@@ -190,3 +190,4 @@ app_license = "MIT"
 # auth_hooks = [
 #	"one_compliance.auth.validate"
 # ]
+fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Super Admin']]]}]
