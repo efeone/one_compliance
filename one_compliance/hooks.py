@@ -102,13 +102,14 @@ doctype_js = {"Customer" : "public/js/customer.js"}
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-#	"*": {
+doc_events = {
+	"Customer": {
+        'validate' : 'idms.idms.doc_events.customer. set_customer_type_value'
 #		"on_update": "method",
 #		"on_cancel": "method",
 #		"on_trash": "method"
-#	}
-# }
+	}
+}
 
 # Scheduled Tasks
 # ---------------
