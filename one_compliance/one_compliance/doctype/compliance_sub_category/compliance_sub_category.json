@@ -12,11 +12,10 @@
   "sub_category",
   "project_template",
   "column_break_06mwn",
-  "biginning_date",
-  "finishing_date",
-  "reoccurrence",
-  "repeat_on",
-  "repeat_till"
+  "start_date",
+  "end_date",
+  "allow_repeat",
+  "repeat_on"
  ],
  "fields": [
   {
@@ -47,38 +46,33 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "0",
-   "fieldname": "reoccurrence",
-   "fieldtype": "Check",
-   "label": "Reoccurrence"
-  },
-  {
-   "depends_on": "eval:doc.reoccurrence == 1",
+   "depends_on": "eval:doc.allow_repeat == 1",
    "fieldname": "repeat_on",
    "fieldtype": "Select",
    "label": "Repeat On",
-   "options": "\nDaily\nWeekly\nMonthly\nYearly"
+   "mandatory_depends_on": "eval:doc.allow_repeat == 1",
+   "options": "\nMonthly\nQuarterly\nHalfyearly\nYearly"
   },
   {
-   "depends_on": "eval:doc.reoccurrence == 1",
-   "fieldname": "repeat_till",
+   "fieldname": "start_date",
    "fieldtype": "Date",
-   "label": "Repeat Till"
+   "label": "Start Date"
   },
   {
-   "fieldname": "biginning_date",
+   "fieldname": "end_date",
    "fieldtype": "Date",
-   "label": "Biginning Date"
+   "label": "End date"
   },
   {
-   "fieldname": "finishing_date",
-   "fieldtype": "Date",
-   "label": "Finishing date"
+   "default": "0",
+   "fieldname": "allow_repeat",
+   "fieldtype": "Check",
+   "label": "Allow Repeat"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-09 15:17:40.963600",
+ "modified": "2023-03-09 16:10:48.381787",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
