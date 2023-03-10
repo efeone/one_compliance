@@ -1,0 +1,39 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-03-10 09:41:33.121039",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "compliance_category",
+  "compliance_sub_category"
+ ],
+ "fields": [
+  {
+   "fieldname": "compliance_category",
+   "fieldtype": "Link",
+   "label": "Compliance Category",
+   "options": "Compliance Category"
+  },
+  {
+   "fieldname": "compliance_sub_category",
+   "fieldtype": "Link",
+   "label": "Compliance Sub Category",
+   "options": "Compliance Sub Category"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-03-10 09:41:50.299526",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Compliance Category Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
