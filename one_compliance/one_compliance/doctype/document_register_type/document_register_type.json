@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:document_register_type",
  "creation": "2023-03-09 11:27:32.722383",
  "default_view": "List",
  "doctype": "DocType",
@@ -14,15 +15,17 @@
    "allow_in_quick_entry": 1,
    "fieldname": "document_register_type",
    "fieldtype": "Data",
-   "label": "Document Register Type"
+   "label": "Document Register Type",
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-09 11:30:26.582817",
+ "modified": "2023-03-09 14:35:16.416428",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Document Register Type",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

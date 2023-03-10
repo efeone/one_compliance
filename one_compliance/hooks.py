@@ -131,6 +131,8 @@ app_license = "MIT"
 #	],
 # }
 
+fixtures = [{"dt": "Document Register Type"}]
+
 # Testing
 # -------
 
