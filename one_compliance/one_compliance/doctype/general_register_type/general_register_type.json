@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "field:general_register_type",
  "creation": "2023-03-09 11:36:55.835059",
  "default_view": "List",
  "doctype": "DocType",
@@ -14,15 +15,17 @@
    "allow_in_quick_entry": 1,
    "fieldname": "general_register_type",
    "fieldtype": "Data",
-   "label": "General Register Type"
+   "label": "General Register Type",
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-09 11:36:55.835059",
+ "modified": "2023-03-09 14:30:30.427726",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "General Register Type",
+ "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {

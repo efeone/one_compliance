@@ -1,0 +1,51 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Document Register Type",
+  "document_register_type": "Company Seal",
+  "modified": "2023-03-09 16:38:45.818684",
+  "name": "Company Seal"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Document Register Type",
+  "document_register_type": "Challan",
+  "modified": "2023-03-09 16:38:56.673724",
+  "name": "Challan"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Document Register Type",
+  "document_register_type": "Information for work",
+  "modified": "2023-03-09 16:39:32.260942",
+  "name": "Information for work"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Document Register Type",
+  "document_register_type": "Digital Signature",
+  "modified": "2023-03-09 16:39:50.246516",
+  "name": "Digital Signature"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Document Register Type",
+  "document_register_type": "Audit Report",
+  "modified": "2023-03-09 16:40:04.016485",
+  "name": "Audit Report"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Document Register Type",
+  "document_register_type": "Books of Accounts",
+  "modified": "2023-03-09 16:40:25.215179",
+  "name": "Books of Accounts"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Document Register Type",
+  "document_register_type": "LLP Agreement Signed",
+  "modified": "2023-03-09 16:40:49.331078",
+  "name": "LLP Agreement Signed"
+ }
+]

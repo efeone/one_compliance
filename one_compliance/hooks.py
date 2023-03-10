@@ -134,6 +134,8 @@ doctype_js = {
 #	],
 # }
 
+fixtures = [{"dt": "Document Register Type"}]
+
 # Testing
 # -------
 
