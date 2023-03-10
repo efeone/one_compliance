@@ -7,7 +7,7 @@ frappe.ui.form.on('Customer',{
       else{
         frm.set_value('customer_type', 'Company')
       }
-      refresh_field('compliance_customer_type');
+      refresh_field('customer_type');
     }
     }
 })

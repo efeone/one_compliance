@@ -1,6 +1,4 @@
 import frappe
-import json
-from frappe import _
 
 @frappe.whitelist()
 def set_customer_type_value(doc, method):
