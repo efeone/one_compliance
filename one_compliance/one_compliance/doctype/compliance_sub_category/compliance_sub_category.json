@@ -9,7 +9,13 @@
  "engine": "InnoDB",
  "field_order": [
   "compliance_category",
-  "sub_category"
+  "sub_category",
+  "project_template",
+  "column_break_06mwn",
+  "start_date",
+  "end_date",
+  "allow_repeat",
+  "repeat_on"
  ],
  "fields": [
   {
@@ -26,13 +32,47 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": " Sub Category",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
+  },
+  {
+   "fieldname": "project_template",
+   "fieldtype": "Link",
+   "label": "Project Template",
+   "options": "Project Template",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_06mwn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.allow_repeat == 1",
+   "fieldname": "repeat_on",
+   "fieldtype": "Select",
+   "label": "Repeat On",
+   "mandatory_depends_on": "eval:doc.allow_repeat == 1",
+   "options": "\nMonthly\nQuarterly\nHalfyearly\nYearly"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End date"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_repeat",
+   "fieldtype": "Check",
+   "label": "Allow Repeat"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-08 17:22:09.764560",
+ "modified": "2023-03-09 16:10:48.381787",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
