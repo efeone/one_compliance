@@ -1,0 +1,232 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-03-09 15:59:46.439522",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer_name",
+  "customer_type",
+  "column_break_czvvr",
+  "lead",
+  "opportunity",
+  "compliance_category_details_section",
+  "type_of_compliance_category",
+  "compliance_category_details",
+  "contact_and_address_tab",
+  "contact_and_address_section",
+  "customer_contacts",
+  "primary_address_and_contact_section",
+  "customer_primary_contact",
+  "mobile_number",
+  "email_id",
+  "column_break_lh9ox",
+  "customer_primary_address",
+  "primary_address",
+  "payments_details_tab",
+  "bank_details_section",
+  "bank_name",
+  "type_of_account",
+  "bank_ac_no",
+  "column_break_r1y1q",
+  "ifsc_code",
+  "micr_code",
+  "credit_limit_and_payment_terms_section",
+  "default_payment_terms_template",
+  "terms_and_condition_tab",
+  "terms_and_condition"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Link",
+   "label": "Customer Name",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "customer_name.lead_name",
+   "fieldname": "lead",
+   "fieldtype": "Link",
+   "label": "  Lead",
+   "options": "Lead"
+  },
+  {
+   "fetch_from": "customer_name.opportunity_name",
+   "fieldname": "opportunity",
+   "fieldtype": "Link",
+   "label": " Opportunity",
+   "options": "Opportunity"
+  },
+  {
+   "fieldname": "credit_limit_and_payment_terms_section",
+   "fieldtype": "Section Break",
+   "label": "Credit Limit and Payment Terms"
+  },
+  {
+   "fieldname": "default_payment_terms_template",
+   "fieldtype": "Link",
+   "label": "Default Payment Terms Template",
+   "options": "Payment Terms Template"
+  },
+  {
+   "fieldname": "bank_details_section",
+   "fieldtype": "Section Break",
+   "label": "Bank details"
+  },
+  {
+   "fieldname": "bank_name",
+   "fieldtype": "Data",
+   "label": "Bank Name"
+  },
+  {
+   "fieldname": "type_of_account",
+   "fieldtype": "Select",
+   "label": "Type of Account",
+   "options": "Savings\nCurrent\nSalary\nNRI\nRD\nFD"
+  },
+  {
+   "fieldname": "bank_ac_no",
+   "fieldtype": "Data",
+   "label": "Bank A/c No"
+  },
+  {
+   "fieldname": "column_break_r1y1q",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "ifsc_code",
+   "fieldtype": "Int",
+   "label": "IFSC Code"
+  },
+  {
+   "fieldname": "micr_code",
+   "fieldtype": "Data",
+   "label": "MICR code"
+  },
+  {
+   "fieldname": "terms_and_condition_tab",
+   "fieldtype": "Tab Break",
+   "label": "Terms and Condition"
+  },
+  {
+   "fieldname": "terms_and_condition",
+   "fieldtype": "Link",
+   "label": "Terms and Condition",
+   "options": "Terms and Conditions"
+  },
+  {
+   "fieldname": "compliance_category_details_section",
+   "fieldtype": "Section Break",
+   "label": "Compliance Category Details"
+  },
+  {
+   "fieldname": "type_of_compliance_category",
+   "fieldtype": "Table MultiSelect",
+   "label": "Type of Compliance Category",
+   "options": "Compliance Category List"
+  },
+  {
+   "fieldname": "compliance_category_details",
+   "fieldtype": "Table",
+   "label": "Compliance Category Details",
+   "options": "Compliance Category Details"
+  },
+  {
+   "fieldname": "contact_and_address_tab",
+   "fieldtype": "Tab Break",
+   "label": "Contact & Address"
+  },
+  {
+   "fieldname": "contact_and_address_section",
+   "fieldtype": "Section Break",
+   "label": "Contact and Address"
+  },
+  {
+   "fieldname": "customer_contacts",
+   "fieldtype": "Table",
+   "label": "Customer Contacts",
+   "options": "Customer Contacts"
+  },
+  {
+   "fieldname": "primary_address_and_contact_section",
+   "fieldtype": "Section Break",
+   "label": "Primary Address and Contact"
+  },
+  {
+   "fieldname": "customer_primary_contact",
+   "fieldtype": "Link",
+   "label": "Customer Primary Contact",
+   "options": "Contact"
+  },
+  {
+   "fetch_from": "customer_primary_contact.mobile_no",
+   "fetch_if_empty": 1,
+   "fieldname": "mobile_number",
+   "fieldtype": "Data",
+   "label": "Mobile Number"
+  },
+  {
+   "fetch_from": "customer_primary_contact.email_id",
+   "fetch_if_empty": 1,
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email id"
+  },
+  {
+   "fieldname": "column_break_lh9ox",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_primary_address",
+   "fieldtype": "Link",
+   "label": "Customer Primary Address",
+   "options": "Address"
+  },
+  {
+   "fieldname": "primary_address",
+   "fieldtype": "Text",
+   "label": "Primary Address"
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Select",
+   "label": "Customer Type",
+   "options": "Company\nIndividual"
+  },
+  {
+   "fieldname": "column_break_czvvr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payments_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Payments Details"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-03-10 16:05:13.306129",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Compliance Agreement",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

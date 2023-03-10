@@ -134,8 +134,6 @@ doctype_js = {
 #	],
 # }
 
-fixtures = [{"dt": "Document Register Type"}]
-
 # Testing
 # -------
 
@@ -196,5 +194,6 @@ fixtures = [{"dt": "Document Register Type"}]
 #	"one_compliance.auth.validate"
 # ]
 fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Super Admin']]]},
-            {'dt': 'Custom DocPerm', 'filters': [['role', 'in', ['Super Admin']]]}
+            {'dt': 'Custom DocPerm', 'filters': [['role', 'in', ['Super Admin']]]},
+            {'dt': "Document Register Type"}
 ]
