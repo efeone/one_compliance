@@ -31,15 +31,13 @@
    "fieldname": "sub_category",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": " Sub Category",
-   "reqd": 1
+   "label": " Sub Category"
   },
   {
    "fieldname": "project_template",
    "fieldtype": "Link",
    "label": "Project Template",
-   "options": "Project Template",
-   "reqd": 1
+   "options": "Project Template"
   },
   {
    "fieldname": "column_break_06mwn",
@@ -72,7 +70,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-09 16:10:48.381787",
+ "modified": "2023-03-13 12:45:25.288367",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
