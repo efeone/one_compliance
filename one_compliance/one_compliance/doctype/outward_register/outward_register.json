@@ -8,10 +8,10 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "inward_register",
   "register_type",
   "general_register_type",
   "document_register_type",
-  "inward_register",
   "purpose",
   "receiver_name",
   "receiver_contact_number",
@@ -28,6 +28,7 @@
  ],
  "fields": [
   {
+   "fetch_from": "inward_register.register_type",
    "fieldname": "register_type",
    "fieldtype": "Select",
    "label": "Register Type",
@@ -90,12 +91,16 @@
    "label": "Received Time"
   },
   {
+   "fetch_from": "inward_register.project",
+   "fetch_if_empty": 1,
    "fieldname": "project",
    "fieldtype": "Link",
    "label": "Project",
    "options": "Project"
   },
   {
+   "fetch_from": "inward_register.customer",
+   "fetch_if_empty": 1,
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
@@ -119,10 +124,12 @@
    "fieldname": "inward_register",
    "fieldtype": "Link",
    "label": "Inward Register",
-   "options": "Inward Register"
+   "options": "Inward Register",
+   "reqd": 1
   },
   {
    "depends_on": "eval:doc.register_type == 'General'",
+   "fetch_from": "inward_register.general_register_type",
    "fieldname": "general_register_type",
    "fieldtype": "Link",
    "label": "General Register Type",
@@ -131,6 +138,7 @@
   },
   {
    "depends_on": "eval:doc.register_type == 'Document'",
+   "fetch_from": "inward_register.document_register_type",
    "fieldname": "document_register_type",
    "fieldtype": "Link",
    "label": "Document Register Type",
@@ -141,7 +149,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-10 10:35:32.646475",
+ "modified": "2023-03-13 10:44:19.450127",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Outward Register",

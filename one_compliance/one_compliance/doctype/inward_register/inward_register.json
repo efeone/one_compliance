@@ -21,7 +21,7 @@
   "expected_return_date",
   "project",
   "customer",
-  "returned_through",
+  "received_through",
   "specify_others",
   "amended_from"
  ],
@@ -125,24 +125,24 @@
    "options": "Document Register Type"
   },
   {
-   "fieldname": "returned_through",
-   "fieldtype": "Select",
-   "label": "Returned Through",
-   "options": "\nMail\nWhatsapp\nPhysical Handover\nCourier\nOthers",
-   "reqd": 1
-  },
-  {
    "depends_on": "eval:doc.returned_through == 'Others'",
    "fieldname": "specify_others",
    "fieldtype": "Data",
    "label": "Specify Others",
    "mandatory_depends_on": "eval:doc.returned_through == 'Others'"
+  },
+  {
+   "fieldname": "received_through",
+   "fieldtype": "Select",
+   "label": "Received Through",
+   "options": "\nMail\nWhatsapp\nPhysical Handover\nCourier\nOthers",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-10 10:39:29.122502",
+ "modified": "2023-03-13 10:45:28.701819",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Inward Register",
