@@ -195,5 +195,6 @@ doctype_js = {
 # ]
 fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Super Admin']]]},
             {'dt': 'Custom DocPerm', 'filters': [['role', 'in', ['Super Admin']]]},
-            {'dt': "Document Register Type"}
+            {'dt': "Document Register Type"},
+            {'dt': 'Customer Type'}
 ]
