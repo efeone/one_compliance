@@ -195,6 +195,9 @@ doctype_js = {
 # ]
 fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Super Admin']]]},
             {'dt': 'Custom DocPerm', 'filters': [['role', 'in', ['Super Admin']]]},
-            {'dt': "Document Register Type"},
-            {'dt': 'Customer Type'}
+            {'dt': 'Document Register Type'},
+            {'dt': 'Customer Type'},
+            {'dt': 'Workflow State', 'filters': [['name', 'in', ['Draft', 'Rejected', 'Approved','Pending']]]},
+            {'dt': 'Workflow', 'filters': [['name', 'in', ['Compliance Agreement Workflow']]]},
+            {'dt': 'Workflow Action Master', 'filters': [['name', 'in', ['Rejected', 'Approved', 'Request for Review', 'Review', 'Approve', 'Reject']]]}
 ]
