@@ -9,5 +9,15 @@ frappe.ui.form.on('Customer',{
       }
       refresh_field('customer_type');
     }
-    }
-})
+  },
+  refresh: function(frm){
+    if(!frm.is_new()){
+    frm.add_custom_button('Create Agreement', () => {
+      frappe.model.open_mapped_doc({
+        method: 'one_compliance.one_compliance.doc_events.customer.create_agreement_custom_button',
+        frm: cur_frm
+      });
+    });
+  }
+}
+});

@@ -8,11 +8,12 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "customer",
   "customer_name",
   "customer_type",
   "column_break_czvvr",
-  "lead",
-  "opportunity",
+  "lead_name",
+  "opportunity_name",
   "compliance_category_details_section",
   "compliance_category",
   "compliance_category_details",
@@ -43,26 +44,10 @@
  "fields": [
   {
    "fieldname": "customer_name",
-   "fieldtype": "Link",
+   "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Customer Name",
-   "options": "Customer",
    "reqd": 1
-  },
-  {
-   "fetch_from": "customer_name.lead_name",
-   "fieldname": "lead",
-   "fieldtype": "Link",
-   "label": "  Lead",
-   "options": "Lead"
-  },
-  {
-   "fetch_from": "customer_name.opportunity_name",
-   "fetch_if_empty": 1,
-   "fieldname": "opportunity",
-   "fieldtype": "Link",
-   "label": " Opportunity",
-   "options": "Opportunity"
   },
   {
    "fieldname": "credit_limit_and_payment_terms_section",
@@ -217,11 +202,29 @@
    "options": "Compliance Agreement",
    "print_hide": 1,
    "read_only": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "lead_name",
+   "fieldtype": "Link",
+   "label": "From Lead",
+   "options": "Lead"
+  },
+  {
+   "fieldname": "opportunity_name",
+   "fieldtype": "Link",
+   "label": "From Opportunity",
+   "options": "Opportunity"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-13 12:14:01.657379",
+ "modified": "2023-03-13 17:22:04.838602",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
