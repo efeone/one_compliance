@@ -193,8 +193,8 @@ doctype_js = {
 # auth_hooks = [
 #	"one_compliance.auth.validate"
 # ]
-fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Super Admin']]]},
-            {'dt': 'Custom DocPerm', 'filters': [['role', 'in', ['Super Admin']]]},
+fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Director']]]},
+            {'dt': 'Custom DocPerm', 'filters': [['role', 'in', ['Director']]]},
             {'dt': "Document Register Type"},
             {'dt': 'Customer Type'}
 ]

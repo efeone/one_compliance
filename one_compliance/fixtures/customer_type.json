@@ -1,0 +1,30 @@
+[
+ {
+  "customer_type": "LLC",
+  "docstatus": 0,
+  "doctype": "Customer Type",
+  "modified": "2023-03-10 10:57:27.671085",
+  "name": "LLC"
+ },
+ {
+  "customer_type": "Trust",
+  "docstatus": 0,
+  "doctype": "Customer Type",
+  "modified": "2023-03-10 10:57:53.305690",
+  "name": "Trust"
+ },
+ {
+  "customer_type": "Individual",
+  "docstatus": 0,
+  "doctype": "Customer Type",
+  "modified": "2023-03-14 12:19:07.163968",
+  "name": "Individual"
+ },
+ {
+  "customer_type": "Company",
+  "docstatus": 0,
+  "doctype": "Customer Type",
+  "modified": "2023-03-14 12:19:24.831645",
+  "name": "Company"
+ }
+]
