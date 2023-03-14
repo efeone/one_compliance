@@ -6,6 +6,11 @@ frappe.ui.form.on('Compliance Agreement',{
   			filters: {'compliance_category': child.compliance_category}
   		};
   	});
+    if(!frm.is_new()){
+      frm.add_custom_button('Create Projects', () =>{
+          frm.call('create_project_from_agreement')
+      })
+    }
   },
   compliance_category:function(frm){
     update_compliance_category(frm);
