@@ -14,15 +14,21 @@
   "person_name",
   "person_contact_number",
   "received_by",
-  "signature",
   "column_break_czx8y",
   "posting_date",
   "posting_time",
-  "expected_return_date",
-  "project",
+  "edit_posting_date_and_time",
+  "status",
   "customer",
   "received_through",
   "specify_others",
+  "signature_tab",
+  "section_break_slzqk",
+  "authority_signature",
+  "column_break_8t056",
+  "person_signature",
+  "remarks_tab",
+  "remarks",
   "amended_from"
  ],
  "fields": [
@@ -30,6 +36,7 @@
    "fieldname": "register_type",
    "fieldtype": "Select",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Register Type",
    "options": "\nGeneral\nDocument",
    "reqd": 1
@@ -50,22 +57,19 @@
    "options": "Customer"
   },
   {
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "options": "Project"
-  },
-  {
    "fieldname": "purpose",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "label": "Purpose",
+   "options": "Purpose",
    "reqd": 1
   },
   {
    "default": "Today",
    "fieldname": "posting_date",
    "fieldtype": "Date",
+   "in_standard_filter": 1,
    "label": "Posting Date",
+   "read_only_depends_on": "eval:doc.edit_posting_date_and_time == 0",
    "reqd": 1
   },
   {
@@ -73,17 +77,8 @@
    "fieldname": "posting_time",
    "fieldtype": "Time",
    "label": "Posting Time",
+   "read_only_depends_on": "eval:doc.edit_posting_date_and_time == 0",
    "reqd": 1
-  },
-  {
-   "fieldname": "expected_return_date",
-   "fieldtype": "Date",
-   "label": "Expected Return Date"
-  },
-  {
-   "fieldname": "signature",
-   "fieldtype": "Attach Image",
-   "label": "Signature"
   },
   {
    "fieldname": "person_name",
@@ -93,7 +88,7 @@
   },
   {
    "fieldname": "person_contact_number",
-   "fieldtype": "Phone",
+   "fieldtype": "Data",
    "label": "Person Contact Number",
    "reqd": 1
   },
@@ -125,24 +120,71 @@
    "options": "Document Register Type"
   },
   {
-   "depends_on": "eval:doc.returned_through == 'Others'",
+   "depends_on": "eval:doc.received_through == 'Others'",
    "fieldname": "specify_others",
    "fieldtype": "Data",
    "label": "Specify Others",
-   "mandatory_depends_on": "eval:doc.returned_through == 'Others'"
+   "mandatory_depends_on": "eval:doc.received_through == 'Others'"
   },
   {
+   "depends_on": "eval:doc.register_type == 'Document'",
    "fieldname": "received_through",
    "fieldtype": "Select",
    "label": "Received Through",
-   "options": "\nMail\nWhatsapp\nPhysical Handover\nCourier\nOthers",
-   "reqd": 1
+   "options": "\nMail\nWhatsapp\nPhysical Handover\nCourier\nOthers"
+  },
+  {
+   "fieldname": "signature_tab",
+   "fieldtype": "Tab Break",
+   "label": "Signature"
+  },
+  {
+   "fieldname": "person_signature",
+   "fieldtype": "Signature",
+   "label": "Person Signature"
+  },
+  {
+   "fieldname": "section_break_slzqk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_8t056",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remarks_tab",
+   "fieldtype": "Tab Break",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "depends_on": "eval:doc.register_type == 'Document'",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "\nReceived\nPending\nOverdue"
+  },
+  {
+   "fieldname": "authority_signature",
+   "fieldtype": "Signature",
+   "label": "Authority Signature"
+  },
+  {
+   "default": "0",
+   "fieldname": "edit_posting_date_and_time",
+   "fieldtype": "Check",
+   "label": "Edit Posting Date and Time"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-13 10:45:28.701819",
+ "modified": "2023-03-16 16:55:45.954395",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Inward Register",

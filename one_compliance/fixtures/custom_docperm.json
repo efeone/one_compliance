@@ -473,5 +473,30 @@
   "share": 0,
   "submit": 0,
   "write": 1
+ },
+ {
+  "amend": 0,
+  "cancel": 1,
+  "create": 1,
+  "delete": 1,
+  "docstatus": 0,
+  "doctype": "Custom DocPerm",
+  "email": 1,
+  "export": 1,
+  "if_owner": 0,
+  "import": 1,
+  "modified": "2023-03-16 15:02:34.463334",
+  "name": "a212529150",
+  "parent": "Inward Register",
+  "permlevel": 0,
+  "print": 1,
+  "read": 1,
+  "report": 0,
+  "role": "Compliance Manager",
+  "select": 1,
+  "set_user_permissions": 0,
+  "share": 1,
+  "submit": 1,
+  "write": 1
  }
 ]
