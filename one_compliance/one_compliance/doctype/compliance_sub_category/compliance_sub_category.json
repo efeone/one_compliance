@@ -12,7 +12,9 @@
   "sub_category",
   "project_template",
   "column_break_06mwn",
-  "maximum_duration",
+  "start_date",
+  "end_date",
+  "rate",
   "allow_repeat",
   "repeat_on"
  ],
@@ -21,6 +23,7 @@
    "fieldname": "compliance_category",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Compliance Category",
    "options": "Compliance Category",
    "reqd": 1,
@@ -30,15 +33,16 @@
    "fieldname": "sub_category",
    "fieldtype": "Data",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": " Sub Category",
-   "reqd": 1
+   "reqd": 1,
+   "set_only_once": 1
   },
   {
    "fieldname": "project_template",
    "fieldtype": "Link",
    "label": "Project Template",
-   "options": "Project Template",
-   "read_only": 1
+   "options": "Project Template"
   },
   {
    "fieldname": "column_break_06mwn",
@@ -50,7 +54,7 @@
    "fieldtype": "Select",
    "label": "Repeat On",
    "mandatory_depends_on": "eval:doc.allow_repeat == 1",
-   "options": "\nMonthly\nQuarterly\nHalf yearly\nyearly"
+   "options": "\nMonthly\nQuarterly\nHalfyearly\nYearly"
   },
   {
    "default": "0",
@@ -59,14 +63,25 @@
    "label": "Allow Repeat"
   },
   {
-   "fieldname": "maximum_duration",
-   "fieldtype": "Int",
-   "label": "Maximum Duration"
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End date"
+  },
+  {
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-15 10:54:25.605230",
+ "modified": "2023-03-16 17:05:30.642860",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",

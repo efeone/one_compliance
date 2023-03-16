@@ -15,6 +15,7 @@
    "fieldname": "compliance_category",
    "fieldtype": "Data",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Compliance Category",
    "reqd": 1,
    "unique": 1
@@ -22,7 +23,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-13 10:34:14.236713",
+ "modified": "2023-03-16 16:52:16.175252",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Category",
