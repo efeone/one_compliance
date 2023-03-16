@@ -8,6 +8,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "if_outward_only",
   "inward_register",
   "register_type",
   "general_register_type",
@@ -16,14 +17,20 @@
   "receiver_name",
   "receiver_contact_number",
   "returned_by",
-  "signature",
   "column_break_b6il8",
-  "received_date",
-  "received_time",
-  "project",
+  "returned_date",
+  "returned_time",
+  "status",
   "customer",
   "returned_through",
   "specify_others",
+  "section_break_pmpst",
+  "signature_tab",
+  "authority_signature",
+  "column_break_3mcs1",
+  "recipient_signature",
+  "remarks_tab",
+  "remarks",
   "amended_from"
  ],
  "fields": [
@@ -31,6 +38,8 @@
    "fetch_from": "inward_register.register_type",
    "fieldname": "register_type",
    "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Register Type",
    "options": "\nGeneral\nDocument",
    "reqd": 1
@@ -46,9 +55,9 @@
   },
   {
    "fieldname": "purpose",
-   "fieldtype": "Data",
-   "in_list_view": 1,
+   "fieldtype": "Link",
    "label": "Purpose",
+   "options": "Purpose",
    "reqd": 1
   },
   {
@@ -59,7 +68,7 @@
   },
   {
    "fieldname": "receiver_contact_number",
-   "fieldtype": "Phone",
+   "fieldtype": "Data",
    "label": "Receiver Contact Number",
    "reqd": 1
   },
@@ -70,33 +79,8 @@
    "reqd": 1
   },
   {
-   "fieldname": "signature",
-   "fieldtype": "Attach Image",
-   "label": "Signature"
-  },
-  {
    "fieldname": "column_break_b6il8",
    "fieldtype": "Column Break"
-  },
-  {
-   "default": "Today",
-   "fieldname": "received_date",
-   "fieldtype": "Date",
-   "label": "Received Date"
-  },
-  {
-   "default": "Now",
-   "fieldname": "received_time",
-   "fieldtype": "Time",
-   "label": "Received Time"
-  },
-  {
-   "fetch_from": "inward_register.project",
-   "fetch_if_empty": 1,
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "options": "Project"
   },
   {
    "fetch_from": "inward_register.customer",
@@ -107,11 +91,11 @@
    "options": "Customer"
   },
   {
+   "depends_on": "eval:doc.register_type == 'Document'",
    "fieldname": "returned_through",
    "fieldtype": "Select",
    "label": "Returned Through",
-   "options": "\nMail\nWhatsapp\nPhysical Handover\nCourier\nOthers",
-   "reqd": 1
+   "options": "\nMail\nWhatsapp\nPhysical Handover\nCourier\nOthers"
   },
   {
    "depends_on": "eval:doc.returned_through == 'Others'",
@@ -124,32 +108,94 @@
    "fieldname": "inward_register",
    "fieldtype": "Link",
    "label": "Inward Register",
-   "options": "Inward Register",
-   "reqd": 1
+   "mandatory_depends_on": "eval:doc.if_outward_only == 0",
+   "options": "Inward Register"
   },
   {
    "depends_on": "eval:doc.register_type == 'General'",
    "fetch_from": "inward_register.general_register_type",
    "fieldname": "general_register_type",
-   "fieldtype": "Link",
+   "fieldtype": "Table MultiSelect",
+   "in_standard_filter": 1,
    "label": "General Register Type",
    "mandatory_depends_on": "eval:doc.register_type == 'General'",
-   "options": "General Register Type"
+   "options": "General Register Type List"
   },
   {
    "depends_on": "eval:doc.register_type == 'Document'",
    "fetch_from": "inward_register.document_register_type",
    "fieldname": "document_register_type",
-   "fieldtype": "Link",
+   "fieldtype": "Table MultiSelect",
    "label": "Document Register Type",
    "mandatory_depends_on": "eval:doc.register_type == 'Document'",
-   "options": "Document Register Type"
+   "options": "Document Register Type List"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "\nReturned\nPending"
+  },
+  {
+   "fieldname": "signature_tab",
+   "fieldtype": "Tab Break",
+   "label": "Signature"
+  },
+  {
+   "fieldname": "authority_signature",
+   "fieldtype": "Signature",
+   "label": "Authority Signature"
+  },
+  {
+   "fieldname": "recipient_signature",
+   "fieldtype": "Signature",
+   "label": "Recipient Signature"
+  },
+  {
+   "fieldname": "column_break_3mcs1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "remarks_tab",
+   "fieldtype": "Tab Break",
+   "label": "Remarks"
+  },
+  {
+   "fieldname": "remarks",
+   "fieldtype": "Small Text",
+   "label": "Remarks"
+  },
+  {
+   "default": "0",
+   "fieldname": "if_outward_only",
+   "fieldtype": "Check",
+   "label": "If Outward Only"
+  },
+  {
+   "default": "Today",
+   "fieldname": "returned_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Returned Date"
+  },
+  {
+   "default": "Now",
+   "fieldname": "returned_time",
+   "fieldtype": "Time",
+   "label": "Returned Time"
+  },
+  {
+   "fieldname": "section_break_pmpst",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-13 10:44:19.450127",
+ "modified": "2023-03-16 15:31:56.953441",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Outward Register",
