@@ -4,6 +4,16 @@ from frappe.model.document import Document
 from frappe import _
 
 class ComplianceAgreement(Document):
+	''' Method used for validate Signature '''
+	def on_update_after_submit(self):
+		self.sign_validation()
+
+	def sign_validation(self):
+		if self.workflow_state == 'Approved' and not self.authority_signature:
+			frappe.throw('Authority Signature is required for Approval')
+		if self.workflow_state == 'Customer Approved' and not self.customer_signature:
+			frappe.throw('Customer Signature is required for Approval')
+
 	@frappe.whitelist()
 	def create_project_from_agreement(self):
 		if self.compliance_category_details:

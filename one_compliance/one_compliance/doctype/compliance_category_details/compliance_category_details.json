@@ -8,7 +8,8 @@
  "engine": "InnoDB",
  "field_order": [
   "compliance_category",
-  "compliance_sub_category"
+  "compliance_sub_category",
+  "rate"
  ],
  "fields": [
   {
@@ -23,12 +24,18 @@
    "fieldtype": "Link",
    "label": "Compliance Sub Category",
    "options": "Compliance Sub Category"
+  },
+  {
+   "fetch_from": "compliance_sub_category.rate",
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-03-13 10:39:37.988979",
+ "modified": "2023-03-16 09:29:23.025263",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Category Details",
