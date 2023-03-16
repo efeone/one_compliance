@@ -2,6 +2,34 @@
  {
   "docstatus": 0,
   "doctype": "Workflow Action Master",
+  "modified": "2023-03-16 10:44:05.020868",
+  "name": "Sent to Customer",
+  "workflow_action_name": "Sent to Customer"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-16 10:45:07.655678",
+  "name": "Customer Approval",
+  "workflow_action_name": "Customer Approval"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-16 10:46:17.783814",
+  "name": "Customer Reject",
+  "workflow_action_name": "Customer Reject"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-16 11:26:32.875913",
+  "name": "Customer Approval waiting",
+  "workflow_action_name": "Customer Approval waiting"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
   "modified": "2023-03-08 10:08:55.708879",
   "name": "Approve",
   "workflow_action_name": "Approve"
