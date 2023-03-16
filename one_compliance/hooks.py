@@ -105,13 +105,11 @@ doctype_js = {
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-#	"*": {
-#		"on_update": "method",
-#		"on_cancel": "method",
-#		"on_trash": "method"
-#	}
-# }
+doc_events = {
+	"Project Template": {
+		"after_insert": "one_compliance.one_compliance.doc_events.project_template.update_project_template",
+	}
+}
 
 # Scheduled Tasks
 # ---------------

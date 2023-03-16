@@ -12,8 +12,7 @@
   "sub_category",
   "project_template",
   "column_break_06mwn",
-  "start_date",
-  "end_date",
+  "maximum_duration",
   "allow_repeat",
   "repeat_on"
  ],
@@ -31,13 +30,15 @@
    "fieldname": "sub_category",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": " Sub Category"
+   "label": " Sub Category",
+   "reqd": 1
   },
   {
    "fieldname": "project_template",
    "fieldtype": "Link",
    "label": "Project Template",
-   "options": "Project Template"
+   "options": "Project Template",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_06mwn",
@@ -49,28 +50,23 @@
    "fieldtype": "Select",
    "label": "Repeat On",
    "mandatory_depends_on": "eval:doc.allow_repeat == 1",
-   "options": "\nMonthly\nQuarterly\nHalfyearly\nYearly"
-  },
-  {
-   "fieldname": "start_date",
-   "fieldtype": "Date",
-   "label": "Start Date"
-  },
-  {
-   "fieldname": "end_date",
-   "fieldtype": "Date",
-   "label": "End date"
+   "options": "\nMonthly\nQuarterly\nHalf yearly\nyearly"
   },
   {
    "default": "0",
    "fieldname": "allow_repeat",
    "fieldtype": "Check",
    "label": "Allow Repeat"
+  },
+  {
+   "fieldname": "maximum_duration",
+   "fieldtype": "Int",
+   "label": "Maximum Duration"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-13 12:45:25.288367",
+ "modified": "2023-03-15 10:54:25.605230",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
@@ -90,7 +86,6 @@
    "write": 1
   }
  ],
- "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
