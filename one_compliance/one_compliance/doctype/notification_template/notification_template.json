@@ -1,0 +1,87 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:notification_name",
+ "creation": "2023-03-17 15:29:34.648669",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "doctype_name",
+  "column_break_fzlym",
+  "notification_name",
+  "section_break_5vqah",
+  "subject",
+  "content"
+ ],
+ "fields": [
+  {
+   "fieldname": "doctype_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "DocType Name",
+   "options": "DocType",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "column_break_fzlym",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "notification_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Notification Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "section_break_5vqah",
+   "fieldtype": "Section Break"
+  },
+  {
+   "description": "Use {{ doc.&lt;field_name&gt; }} to display values from the document in the subject <br>\nexample :- {{ doc.name }} will display the name of the document in the notification subject",
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "label": "Subject",
+   "reqd": 1
+  },
+  {
+   "description": "Use {{ doc.&lt;field_name&gt; }} to display values from the document in the content <br>\nexample :- {{ doc.name }} will display the name of the document in the notification",
+   "fieldname": "content",
+   "fieldtype": "Small Text",
+   "label": "Content",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-03-17 15:58:16.705857",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Notification Template",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_views": 1
+}
