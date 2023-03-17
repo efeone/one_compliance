@@ -20,6 +20,7 @@
   "column_break_b6il8",
   "returned_date",
   "returned_time",
+  "edit_return_date_and_time",
   "status",
   "customer",
   "returned_through",
@@ -179,23 +180,33 @@
    "fieldtype": "Date",
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Returned Date"
+   "label": "Returned Date",
+   "read_only_depends_on": "eval:doc.edit_return_date_and_time == 0",
+   "reqd": 1
   },
   {
    "default": "Now",
    "fieldname": "returned_time",
    "fieldtype": "Time",
-   "label": "Returned Time"
+   "label": "Returned Time",
+   "read_only_depends_on": "eval:doc.edit_return_date_and_time == 0",
+   "reqd": 1
   },
   {
    "fieldname": "section_break_pmpst",
    "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "edit_return_date_and_time",
+   "fieldtype": "Check",
+   "label": "Edit Return Date and Time"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-16 15:31:56.953441",
+ "modified": "2023-03-17 11:08:29.665582",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Outward Register",
