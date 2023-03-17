@@ -21,10 +21,6 @@
   "compliance_category",
   "compliance_category_details",
   "total",
-  "signatures_section",
-  "customer_signature",
-  "column_break_qxw6c",
-  "authority_signature",
   "payments_details_tab",
   "bank_details_section",
   "bank_name",
@@ -37,6 +33,10 @@
   "default_payment_terms_template",
   "terms_and_condition_tab",
   "terms_and_condition",
+  "signatures_tab",
+  "customer_signature",
+  "column_break_qxw6c",
+  "authority_signature",
   "amended_from"
  ],
  "fields": [
@@ -201,11 +201,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "signatures_section",
-   "fieldtype": "Section Break",
-   "label": "Signatures"
-  },
-  {
    "allow_on_submit": 1,
    "fieldname": "workflow_state",
    "fieldtype": "Link",
@@ -213,12 +208,17 @@
    "label": "Workflow State",
    "no_copy": 1,
    "options": "Workflow State"
+  },
+  {
+   "fieldname": "signatures_tab",
+   "fieldtype": "Tab Break",
+   "label": "Signatures"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-16 12:51:01.567551",
+ "modified": "2023-03-17 11:31:17.598888",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
