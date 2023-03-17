@@ -8,25 +8,23 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "workflow_state",
   "customer",
   "customer_name",
   "customer_type",
   "column_break_czvvr",
   "lead_name",
   "opportunity_name",
+  "valid_from",
+  "valid_till",
   "compliance_category_details_section",
   "compliance_category",
   "compliance_category_details",
-  "contact_and_address_tab",
-  "contact_and_address_section",
-  "customer_contacts",
-  "primary_address_and_contact_section",
-  "customer_primary_contact",
-  "mobile_number",
-  "email_id",
-  "column_break_lh9ox",
-  "customer_primary_address",
-  "primary_address",
+  "total",
+  "signatures_section",
+  "customer_signature",
+  "column_break_qxw6c",
+  "authority_signature",
   "payments_details_tab",
   "bank_details_section",
   "bank_name",
@@ -118,62 +116,6 @@
    "options": "Compliance Category Details"
   },
   {
-   "fieldname": "contact_and_address_tab",
-   "fieldtype": "Tab Break",
-   "label": "Contact & Address"
-  },
-  {
-   "fieldname": "contact_and_address_section",
-   "fieldtype": "Section Break",
-   "label": "Contact and Address"
-  },
-  {
-   "fieldname": "customer_contacts",
-   "fieldtype": "Table",
-   "label": "Customer Contacts",
-   "options": "Customer Contacts"
-  },
-  {
-   "fieldname": "primary_address_and_contact_section",
-   "fieldtype": "Section Break",
-   "label": "Primary Address and Contact"
-  },
-  {
-   "fieldname": "customer_primary_contact",
-   "fieldtype": "Link",
-   "label": "Customer Primary Contact",
-   "options": "Contact"
-  },
-  {
-   "fetch_from": "customer_primary_contact.mobile_no",
-   "fetch_if_empty": 1,
-   "fieldname": "mobile_number",
-   "fieldtype": "Data",
-   "label": "Mobile Number"
-  },
-  {
-   "fetch_from": "customer_primary_contact.email_id",
-   "fetch_if_empty": 1,
-   "fieldname": "email_id",
-   "fieldtype": "Data",
-   "label": "Email id"
-  },
-  {
-   "fieldname": "column_break_lh9ox",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "customer_primary_address",
-   "fieldtype": "Link",
-   "label": "Customer Primary Address",
-   "options": "Address"
-  },
-  {
-   "fieldname": "primary_address",
-   "fieldtype": "Text",
-   "label": "Primary Address"
-  },
-  {
    "fieldname": "customer_type",
    "fieldtype": "Select",
    "label": "Customer Type",
@@ -221,12 +163,62 @@
    "fieldtype": "Link",
    "label": "From Opportunity",
    "options": "Opportunity"
+  },
+  {
+   "default": "Today",
+   "fieldname": "valid_from",
+   "fieldtype": "Date",
+   "label": "Valid From",
+   "reqd": 1
+  },
+  {
+   "fieldname": "valid_till",
+   "fieldtype": "Date",
+   "label": "Valid Till",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Data",
+   "label": "Total Rate"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "customer_signature",
+   "fieldtype": "Signature",
+   "label": "Customer ",
+   "mandatory_depends_on": "eval:doc.workflow_state == 'Customer Approval Waiting'"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "authority_signature",
+   "fieldtype": "Signature",
+   "label": "Authority ",
+   "mandatory_depends_on": "eval:doc.workflow_state == 'Pending'"
+  },
+  {
+   "fieldname": "column_break_qxw6c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "signatures_section",
+   "fieldtype": "Section Break",
+   "label": "Signatures"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Workflow State",
+   "no_copy": 1,
+   "options": "Workflow State"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-14 13:27:44.224397",
+ "modified": "2023-03-16 12:51:01.567551",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",

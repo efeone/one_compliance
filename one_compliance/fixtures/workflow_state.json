@@ -2,6 +2,42 @@
  {
   "docstatus": 0,
   "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2023-03-16 10:39:23.207680",
+  "name": "Sent to Customer",
+  "style": "",
+  "workflow_state_name": "Sent to Customer"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2023-03-16 10:40:33.996846",
+  "name": "Customer Approved",
+  "style": "",
+  "workflow_state_name": "Customer Approved"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2023-03-16 10:49:51.506753",
+  "name": "Customer Approval Waiting",
+  "style": "",
+  "workflow_state_name": "Customer Approval Waiting"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2023-03-16 10:50:26.124950",
+  "name": "Customer Rejected",
+  "style": "",
+  "workflow_state_name": "Customer Rejected"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
   "icon": "question-sign",
   "modified": "2023-03-08 10:08:55.682771",
   "name": "Pending",

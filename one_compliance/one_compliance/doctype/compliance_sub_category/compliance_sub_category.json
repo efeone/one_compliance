@@ -13,6 +13,9 @@
   "project_template",
   "column_break_06mwn",
   "maximum_duration",
+  "start_date",
+  "end_date",
+  "rate",
   "allow_repeat",
   "repeat_on"
  ],
@@ -62,11 +65,16 @@
    "fieldname": "maximum_duration",
    "fieldtype": "Int",
    "label": "Maximum Duration"
+   "fieldname": "rate",
+   "fieldtype": "Currency",
+   "label": "Rate",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
  "modified": "2023-03-15 10:54:25.605230",
+ "modified": "2023-03-15 11:39:24.440775",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",

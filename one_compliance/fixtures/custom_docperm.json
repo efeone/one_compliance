@@ -451,7 +451,7 @@
  },
  {
   "amend": 0,
-  "cancel": 0,
+  "cancel": 1,
   "create": 1,
   "delete": 1,
   "docstatus": 0,
@@ -471,7 +471,7 @@
   "select": 1,
   "set_user_permissions": 0,
   "share": 0,
-  "submit": 0,
+  "submit": 1,
   "write": 1
  }
 ]
