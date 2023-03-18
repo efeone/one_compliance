@@ -108,16 +108,19 @@ doctype_js = {
 doc_events = {
 	"Project Template": {
 		"after_insert": "one_compliance.one_compliance.doc_events.project_template.update_project_template",
-	}
+	},
+   'Task':{
+        "validate":'one_compliance.one_compliance.utils.sent_ovderdue_notification_to_employee'
+    }
 }
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-#	"all": [
-#		"one_compliance.tasks.all"
-#	],
+scheduler_events = {
+	"all": [
+		'one_compliance.one_compliance.utils.sent_ovderdue_notification_to_employee'
+	]
 #	"daily": [
 #		"one_compliance.tasks.daily"
 #	],
@@ -130,7 +133,7 @@ doc_events = {
 #	"monthly": [
 #		"one_compliance.tasks.monthly"
 #	],
-# }
+}
 
 # Testing
 # -------
@@ -195,8 +198,8 @@ fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Director','Compliance Ma
             {'dt': 'Custom DocPerm', 'filters': [['role', 'in', ['Director','Compliance Manager']]]},
             {'dt': "Document Register Type"},
             {'dt': 'Customer Type'},
+            {'dt': 'Notification Template'},
             {'dt': 'Workflow State', 'filters': [['name', 'in', ['Draft','Approved','Rejected','Pending','Sent to Customer','Customer Approval Waiting','Customer Approved','Customer Rejected']]]},
 			{'dt': 'Workflow', 'filters': [['name', 'in', ['Compliance Agreement Workflow']]]},
-			{'dt': 'Workflow Action Master', 'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval','Customer Reject','Customer Approval waiting']]]},
-            {'dt' : 'Notification Template'}
+			{'dt': 'Workflow Action Master', 'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval','Customer Reject','Customer Approval waiting']]]}
 ]
