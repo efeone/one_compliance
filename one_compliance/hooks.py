@@ -197,5 +197,6 @@ fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Director','Compliance Ma
             {'dt': 'Customer Type'},
             {'dt': 'Workflow State', 'filters': [['name', 'in', ['Draft','Approved','Rejected','Pending','Sent to Customer','Customer Approval Waiting','Customer Approved','Customer Rejected']]]},
 			{'dt': 'Workflow', 'filters': [['name', 'in', ['Compliance Agreement Workflow']]]},
-			{'dt': 'Workflow Action Master', 'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval','Customer Reject','Customer Approval waiting']]]}
+			{'dt': 'Workflow Action Master', 'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval','Customer Reject','Customer Approval waiting']]]},
+            {'dt' : 'Notification Template'}
 ]
