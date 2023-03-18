@@ -1,0 +1,12 @@
+[
+ {
+  "content": "Task {{ doc.name }} has reached its due date. Take necessary actions to complete it ASAP",
+  "docstatus": 0,
+  "doctype": "Notification Template",
+  "doctype_name": "Task",
+  "modified": "2023-03-18 10:22:03.791853",
+  "name": "Task Due Date",
+  "notification_name": "Task Due Date",
+  "subject": "Today is the due date of {{ doc.name }}"
+ }
+]
