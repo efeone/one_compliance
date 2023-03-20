@@ -11,6 +11,7 @@
   "compliance_category",
   "sub_category",
   "project_template",
+  "notification_template",
   "column_break_06mwn",
   "maximum_duration",
   "rate",
@@ -71,11 +72,18 @@
    "label": "Repeat On",
    "mandatory_depends_on": "eval:doc.allow_repeat == 1",
    "options": "\nMonthly\nQuarterly\nHalf yearly\nyearly"
+  },
+  {
+   "fieldname": "notification_template",
+   "fieldtype": "Link",
+   "label": "Notification Template",
+   "options": "Notification Template",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-17 10:40:35.318020",
+ "modified": "2023-03-20 11:02:55.967898",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
