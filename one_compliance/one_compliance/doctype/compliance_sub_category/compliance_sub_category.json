@@ -16,7 +16,14 @@
   "maximum_duration",
   "rate",
   "allow_repeat",
-  "repeat_on"
+  "repeat_on",
+  "notification_templates_section",
+  "task_assign_notification",
+  "task_before_due_date__notification",
+  "task_complete_notification",
+  "column_break_g0ffa",
+  "task_overdue_notification",
+  "no_action_taken_notification"
  ],
  "fields": [
   {
@@ -74,16 +81,48 @@
    "options": "\nMonthly\nQuarterly\nHalf yearly\nyearly"
   },
   {
-   "fieldname": "notification_template",
+   "fieldname": "notification_templates_section",
+   "fieldtype": "Section Break",
+   "label": "Notification Templates"
+  },
+  {
+   "fieldname": "task_assign_notification",
    "fieldtype": "Link",
-   "label": "Notification Template",
-   "options": "Notification Template",
-   "reqd": 1
+   "label": "Task Assign Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_before_due_date__notification",
+   "fieldtype": "Link",
+   "label": "Task Before Due Date  Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_complete_notification",
+   "fieldtype": "Link",
+   "label": "Task Complete Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_overdue_notification",
+   "fieldtype": "Link",
+   "label": "Task Overdue Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "no_action_taken_notification",
+   "fieldtype": "Link",
+   "label": "No Action Taken Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "column_break_g0ffa",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-20 11:02:55.967898",
+ "modified": "2023-03-20 15:48:02.442825",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
