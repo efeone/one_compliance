@@ -1,0 +1,85 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "CS.####",
+ "creation": "2023-03-20 13:18:47.462543",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "notification_settings_section",
+  "task_assign_notification",
+  "task_before_due_date_notification",
+  "task_overdue_notification",
+  "column_break_xwbwy",
+  "task_complete_notification",
+  "no_action_taken_notification"
+ ],
+ "fields": [
+  {
+   "fieldname": "task_assign_notification",
+   "fieldtype": "Link",
+   "label": "Task Assign Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_before_due_date_notification",
+   "fieldtype": "Link",
+   "label": "Task Before Due Date Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_overdue_notification",
+   "fieldtype": "Link",
+   "label": "Task Overdue Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_complete_notification",
+   "fieldtype": "Link",
+   "label": "Task Complete Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "no_action_taken_notification",
+   "fieldtype": "Link",
+   "label": "No Action Taken Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "column_break_xwbwy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "notification_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Notification Settings"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-03-20 14:20:10.202367",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Compliance Settings",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
