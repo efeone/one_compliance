@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "CTA-.#####",
  "creation": "2023-03-17 14:40:04.361342",
  "default_view": "List",
  "doctype": "DocType",
@@ -8,7 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "category",
-  "task_list"
+  "task_details"
  ],
  "fields": [
   {
@@ -18,18 +19,19 @@
    "options": "Compliance Category List"
   },
   {
-   "fieldname": "task_list",
+   "fieldname": "task_details",
    "fieldtype": "Table",
-   "label": "Task List",
-   "options": "Compliance Task Details"
+   "label": "Task Details",
+   "options": "Compliance Task Detail"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-18 14:44:55.840558",
+ "modified": "2023-03-20 16:14:54.036398",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Task Assignment",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {

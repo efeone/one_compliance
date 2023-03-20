@@ -1,6 +1,7 @@
 
 import frappe
 from frappe.model.document import Document
+from frappe.model.mapper import *
 from frappe import _
 
 class ComplianceAgreement(Document):
@@ -40,8 +41,49 @@ class ComplianceAgreement(Document):
 								if tasks_doc.expected_time:
 									task_doc.expected_time = tasks_doc.expected_time
 								task_doc.save(ignore_permissions=True)
+						return True
 					else :
 						frappe.throw(
 						title = _('ALERT !!'),
 						msg = _('Project Template does not exist')
 						)
+
+@frappe.whitelist()
+def assign_tasks(source_name, target_doc = None):
+	''' Method to assign tasks for custom button Assign Task and route to Compliance Task Assignement doctype '''
+	def set_missing_values(source, target):
+		for categories in source.compliance_category:
+			target.append('category', {
+			'compliance_category' : categories.compliance_category
+			})
+		for task in source.compliance_category_details:
+			task_doc = get_task_from_project(task.compliance_sub_category, source.customer_name)
+			for tasks in task_doc:
+				target.append('task_details', {
+				'sub_category' : task.compliance_sub_category,
+				'task':tasks.name
+				})
+	doc = get_mapped_doc(
+		'Compliance Agreement',
+		source_name,
+		{
+		'Compliance Agreement': {
+		'doctype': 'Compliance Task Assignment',
+		},
+		}, target_doc, set_missing_values)
+	doc.save()
+	return doc
+
+
+@frappe.whitelist()
+def get_task_from_project(sub_category, customer_name):
+	''' Method to get tasks from project based on Sub Category '''
+	task_items = []
+	if frappe.db.exists ('Project', { 'customer': customer_name }):
+		project_doc = frappe.db.get_list('Project', {'customer': customer_name})
+		for projects in project_doc:
+			task_list = frappe.db.get_list('Task', filters={'project': projects.name}, fields = ['compliance_sub_category','name'])
+			for tasks in task_list:
+				if tasks.compliance_sub_category == sub_category:
+					task_items.append(tasks)
+	return task_items
