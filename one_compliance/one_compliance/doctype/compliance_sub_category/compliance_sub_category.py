@@ -23,3 +23,8 @@ def create_project_template_custom_button(source_name, target_doc = None):
         },
 		}, target_doc, set_missing_values)
 	return doc
+
+@frappe.whitelist()
+def get_notification_details():
+	doc = frappe.get_doc('Compliance Settings')
+	return doc
