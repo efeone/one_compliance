@@ -3,45 +3,45 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2023-03-16 10:39:23.207680",
+  "modified": "2023-03-21 17:48:59.716993",
   "name": "Sent to Customer",
-  "style": "",
+  "style": "Info",
   "workflow_state_name": "Sent to Customer"
  },
  {
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2023-03-16 10:40:33.996846",
+  "modified": "2023-03-21 17:48:41.042911",
   "name": "Customer Approved",
-  "style": "",
+  "style": "Success",
   "workflow_state_name": "Customer Approved"
  },
  {
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2023-03-16 10:49:51.506753",
+  "modified": "2023-03-21 17:48:30.838810",
   "name": "Customer Approval Waiting",
-  "style": "",
+  "style": "Info",
   "workflow_state_name": "Customer Approval Waiting"
  },
  {
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
-  "modified": "2023-03-16 10:50:26.124950",
+  "modified": "2023-03-21 17:48:04.875819",
   "name": "Customer Rejected",
-  "style": "",
+  "style": "Danger",
   "workflow_state_name": "Customer Rejected"
  },
  {
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "question-sign",
-  "modified": "2023-03-08 10:08:55.682771",
+  "modified": "2023-03-21 17:49:26.123936",
   "name": "Pending",
-  "style": "",
+  "style": "Danger",
   "workflow_state_name": "Pending"
  },
  {
