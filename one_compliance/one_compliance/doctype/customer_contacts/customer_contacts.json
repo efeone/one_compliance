@@ -17,6 +17,8 @@
    "fetch_if_empty": 1,
    "fieldname": "phone_number",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Phone Number",
    "options": "Phone",
    "read_only": 1
@@ -26,6 +28,8 @@
    "fetch_if_empty": 1,
    "fieldname": "email_address",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Email Address",
    "options": "Email",
    "read_only": 1
@@ -33,22 +37,26 @@
   {
    "fieldname": "contact",
    "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Contact",
    "options": "Contact"
   },
   {
-   "fetch_from": "contact.designation",
+   "fetch_from": "contact.compliance_designation",
    "fetch_if_empty": 1,
    "fieldname": "designation",
-   "fieldtype": "Data",
+   "fieldtype": "Link",
    "in_list_view": 1,
-   "label": "Designation"
+   "in_standard_filter": 1,
+   "label": "Designation",
+   "options": "Designation"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-03-16 12:38:10.575416",
+ "modified": "2023-03-21 12:31:26.959608",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Customer Contacts",

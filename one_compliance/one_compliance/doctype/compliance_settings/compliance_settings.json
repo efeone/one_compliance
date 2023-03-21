@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "CS.####",
- "creation": "2023-03-20 13:18:47.462543",
+ "creation": "2023-03-21 09:41:52.326630",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -17,6 +17,11 @@
   "no_action_taken_notification"
  ],
  "fields": [
+  {
+   "fieldname": "notification_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Notification Settings"
+  },
   {
    "fieldname": "task_assign_notification",
    "fieldtype": "Link",
@@ -36,6 +41,10 @@
    "options": "Notification Template"
   },
   {
+   "fieldname": "column_break_xwbwy",
+   "fieldtype": "Column Break"
+  },
+  {
    "fieldname": "task_complete_notification",
    "fieldtype": "Link",
    "label": "Task Complete Notification",
@@ -46,20 +55,12 @@
    "fieldtype": "Link",
    "label": "No Action Taken Notification",
    "options": "Notification Template"
-  },
-  {
-   "fieldname": "column_break_xwbwy",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "notification_settings_section",
-   "fieldtype": "Section Break",
-   "label": "Notification Settings"
   }
  ],
  "index_web_pages_for_search": 1,
+ "issingle": 1,
  "links": [],
- "modified": "2023-03-20 14:20:10.202367",
+ "modified": "2023-03-21 12:33:58.482136",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
@@ -70,10 +71,8 @@
    "create": 1,
    "delete": 1,
    "email": 1,
-   "export": 1,
    "print": 1,
    "read": 1,
-   "report": 1,
    "role": "System Manager",
    "share": 1,
    "write": 1
