@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:general_register_type",
  "creation": "2023-03-09 11:36:55.835059",
@@ -21,7 +22,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-09 14:30:30.427726",
+ "modified": "2023-03-21 12:39:40.590990",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "General Register Type",

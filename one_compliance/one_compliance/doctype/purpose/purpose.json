@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:purpose",
  "creation": "2023-03-15 11:32:51.262231",
@@ -22,7 +23,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-15 11:39:21.394936",
+ "modified": "2023-03-21 12:32:07.495478",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Purpose",
