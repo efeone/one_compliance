@@ -110,18 +110,21 @@ doc_events = {
 	"Project Template": {
 		"after_insert": "one_compliance.one_compliance.doc_events.project_template.update_project_template",
 	}
+    # 'Task':{
+    #     'on_update':'one_compliance.one_compliance.utils.sent_email_notification'
+    # }
 }
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
+scheduler_events = {
 #	"all": [
 #		"one_compliance.tasks.all"
 #	],
-#	"daily": [
-#		"one_compliance.tasks.daily"
-#	],
+	"daily": [
+        'one_compliance.one_compliance.utils.sent_email_notification'
+	]
 #	"hourly": [
 #		"one_compliance.tasks.hourly"
 #	],
@@ -131,7 +134,7 @@ doc_events = {
 #	"monthly": [
 #		"one_compliance.tasks.monthly"
 #	],
-# }
+}
 
 # Testing
 # -------
