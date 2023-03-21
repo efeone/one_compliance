@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "field:notification_name",
  "creation": "2023-03-17 15:29:34.648669",
@@ -60,7 +61,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-17 15:58:16.705857",
+ "modified": "2023-03-21 12:32:34.838458",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Notification Template",

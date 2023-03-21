@@ -7,7 +7,7 @@ frappe.ui.form.on('Compliance Agreement',{
   			filters: {'compliance_category': child.compliance_category}
   		};
   	});
-    if(!frm.is_new()){
+    if(!frm.is_new() && frm.doc.workflow_state == 'Customer Approved'){
       frm.add_custom_button('Assign Task', () =>{
         // Custom button to assign tasks from Compliance Agreement
         frappe.model.open_mapped_doc({
@@ -16,7 +16,7 @@ frappe.ui.form.on('Compliance Agreement',{
         })
       })
     }
-    if(!frm.is_new()){
+    if(!frm.is_new() && frm.doc.workflow_state == 'Customer Approved'){
       frm.add_custom_button('Create Projects', () =>{
         // custom button to create projects from Compliance Agreement
           frm.call('create_project_from_agreement')
