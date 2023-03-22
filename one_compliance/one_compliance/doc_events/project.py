@@ -21,7 +21,7 @@ def make_sales_invoice(source_name, target_doc=None):
 		{
 			'Project':{
                 'doctype':'Sales Invoice'
-            
+
 				},
 			},
 		target_doc,
@@ -30,3 +30,15 @@ def make_sales_invoice(source_name, target_doc=None):
 	doclist.save()
 
 	return doclist
+
+""" Method to add customer Credential details """
+
+@frappe.whitelist()
+def add_credential_details(customer,purpose):
+    if frappe.db.exists('Customer Credentials',{'customer':customer}):
+        customer_credential = frappe.db.get_value('Customer Credentials',{'customer':customer})
+        if frappe.db.exists('Credential Details', {'parent':customer_credential,'purpose':purpose}):
+            username, password, url = frappe.db.get_value('Credential Details', {'parent':customer_credential,'purpose':purpose}, ['username', 'password','url'])
+            return [username, password, url]
+        else:
+            frappe.throw(_('Credential not configured for this Purpose'))
