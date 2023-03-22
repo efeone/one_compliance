@@ -1,5 +1,6 @@
 import frappe
 from frappe.model.mapper import *
+from frappe import _
 
 """ Method used to set value in standard hidden field """
 
@@ -54,3 +55,16 @@ def filter_contact(doctype, txt, searchfield, start, page_len, filters):
             'page_len': page_len
         })
         return values
+
+""" Method to add customer Credential details """
+
+@frappe.whitelist()
+def add_credential_details(customer,purpose):
+    if frappe.db.exists('Customer Credentials',{'customer':customer}):
+        customer_credential = frappe.db.get_value('Customer Credentials',{'customer':customer})
+        if frappe.db.exists('Credential Details', {'parent':customer_credential,'purpose':purpose}):
+            username, password, url = frappe.db.get_value('Credential Details', {'parent':customer_credential,'purpose':purpose}, ['username', 'password','url'])
+            return [username, password, url]
+        else:
+            frappe.throw(_('Credential not configured for this Purpose'))
+    
