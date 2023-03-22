@@ -110,9 +110,6 @@ doc_events = {
 	"Project Template": {
 		"after_insert": "one_compliance.one_compliance.doc_events.project_template.update_project_template",
 	}
-    # 'Task':{
-    #     'on_update':'one_compliance.one_compliance.utils.sent_email_notification'
-    # }
 }
 
 # Scheduled Tasks
