@@ -19,9 +19,7 @@ frappe.ui.form.on('Outward Register', {
 	},
 	onload: function(frm) {
 		if(frm.is_new()){
-			frm.set_value('purpose',)
-			frm.set_value('document_register_type', )
-			frm.set_value('general_register_type')
+			frm.set_value('purpose')
 		}
 	}
 });

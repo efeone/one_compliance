@@ -106,6 +106,7 @@
    "mandatory_depends_on": "eval:doc.returned_through == 'Others'"
   },
   {
+   "depends_on": "eval:doc.if_outward_only == 0",
    "fieldname": "inward_register",
    "fieldtype": "Link",
    "label": "Inward Register",
@@ -137,7 +138,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "\nPartially Returned\nReturned\nPending"
+   "options": "open\nPartially Returned\nReturned\nPending"
   },
   {
    "fieldname": "signature_tab",
@@ -206,7 +207,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-21 12:02:01.621501",
+ "modified": "2023-03-21 17:16:00.773097",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Outward Register",

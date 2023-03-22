@@ -34,9 +34,9 @@
   "terms_and_condition_tab",
   "terms_and_condition",
   "signatures_tab",
-  "customer_signature",
-  "column_break_qxw6c",
   "authority_signature",
+  "column_break_qxw6c",
+  "customer_signature",
   "amended_from"
  ],
  "fields": [
@@ -184,6 +184,7 @@
   },
   {
    "allow_on_submit": 1,
+   "depends_on": "eval:doc.workflow_state == 'Customer Approval Waiting'",
    "fieldname": "customer_signature",
    "fieldtype": "Signature",
    "label": "Customer ",
@@ -218,7 +219,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-17 11:31:17.598888",
+ "modified": "2023-03-21 17:46:17.860863",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
