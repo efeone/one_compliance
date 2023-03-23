@@ -15,3 +15,7 @@ def assign_tasks_to_selected_users(task_details):
 	task_details = json.loads(task_details)
 	for task in task_details:
 		create_todo('Task', task.get('task'), task.get('user'), task.get('user'), 'Tasks Assigned Successfully')
+		''' To set Alert message below '''
+		frappe.msgprint(
+			msg = 'Tasks assigned Successfully', alert =1
+		 )
