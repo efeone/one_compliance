@@ -11,6 +11,21 @@ frappe.ui.form.on('Customer',{
     }
   },
   refresh: function(frm){
+    frappe.call({
+    method:"one_compliance.one_compliance.doc_events.customer.set_allow_edit",
+    args: {
+      'customer_contacts': frm.doc.customer_contacts
+    },
+    callback:function(r){
+      if (r.message){
+        frm.refresh_field('customer_contacts')
+      }
+    }
+  })
+    setTimeout(() => {
+      frm.remove_custom_button('Pricing Rule','Create');
+      frm.remove_custom_button('Get Customer Group Details','Actions');
+    })
     if(!frm.is_new()){
       frm.add_custom_button('Create Agreement', () => { /* Add a custom button to get compliance agreement details */
         frappe.model.open_mapped_doc({
@@ -29,8 +44,11 @@ frappe.ui.form.on('Customer',{
       frm.add_custom_button('View Credential', () => {
 				customer_credentials(frm)
 				})
+
     }
   }
+});
+frappe.ui.form.on('Customer Contacts',{
 });
 /* applied dialog instance to show customer Credential */
 
