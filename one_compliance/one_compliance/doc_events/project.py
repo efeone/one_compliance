@@ -21,7 +21,7 @@ def make_sales_invoice(source_name, target_doc=None):
 		{
 			'Project':{
                 'doctype':'Sales Invoice'
-            
+
 				},
 			},
 		target_doc,
