@@ -9,12 +9,12 @@
  "engine": "InnoDB",
  "field_order": [
   "notification_settings_section",
-  "task_assign_notification",
   "task_before_due_date_notification",
-  "task_overdue_notification",
+  "task_overdue_notification_for_employee",
+  "task_overdue_notification_for_director",
   "column_break_xwbwy",
-  "task_complete_notification",
-  "no_action_taken_notification"
+  "task_complete_notification_for_director",
+  "no_action_taken_notification_for_director"
  ],
  "fields": [
   {
@@ -23,44 +23,44 @@
    "label": "Notification Settings"
   },
   {
-   "fieldname": "task_assign_notification",
+   "fieldname": "column_break_xwbwy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "task_overdue_notification_for_employee",
    "fieldtype": "Link",
-   "label": "Task Assign Notification",
+   "label": "Task Overdue Notification for Employee",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_overdue_notification_for_director",
+   "fieldtype": "Link",
+   "label": "Task Overdue Notification for Director",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_complete_notification_for_director",
+   "fieldtype": "Link",
+   "label": "Task Complete Notification for Director",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "no_action_taken_notification_for_director",
+   "fieldtype": "Link",
+   "label": "No Action Taken Notification for Director",
    "options": "Notification Template"
   },
   {
    "fieldname": "task_before_due_date_notification",
    "fieldtype": "Link",
-   "label": "Task Before Due Date Notification",
-   "options": "Notification Template"
-  },
-  {
-   "fieldname": "task_overdue_notification",
-   "fieldtype": "Link",
-   "label": "Task Overdue Notification",
-   "options": "Notification Template"
-  },
-  {
-   "fieldname": "column_break_xwbwy",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "task_complete_notification",
-   "fieldtype": "Link",
-   "label": "Task Complete Notification",
-   "options": "Notification Template"
-  },
-  {
-   "fieldname": "no_action_taken_notification",
-   "fieldtype": "Link",
-   "label": "No Action Taken Notification",
+   "label": "Task Before Due Date Notification ",
    "options": "Notification Template"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-03-21 12:33:58.482136",
+ "modified": "2023-03-23 11:19:27.156303",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",

@@ -121,7 +121,7 @@ scheduler_events = {
 #		"one_compliance.tasks.all"
 #	],
 	"daily": [
-        'one_compliance.one_compliance.utils.sent_email_notification'
+        'one_compliance.one_compliance.utils.task_daily_sheduler'
 	]
 #	"hourly": [
 #		"one_compliance.tasks.hourly"
