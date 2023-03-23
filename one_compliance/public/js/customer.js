@@ -33,6 +33,7 @@ frappe.ui.form.on('Customer',{
   }
 });
 /* applied dialog instance to show customer Credential */
+
 let customer_credentials = function (frm) {
   let d = new frappe.ui.Dialog({
     title: 'Enter details',
@@ -47,7 +48,7 @@ let customer_credentials = function (frm) {
     primary_action_label: 'View Credential',
     primary_action(values) {
       frappe.call({
-        method:'one_compliance.one_compliance.doc_events.customer.add_credential_details',
+        method:'one_compliance.one_compliance.utils.view_credential_details',
         args:{
               'customer':frm.doc.name,
               'purpose':values.purpose
@@ -88,8 +89,7 @@ let customer_credentials = function (frm) {
               secondary_action_label : 'Go To URL',
               secondary_action(value){
                 window.open(r.message[2])
-
-              }
+                }
           });
           newd.show();
           }

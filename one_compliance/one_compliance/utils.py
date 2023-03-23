@@ -57,3 +57,15 @@ def sent_email_notification():
                                 subject = frappe.render_template(subject_template, context)
                                 content = frappe.render_template(content_template, context)
                                 create_notification_log(subject, 'Mention', assign, content, doc.doctype, doc.name)
+
+""" Method to view customer Credential details """
+
+@frappe.whitelist()
+def view_credential_details(customer,purpose):
+    if frappe.db.exists('Customer Credentials',{'customer':customer}):
+        customer_credential = frappe.db.get_value('Customer Credentials',{'customer':customer})
+        if frappe.db.exists('Credential Details', {'parent':customer_credential,'purpose':purpose}):
+            username, password, url = frappe.db.get_value('Credential Details', {'parent':customer_credential,'purpose':purpose}, ['username', 'password','url'])
+            return [username, password, url]
+        else:
+            frappe.throw(_('Credential not configured for this Purpose'))
