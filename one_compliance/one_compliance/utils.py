@@ -2,6 +2,8 @@ import frappe
 import json
 from frappe.utils import *
 from frappe.email.doctype.notification.notification import get_context
+from frappe.utils.user import get_users_with_role
+
 
 @frappe.whitelist()
 def create_notification_log(subject, type, for_user, email_content, document_type, document_name):
@@ -29,12 +31,14 @@ def create_todo(doctype, name, assign_to, owner, description):
     todo.date = frappe.utils.today()
     todo.save(ignore_permissions = True)
 
+""" Method to send task before due date and overdue notification to employee and task overdue notification to director"""
+
 @frappe.whitelist()
-def sent_email_notification():
-    tasks = frappe.db.get_all('Task')
+def task_daily_sheduler():
+    tasks = frappe.db.get_all('Task', filters= {'status': ['not in', ['Template', 'Completed', 'Cancelled']]})
     if tasks:
         for task in tasks:
-            doc = frappe.get_doc('Task',task.name)
+            doc = frappe.get_doc('Task', task.name)
             assigns = frappe.db.get_value('Task', doc.name, '_assign')
             if assigns:
                 assigns = json.loads(assigns)
@@ -42,21 +46,30 @@ def sent_email_notification():
                     context = get_context(doc)
                     if assign:
                         today = frappe.utils.today()
-                        days_diff = date_diff(getdate(doc.expected_time), today)
-                        if days_diff == 1:
-                            sub_doc = frappe.db.get_value('Compliance Sub Category', doc.compliance_sub_category, 'task_before_due_date__notification')
-                            if sub_doc:
-                                subject_template, content_template = frappe.db.get_value('Notification Template', sub_doc, ['subject', 'content'])
-                                subject = frappe.render_template(subject_template, context)
-                                content = frappe.render_template(content_template, context)
-                                create_notification_log(subject, 'Mention', assign, content, doc.doctype, doc.name)
-                        if days_diff == 0:
-                            sub_doc = frappe.db.get_value('Compliance Sub Category', doc.compliance_sub_category, 'task_overdue_notification')
-                            if sub_doc:
-                                subject_template, content_template = frappe.db.get_value('Notification Template', sub_doc, ['subject', 'content'])
-                                subject = frappe.render_template(subject_template, context)
-                                content = frappe.render_template(content_template, context)
-                                create_notification_log(subject, 'Mention', assign, content, doc.doctype, doc.name)
+                        if doc.exp_end_date:
+                            days_diff = date_diff(getdate(doc.exp_end_date), getdate(today))
+                            if days_diff == 0:
+                                send_notification(doc, assign, context, 'task_overdue_notification_for_employee')
+                                send_notification_to_roles(doc, 'Director', context, 'task_overdue_notification_for_director')
+                            if days_diff == 1:
+                                send_notification(doc, assign, context, 'task_before_due_date__notification')
+
+@frappe.whitelist()
+def send_notification(doc, for_user, context, notification_template_fieldname):
+    notification_template = frappe.db.get_value('Compliance Sub Category', doc.compliance_sub_category, notification_template_fieldname)
+    if notification_template:
+        subject_template, content_template = frappe.db.get_value('Notification Template', notification_template, ['subject', 'content'])
+        subject = frappe.render_template(subject_template, context)
+        content = frappe.render_template(content_template, context)
+        create_notification_log(subject, 'Mention', for_user, content, doc.doctype, doc.name)
+
+""" Method to send notification to perticular role """
+
+@frappe.whitelist()
+def send_notification_to_roles(doc, role, context, notification_template_fieldname):
+    users = get_users_with_role(role)
+    for user in users:
+        send_notification(doc, user, context, notification_template_fieldname)
 
 """ Method to view customer Credential details """
 

@@ -11,19 +11,18 @@
   "compliance_category",
   "sub_category",
   "project_template",
-  "notification_template",
   "column_break_06mwn",
   "maximum_duration",
   "rate",
   "allow_repeat",
   "repeat_on",
   "notification_templates_section",
-  "task_assign_notification",
   "task_before_due_date__notification",
-  "task_complete_notification",
+  "task_complete_notification_for_director",
+  "task_overdue_notification_for_employee",
   "column_break_g0ffa",
-  "task_overdue_notification",
-  "no_action_taken_notification"
+  "task_overdue_notification_for_director",
+  "no_action_taken_notification_for_director"
  ],
  "fields": [
   {
@@ -86,43 +85,43 @@
    "label": "Notification Templates"
   },
   {
-   "fieldname": "task_assign_notification",
+   "fieldname": "column_break_g0ffa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "task_complete_notification_for_director",
    "fieldtype": "Link",
-   "label": "Task Assign Notification",
+   "label": "Task Complete Notification for Director",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_overdue_notification_for_employee",
+   "fieldtype": "Link",
+   "label": "Task Overdue Notification for Employee",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "no_action_taken_notification_for_director",
+   "fieldtype": "Link",
+   "label": "No Action Taken Notification for Director",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_overdue_notification_for_director",
+   "fieldtype": "Link",
+   "label": "Task Overdue Notification for Director",
    "options": "Notification Template"
   },
   {
    "fieldname": "task_before_due_date__notification",
    "fieldtype": "Link",
-   "label": "Task Before Due Date  Notification",
+   "label": "Task Before Due Date  Notification ",
    "options": "Notification Template"
-  },
-  {
-   "fieldname": "task_complete_notification",
-   "fieldtype": "Link",
-   "label": "Task Complete Notification",
-   "options": "Notification Template"
-  },
-  {
-   "fieldname": "task_overdue_notification",
-   "fieldtype": "Link",
-   "label": "Task Overdue Notification",
-   "options": "Notification Template"
-  },
-  {
-   "fieldname": "no_action_taken_notification",
-   "fieldtype": "Link",
-   "label": "No Action Taken Notification",
-   "options": "Notification Template"
-  },
-  {
-   "fieldname": "column_break_g0ffa",
-   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-20 15:48:02.442825",
+ "modified": "2023-03-23 11:18:48.300916",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
