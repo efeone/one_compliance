@@ -16,7 +16,7 @@
   "lead_name",
   "opportunity_name",
   "valid_from",
-  "valid_till",
+  "valid_upto",
   "compliance_category_details_section",
   "compliance_category",
   "compliance_category_details",
@@ -172,12 +172,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "valid_till",
-   "fieldtype": "Date",
-   "label": "Valid Till",
-   "reqd": 1
-  },
-  {
    "fieldname": "total",
    "fieldtype": "Data",
    "label": "Total Rate"
@@ -214,12 +208,18 @@
    "fieldname": "signatures_tab",
    "fieldtype": "Tab Break",
    "label": "Signatures"
+  },
+  {
+   "fieldname": "valid_upto",
+   "fieldtype": "Date",
+   "label": "Valid Upto",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-21 17:46:17.860863",
+ "modified": "2023-03-23 10:26:58.287046",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
