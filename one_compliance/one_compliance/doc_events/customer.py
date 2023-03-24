@@ -16,11 +16,11 @@ def set_customer_type_value(doc, method):
 
 @frappe.whitelist()
 def set_allow_edit(customer_contacts):
+    ''' Method used for set email and ohone number field as editable for particular user role '''
     customer_contacts = json.loads(customer_contacts)
     user = frappe.session.user
     user_roles = frappe.get_roles(user)
     for cu in customer_contacts:
-        print(cu.get('name'))
         if "Director" in user_roles or "Compliance Manager" in user_roles:
             frappe.db.set_value('Customer Contacts',cu.get('name'),'allow_edit',1)
             frappe.db.commit()
