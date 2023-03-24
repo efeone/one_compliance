@@ -3,7 +3,7 @@ import json
 from frappe.utils import *
 from frappe.email.doctype.notification.notification import get_context
 from frappe.utils.user import get_users_with_role
-
+from frappe import _
 
 @frappe.whitelist()
 def create_notification_log(subject, type, for_user, email_content, document_type, document_name):
@@ -71,10 +71,9 @@ def send_notification_to_roles(doc, role, context, notification_template_fieldna
     for user in users:
         send_notification(doc, user, context, notification_template_fieldname)
 
-""" Method to view customer Credential details """
-
 @frappe.whitelist()
 def view_credential_details(customer,purpose):
+    """ Method to view customer Credential details """
     if frappe.db.exists('Customer Credentials',{'customer':customer}):
         customer_credential = frappe.db.get_value('Customer Credentials',{'customer':customer})
         if frappe.db.exists('Credential Details', {'parent':customer_credential,'purpose':purpose}):
@@ -82,3 +81,22 @@ def view_credential_details(customer,purpose):
             return [username, password, url]
         else:
             frappe.throw(_('Credential not configured for this Purpose'))
+
+@frappe.whitelist()
+def view_customer_documents(customer,compliance_sub_category):
+    """ Method to view customer documents """
+    if frappe.db.exists('Customer Document',{'customer':customer}):
+        customer_document =frappe.db.get_value('Customer Document',{'customer':customer})
+        if frappe.db.exists('Customer Document Record',{'parent':customer_document,'compliance_sub_category':compliance_sub_category}):
+            document_attachment = frappe.db.get_value('Customer Document Record',{'parent':customer_document,'compliance_sub_category':compliance_sub_category}, ['document_attachment'])
+            return [document_attachment]
+        else:
+            frappe.throw(_('Document not attached for this sub category'))
+
+
+@frappe.whitelist()
+def edit_customer_credentials(customer):
+    """ Method to edit or add customer Credential """
+    if frappe.db.exists('Customer Credentials',{'customer':customer}):
+        customer_credential = frappe.db.get_value('Customer Credentials',{'customer':customer})
+        return customer_credential
