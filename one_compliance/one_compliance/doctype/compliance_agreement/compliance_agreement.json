@@ -12,6 +12,7 @@
   "customer",
   "customer_name",
   "customer_type",
+  "invoice_based_on",
   "column_break_czvvr",
   "lead_name",
   "opportunity_name",
@@ -214,12 +215,19 @@
    "fieldname": "signatures_tab",
    "fieldtype": "Tab Break",
    "label": "Signatures"
+  },
+  {
+   "fieldname": "invoice_based_on",
+   "fieldtype": "Select",
+   "label": "Invoice Based On",
+   "options": "\nConsolidated\nProject",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-21 17:46:17.860863",
+ "modified": "2023-03-24 10:59:13.532236",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",

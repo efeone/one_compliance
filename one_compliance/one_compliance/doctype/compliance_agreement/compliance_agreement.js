@@ -15,11 +15,27 @@ frappe.ui.form.on('Compliance Agreement',{
           frm: cur_frm
         })
       })
-    }
-    if(!frm.is_new() && frm.doc.workflow_state == 'Customer Approved'){
       frm.add_custom_button('Create Projects', () =>{
         // custom button to create projects from Compliance Agreement
           frm.call('create_project_from_agreement')
+      })
+    }
+    if(frm.doc.invoice_based_on){
+      frappe.call({
+        method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.check_project_status',
+        args:{
+          'compliance_agreement':frm.doc.name
+        },
+        callback: (r) =>{
+          if (r.message){
+            frm.add_custom_button('Create Sales Invoice', () => {
+              frappe.model.open_mapped_doc({
+                method: "one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.make_sales_invoice",
+                frm: cur_frm
+            })
+            })
+          }
+        }
       })
     }
   },
