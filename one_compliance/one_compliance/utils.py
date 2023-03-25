@@ -31,10 +31,9 @@ def create_todo(doctype, name, assign_to, owner, description):
     todo.date = frappe.utils.today()
     todo.save(ignore_permissions = True)
 
-""" Method to send task before due date and overdue notification to employee and task overdue notification to director"""
-
 @frappe.whitelist()
 def task_daily_sheduler():
+    """ Method to send task before due date and overdue notification to employee and task overdue and no action taken notification to director"""
     tasks = frappe.db.get_all('Task', filters= {'status': ['not in', ['Template', 'Completed', 'Cancelled']]})
     if tasks:
         for task in tasks:
@@ -53,6 +52,9 @@ def task_daily_sheduler():
                                 send_notification_to_roles(doc, 'Director', context, 'task_overdue_notification_for_director')
                             if days_diff == 1:
                                 send_notification(doc, assign, context, 'task_before_due_date__notification')
+                        if doc.exp_start_date:
+                            if doc.status == 'Open' and (getdate(doc.exp_start_date) < getdate(today)):
+                                send_notification_to_roles(doc, 'Director', context, 'no_action_taken_notification_for_director')
 
 @frappe.whitelist()
 def send_notification(doc, for_user, context, notification_template_fieldname):
@@ -63,10 +65,9 @@ def send_notification(doc, for_user, context, notification_template_fieldname):
         content = frappe.render_template(content_template, context)
         create_notification_log(subject, 'Mention', for_user, content, doc.doctype, doc.name)
 
-""" Method to send notification to perticular role """
-
 @frappe.whitelist()
 def send_notification_to_roles(doc, role, context, notification_template_fieldname):
+    """ Method to send notification to perticular role """
     users = get_users_with_role(role)
     for user in users:
         send_notification(doc, user, context, notification_template_fieldname)

@@ -14,7 +14,8 @@
   "task_overdue_notification_for_director",
   "column_break_xwbwy",
   "task_complete_notification_for_director",
-  "no_action_taken_notification_for_director"
+  "no_action_taken_notification_for_director",
+  "project_complete_notification_for_customer"
  ],
  "fields": [
   {
@@ -55,12 +56,18 @@
    "fieldtype": "Link",
    "label": "Task Before Due Date Notification ",
    "options": "Notification Template"
+  },
+  {
+   "fieldname": "project_complete_notification_for_customer",
+   "fieldtype": "Link",
+   "label": "Project Complete Notification For Customer",
+   "options": "Notification Template"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-03-23 11:19:27.156303",
+ "modified": "2023-03-24 16:52:01.701573",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",

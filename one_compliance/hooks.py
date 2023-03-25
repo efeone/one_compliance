@@ -110,7 +110,13 @@ doctype_js = {
 doc_events = {
 	"Project Template": {
 		"after_insert": "one_compliance.one_compliance.doc_events.project_template.update_project_template",
-	}
+	},
+    'Task':{
+        'on_update':'one_compliance.one_compliance.doc_events.task.task_on_update'
+    },
+    'Project':{
+        'on_update':'one_compliance.one_compliance.doc_events.project.project_on_update'
+    }
 }
 
 # Scheduled Tasks

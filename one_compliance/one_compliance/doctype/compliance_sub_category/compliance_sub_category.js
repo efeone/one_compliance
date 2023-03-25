@@ -38,6 +38,9 @@ let set_notification_templates = function(frm){
 				if(!frm.doc.no_action_taken_notification){
 					frm.set_value('no_action_taken_notification_for_director', r.message.no_action_taken_notification_for_director)
 				}
+				if(!frm.doc.project_complete_notification_for_customer){
+					frm.set_value('project_complete_notification_for_customer', r.message.project_complete_notification_for_customer)
+				}
 			}
 		}
 	})

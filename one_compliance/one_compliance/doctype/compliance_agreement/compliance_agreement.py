@@ -28,6 +28,7 @@ class ComplianceAgreement(Document):
 						project.project_name = self.customer_name + '-' + compliance_category.compliance_sub_category
 						project.customer = self.customer
 						project.compliance_agreement = self.name
+						project.compliance_sub_category = compliance_category.compliance_sub_category
 						project.save()
 						frappe.msgprint('Project Created', alert = 1)
 						project_template_doc = frappe.get_doc('Project Template', project_template)
@@ -127,7 +128,7 @@ def make_sales_invoice(source_name, target_doc=None):
 		{
 			'Compliance Agreement':{
                 'doctype':'Sales Invoice'
-            
+
 				},
 			},
 		target_doc,
