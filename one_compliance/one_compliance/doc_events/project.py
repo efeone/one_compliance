@@ -1,5 +1,8 @@
 import frappe
 from frappe.model.mapper import get_mapped_doc
+from one_compliance.one_compliance.utils import send_notification
+from frappe.email.doctype.notification.notification import get_context
+
 
 @frappe.whitelist()
 def make_sales_invoice(source_name, target_doc=None):
@@ -33,3 +36,16 @@ def make_sales_invoice(source_name, target_doc=None):
 	doclist.save()
 
 	return doclist
+
+@frappe.whitelist()
+def project_on_update(doc, method):
+	if doc.status == 'Completed':
+		customer_name = frappe.db.get_value('Project', doc.name, 'customer')
+		email_id = frappe.db.get_value('Customer', doc.customer, 'email_id')
+		if email_id:
+			project_complete_notification_for_customer(doc, email_id)
+
+@frappe.whitelist()
+def project_complete_notification_for_customer(doc, email_id):
+	context = get_context(doc)
+	send_notification(doc, email_id, context, 'project_complete_notification_for_customer')
