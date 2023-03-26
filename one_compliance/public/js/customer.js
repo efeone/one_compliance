@@ -1,5 +1,5 @@
 frappe.ui.form.on('Customer',{
-  compliance_customer_type(frm){
+  compliance_customer_type: function(frm){
     if(frm.doc.compliance_customer_type){
       if(frm.doc.compliance_customer_type == 'Individual'){
         frm.set_value('customer_type','Individual')
@@ -11,17 +11,19 @@ frappe.ui.form.on('Customer',{
     }
   },
   refresh: function(frm){
-    frappe.call({
-    method:"one_compliance.one_compliance.doc_events.customer.set_allow_edit",
-    args: {
-      'customer_contacts': frm.doc.customer_contacts
-    },
-    callback:function(r){
-      if (r.message){
-        frm.refresh_field('customer_contacts')
-      }
+    if(!frm.is_new() && frm.doc.customer_contacts){
+      frappe.call({
+        method:"one_compliance.one_compliance.doc_events.customer.set_allow_edit",
+        args: {
+          'customer_contacts': frm.doc.customer_contacts
+        },
+        callback:function(r){
+          if (r.message){
+            frm.refresh_field('customer_contacts')
+          }
+        }
+      });
     }
-  })
     setTimeout(() => {
       frm.remove_custom_button('Pricing Rule','Create');
       frm.remove_custom_button('Get Customer Group Details','Actions');
