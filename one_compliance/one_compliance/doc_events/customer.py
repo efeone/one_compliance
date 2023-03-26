@@ -4,10 +4,11 @@ from frappe.model.mapper import *
 from frappe import _
 from frappe.utils.user import get_users_with_role
 
-""" Method used to set value in standard hidden field """
-
 @frappe.whitelist()
-def set_customer_type_value(doc, method):
+def set_customer_type_value(doc):
+    '''
+        Method used to set value in standard hidden field
+    '''
     if doc.compliance_customer_type:
         if doc.compliance_customer_type == 'Individual':
             doc.customer_type = 'Individual'
@@ -20,7 +21,6 @@ def set_allow_edit(customer_contacts):
     user = frappe.session.user
     user_roles = frappe.get_roles(user)
     for cu in customer_contacts:
-        print(cu.get('name'))
         if "Director" in user_roles or "Compliance Manager" in user_roles:
             frappe.db.set_value('Customer Contacts',cu.get('name'),'allow_edit',1)
             frappe.db.commit()
@@ -45,11 +45,11 @@ def create_agreement_custom_button(source_name, target_doc = None):
         },target_doc,set_missing_values)
     return doc
 
-
-""" method used to filter contact """
-
 @frappe.whitelist()
 def filter_contact(doctype, txt, searchfield, start, page_len, filters):
+    '''
+        Method used to filter contact
+    '''
     if filters:
         query = """
             SELECT
@@ -72,10 +72,11 @@ def filter_contact(doctype, txt, searchfield, start, page_len, filters):
         })
         return values
 
-""" Method to add customer Credential details """
-
 @frappe.whitelist()
 def add_credential_details(customer,purpose):
+    '''
+        Method to add customer Credential details
+    '''
     if frappe.db.exists('Customer Credentials',{'customer':customer}):
         customer_credential = frappe.db.get_value('Customer Credentials',{'customer':customer})
         if frappe.db.exists('Credential Details', {'parent':customer_credential,'purpose':purpose}):
@@ -83,3 +84,23 @@ def add_credential_details(customer,purpose):
             return [username, password, url]
         else:
             frappe.throw(_('Credential not configured for this Purpose'))
+
+
+def customer_on_update(doc, method):
+    '''
+        Method trigger on on_update of customer.
+    '''
+    set_customer_type_value(doc)
+    create_user_from_customer(doc)
+
+
+def create_user_from_customer(doc):
+    create_user_on_customer_creation = frappe.db.get_single_value('Compliance Settings', 'create_user_on_customer_creation')
+    if create_user_on_customer_creation:
+        if doc.email_id:
+            if not frappe.db.exists('User', doc.email_id):
+                user_doc = frappe.new_doc('User')
+                user_doc.email = doc.email_id
+                user_doc.first_name = doc.customer_name
+                user_doc.save(ignore_permissions = True)
+                frappe.msgprint('User created for this customer', alert=True, indicator='green')

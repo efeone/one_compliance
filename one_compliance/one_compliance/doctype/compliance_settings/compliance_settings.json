@@ -1,6 +1,5 @@
 {
  "actions": [],
- "allow_rename": 1,
  "autoname": "CS.####",
  "creation": "2023-03-21 09:41:52.326630",
  "default_view": "List",
@@ -8,6 +7,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "general_configurations_section",
+  "create_user_on_customer_creation",
   "notification_settings_section",
   "task_before_due_date_notification",
   "task_overdue_notification_for_employee",
@@ -62,12 +63,23 @@
    "fieldtype": "Link",
    "label": "Project Complete Notification For Customer",
    "options": "Notification Template"
+  },
+  {
+   "fieldname": "general_configurations_section",
+   "fieldtype": "Section Break",
+   "label": "General Configurations"
+  },
+  {
+   "default": "1",
+   "fieldname": "create_user_on_customer_creation",
+   "fieldtype": "Check",
+   "label": "Create user on Customer Creation"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-03-24 16:52:01.701573",
+ "modified": "2023-03-26 19:03:07.646888",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
