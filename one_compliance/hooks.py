@@ -126,11 +126,12 @@ doc_events = {
 # ---------------
 
 scheduler_events = {
-#	"all": [
-#		"one_compliance.tasks.all"
-#	],
+# "all": [
+# "one_compliance.tasks.hourly"
+# ],
 	"daily": [
-        'one_compliance.one_compliance.utils.task_daily_sheduler'
+        'one_compliance.one_compliance.utils.task_daily_sheduler',
+        'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.set_value_in_status'
 	]
 #	"hourly": [
 #		"one_compliance.tasks.hourly"

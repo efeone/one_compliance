@@ -13,6 +13,7 @@
   "customer_name",
   "customer_type",
   "invoice_based_on",
+  "status",
   "column_break_czvvr",
   "lead_name",
   "opportunity_name",
@@ -211,6 +212,12 @@
    "label": "Signatures"
   },
   {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Active\nIn-Active"
+  },
+  {
    "fieldname": "valid_upto",
    "fieldtype": "Date",
    "label": "Valid Upto",
@@ -220,7 +227,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-24 10:59:13.532236",
+ "modified": "2023-03-24 16:39:16.313379",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
