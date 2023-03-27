@@ -110,3 +110,7 @@ frappe.ui.form.on('Compliance Category Details',{
       frm.set_value('total',total)
       }
   });
+
+let create_custom_button_project = function(frm){
+  
+}

@@ -72,20 +72,6 @@ def filter_contact(doctype, txt, searchfield, start, page_len, filters):
         })
         return values
 
-@frappe.whitelist()
-def add_credential_details(customer,purpose):
-    '''
-        Method to add customer Credential details
-    '''
-    if frappe.db.exists('Customer Credentials',{'customer':customer}):
-        customer_credential = frappe.db.get_value('Customer Credentials',{'customer':customer})
-        if frappe.db.exists('Credential Details', {'parent':customer_credential,'purpose':purpose}):
-            username, password, url = frappe.db.get_value('Credential Details', {'parent':customer_credential,'purpose':purpose}, ['username', 'password','url'])
-            return [username, password, url]
-        else:
-            frappe.throw(_('Credential not configured for this Purpose'))
-
-
 def customer_on_update(doc, method):
     '''
         Method trigger on on_update of customer.
@@ -104,3 +90,11 @@ def create_user_from_customer(doc):
                 user_doc.first_name = doc.customer_name
                 user_doc.save(ignore_permissions = True)
                 frappe.msgprint('User created for this customer', alert=True, indicator='green')
+                
+@frappe.whitelist()
+def custom_button_for_view_Compliance_agreement(customer):
+    if frappe.db.exists('Compliance Agreement', {'customer':customer, 'status':'Active'}):
+        compliance_agreement = frappe.db.get_value('Compliance Agreement', {'customer':customer, 'status':'Active'})
+        return compliance_agreement
+    else:
+        return 0

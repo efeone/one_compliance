@@ -29,14 +29,8 @@ frappe.ui.form.on('Customer',{
       frm.remove_custom_button('Get Customer Group Details','Actions');
     })
     if(!frm.is_new()){
-      frm.add_custom_button('Create Agreement', () => { /* Add a custom button to get compliance agreement details */
-        frappe.model.open_mapped_doc({
-          method: 'one_compliance.one_compliance.doc_events.customer.create_agreement_custom_button',
-          frm: cur_frm
-        });
-      });
       frm.set_query('contact','customer_contacts', (doc, cdt, cdn) => { /* applied filter in contact to get corresponding customer */
-      return {
+        return {
           query: 'one_compliance.one_compliance.doc_events.customer.filter_contact',
           filters: {
             customer_name: doc.name
@@ -46,7 +40,7 @@ frappe.ui.form.on('Customer',{
       let roles = frappe.user_roles;
       if(roles.includes('Compliance Manager') || roles.includes('Director')){
       frm.add_custom_button('View Credential', () => {
-				customer_credentials(frm)
+        customer_credentials(frm)
       });
       frm.add_custom_button('View Document',() =>{
         customer_documents(frm)
@@ -55,6 +49,7 @@ frappe.ui.form.on('Customer',{
         edit_customer_credentials(frm)
       });
     }
+    view_compliance_agreemet(frm)
     }
   }
 });
@@ -211,3 +206,27 @@ let edit_customer_credentials = function (frm) {
       });
       d.show();
     }
+
+let view_compliance_agreemet = function(frm) {
+  frappe.call({
+    method : 'one_compliance.one_compliance.doc_events.customer.custom_button_for_view_Compliance_agreement',
+    args :{
+      'customer' : frm.doc.name
+     },
+   callback : function(r){
+     if(r.message){
+       frm.add_custom_button('View Agreement', ()=>{
+         frappe.set_route('Form','Compliance Agreement', r.message)
+      })
+     }
+     else{
+       frm.add_custom_button('Create Agreement', () => { /* Add a custom button to get compliance agreement details */
+         frappe.model.open_mapped_doc({
+           method: 'one_compliance.one_compliance.doc_events.customer.create_agreement_custom_button',
+           frm: cur_frm
+         });
+       });
+      }
+     }
+ })
+}
