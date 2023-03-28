@@ -24,6 +24,25 @@ class ComplianceAgreement(Document):
 		if getdate(self.valid_from) > getdate(self.valid_upto) :
 			frappe.throw('From Date cannot be greater than Upto Date')
 
+	@frappe.whitelist()
+	def list_sub_category(self):
+		rate = 0
+		if self.compliance_category:
+			for compliance_category in self.compliance_category:
+				compliance_sub_category_list = get_compliance_sub_category_list(compliance_category)
+				if compliance_sub_category_list:
+					for compliance_sub_category in compliance_sub_category_list:
+						rate += compliance_sub_category.rate
+						rate -= compliance_sub_category.rate
+						if not check_exist_list(self, compliance_sub_category):
+							self.append('compliance_category_details',{
+							'compliance_category':compliance_sub_category.compliance_category,
+							'compliance_sub_category':compliance_sub_category.name,
+							'rate':compliance_sub_category.rate
+							})
+			self.total = rate
+			return True
+
 @frappe.whitelist()
 def create_project_from_agreement(self):
 	''' Method to create projects from Compliance Agreement '''
@@ -59,7 +78,6 @@ def create_project_from_agreement(self):
 					msg = _('Project Template does not exist'))
 @frappe.whitelist()
 def assign_tasks(source_name, target_doc = None):
-	'''Method to assign tasks for custom button Assign Task and route to Compliance Task Assignement doctype'''
 	def set_missing_values(source, target):
 		for categories in source.compliance_category:
 			target.append('category', {
@@ -176,3 +194,19 @@ def set_value_in_status():
 					frappe.db.set_value('Compliance Agreement',  agreement.name, 'status', 'Active')
 				else:
 					frappe.db.set_value('Compliance Agreement',  agreement.name, 'status', 'In-Active')
+
+def get_compliance_sub_category_list(compliance_category):
+	sub_category_list = frappe.db.get_list('Compliance Sub Category', filters = {'compliance_category':compliance_category.compliance_category}, fields = ['rate','name','compliance_category'])
+	return sub_category_list
+
+def check_exist_list(self, compliance_sub_category):
+	exist = False
+	try:
+		if self.compliance_category_details:
+			for item in self.compliance_category_details:
+				if compliance_sub_category:
+					if item.compliance_sub_category == compliance_sub_category.name and item.compliance_category == compliance_sub_category.compliance_category:
+						exist = True
+	except:
+		exist = False
+	return exist
