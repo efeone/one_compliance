@@ -4,6 +4,7 @@ from frappe.model.mapper import *
 from frappe import _
 from frappe.utils.user import get_users_with_role
 
+
 @frappe.whitelist()
 def set_customer_type_value(doc):
     '''
@@ -90,7 +91,7 @@ def create_user_from_customer(doc):
                 user_doc.first_name = doc.customer_name
                 user_doc.save(ignore_permissions = True)
                 frappe.msgprint('User created for this customer', alert=True, indicator='green')
-                
+
 @frappe.whitelist()
 def custom_button_for_view_Compliance_agreement(customer):
     if frappe.db.exists('Compliance Agreement', {'customer':customer, 'status':'Active'}):
@@ -98,3 +99,11 @@ def custom_button_for_view_Compliance_agreement(customer):
         return compliance_agreement
     else:
         return 0
+
+@frappe.whitelist()
+def send_clarification_message(customer,message):
+    doc = frappe.get_doc('Customer',customer)
+    recipient =doc.email_id
+    subject = "Clarification Request"
+    body = "Dear {},\n\nWe are writing to request clarification on the following matter: {}".format(customer, message)
+    frappe.sendmail(recipients=[recipient],subject=subject, message=body)

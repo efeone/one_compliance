@@ -95,6 +95,7 @@ def view_customer_documents(customer,compliance_sub_category):
             frappe.throw(_('Document not attached for this sub category'))
 
 
+
 @frappe.whitelist()
 def edit_customer_credentials(customer):
     """ Method to edit or add customer Credential """
