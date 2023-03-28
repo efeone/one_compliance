@@ -57,10 +57,9 @@ def create_project_from_agreement(self):
 					frappe.throw(
 					title = _('ALERT !!'),
 					msg = _('Project Template does not exist'))
-
 @frappe.whitelist()
 def assign_tasks(source_name, target_doc = None):
-	 '''Method to assign tasks for custom button Assign Task and route to Compliance Task Assignement doctype'''
+	'''Method to assign tasks for custom button Assign Task and route to Compliance Task Assignement doctype'''
 	def set_missing_values(source, target):
 		for categories in source.compliance_category:
 			target.append('category', {
@@ -70,8 +69,8 @@ def assign_tasks(source_name, target_doc = None):
 			task_doc = get_task_from_project(task.compliance_sub_category, source.customer_name)
 			for tasks in task_doc:
 				target.append('task_details', {
-				'sub_category' : task.compliance_sub_category,
-				'task':tasks.name
+					'sub_category' : task.compliance_sub_category,
+					'task':tasks.name
 				})
 	doc = get_mapped_doc(
 		'Compliance Agreement',
@@ -83,7 +82,6 @@ def assign_tasks(source_name, target_doc = None):
 		}, target_doc, set_missing_values)
 	doc.save()
 	return doc
-
 
 @frappe.whitelist()
 def get_task_from_project(sub_category, customer_name):
