@@ -24,7 +24,7 @@ let set_notification_templates = function(frm){
 
 				// set value to customer and company
 				if(!frm.doc.task_before_due_date__notification){
-					frm.set_value('task_before_due_date__notification', r.message.task_before_due_date__notification)
+					frm.set_value('task_before_due_date_notification', r.message.task_before_due_date_notification)
 				}
 				if(!frm.doc.task_complete_notification){
 					frm.set_value('task_complete_notification_for_director', r.message.task_complete_notification_for_director)

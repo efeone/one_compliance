@@ -34,16 +34,16 @@ def make_sales_invoice(source_name, target_doc=None):
 		set_missing_values
 	)
 	doclist.save()
-
 	return doclist
 
 @frappe.whitelist()
 def project_on_update(doc, method):
 	if doc.status == 'Completed':
-		customer_name = frappe.db.get_value('Project', doc.name, 'customer')
-		email_id = frappe.db.get_value('Customer', doc.customer, 'email_id')
-		if email_id:
-			project_complete_notification_for_customer(doc, email_id)
+		send_project_completion_mail = frappe.db.get_value('Customer', doc.customer, 'send_project_completion_mail')
+		if send_project_completion_mail:
+			email_id = frappe.db.get_value('Customer', doc.customer, 'email_id')
+			if email_id:
+				project_complete_notification_for_customer(doc, email_id)
 
 @frappe.whitelist()
 def project_complete_notification_for_customer(doc, email_id):
