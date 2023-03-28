@@ -52,11 +52,12 @@ def create_project_from_agreement(self):
 							if tasks_doc.expected_time:
 								task_doc.expected_time = tasks_doc.expected_time
 							task_doc.save(ignore_permissions=True)
-					return True
 				else :
 					frappe.throw(
 					title = _('ALERT !!'),
-					msg = _('Project Template does not exist'))
+					msg = _('Project Template does not exist')
+					)
+
 @frappe.whitelist()
 def assign_tasks(source_name, target_doc = None):
 	'''Method to assign tasks for custom button Assign Task and route to Compliance Task Assignement doctype'''

@@ -39,9 +39,18 @@ frappe.ui.form.on('Compliance Agreement',{
       })
     }
   },
-
   compliance_category:function(frm){
     update_compliance_category(frm);
+  },
+  setup :function(frm){
+    frm.set_query('terms_and_condition', () => {
+      return {
+        filters: {
+          compliance: 1,
+          disabled: 0
+        }
+      }
+    });
   }
 });
 
@@ -112,5 +121,5 @@ frappe.ui.form.on('Compliance Category Details',{
   });
 
 let create_custom_button_project = function(frm){
-  
+
 }

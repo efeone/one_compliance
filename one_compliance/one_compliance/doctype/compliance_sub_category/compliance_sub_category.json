@@ -17,7 +17,7 @@
   "allow_repeat",
   "repeat_on",
   "notification_templates_section",
-  "task_before_due_date__notification",
+  "task_before_due_date_notification",
   "task_complete_notification_for_director",
   "task_overdue_notification_for_employee",
   "column_break_g0ffa",
@@ -114,21 +114,21 @@
    "options": "Notification Template"
   },
   {
-   "fieldname": "task_before_due_date__notification",
-   "fieldtype": "Link",
-   "label": "Task Before Due Date  Notification ",
-   "options": "Notification Template"
-  },
-  {
    "fieldname": "project_complete_notification_for_customer",
    "fieldtype": "Link",
    "label": "Project Complete Notification For Customer",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_before_due_date_notification",
+   "fieldtype": "Link",
+   "label": "Task Before Due Date  Notification ",
    "options": "Notification Template"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-24 16:53:59.692531",
+ "modified": "2023-03-27 14:33:50.753735",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
