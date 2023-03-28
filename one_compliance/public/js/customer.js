@@ -39,21 +39,23 @@ frappe.ui.form.on('Customer',{
       });
       let roles = frappe.user_roles;
       if(roles.includes('Compliance Manager') || roles.includes('Director')){
-      frm.add_custom_button('View Credential', () => {
+      frm.add_custom_button('Add/View Credential', () => {
         customer_credentials(frm)
       });
       frm.add_custom_button('View Document',() =>{
         customer_documents(frm)
       });
-      frm.add_custom_button('Add/Edit Credentials',() => {
-        edit_customer_credentials(frm)
+    }
+    if(roles.includes('Employee') || roles.includes('Director')){
+      frm.add_custom_button('Sent Clarification', () =>{
+        send_clarification_message(frm)
       });
     }
     view_compliance_agreemet(frm)
     }
   }
 });
-/* applied dialog instance to show customer Credential */
+/* applied dialog instance to add or view customer Credential */
 
 let customer_credentials = function (frm) {
   let d = new frappe.ui.Dialog({
@@ -107,10 +109,21 @@ let customer_credentials = function (frm) {
               primary_action(value) {
                   newd.hide();
               },
-              secondary_action_label : 'Go To URL',
+              secondary_action_label : 'Edit Credential',
               secondary_action(value){
-                window.open(r.message[2])
-                }
+                frappe.call({
+                  method:'one_compliance.one_compliance.utils.edit_customer_credentials',
+                  args:{
+                    'customer':frm.doc.name,
+                  },
+                  callback:function(r){
+                    if (r.message) {
+                      d.hide();
+                      frappe.set_route('Form','Customer Credentials', r.message, '_blank');
+                    }
+                  }
+                })
+              }
           });
           newd.show();
           }
@@ -174,39 +187,6 @@ let customer_documents = function (frm) {
 d.show();
 }
 
-/* applied dialog instance to edit customer Credential */
-
-let edit_customer_credentials = function (frm) {
-  let d = new frappe.ui.Dialog({
-    title: 'Enter details',
-    fields: [
-      {
-        label: 'Purpose',
-        fieldname: 'purpose',
-        fieldtype: 'Link',
-        options: 'Credential Type'
-      },
-    ],
-    primary_action_label: 'Edit Credential',
-    primary_action(values) {
-      frappe.call({
-        method:'one_compliance.one_compliance.utils.edit_customer_credentials',
-        args:{
-              'customer':frm.doc.name,
-              'purpose':values.purpose
-            },
-            callback:function(r){
-              if (r.message){
-                d.hide();
-                frappe.set_route('Form','Customer Credentials',r.message)
-              }
-            }
-          })
-        }
-      });
-      d.show();
-    }
-
 let view_compliance_agreemet = function(frm) {
   frappe.call({
     method : 'one_compliance.one_compliance.doc_events.customer.custom_button_for_view_Compliance_agreement',
@@ -229,4 +209,35 @@ let view_compliance_agreemet = function(frm) {
       }
      }
  })
+}
+
+let send_clarification_message = function (frm){
+  let d = new frappe.ui.Dialog({
+    title: 'Message',
+    fields: [
+      {
+        'fieldname': 'message',
+        'fieldtype': 'Text',
+        'label': 'Clarification Message',
+        'reqd': 1
+      }
+    ],
+    primary_action_label: 'Send',
+    primary_action(values) {
+      frappe.call({
+        method: 'one_compliance.one_compliance.doc_events.customer.send_clarification_message',
+        args: {
+          'customer': frm.doc.name,
+          'message': values.message
+        },
+        callback: function(r) {
+          if (r.message) {
+            frappe.show_alert(r.message);
+          }
+        }
+      });
+      d.hide();
+    }
+  });
+  d.show()
 }
