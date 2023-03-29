@@ -24,39 +24,57 @@ class ComplianceAgreement(Document):
 		if getdate(self.valid_from) > getdate(self.valid_upto) :
 			frappe.throw('From Date cannot be greater than Upto Date')
 
-@frappe.whitelist()
-def create_project_from_agreement(self):
-	''' Method to create projects from Compliance Agreement '''
-	if self.compliance_category_details:
-		for compliance_category in self.compliance_category_details:
-			if compliance_category.compliance_sub_category:
-				project_template  = frappe.db.get_value('Compliance Sub Category', compliance_category.compliance_sub_category, 'project_template')
-				if project_template:
-					project = frappe.new_doc('Project')
-					project.project_name = self.customer_name + '-' + compliance_category.compliance_sub_category
-					project.customer = self.customer
-					project.compliance_agreement = self.name
-					project.compliance_sub_category = compliance_category.compliance_sub_category
-					project.save()
-					frappe.msgprint('Project Created', alert = 1)
-					project_template_doc = frappe.get_doc('Project Template', project_template)
-					for task in project_template_doc.tasks:
-						''' Method to create task against created project from the Project Template '''
-						if not frappe.db.exists('Task',{'project':project.name, 'subject':task.subject}):
-							tasks_doc = frappe.get_doc('Task',task.task)
-							task_doc = frappe.new_doc('Task')
-							task_doc.compliance_sub_category = compliance_category.compliance_sub_category
-							task_doc.subject = task.subject
-							task_doc.project = project.name
-							task_doc.type = 'ToDo'
-							if tasks_doc.expected_time:
-								task_doc.expected_time = tasks_doc.expected_time
-							task_doc.save(ignore_permissions=True)
-				else :
-					frappe.throw(
-					title = _('ALERT !!'),
-					msg = _('Project Template does not exist')
-					)
+	@frappe.whitelist()
+	def list_sub_category(self):
+		rate = 0
+		if self.compliance_category:
+			for compliance_category in self.compliance_category:
+				compliance_sub_category_list = get_compliance_sub_category_list(compliance_category)
+				if compliance_sub_category_list:
+					for compliance_sub_category in compliance_sub_category_list:
+						rate += compliance_sub_category.rate
+						if not check_exist_list(self, compliance_sub_category):
+							self.append('compliance_category_details',{
+							'compliance_category':compliance_sub_category.compliance_category,
+							'compliance_sub_category':compliance_sub_category.name,
+							'rate':compliance_sub_category.rate
+							})
+			self.total = rate
+			return True
+
+	@frappe.whitelist()
+	def create_project_from_agreement(self):
+		''' Method to create projects from Compliance Agreement '''
+		if self.compliance_category_details:
+			for compliance_category in self.compliance_category_details:
+				if compliance_category.compliance_sub_category:
+					project_template  = frappe.db.get_value('Compliance Sub Category', compliance_category.compliance_sub_category, 'project_template')
+					if project_template:
+						project = frappe.new_doc('Project')
+						project.project_name = self.customer_name + '-' + compliance_category.compliance_sub_category
+						project.customer = self.customer
+						project.compliance_agreement = self.name
+						project.compliance_sub_category = compliance_category.compliance_sub_category
+						project.save()
+						frappe.msgprint('Project Created', alert = 1)
+						project_template_doc = frappe.get_doc('Project Template', project_template)
+						for task in project_template_doc.tasks:
+							''' Method to create task against created project from the Project Template '''
+							if not frappe.db.exists('Task',{'project':project.name, 'subject':task.subject}):
+								tasks_doc = frappe.get_doc('Task',task.task)
+								task_doc = frappe.new_doc('Task')
+								task_doc.compliance_sub_category = compliance_category.compliance_sub_category
+								task_doc.subject = task.subject
+								task_doc.project = project.name
+								task_doc.type = 'ToDo'
+								if tasks_doc.expected_time:
+									task_doc.expected_time = tasks_doc.expected_time
+								task_doc.save(ignore_permissions=True)
+						return True
+					else :
+						frappe.throw(
+						title = _('ALERT !!'),
+						msg = _('Project Template does not exist'))
 
 @frappe.whitelist()
 def assign_tasks(source_name, target_doc = None):
@@ -177,3 +195,29 @@ def set_value_in_status():
 					frappe.db.set_value('Compliance Agreement',  agreement.name, 'status', 'Active')
 				else:
 					frappe.db.set_value('Compliance Agreement',  agreement.name, 'status', 'In-Active')
+
+def get_compliance_sub_category_list(compliance_category):
+	'''method used for list sub category'''
+	sub_category_list = frappe.db.get_list('Compliance Sub Category', filters = {'compliance_category':compliance_category.compliance_category}, fields = ['rate','name','compliance_category'])
+	return sub_category_list
+
+def check_exist_list(self, compliance_sub_category):
+	'''method used for checking sub category in corresponding sub category'''
+	exist = False
+	try:
+		if self.compliance_category_details:
+			for item in self.compliance_category_details:
+				if compliance_sub_category:
+					if item.compliance_sub_category == compliance_sub_category.name and item.compliance_category == compliance_sub_category.compliance_category:
+						exist = True
+	except:
+		exist = False
+	return exist
+
+@frappe.whitelist()
+def check_project_against_customer(customer):
+	'''method used for checking project against customer'''
+	if frappe.db.exists('Project', {'customer': customer}):
+		return 1
+	else:
+		return 0
