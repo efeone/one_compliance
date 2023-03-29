@@ -4,9 +4,16 @@
 import frappe
 from frappe.model.document import Document
 from frappe.model.mapper import *
+from frappe import _
 
 class ComplianceSubCategory(Document):
-	pass
+	def validate(self):
+		self.validate_rate()
+
+	def validate_rate(self):
+		""" Method to validate rate """
+		if not self.rate :
+			frappe.throw(_('Please Enter Valid Rate'))
 
 @frappe.whitelist()
 def create_project_template_custom_button(source_name, target_doc = None):
