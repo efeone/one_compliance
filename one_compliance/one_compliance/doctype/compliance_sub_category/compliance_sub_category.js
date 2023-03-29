@@ -3,16 +3,18 @@
 
 frappe.ui.form.on('Compliance Sub Category', {
 	refresh: function(frm) {
-    if(!frm.is_new() && !frm.doc.project_template){
+		if(!frm.is_new() && !frm.doc.project_template){
 			//custom button to create project template and route to  project template doctype
-     frm.add_custom_button('Create Project Template', () =>{
-       frappe.model.open_mapped_doc({
-         method: 'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.create_project_template_custom_button',
-         frm: cur_frm
-       });
-     });
-    }
-		set_notification_templates(frm);
+			frm.add_custom_button('Create Project Template', () =>{
+				frappe.model.open_mapped_doc({
+					method: 'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.create_project_template_custom_button',
+					frm: cur_frm
+				});
+			});
+		}
+		if(frm.is_new()){
+			set_notification_templates(frm);
+		}
 	}
 });
 
@@ -21,9 +23,8 @@ let set_notification_templates = function(frm){
 		method:'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.get_notification_details',
 		callback: (r) => {
 			if(r.message){
-
 				// set value to customer and company
-				if(!frm.doc.task_before_due_date__notification){
+				if(!frm.doc.task_before_due_date_notification){
 					frm.set_value('task_before_due_date_notification', r.message.task_before_due_date_notification)
 				}
 				if(!frm.doc.task_complete_notification){

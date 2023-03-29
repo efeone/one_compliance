@@ -2,14 +2,16 @@ frappe.ui.form.on('Task',{
   refresh(frm){
     let roles = frappe.user_roles;
     if(roles.includes('Compliance Manager') || roles.includes('Director')){
-      frm.add_custom_button('View Credential', () => {
-        customer_credentials(frm)
-      });
-      frm.add_custom_button('View Document', () => {
-        customer_document(frm)
-      });
+      if (frm.doc.is_template == 0){
+        frm.add_custom_button('View Credential', () => {
+          customer_credentials(frm)
+        });
+        frm.add_custom_button('View Document', () => {
+          customer_document(frm)
+        });
+      }
     }
-  }
+  },
 });
 /* applied dialog instance to show customer Credential */
 
