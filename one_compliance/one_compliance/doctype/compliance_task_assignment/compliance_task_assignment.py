@@ -1,4 +1,4 @@
-# Copyright (c) 2023, efeone and contributors
+		# Copyright (c) 2023, efeone and contributors
 # For license information, please see license.txt
 
 import frappe
@@ -14,8 +14,10 @@ def assign_tasks_to_selected_users(task_details):
 	''' Method to assign task to the selected users '''
 	task_details = json.loads(task_details)
 	for task in task_details:
-		create_todo('Task', task.get('task'), task.get('user'), task.get('user'), 'Tasks Assigned Successfully')
+		frappe.db.set_value('Task',task.get('task'),'assigned_to',task.get('user'))
+		create_todo('Task', task.get('task'),task.get('user'), task.get('user'), 'Tasks Assigned Successfully')
+		frappe.db.commit()
 		''' To set Alert message below '''
-		frappe.msgprint(
-			msg = 'Tasks assigned Successfully', alert =1
-		 )
+	frappe.msgprint(
+		msg = 'Tasks assigned Successfully', alert =1
+	 )

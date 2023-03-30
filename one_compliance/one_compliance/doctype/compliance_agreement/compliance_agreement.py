@@ -70,11 +70,11 @@ class ComplianceAgreement(Document):
 								if tasks_doc.expected_time:
 									task_doc.expected_time = tasks_doc.expected_time
 								task_doc.save(ignore_permissions=True)
-						return True
 					else :
 						frappe.throw(
 						title = _('ALERT !!'),
-						msg = _('Project Template does not exist'))
+						msg = _('Project Template does not exist')
+						)
 
 @frappe.whitelist()
 def assign_tasks(source_name, target_doc = None):
