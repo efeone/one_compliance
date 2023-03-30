@@ -2,6 +2,25 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Compliance Category', {
+  setup:function(frm){
+    // applied filter for getting head of department
+    frm.set_query('head_of_department', function() {
+      return{
+        filters:{
+          'department':frm.doc.department,
+          'designation': 'Head Of Department'
+        }
+      }
+    });
+    // applied filter for designation in child table
+    frm.set_query('employee','staff_assignment', () => {
+      return {
+        filters:{
+        'designation':['in', ["Business Executive","Business Executive Trainee"]]
+        }
+    }
+  })
+    },
 	refresh: function(frm) {
     if(!frm.is_new() && frm.doc.compliance_category){
       //custom button to view compliance sub category from compliance category//
