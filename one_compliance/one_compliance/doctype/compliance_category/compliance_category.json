@@ -9,7 +9,10 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "compliance_category"
+  "compliance_category",
+  "department",
+  "head_of_department",
+  "staff_assignment"
  ],
  "fields": [
   {
@@ -20,11 +23,29 @@
    "label": "Compliance Category",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "fieldname": "head_of_department",
+   "fieldtype": "Link",
+   "label": "Head Of Department",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "staff_assignment",
+   "fieldtype": "Table",
+   "label": "Staff Assignment",
+   "options": "Staff Assignment"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-21 12:34:18.827516",
+ "modified": "2023-03-30 11:15:34.751116",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Category",
@@ -46,7 +67,6 @@
    "write": 1
   }
  ],
- "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
