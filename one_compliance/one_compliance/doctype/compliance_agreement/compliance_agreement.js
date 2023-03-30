@@ -3,22 +3,12 @@ frappe.ui.form.on('Compliance Agreement',{
     frm.set_query('compliance_sub_category','compliance_category_details',(frm,cdt,cdn) => {
       // setting filer for sub category //
       let child = locals[cdt][cdn];
-  		return {
-  			filters: {'compliance_category': child.compliance_category}
-  		};
-  	});
+          return {
+              filters: {'compliance_category': child.compliance_category}
+          };
+      });
     if(!frm.is_new() && frm.doc.workflow_state == 'Customer Approved'){
-      frm.add_custom_button('Assign Task', () =>{
-        // Custom button to assign tasks from Compliance Agreement
-        frappe.model.open_mapped_doc({
-          method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.assign_tasks',
-          frm: cur_frm
-        })
-      })
-      frm.add_custom_button('Create Projects', () =>{
-        // custom button to create projects from Compliance Agreement
-          frm.call('create_project_from_agreement')
-      })
+       view_custom_button_project(frm)
     }
     if(frm.doc.invoice_based_on){
       frappe.call({
@@ -40,6 +30,7 @@ frappe.ui.form.on('Compliance Agreement',{
     }
   },
   compliance_category:function(frm){
+    set_sub_category_list(frm);
     update_compliance_category(frm);
   },
   setup :function(frm){
@@ -53,7 +44,6 @@ frappe.ui.form.on('Compliance Agreement',{
     });
   }
 });
-
 
 let update_compliance_category = function (frm) {
   // Add or Remove data from compliance category table multi-select//
@@ -119,7 +109,42 @@ frappe.ui.form.on('Compliance Category Details',{
       frm.set_value('total',total)
       }
   });
+  
+let set_sub_category_list = function(frm){
+  frm.call('list_sub_category', {throw_if_missing : true})
+    .then(r =>{
+      if(r.message){
+        frm.refresh_field('compliance_category_details');
+      }
+    })
+}
 
-let create_custom_button_project = function(frm){
-
+let view_custom_button_project = function(frm){
+  frappe.call({
+    method : 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.check_project_against_customer',
+    args :{
+      'customer' : frm.doc.customer
+    },
+    callback : (r) => {
+      if(r.message){
+        frm.add_custom_button('Assign Task', () =>{
+          // Custom button to assign tasks from Compliance Agreement
+          frappe.model.open_mapped_doc({
+            method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.assign_tasks',
+            frm: cur_frm
+          })
+        })
+      }
+      else{
+        frm.add_custom_button('Create Projects', () =>{
+          // custom button to create projects from Compliance Agreement
+          frm.call('create_project_from_agreement').then(r => {
+            if (r.message) {
+              frm.reload_doc()
+            }
+          })
+        })
+      }
+    }
+  })
 }
