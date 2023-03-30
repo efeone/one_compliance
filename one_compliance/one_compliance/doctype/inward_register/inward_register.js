@@ -25,4 +25,14 @@ frappe.ui.form.on('Inward Register', {
 			frm.set_df_property('edit_posting_date_and_time','hidden',1);
 		}
 	},
+	digital_signature: function(frm){
+		if(frm.doc.digital_signature){
+			// custom button to add/view digital signature from inward register
+			frm.add_custom_button('Add/View Digital Signature', () =>{
+
+			})
+		}else {
+			frm.remove_custom_button('Add/View Digital Signature');
+		}
+	}
 });

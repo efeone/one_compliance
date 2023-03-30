@@ -1,0 +1,71 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-03-30 13:10:50.100141",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "register_type",
+  "reference_id",
+  "posting_date",
+  "posting_time",
+  "senderreceiver"
+ ],
+ "fields": [
+  {
+   "fieldname": "register_type",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Register Type",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "reference_id",
+   "fieldtype": "Dynamic Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Reference Id",
+   "options": "register_type"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "posting_time",
+   "fieldtype": "Time",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Posting Time"
+  },
+  {
+   "fieldname": "senderreceiver",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Sender/Receiver"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-03-30 16:31:09.843153",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Digital Signature Details",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

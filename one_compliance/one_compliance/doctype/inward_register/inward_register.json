@@ -7,6 +7,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
+  "digital_signature",
   "register_type",
   "general_register_type",
   "document_register_type",
@@ -179,12 +180,18 @@
    "fieldname": "edit_posting_date_and_time",
    "fieldtype": "Check",
    "label": "Edit Posting Date and Time"
+  },
+  {
+   "default": "0",
+   "fieldname": "digital_signature",
+   "fieldtype": "Check",
+   "label": "Digital Signature"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-21 17:19:37.704454",
+ "modified": "2023-03-30 09:56:55.832579",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Inward Register",

@@ -13,9 +13,11 @@
   "customer_name",
   "customer_type",
   "status",
+  "invoice_based_on",
   "column_break_czvvr",
   "lead_name",
   "opportunity_name",
+  "has_validity",
   "valid_from",
   "valid_upto",
   "invoice_based_on",
@@ -218,10 +220,17 @@
    "options": "Active\nIn-Active"
   },
   {
+   "depends_on": "eval:doc.has_validity == 1",
    "fieldname": "valid_upto",
    "fieldtype": "Date",
    "label": "Valid Upto",
-   "reqd": 1
+   "mandatory_depends_on": "eval:doc.has_validity == 1"
+  },
+  {
+   "default": "0",
+   "fieldname": "has_validity",
+   "fieldtype": "Check",
+   "label": "Has Validity"
   },
   {
    "fieldname": "invoice_based_on",
@@ -233,7 +242,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-29 10:55:04.032517",
+ "modified": "2023-03-30 16:20:10.723868",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",

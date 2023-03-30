@@ -107,3 +107,6 @@ def send_clarification_message(customer,message):
     subject = "Clarification Request"
     body = "Dear {},\n\nWe are writing to request clarification on the following matter: {}".format(customer, message)
     frappe.sendmail(recipients=[recipient],subject=subject, message=body)
+    frappe.msgprint(
+		msg = 'Mail Send', alert =1
+	 )
