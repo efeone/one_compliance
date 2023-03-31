@@ -16,6 +16,10 @@
   "rate",
   "allow_repeat",
   "repeat_on",
+  "department_details_section",
+  "department",
+  "head_of_department",
+  "staff_assignment",
   "notification_templates_section",
   "task_before_due_date_notification",
   "task_complete_notification_for_director",
@@ -124,11 +128,36 @@
    "fieldtype": "Link",
    "label": "Task Before Due Date  Notification ",
    "options": "Notification Template"
+  },
+  {
+   "fieldname": "department_details_section",
+   "fieldtype": "Section Break",
+   "label": "Department Details"
+  },
+  {
+   "fetch_from": "compliance_category.department",
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "fetch_from": "compliance_category.head_of_department",
+   "fieldname": "head_of_department",
+   "fieldtype": "Link",
+   "label": "Head Of Department",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "staff_assignment",
+   "fieldtype": "Table",
+   "label": "Staff Assignment",
+   "options": "Staff Assignment"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-29 09:08:37.762942",
+ "modified": "2023-03-31 12:27:48.109931",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",

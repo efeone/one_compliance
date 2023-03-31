@@ -27,6 +27,9 @@
   {
    "fieldname": "customer",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Customer",
    "options": "Customer",
    "reqd": 1
@@ -41,7 +44,9 @@
   {
    "fieldname": "expiry_date",
    "fieldtype": "Date",
+   "in_filter": 1,
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Expiry Date",
    "reqd": 1
   },
@@ -80,6 +85,9 @@
   {
    "fieldname": "company_name",
    "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Company Name"
   },
   {
@@ -87,6 +95,7 @@
    "fieldtype": "Data",
    "in_filter": 1,
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Director Name",
    "reqd": 1
   },
@@ -95,6 +104,8 @@
    "fieldname": "customer_name",
    "fieldtype": "Data",
    "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Customer Name",
    "read_only": 1
   },
@@ -105,6 +116,9 @@
   {
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Status",
    "options": "\nAvailable\nNot Available",
    "read_only": 1
@@ -119,7 +133,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-30 16:02:18.462126",
+ "modified": "2023-03-31 11:09:08.926268",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Digital Signature",
@@ -139,6 +153,7 @@
    "write": 1
   }
  ],
+ "search_fields": " director_name",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
