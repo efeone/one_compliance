@@ -55,6 +55,7 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
+   "mandatory_depends_on": "eval:doc.digital_signature == 1",
    "options": "Customer"
   },
   {
@@ -191,7 +192,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-03-30 09:56:55.832579",
+ "modified": "2023-03-31 15:05:12.222948",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Inward Register",
