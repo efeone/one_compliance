@@ -102,3 +102,25 @@ def edit_customer_credentials(customer):
     if frappe.db.exists('Customer Credentials',{'customer':customer}):
         customer_credential = frappe.db.get_value('Customer Credentials',{'customer':customer})
         return customer_credential
+
+@frappe.whitelist()
+def update_digital_signature(digital_signature, register_type, register_name):
+        """ Method to append values from inward and outward register to digital signature details child doctype """
+    if digital_signature and register_name and register_type:
+        if not frappe.db.exists('Digital Signature', digital_signature):
+            frappe.throw("Digital signature does not exists")
+        if not frappe.db.exists(register_type, register_name):
+            frappe.throw("Register does not exists")
+        digital_signature_doc = frappe.get_doc('Digital Signature', digital_signature)
+        register_doc = frappe.get_doc(register_type, register_name)
+        digital_signature_doc.append('digital_signature_details',{
+            'register_type': register_doc.doctype,
+            'reference_id': register_doc.name,
+            'posting_date': register_doc.posting_date,
+            'posting_time': register_doc.posting_time,
+            'sender_receiver': register_doc.person_name
+        })
+        digital_signature_doc.save()
+        frappe.db.commit()
+        digital_signature_doc.reload()
+        return True

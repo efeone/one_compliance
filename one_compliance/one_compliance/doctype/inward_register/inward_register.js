@@ -24,15 +24,57 @@ frappe.ui.form.on('Inward Register', {
 		else{
 			frm.set_df_property('edit_posting_date_and_time','hidden',1);
 		}
-	},
-	digital_signature: function(frm){
-		if(frm.doc.digital_signature){
-			// custom button to add/view digital signature from inward register
+		if(frm.doc.digital_signature == 1){
 			frm.add_custom_button('Add/View Digital Signature', () =>{
-
+				digital_signature(frm)
 			})
-		}else {
-			frm.remove_custom_button('Add/View Digital Signature');
 		}
-	}
+	},
 });
+/* applied dialog instance to add or view digital signature */
+
+let digital_signature = function (frm) {
+	let d = new frappe.ui.Dialog({
+		title: 'Add/View Digital Signature',
+		fields: [
+				{
+						label: 'Digital Signature',
+						fieldname: 'digital_signature',
+						fieldtype: 'Link',
+						options: 'Digital Signature',
+						reqd: 1,
+						get_query : function() {
+							return {
+								filters: {
+									customer: frm.doc.customer
+								}
+							}
+						}
+				}
+		],
+		primary_action_label: 'Update',
+    primary_action(values) {
+			d.hide()
+			if (values.digital_signature){
+				frappe.call({
+					method:'one_compliance.one_compliance.utils.update_digital_signature',
+					args:{
+						'digital_signature': values.digital_signature,
+						'register_type': frm.doc.doctype,
+						'register_name': frm.doc.name
+					},
+					callback:function(r){
+						if (r.message) {
+							frappe.show_alert({
+								message:__('Digital Signature Updated'),
+								indicator:'green'
+							}, 5);
+						}
+					}
+				})
+			}
+    }
+});
+
+d.show();
+}
