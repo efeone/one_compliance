@@ -1,5 +1,6 @@
 {
  "actions": [],
+ "allow_import": 1,
  "allow_rename": 1,
  "autoname": "format:{compliance_category}-{sub_category}",
  "creation": "2023-03-08 15:29:33.246972",
@@ -157,7 +158,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-31 12:27:48.109931",
+ "modified": "2023-04-03 11:46:20.316121",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",

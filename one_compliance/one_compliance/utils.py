@@ -105,7 +105,7 @@ def edit_customer_credentials(customer):
 
 @frappe.whitelist()
 def update_digital_signature(digital_signature, register_type, register_name):
-        """ Method to append values from inward and outward register to digital signature details child doctype """
+    """ Method to append values to child table digital signature details from inward and outward register """
     if digital_signature and register_name and register_type:
         if not frappe.db.exists('Digital Signature', digital_signature):
             frappe.throw("Digital signature does not exists")
@@ -113,13 +113,18 @@ def update_digital_signature(digital_signature, register_type, register_name):
             frappe.throw("Register does not exists")
         digital_signature_doc = frappe.get_doc('Digital Signature', digital_signature)
         register_doc = frappe.get_doc(register_type, register_name)
-        digital_signature_doc.append('digital_signature_details',{
-            'register_type': register_doc.doctype,
-            'reference_id': register_doc.name,
-            'posting_date': register_doc.posting_date,
-            'posting_time': register_doc.posting_time,
-            'sender_receiver': register_doc.person_name
-        })
+        digital_signature_detail = digital_signature_doc.append('digital_signature_details')
+        digital_signature_detail.register_type = register_doc.doctype
+        digital_signature_detail.reference_id = register_doc.name
+        if register_type == 'Inward Register':
+            digital_signature_detail.posting_date = register_doc.posting_date
+            digital_signature_detail.posting_time = register_doc.posting_time
+            digital_signature_detail.sender_receiver = register_doc.person_name
+        else:
+            if register_type == 'Outward Register':
+                digital_signature_detail.posting_date = register_doc.returned_date
+                digital_signature_detail.posting_time = register_doc.returned_time
+                digital_signature_detail.sender_receiver = register_doc.receiver_name
         digital_signature_doc.save()
         frappe.db.commit()
         digital_signature_doc.reload()
