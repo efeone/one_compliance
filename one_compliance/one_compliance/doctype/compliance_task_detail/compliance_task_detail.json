@@ -9,13 +9,15 @@
  "field_order": [
   "sub_category",
   "task",
-  "user"
+  "type",
+  "employee_or_group"
  ],
  "fields": [
   {
    "fieldname": "task",
    "fieldtype": "Link",
    "in_list_view": 1,
+   "in_preview": 1,
    "in_standard_filter": 1,
    "label": "Task",
    "options": "Task"
@@ -24,22 +26,36 @@
    "fieldname": "sub_category",
    "fieldtype": "Data",
    "in_list_view": 1,
+   "in_preview": 1,
    "in_standard_filter": 1,
    "label": "Sub Category"
   },
   {
-   "fieldname": "user",
-   "fieldtype": "Link",
+   "fieldname": "type",
+   "fieldtype": "Select",
    "in_list_view": 1,
+   "in_preview": 1,
    "in_standard_filter": 1,
-   "label": "User",
-   "options": "User"
+   "label": "Type",
+   "options": "\nEmployee\nEmployee Group"
+  },
+  {
+   "depends_on": "eval:doc.type=='Group'",
+   "fieldname": "employee_or_group",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "in_preview": 1,
+   "in_standard_filter": 1,
+   "label": "Employee / Group",
+   "mandatory_depends_on": "eval:doc.type=='Group'",
+   "options": "type",
+   "read_only_depends_on": "eval:doc.type=='Single'"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-03-27 15:18:51.655936",
+ "modified": "2023-03-31 15:41:26.704137",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Task Detail",
