@@ -5,7 +5,7 @@ frappe.ui.form.on('Compliance Task Assignment', {
 	refresh: function(frm){
 		if(!frm.is_new()){
 			// Set user field mandatory in childtable in saved doctype
-			var df = frappe.meta.get_docfield('Compliance Task Detail', 'user', cur_frm.doc.name);
+			var df = frappe.meta.get_docfield('Compliance Task Detail', 'employee_or_group', cur_frm.doc.name);
 			df.reqd = 1;
 	 }
 	},
