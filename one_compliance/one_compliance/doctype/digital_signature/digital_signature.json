@@ -20,7 +20,8 @@
   "notify_on_expiration",
   "notify_before",
   "notify_before_unit",
-  "section_break_webss",
+  "digital_signature_expiry_notification",
+  "section_break_yhybq",
   "digital_signature_details"
  ],
  "fields": [
@@ -80,10 +81,6 @@
    "read_only": 1
   },
   {
-   "fieldname": "section_break_webss",
-   "fieldtype": "Section Break"
-  },
-  {
    "fieldname": "company_name",
    "fieldtype": "Data",
    "in_filter": 1,
@@ -130,11 +127,23 @@
    "label": "Director Email",
    "mandatory_depends_on": "eval:doc.notify_on_expiration == 1",
    "options": "Email"
+  },
+  {
+   "depends_on": "eval:doc.notify_on_expiration == 1",
+   "fetch_from": "compliance_settings.digital_signature_expiry_notification",
+   "fieldname": "digital_signature_expiry_notification",
+   "fieldtype": "Link",
+   "label": "Digital Signature Expiry Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "section_break_yhybq",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-01 10:04:18.287988",
+ "modified": "2023-04-01 16:41:44.754175",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Digital Signature",
