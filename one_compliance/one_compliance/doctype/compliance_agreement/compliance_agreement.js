@@ -10,6 +10,7 @@ frappe.ui.form.on('Compliance Agreement',{
     if(!frm.is_new() && frm.doc.workflow_state == 'Customer Approved'){
        view_custom_button_project(frm)
     }
+    // Create sales invoice against project and compliance_agreement
     if(frm.doc.invoice_based_on){
       frappe.call({
         method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.check_project_status',

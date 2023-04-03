@@ -6,6 +6,7 @@ from frappe.email.doctype.notification.notification import get_context
 
 @frappe.whitelist()
 def make_sales_invoice(source_name, target_doc=None):
+	# Create sales invoice against project doctype
 	def set_missing_values(source, target):
 		income_account = frappe.db.get_value('Company',source.company, 'default_income_account')
 		if frappe.db.exists('Compliance Agreement', source.compliance_agreement):
