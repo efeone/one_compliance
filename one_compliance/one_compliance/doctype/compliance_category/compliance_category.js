@@ -20,6 +20,13 @@ frappe.ui.form.on('Compliance Category', {
         }
     }
   })
+  frm.set_query('department', () => {
+    return {
+      filters:{
+        is_compliance: 1
+      }
+  }
+})
     },
 	refresh: function(frm) {
     if(!frm.is_new() && frm.doc.compliance_category){

@@ -50,8 +50,9 @@ class ComplianceAgreement(Document):
 				if compliance_category.compliance_sub_category:
 					project_template  = frappe.db.get_value('Compliance Sub Category', compliance_category.compliance_sub_category, 'project_template')
 					if project_template:
+						today = getdate(frappe.utils.today())
 						project = frappe.new_doc('Project')
-						project.project_name = self.customer_name + '-' + compliance_category.compliance_sub_category
+						project.project_name = self.customer_name + '-' + compliance_category.compliance_sub_category + '-' + str(today)
 						project.customer = self.customer
 						project.compliance_agreement = self.name
 						project.compliance_sub_category = compliance_category.compliance_sub_category
@@ -60,16 +61,15 @@ class ComplianceAgreement(Document):
 						project_template_doc = frappe.get_doc('Project Template', project_template)
 						for task in project_template_doc.tasks:
 							''' Method to create task against created project from the Project Template '''
-							if not frappe.db.exists('Task',{'project':project.name, 'subject':task.subject}):
-								tasks_doc = frappe.get_doc('Task',task.task)
-								task_doc = frappe.new_doc('Task')
-								task_doc.compliance_sub_category = compliance_category.compliance_sub_category
-								task_doc.subject = task.subject
-								task_doc.project = project.name
-								task_doc.type = 'ToDo'
-								if tasks_doc.expected_time:
-									task_doc.expected_time = tasks_doc.expected_time
-								task_doc.save(ignore_permissions=True)
+							tasks_doc = frappe.get_doc('Task', task.task)
+							task_doc = frappe.new_doc('Task')
+							task_doc.compliance_sub_category = compliance_category.compliance_sub_category
+							task_doc.subject = task.subject
+							task_doc.project = project.name
+							if tasks_doc.expected_time:
+								task_doc.expected_time = tasks_doc.expected_time
+							task_doc.save(ignore_permissions=True)
+
 					else :
 						frappe.throw(
 						title = _('ALERT !!'),
@@ -82,7 +82,7 @@ def assign_tasks(source_name, target_doc = None):
 	def set_missing_values(source, target):
 		for categories in source.compliance_category:
 			target.append('category', {
-			'compliance_category' : categories.compliance_category
+				'compliance_category' : categories.compliance_category
 			})
 		for task in source.compliance_category_details:
 			task_doc = get_task_from_project(task.compliance_sub_category, source.customer_name)
@@ -106,10 +106,10 @@ def assign_tasks(source_name, target_doc = None):
 def get_task_from_project(sub_category, customer_name):
 	''' Method to get tasks from project based on Sub Category '''
 	task_items = []
-	if frappe.db.exists ('Project', { 'customer': customer_name }):
-		project_doc = frappe.db.get_list('Project', {'customer': customer_name})
-		for projects in project_doc:
-			task_list = frappe.db.get_list('Task', filters={'project': projects.name}, fields = ['compliance_sub_category','name'])
+	if frappe.db.exists ('Project', { 'customer': customer_name, 'compliance_sub_category':sub_category }):
+		project_list = frappe.db.get_list('Project', {'customer': customer_name, 'compliance_sub_category':sub_category})
+		for project in project_list:
+			task_list = frappe.db.get_list('Task', filters={'project': project.name}, fields = ['compliance_sub_category','name'])
 			for tasks in task_list:
 				if tasks.compliance_sub_category == sub_category:
 					task_items.append(tasks)
