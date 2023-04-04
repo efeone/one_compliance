@@ -1,9 +1,11 @@
 import frappe
 import json
 from frappe.utils import *
+from frappe.model.document import Document
 from frappe.email.doctype.notification.notification import get_context
 from frappe.utils.user import get_users_with_role
 from frappe import _
+from datetime import date
 
 @frappe.whitelist()
 def create_notification_log(subject, type, for_user, email_content, document_type, document_name):
@@ -58,6 +60,7 @@ def task_daily_sheduler():
 
 @frappe.whitelist()
 def send_notification(doc, for_user, context, notification_template_fieldname):
+    ''' Method to send notification for daily task scheduling using Notification Template '''
     notification_template = frappe.db.get_value('Compliance Sub Category', doc.compliance_sub_category, notification_template_fieldname)
     if notification_template:
         subject_template, content_template = frappe.db.get_value('Notification Template', notification_template, ['subject', 'content'])
@@ -129,3 +132,39 @@ def update_digital_signature(digital_signature, register_type, register_name):
         frappe.db.commit()
         digital_signature_doc.reload()
         return True
+
+@frappe.whitelist()
+def notification_for_digital_signature_expiry():
+    ''' Method to send notification for notifying Digital Signature expiration to director email '''
+    digital_signature_list = frappe.get_all('Digital Signature', filters= {'notify_on_expiration': 1})
+    if digital_signature_list:
+        today = getdate(frappe.utils.today())
+        for digital_signature in digital_signature_list:
+            digital_signature_doc = frappe.get_doc('Digital Signature', digital_signature.name)
+            context = get_context(digital_signature_doc)
+            director_mail = digital_signature_doc.director_email
+            due_date = getdate(digital_signature_doc.expiry_date)
+            if digital_signature_doc.notify_before:
+                if digital_signature_doc.notify_before_unit == 'Day':
+                    notification_date = frappe.utils.add_to_date(due_date, days=-1*digital_signature_doc.notify_before)
+                    if getdate(notification_date) == today:
+                        send_notification_for_digital_signature(digital_signature_doc, director_mail, context, 'digital_signature_expiry_notification')
+                if digital_signature_doc.notify_before_unit == 'Week':
+                    notification_date = frappe.utils.add_to_date(due_date, days=-7*digital_signature_doc.notify_before)
+                    if getdate(notification_date) == today:
+                        send_notification_for_digital_signature(digital_signature_doc, director_mail, context, 'digital_signature_expiry_notification')
+                if digital_signature_doc.notify_before_unit == 'Month':
+                    notification_date = frappe.utils.add_months(due_date, (-1*digital_signature_doc.notify_before))
+                    if getdate(notification_date) == today:
+                        send_notification_for_digital_signature(digital_signature_doc, director_mail, context, 'digital_signature_expiry_notification')
+
+@frappe.whitelist()
+def send_notification_for_digital_signature(doc, for_user, context, notification_template_fieldname):
+    ''' Method to send email for digital signature expiration using Notification Template '''
+    notification_template = frappe.db.get_value('Digital Signature', doc.name, notification_template_fieldname)
+    if notification_template:
+        subject_template, content_template = frappe.db.get_value('Notification Template', notification_template, ['subject', 'content'])
+        subject = frappe.render_template(subject_template, context)
+        content = frappe.render_template(content_template, context)
+        frappe.sendmail(recipients=[for_user], subject=subject, message=content)
+        frappe.db.commit()
