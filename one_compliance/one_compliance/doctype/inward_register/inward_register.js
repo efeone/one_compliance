@@ -24,12 +24,10 @@ frappe.ui.form.on('Inward Register', {
 		else{
 			frm.set_df_property('edit_posting_date_and_time','hidden',1);
 		}
-		if(frm.doc.digital_signature == 1){
-			frm.add_custom_button('Add/View Digital Signature', () =>{
-				digital_signature_dialog(frm)
-			})
+		if(frm.doc.digital_signature == 1 && frm.doc.customer){
+			disable_add_or_view_digital_signature_button(frm)
 		}
-	},
+	}
 });
 /* applied dialog instance to add or view digital signature */
 
@@ -77,4 +75,20 @@ let digital_signature_dialog = function (frm) {
 });
 
 d.show();
+}
+
+let disable_add_or_view_digital_signature_button = function(frm) {
+	frappe.call({
+		method: 'one_compliance.one_compliance.doctype.inward_register.inward_register.disable_add_or_view_digital_signature_button',
+		args: {
+			'customer' : frm.doc.customer
+		},
+		callback: (r) => {
+			if(r.message) {
+				frm.add_custom_button('Add/View Digital Signature', () =>{
+					digital_signature_dialog(frm)
+				})
+			}
+		}
+	})
 }

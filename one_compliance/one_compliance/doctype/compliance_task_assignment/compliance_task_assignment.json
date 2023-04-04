@@ -9,6 +9,9 @@
  "engine": "InnoDB",
  "field_order": [
   "category",
+  "column_break_dl35u",
+  "compliance_agreement",
+  "section_break_taxp7",
   "task_details"
  ],
  "fields": [
@@ -23,11 +26,25 @@
    "fieldtype": "Table",
    "label": "Task Details",
    "options": "Compliance Task Detail"
+  },
+  {
+   "fieldname": "column_break_dl35u",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "compliance_agreement",
+   "fieldtype": "Link",
+   "label": "Compliance Agreement",
+   "options": "Compliance Agreement"
+  },
+  {
+   "fieldname": "section_break_taxp7",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-31 14:31:47.632450",
+ "modified": "2023-04-04 16:00:23.993504",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Task Assignment",

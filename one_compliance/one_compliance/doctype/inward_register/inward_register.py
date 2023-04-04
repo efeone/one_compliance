@@ -22,3 +22,8 @@ def create_outward_register(source_name, target_doc = None):
         },
         },target_doc,set_missing_values)
     return doc
+
+@frappe.whitelist()
+def disable_add_or_view_digital_signature_button(customer):
+	if not frappe.db.exists('Digital Signature', {'customer' : customer}):
+		return 1
