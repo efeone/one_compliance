@@ -17,6 +17,7 @@ class DigitalSignature(Document):
 			frappe.throw(_('Please Enter Valid Expiry Date'))
 
 	def validate_duplicate_entry(self):
+		''' Method to validate duplicate entry of Register '''
 		if self.digital_signature_details:
 			for digital_signature in self.digital_signature_details:
 				if digital_signature.reference_id:

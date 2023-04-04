@@ -26,14 +26,14 @@ frappe.ui.form.on('Inward Register', {
 		}
 		if(frm.doc.digital_signature == 1){
 			frm.add_custom_button('Add/View Digital Signature', () =>{
-				digital_signature(frm)
+				digital_signature_dialog(frm)
 			})
 		}
 	},
 });
 /* applied dialog instance to add or view digital signature */
 
-let digital_signature = function (frm) {
+let digital_signature_dialog = function (frm) {
 	let d = new frappe.ui.Dialog({
 		title: 'Add/View Digital Signature',
 		fields: [

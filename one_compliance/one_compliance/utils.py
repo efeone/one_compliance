@@ -81,7 +81,8 @@ def view_credential_details(customer,purpose):
     if frappe.db.exists('Customer Credentials',{'customer':customer}):
         customer_credential = frappe.db.get_value('Customer Credentials',{'customer':customer})
         if frappe.db.exists('Credential Details', {'parent':customer_credential,'purpose':purpose}):
-            username, password, url = frappe.db.get_value('Credential Details', {'parent':customer_credential,'purpose':purpose}, ['username', 'password','url'])
+            username, cd_name, url = frappe.db.get_value('Credential Details', {'parent':customer_credential,'purpose':purpose}, ['username', 'name','url'])
+            password = frappe.utils.password.get_decrypted_password("Credential Details", cd_name, "password")
             return [username, password, url]
         else:
             frappe.throw(_('Credential not configured for this Purpose'))
@@ -123,11 +124,10 @@ def update_digital_signature(digital_signature, register_type, register_name):
             digital_signature_detail.posting_date = register_doc.posting_date
             digital_signature_detail.posting_time = register_doc.posting_time
             digital_signature_detail.sender_receiver = register_doc.person_name
-        else:
-            if register_type == 'Outward Register':
-                digital_signature_detail.posting_date = register_doc.returned_date
-                digital_signature_detail.posting_time = register_doc.returned_time
-                digital_signature_detail.sender_receiver = register_doc.receiver_name
+        elif register_type == 'Outward Register':
+            digital_signature_detail.posting_date = register_doc.returned_date
+            digital_signature_detail.posting_time = register_doc.returned_time
+            digital_signature_detail.sender_receiver = register_doc.receiver_name
         digital_signature_doc.save()
         frappe.db.commit()
         digital_signature_doc.reload()
