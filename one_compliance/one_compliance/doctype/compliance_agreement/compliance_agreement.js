@@ -29,6 +29,8 @@ frappe.ui.form.on('Compliance Agreement',{
         }
       })
     }
+   disable_assign_task_button(frm)
+
   },
   compliance_category:function(frm){
     set_sub_category_list(frm);
@@ -110,7 +112,7 @@ frappe.ui.form.on('Compliance Category Details',{
       frm.set_value('total',total)
       }
   });
-  
+
 let set_sub_category_list = function(frm){
   frm.call('list_sub_category', {throw_if_missing : true})
     .then(r =>{
@@ -145,6 +147,21 @@ let view_custom_button_project = function(frm){
             }
           })
         })
+      }
+    }
+  })
+}
+
+let disable_assign_task_button = function(frm) {
+  //Function to disable the Assign Task button once the tasks assigned
+  frappe.call({
+    method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.disable_assign_task_button',
+    args: {
+      'name' : frm.doc.name
+    },
+    callback: (r) => {
+      if(r.message) {
+        frm.remove_custom_button('Assign Task')
       }
     }
   })

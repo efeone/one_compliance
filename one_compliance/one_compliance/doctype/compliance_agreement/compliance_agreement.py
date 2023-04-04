@@ -80,6 +80,7 @@ class ComplianceAgreement(Document):
 def assign_tasks(source_name, target_doc = None):
 	'''Method to assign tasks for custom button Assign Task and route to Compliance Task Assignement doctype'''
 	def set_missing_values(source, target):
+		target.compliance_agreement = source.name
 		for categories in source.compliance_category:
 			target.append('category', {
 			'compliance_category' : categories.compliance_category
@@ -221,3 +222,9 @@ def check_project_against_customer(customer):
 		return 1
 	else:
 		return 0
+
+@frappe.whitelist()
+def disable_assign_task_button(name):
+	''' Method to check compliance agreement exists in compliance task assignment for disable custom button '''
+	if frappe.db.exists('Compliance Task Assignment', {'compliance_agreement': name}):
+		return 1
