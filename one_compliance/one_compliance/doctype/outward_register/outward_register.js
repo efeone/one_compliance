@@ -20,6 +20,7 @@ frappe.ui.form.on('Outward Register', {
 			frm.add_custom_button('Add/View Digital Signature', () =>{
 				digital_signature_dialog(frm)
 			})
+			disable_add_or_view_digital_signature_button(frm)
 		}
 	},
 	onload: function(frm) {
@@ -74,4 +75,20 @@ let digital_signature_dialog = function (frm) {
 });
 
 d.show();
+}
+
+
+let disable_add_or_view_digital_signature_button = function(frm) {
+	// Function to disable custom button Add/View Digital Signature after once it updated
+	frappe.call({
+		method: 'one_compliance.one_compliance.doctype.outward_register.outward_register.disable_add_or_view_digital_signature_button',
+		args: {
+			'customer' : frm.doc.customer
+		},
+		callback: (r) => {
+			if(r.message) {
+				frm.remove_custom_button('Add/View Digital Signature')
+			}
+		}
+	})
 }

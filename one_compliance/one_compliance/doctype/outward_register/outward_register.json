@@ -207,6 +207,7 @@
   },
   {
    "default": "0",
+   "depends_on": "eval:doc.if_outward_only == 0",
    "fieldname": "digital_signature",
    "fieldtype": "Check",
    "label": "Digital Signature"
@@ -215,7 +216,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-03 10:11:09.718613",
+ "modified": "2023-04-05 12:29:38.933271",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Outward Register",

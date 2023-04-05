@@ -23,7 +23,11 @@ def create_outward_register(source_name, target_doc = None):
         },target_doc,set_missing_values)
     return doc
 
+
 @frappe.whitelist()
 def disable_add_or_view_digital_signature_button(customer):
-	if not frappe.db.exists('Digital Signature', {'customer' : customer}):
-		return 1
+	''' Method to check is there any value existing in the table with same customer '''
+	if frappe.db.exists('Digital Signature', {'customer' : customer}):
+		digital_signature_doc = frappe.get_doc('Digital Signature', {'customer' : customer})
+		if digital_signature_doc.digital_signature_details:
+			return 1
