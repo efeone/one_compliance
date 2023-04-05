@@ -124,9 +124,10 @@ let set_sub_category_list = function(frm){
 
 let view_custom_button_project = function(frm){
   frappe.call({
-    method : 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.check_project_against_customer',
+    method : 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.check_project_against_compliance_sub_category',
     args :{
-      'customer' : frm.doc.customer
+      'compliance_category_details' : frm.doc.compliance_category_details,
+      'compliance_agreement' : frm.doc.name
     },
     callback : (r) => {
       if(r.message){
