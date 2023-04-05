@@ -25,6 +25,9 @@ frappe.ui.form.on('Inward Register', {
 			frm.set_df_property('edit_posting_date_and_time','hidden',1);
 		}
 		if(frm.doc.digital_signature == 1 && frm.doc.customer){
+			frm.add_custom_button('Add/View Digital Signature', () =>{
+				digital_signature_dialog(frm)
+			})
 			disable_add_or_view_digital_signature_button(frm)
 		}
 	}
@@ -78,6 +81,7 @@ d.show();
 }
 
 let disable_add_or_view_digital_signature_button = function(frm) {
+	// Function to disable custom button Add/View Digital Signature after once it updated
 	frappe.call({
 		method: 'one_compliance.one_compliance.doctype.inward_register.inward_register.disable_add_or_view_digital_signature_button',
 		args: {
@@ -85,9 +89,7 @@ let disable_add_or_view_digital_signature_button = function(frm) {
 		},
 		callback: (r) => {
 			if(r.message) {
-				frm.add_custom_button('Add/View Digital Signature', () =>{
-					digital_signature_dialog(frm)
-				})
+				frm.remove_custom_button('Add/View Digital Signature')
 			}
 		}
 	})
