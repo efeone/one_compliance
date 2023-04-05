@@ -216,15 +216,15 @@ def check_exist_list(self, compliance_sub_category):
 	return exist
 
 @frappe.whitelist()
-def check_project_against_customer(customer):
-	'''method used for checking project against customer'''
-	if frappe.db.exists('Project', {'customer': customer}):
-		return 1
-	else:
-		return 0
-
-@frappe.whitelist()
 def disable_assign_task_button(name):
 	''' Method to check compliance agreement exists in compliance task assignment for disable custom button '''
 	if frappe.db.exists('Compliance Task Assignment', {'compliance_agreement': name}):
 		return 1
+
+@frappe.whitelist()
+def check_project_against_compliance_sub_category(compliance_category_details, compliance_agreement):
+    '''method used for checking project against Compliance Sub Category'''
+    categories = json.loads(compliance_category_details)
+    for category in categories:
+        if frappe.db.exists('Project',{'compliance_agreement':compliance_agreement, 'compliance_sub_category':category.get('compliance_sub_category')}):
+            return True
