@@ -12,7 +12,7 @@
   "compliance_category",
   "department",
   "head_of_department",
-  "staff_assignment"
+  "compliance_executive"
  ],
  "fields": [
   {
@@ -37,15 +37,15 @@
    "options": "Employee"
   },
   {
-   "fieldname": "staff_assignment",
+   "fieldname": "compliance_executive",
    "fieldtype": "Table",
-   "label": "Staff Assignment",
-   "options": "Staff Assignment"
+   "label": "Compliance Executive",
+   "options": "Compliance Executive"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-03 11:43:06.424653",
+ "modified": "2023-04-06 12:52:57.235636",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Category",

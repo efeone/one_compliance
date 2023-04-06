@@ -3,6 +3,15 @@
 
 frappe.ui.form.on('Compliance Sub Category', {
 	refresh: function(frm) {
+		// Applied filter in child table for active employee
+		frm.set_query('employee','compliance_executive', (frm, cdt, cdn) => {
+			let child = locals[cdt][cdn]
+				return {
+					filters: {
+						status: 'Active'
+					}
+			}
+		})
 		if(!frm.is_new() && !frm.doc.project_template){
 			//custom button to create project template and route to  project template doctype
 			frm.add_custom_button('Create Project Template', () =>{
@@ -15,7 +24,14 @@ frappe.ui.form.on('Compliance Sub Category', {
 		if(frm.is_new()){
 			set_notification_templates(frm);
 		}
+	},
+	validate: function(frm) {
+		set_validation_for_day(frm)
+	},
+	day: function(frm){
+		set_validation_for_day(frm)
 	}
+
 });
 
 let set_notification_templates = function(frm){
@@ -45,4 +61,12 @@ let set_notification_templates = function(frm){
 			}
 		}
 	})
+}
+
+let set_validation_for_day = function(frm) {
+	//Method to set an error message to enter value day between 1 and 31
+	if (frm.doc.day < 1 || frm.doc.day > 31) {
+		frappe.throw('The number of days should be between 1 and 31.')
+		frm.set_value('day', '');
+	}
 }
