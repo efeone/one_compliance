@@ -28,3 +28,8 @@ class DigitalSignature(Document):
 							count = count + 1
 					if count > 1:
 						frappe.throw("Register Type :{0} is already linked with this Digital Signature".format(reference_id))
+
+@frappe.whitelist()
+def get_notification_details():
+	doc = frappe.get_doc('Compliance Settings')
+	return doc

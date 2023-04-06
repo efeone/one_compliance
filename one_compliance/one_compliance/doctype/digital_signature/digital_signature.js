@@ -15,5 +15,23 @@ frappe.ui.form.on('Digital Signature', {
                 frm.set_value('customer', r.message.customer);
             });
         }
+    },
+    refresh: function (frm) {
+      if(frm.is_new()){
+  			set_notification_templates(frm);
+  		}
     }
 });
+
+let set_notification_templates = function(frm){
+	frappe.call({
+		method:'one_compliance.one_compliance.doctype.digital_signature.digital_signature.get_notification_details',
+		callback: (r) => {
+			if(r.message){
+				if(!frm.doc.digital_signature_expiry_notification){
+					frm.set_value('digital_signature_expiry_notification', r.message.digital_signature_expiry_notification)
+				}
+			}
+		}
+	})
+}
