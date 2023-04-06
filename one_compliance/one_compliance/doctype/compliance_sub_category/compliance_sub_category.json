@@ -12,15 +12,18 @@
   "compliance_category",
   "sub_category",
   "project_template",
+  "allow_repeat",
+  "repeat_on",
+  "month",
+  "day",
   "column_break_06mwn",
   "maximum_duration",
   "rate",
-  "allow_repeat",
-  "repeat_on",
+  "enabled",
   "department_details_section",
   "department",
   "head_of_department",
-  "staff_assignment",
+  "compliance_executive",
   "notification_templates_section",
   "task_before_due_date_notification",
   "task_complete_notification_for_director",
@@ -87,7 +90,7 @@
   },
   {
    "fieldname": "notification_templates_section",
-   "fieldtype": "Section Break",
+   "fieldtype": "Tab Break",
    "label": "Notification Templates"
   },
   {
@@ -98,41 +101,47 @@
    "fieldname": "task_complete_notification_for_director",
    "fieldtype": "Link",
    "label": "Task Complete Notification for Director",
-   "options": "Notification Template"
+   "options": "Notification Template",
+   "reqd": 1
   },
   {
    "fieldname": "task_overdue_notification_for_employee",
    "fieldtype": "Link",
    "label": "Task Overdue Notification for Employee",
-   "options": "Notification Template"
+   "options": "Notification Template",
+   "reqd": 1
   },
   {
    "fieldname": "no_action_taken_notification_for_director",
    "fieldtype": "Link",
    "label": "No Action Taken Notification for Director",
-   "options": "Notification Template"
+   "options": "Notification Template",
+   "reqd": 1
   },
   {
    "fieldname": "task_overdue_notification_for_director",
    "fieldtype": "Link",
    "label": "Task Overdue Notification for Director",
-   "options": "Notification Template"
+   "options": "Notification Template",
+   "reqd": 1
   },
   {
    "fieldname": "project_complete_notification_for_customer",
    "fieldtype": "Link",
    "label": "Project Complete Notification For Customer",
-   "options": "Notification Template"
+   "options": "Notification Template",
+   "reqd": 1
   },
   {
    "fieldname": "task_before_due_date_notification",
    "fieldtype": "Link",
    "label": "Task Before Due Date  Notification ",
-   "options": "Notification Template"
+   "options": "Notification Template",
+   "reqd": 1
   },
   {
    "fieldname": "department_details_section",
-   "fieldtype": "Section Break",
+   "fieldtype": "Tab Break",
    "label": "Department Details"
   },
   {
@@ -143,22 +152,43 @@
    "options": "Department"
   },
   {
-   "fetch_from": "compliance_category.head_of_department",
+   "fetch_if_empty": 1,
    "fieldname": "head_of_department",
    "fieldtype": "Link",
    "label": "Head Of Department",
    "options": "Employee"
   },
   {
-   "fieldname": "staff_assignment",
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "compliance_executive",
    "fieldtype": "Table",
-   "label": "Staff Assignment",
-   "options": "Staff Assignment"
+   "label": "Compliance Executive",
+   "options": "Compliance Executive"
+  },
+  {
+   "depends_on": "eval:doc.allow_repeat == 1 && doc.repeat_on != 'Monthly' && doc.repeat_on != ''",
+   "fieldname": "month",
+   "fieldtype": "Select",
+   "label": "Month",
+   "mandatory_depends_on": "eval:doc.allow_repeat == 1 && doc.repeat_on != 'Monthly'",
+   "options": "\nJanuary\nFebruary\nMarch\nApril\nMay\nJune\nJuly\nAugust\nSeptember\nOctober\nNovember\nDecember"
+  },
+  {
+   "depends_on": "eval:doc.allow_repeat == 1 && doc.repeat_on != ''",
+   "fieldname": "day",
+   "fieldtype": "Int",
+   "label": "Day",
+   "mandatory_depends_on": "eval:doc.allow_repeat == 1"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-03 11:46:20.316121",
+ "modified": "2023-04-06 15:10:18.435151",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",

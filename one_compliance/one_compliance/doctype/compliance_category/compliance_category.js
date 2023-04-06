@@ -7,16 +7,16 @@ frappe.ui.form.on('Compliance Category', {
     frm.set_query('head_of_department', function() {
       return{
         filters:{
-          'department':frm.doc.department,
+          'department': frm.doc.department,
           'designation': 'Head Of Department'
         }
       }
     });
     // applied filter for designation in child table
-    frm.set_query('employee','staff_assignment', () => {
+    frm.set_query('employee','compliance_executive', () => {
       return {
         filters:{
-        'designation':['in', ["Business Executive","Business Executive Trainee"]]
+          status: 'Active'
         }
     }
   })
