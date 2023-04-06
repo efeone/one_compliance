@@ -75,6 +75,7 @@ class ComplianceAgreement(Document):
 						title = _('ALERT !!'),
 						msg = _('Project Template does not exist')
 						)
+			return 1
 
 @frappe.whitelist()
 def assign_tasks(source_name, target_doc = None):

@@ -29,8 +29,7 @@ frappe.ui.form.on('Compliance Agreement',{
         }
       })
     }
-   disable_assign_task_button(frm)
-
+   disable_assign_task_button(frm);
   },
   compliance_category:function(frm){
     set_sub_category_list(frm);
@@ -136,7 +135,8 @@ let view_custom_button_project = function(frm){
           frappe.model.open_mapped_doc({
             method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.assign_tasks',
             frm: cur_frm
-          })
+          });
+          frm.reload_doc();
         })
       }
       else{
@@ -144,7 +144,7 @@ let view_custom_button_project = function(frm){
           // custom button to create projects from Compliance Agreement
           frm.call('create_project_from_agreement').then(r => {
             if (r.message) {
-              frm.reload_doc()
+              frm.reload_doc();
             }
           })
         })
@@ -162,7 +162,7 @@ let disable_assign_task_button = function(frm) {
     },
     callback: (r) => {
       if(r.message) {
-        frm.remove_custom_button('Assign Task')
+        frm.remove_custom_button('Assign Task');
       }
     }
   })

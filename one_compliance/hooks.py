@@ -33,7 +33,8 @@ doctype_js = {
         "Project Template" : "public/js/project_template.js",
         "Customer" : "public/js/customer.js",
         "Project": "public/js/project.js",
-        "Task": "public/js/task.js"
+        "Task": "public/js/task.js",
+        "Department": "public/js/department.js"
         }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
