@@ -53,6 +53,24 @@ frappe.ui.form.on('Customer',{
     }
     view_compliance_agreemet(frm)
     }
+    // Create sales invoice against compliance_agreement
+    
+    frappe.call({
+      method: 'one_compliance.one_compliance.doc_events.customer.check_invoice_based_on_and_project_status',
+      args:{
+        'customer':frm.doc.name
+      },
+      callback: (r) =>{
+        if (r.message){
+          frm.add_custom_button('Create Sales Invoice', () => {
+            frappe.model.open_mapped_doc({
+              method: "one_compliance.one_compliance.doc_events.customer.make_sales_invoice",
+              frm: cur_frm
+          })
+          })
+        }
+      }
+    })
   }
 });
 /* applied dialog instance to add or view customer Credential */

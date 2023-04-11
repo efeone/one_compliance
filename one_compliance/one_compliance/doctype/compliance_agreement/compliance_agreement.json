@@ -56,6 +56,7 @@
    "label": "Credit Limit and Payment Terms"
   },
   {
+   "fetch_from": "customer.payment_terms",
    "fieldname": "default_payment_terms_template",
    "fieldtype": "Link",
    "label": "Default Payment Terms Template",
@@ -241,7 +242,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-02 20:49:53.990620",
+ "modified": "2023-04-10 12:14:56.404781",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",

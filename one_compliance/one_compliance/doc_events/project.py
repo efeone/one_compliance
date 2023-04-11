@@ -3,39 +3,32 @@ from frappe.model.mapper import get_mapped_doc
 from one_compliance.one_compliance.utils import send_notification
 from frappe.email.doctype.notification.notification import get_context
 
-
 @frappe.whitelist()
-def make_sales_invoice(source_name, target_doc=None):
-	# Create sales invoice against project doctype
-	def set_missing_values(source, target):
-		income_account = frappe.db.get_value('Company',source.company, 'default_income_account')
-		if frappe.db.exists('Compliance Agreement', source.compliance_agreement):
-			compliance_agreement = frappe.get_doc ('Compliance Agreement', source.compliance_agreement)
+def make_sales_invoice(doc, method):
+	# *The sales invoice will be automatic on the on update of the project*
+	if doc.status == 'Completed':
+		sales_invoice = frappe.new_doc('Sales Invoice')
+		sales_invoice.customer = doc.customer
+		sales_invoice.posting_date = frappe.utils.today()
+		income_account = frappe.db.get_value('Company',doc.company, 'default_income_account')
+		payment_terms = frappe.db.get_value('Compliance Agreement', doc.compliance_agreement,'default_payment_terms_template')
+		if payment_terms:
+			sales_invoice.default_payment_terms_template = payment_terms
+		if frappe.db.exists('Compliance Agreement', doc.compliance_agreement):
+			compliance_agreement = frappe.get_doc ('Compliance Agreement', doc.compliance_agreement)
 			if compliance_agreement.compliance_category_details:
 				for sub_category in compliance_agreement.compliance_category_details:
 					if frappe.db.exists('Compliance Sub Category', sub_category.compliance_sub_category):
 						sub_category_doc = frappe.get_doc('Compliance Sub Category', sub_category.compliance_sub_category)
-						target.append('items', {
-						'item_name' : sub_category.compliance_sub_category,
-						'rate' : sub_category_doc.rate,
-						'qty' : 1,
-						'income_account' : income_account,
-						'description' : sub_category_doc.name,
-						})
-	doclist = get_mapped_doc(
-		'Project',
-		source_name,
-		{
-			'Project':{
-                'doctype':'Sales Invoice'
-
-				},
-			},
-		target_doc,
-		set_missing_values
-	)
-	doclist.save()
-	return doclist
+						if doc.compliance_sub_category == sub_category.compliance_sub_category:
+							sales_invoice.append('items', {
+							'item_name' : sub_category.compliance_sub_category,
+							'rate' : sub_category_doc.rate,
+							'qty' : 1,
+							'income_account' : income_account,
+							'description' : sub_category_doc.name
+							})
+		sales_invoice.save()
 
 @frappe.whitelist()
 def project_on_update(doc, method):
