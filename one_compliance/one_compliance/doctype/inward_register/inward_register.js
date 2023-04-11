@@ -24,12 +24,16 @@ frappe.ui.form.on('Inward Register', {
 		else{
 			frm.set_df_property('edit_posting_date_and_time','hidden',1);
 		}
-		if(frm.doc.digital_signature == 1 && frm.doc.customer){
+		if(frm.doc.register_type == 'Digital Signature' && frm.doc.customer){
 			frm.add_custom_button('Add/View Digital Signature', () =>{
 				digital_signature_dialog(frm)
 			})
 			disable_add_or_view_digital_signature_button(frm)
 		}
+	},
+
+	document_register_type: function(frm) {
+		update_document_register_type(frm);
 	}
 });
 /* applied dialog instance to add or view digital signature */
@@ -93,4 +97,50 @@ let disable_add_or_view_digital_signature_button = function(frm) {
 			}
 		}
 	})
+}
+
+let update_document_register_type = function(frm) {
+	// Add or Remove data from  register type table based on multi-select
+	let document_register_type = frm.doc.document_register_type;
+	let document_register_type_length = frm.doc.document_register_type.length;
+	let document_register_type_detail_length = 0
+	if (frm.doc.register_type_detail) {
+		document_register_type_detail_length = frm.doc.register_type_detail.length
+	}
+	if (document_register_type_length > document_register_type_detail_length) {
+		frm.clear_table('register_type_detail')
+		frm.doc.document_register_type.forEach(document_register_type => {
+				let document_register_type_table = frm.add_child('register_type_detail');
+				document_register_type_table.document_register_type = document_register_type.document_register_type
+				frm.refresh_field('register_type_detail')
+		})
+	}
+  else if (document_register_type_length < document_register_type_detail_length) {
+		if (document_register_type_length) {
+			document_register_type_length = frm.doc.document_register_type.length
+			let document_register_types = []
+			frm.doc.document_register_type.forEach(document_register_type => {
+				document_register_types.push(document_register_type.document_register_type)
+			});
+			delete_row_from_document_register_type_table(document_register_types)
+			document_register_type = frm.doc.document_register_type
+			document_register_type_length = frm.doc.document_register_type.length
+		}
+		else {
+			frm.clear_table('register_type_detail')
+			frm.refresh_field('register_type_detail')
+		}
+	}
+}
+
+
+let delete_row_from_document_register_type_table = function (document_register_types) {
+		let table = cur_frm.doc.register_type_detail || [];
+		let i = table.length;
+		while (i--) {
+			if(!document_register_types.includes(table[i].document_register_type)) {
+				cur_frm.get_field('register_type_detail').grid.grid_rows[i].remove();
+			}
+		}
+		cur_frm.refresh_field('register_type_detail')
 }

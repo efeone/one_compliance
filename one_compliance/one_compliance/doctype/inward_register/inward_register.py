@@ -7,7 +7,28 @@ from frappe.model.mapper import *
 
 
 class InwardRegister(Document):
-	pass
+	def validate(self):
+		self.change_inward_status()
+
+	def change_inward_status(self):
+		''' Method to change the status of Inward Doctype based on status of child table '''
+		is_returned = True
+		is_issued = True
+		for register_types in self.register_type_detail:
+			if register_types.status != 'Issued':
+				is_issued = False
+			if register_types.status != 'Returned':
+				is_returned = False
+		if is_issued == True:
+			self.status = 'Open'
+		else:
+			if is_returned == True:
+				self.status = 'Returned'
+			else:
+				self.status = 'Partially Returned'
+
+
+
 
 @frappe.whitelist()
 def create_outward_register(source_name, target_doc = None):
