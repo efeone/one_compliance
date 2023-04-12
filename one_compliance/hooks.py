@@ -116,7 +116,8 @@ doc_events = {
         'on_update':'one_compliance.one_compliance.doc_events.task.task_on_update'
     },
     'Project':{
-        'on_update':'one_compliance.one_compliance.doc_events.project.project_on_update'
+        'on_update':['one_compliance.one_compliance.doc_events.project.project_on_update',
+                    'one_compliance.one_compliance.doc_events.project.make_sales_invoice']
     },
     'Customer':{
         'on_update':'one_compliance.one_compliance.doc_events.customer.customer_on_update'

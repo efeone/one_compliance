@@ -110,3 +110,81 @@ def send_clarification_message(customer,message):
     frappe.msgprint(
 		msg = 'Mail Send', alert =1
 	 )
+
+
+@frappe.whitelist()
+def check_invoice_based_on_and_project_status(customer):
+    if frappe.db.exists('Compliance Agreement',{'customer':customer,'status':'Active'}):
+        invoice_based_on, compliance_agreement = frappe.db.get_value('Compliance Agreement',{'customer':customer,'status':'Active'}, ['invoice_based_on','name'])
+        print(invoice_based_on)
+        print(compliance_agreement)
+        if invoice_based_on and invoice_based_on == 'Consolidated':
+            if frappe.db.exists('Project',{'customer':customer,'compliance_agreement':compliance_agreement,'status':'Completed'}):
+                return True
+
+@frappe.whitelist()
+def make_sales_invoice(source_name, target_doc=None):
+    # *Method to create sales_invoice when invoice_based_on is Consolidated*
+    def set_missing_values(source, target):
+        compliance_agreement = frappe.get_doc('Compliance Agreement',{'customer':source_name, 'status':'Active'})
+        company = frappe.db.get_value('Project',{'customer':source_name,'compliance_agreement':compliance_agreement.name},'company')
+        if company:
+            income_account = frappe.db.get_value('Company',company, 'default_income_account')
+        if compliance_agreement.compliance_category_details:
+            for sub_category in compliance_agreement.compliance_category_details:
+                rate = calculate_rate(compliance_agreement.compliance_category_details, sub_category.compliance_category)
+                if compliance_agreement.invoice_based_on == 'Consolidated':
+                    if not check_exist(target, sub_category.compliance_category):
+                        if source.payment_terms: 
+                            target.append('items', {
+                                'item_name' : sub_category.compliance_category,
+                                'rate' : rate,
+                                'qty' : 1,
+                                'income_account' : income_account,
+                                'description' : sub_category.name,
+                                'default_payment_terms_template' : source.payment_terms,
+                            })
+                        else:
+                            target.append('items', {
+                                'item_name' : sub_category.compliance_category,
+                                'rate' : rate,
+                                'qty' : 1,
+                                'income_account' : income_account,
+                                'description' : sub_category.name,
+                            })
+
+
+    doclist = get_mapped_doc(
+    'Customer',
+    source_name,
+        {
+        'Customer':{
+            'doctype':'Sales Invoice'
+
+            },
+        },
+    target_doc,
+    set_missing_values
+    )
+    doclist.save()
+    return doclist
+
+def check_exist(target, compliance_category):
+    ''' checking if item allready exist in child table '''
+    exist = False
+    try:
+        if target.items:
+            for item in target.items:
+                if compliance_category:
+                    if item.item_name == compliance_category:
+                        exist = True
+    except:
+        exist = False
+    return exist
+
+def calculate_rate(compliance_category_details, compliance_category):
+	rate = 0
+	for category in compliance_category_details:
+		if category.compliance_category == compliance_category:
+			rate += category.rate
+	return rate
