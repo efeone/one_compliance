@@ -17,6 +17,8 @@
   "column_break_tcpzq",
   "customer_name",
   "expiry_date",
+  "pan_number",
+  "din_number",
   "notify_on_expiration",
   "notify_before",
   "notify_before_unit",
@@ -139,11 +141,24 @@
   {
    "fieldname": "section_break_yhybq",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "pan_number",
+   "fieldtype": "Data",
+   "label": "PAN Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "din_number",
+   "fieldtype": "Data",
+   "label": "DIN Number",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-01 16:41:44.754175",
+ "modified": "2023-04-12 15:23:03.968761",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Digital Signature",
