@@ -33,3 +33,9 @@ class DigitalSignature(Document):
 def get_notification_details():
 	doc = frappe.get_doc('Compliance Settings')
 	return doc
+
+@frappe.whitelist()
+def validation_on_company_name(customer):
+	compliance_customer_type = frappe.db.get_value('Customer',customer,'compliance_customer_type')
+	if not compliance_customer_type == 'Individual':
+		return True

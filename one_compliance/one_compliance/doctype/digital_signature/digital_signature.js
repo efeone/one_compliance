@@ -14,13 +14,40 @@ frappe.ui.form.on('Digital Signature', {
             frappe.db.get_value('Outward Register', prev_route[2], 'customer').then(r => {
                 frm.set_value('customer', r.message.customer);
             });
+    
         }
     },
     refresh: function (frm) {
-      if(frm.is_new()){
+        if(frm.is_new()){
   			set_notification_templates(frm);
   		}
+    },
+    customer: function (frm) {
+        if(frm.doc.customer){
+            frappe.call({
+                method: 'one_compliance.one_compliance.doctype.digital_signature.digital_signature.validation_on_company_name',
+                    args:{
+                        'customer':frm.doc.customer
+                          },
+                          callback: (r) =>{
+                            if (r.message){
+                             frm.set_value('company_name',frm.doc.customer)
+                            }
+                            else{
+                                frm.set_value('company_name','')
+                            }
+                          }
+                    })
+  		}
+       
+    },
+
+    notify_on_expiration: function (frm) {
+        if (frm.doc.notify_on_expiration == 1 ) {
+            frappe.msgprint('Make sure the Director Email is provided.')   
+        }
     }
+
 });
 
 let set_notification_templates = function(frm){
