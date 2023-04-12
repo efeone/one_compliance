@@ -7,9 +7,7 @@ frappe.ui.form.on('Compliance Agreement',{
               filters: {'compliance_category': child.compliance_category}
           };
       });
-    if(!frm.is_new() && frm.doc.workflow_state == 'Customer Approved'){
-       view_custom_button_project(frm)
-    }
+
     // Create sales invoice against project and compliance_agreement
     if(frm.doc.invoice_based_on){
       frappe.call({
@@ -119,51 +117,4 @@ let set_sub_category_list = function(frm){
         frm.refresh_field('compliance_category_details');
       }
     })
-}
-
-let view_custom_button_project = function(frm){
-  frappe.call({
-    method : 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.check_project_against_compliance_sub_category',
-    args :{
-      'compliance_category_details' : frm.doc.compliance_category_details,
-      'compliance_agreement' : frm.doc.name
-    },
-    callback : (r) => {
-      if(r.message){
-        frm.add_custom_button('Assign Task', () =>{
-          // Custom button to assign tasks from Compliance Agreement
-          frappe.model.open_mapped_doc({
-            method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.assign_tasks',
-            frm: cur_frm
-          });
-          frm.reload_doc();
-        })
-      }
-      else{
-        frm.add_custom_button('Create Projects', () =>{
-          // custom button to create projects from Compliance Agreement
-          frm.call('create_project_from_agreement').then(r => {
-            if (r.message) {
-              frm.reload_doc();
-            }
-          })
-        })
-      }
-    }
-  })
-}
-
-let disable_assign_task_button = function(frm) {
-  //Function to disable the Assign Task button once the tasks assigned
-  frappe.call({
-    method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.disable_assign_task_button',
-    args: {
-      'name' : frm.doc.name
-    },
-    callback: (r) => {
-      if(r.message) {
-        frm.remove_custom_button('Assign Task');
-      }
-    }
-  })
 }
