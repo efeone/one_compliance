@@ -11,6 +11,9 @@ class ComplianceAgreement(Document):
 	def on_update_after_submit(self):
 		self.sign_validation()
 
+	def before_insert(self):
+		self.status = "Open"
+
 	def sign_validation(self):
 		if self.workflow_state == 'Approved' and not self.authority_signature:
 			frappe.throw('Authority Signature is required for Approval')
@@ -41,7 +44,7 @@ class ComplianceAgreement(Document):
 							})
 			self.total = rate
 			return True
-			
+
 
 @frappe.whitelist()
 def check_project_status(compliance_agreement):
@@ -122,7 +125,7 @@ def set_value_in_status():
 				if today <= getdate(valid_upto) :
 					frappe.db.set_value('Compliance Agreement',  agreement.name, 'status', 'Active')
 				else:
-					frappe.db.set_value('Compliance Agreement',  agreement.name, 'status', 'In-Active')
+					frappe.db.set_value('Compliance Agreement',  agreement.name, 'status', 'Expired')
 
 def get_compliance_sub_category_list(compliance_category):
 	'''method used for list sub category'''
@@ -141,3 +144,9 @@ def check_exist_list(self, compliance_sub_category):
 	except:
 		exist = False
 	return exist
+
+@frappe.whitelist()
+def set_agreement_status(agreement_id, status):
+    frappe.db.set_value('Compliance Agreement', agreement_id, 'status', status)
+    frappe.db.commit()
+    return True
