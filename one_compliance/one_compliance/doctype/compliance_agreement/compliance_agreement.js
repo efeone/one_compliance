@@ -27,7 +27,12 @@ frappe.ui.form.on('Compliance Agreement',{
         }
       })
     }
-   disable_assign_task_button(frm);
+
+   if(!frm.is_new()){
+     frm.add_custom_button('Set Agreement Status', () => {
+       set_agreement_status(frm)
+     })
+   }
   },
   compliance_category:function(frm){
     set_sub_category_list(frm);
@@ -42,6 +47,14 @@ frappe.ui.form.on('Compliance Agreement',{
         }
       }
     });
+    frm.set_query('customer', () => {
+      return {
+        filters: {
+          disabled: 0
+        }
+      }
+    });
+
   }
 });
 
@@ -117,4 +130,43 @@ let set_sub_category_list = function(frm){
         frm.refresh_field('compliance_category_details');
       }
     })
+}
+
+let set_agreement_status = function(frm){
+  //function to set the status of compliance agreement to open and hold
+  let d = new frappe.ui.Dialog({
+    title: 'Set Agreement Status',
+    fields: [
+        {
+            label: 'Status',
+            fieldname: 'status',
+            fieldtype: 'Select',
+            reqd: 1,
+            options: 'Open\nHold',
+        },
+    ],
+    primary_action_label: 'Set Agreement Status',
+    primary_action(values) {
+      if(values.status){
+        frappe.call({
+          method:'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.set_agreement_status',
+          args:{
+            'status': values.status,
+            'agreement_id': frm.doc.name
+          },
+          callback:function(r){
+            if (r.message) {
+              frm.reload_doc()
+              frappe.show_alert({
+                message:__('Status Has Been Updated'),
+                indicator:'green'
+              }, 5);
+            }
+          }
+        });
+      }
+        d.hide();
+    }
+  });
+  d.show();
 }

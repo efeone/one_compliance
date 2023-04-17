@@ -25,14 +25,6 @@
   "compliance_category_details",
   "total",
   "payments_details_tab",
-  "bank_details_section",
-  "bank_name",
-  "type_of_account",
-  "bank_ac_no",
-  "column_break_r1y1q",
-  "ifsc_code",
-  "micr_code",
-  "credit_limit_and_payment_terms_section",
   "default_payment_terms_template",
   "terms_and_condition_tab",
   "terms_and_condition",
@@ -51,51 +43,11 @@
    "label": "Customer Name"
   },
   {
-   "fieldname": "credit_limit_and_payment_terms_section",
-   "fieldtype": "Section Break",
-   "label": "Credit Limit and Payment Terms"
-  },
-  {
    "fetch_from": "customer.payment_terms",
    "fieldname": "default_payment_terms_template",
    "fieldtype": "Link",
    "label": "Default Payment Terms Template",
    "options": "Payment Terms Template"
-  },
-  {
-   "fieldname": "bank_details_section",
-   "fieldtype": "Section Break",
-   "label": "Bank details"
-  },
-  {
-   "fieldname": "bank_name",
-   "fieldtype": "Data",
-   "label": "Bank Name"
-  },
-  {
-   "fieldname": "type_of_account",
-   "fieldtype": "Select",
-   "label": "Type of Account",
-   "options": "Savings\nCurrent\nSalary\nNRI\nRD\nFD"
-  },
-  {
-   "fieldname": "bank_ac_no",
-   "fieldtype": "Data",
-   "label": "Bank A/c No"
-  },
-  {
-   "fieldname": "column_break_r1y1q",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "ifsc_code",
-   "fieldtype": "Int",
-   "label": "IFSC Code"
-  },
-  {
-   "fieldname": "micr_code",
-   "fieldtype": "Data",
-   "label": "MICR code"
   },
   {
    "fieldname": "terms_and_condition_tab",
@@ -217,7 +169,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Active\nIn-Active"
+   "options": "Open\nActive\nExpired\nHold\nCancelled"
   },
   {
    "depends_on": "eval:doc.has_long_term_validity == 0",
@@ -242,7 +194,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-10 12:14:56.404781",
+ "modified": "2023-04-17 11:29:44.054959",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
@@ -251,6 +203,8 @@
  "owner": "Administrator",
  "permissions": [
   {
+   "amend": 1,
+   "cancel": 1,
    "create": 1,
    "delete": 1,
    "email": 1,
@@ -260,6 +214,7 @@
    "report": 1,
    "role": "System Manager",
    "share": 1,
+   "submit": 1,
    "write": 1
   }
  ],
