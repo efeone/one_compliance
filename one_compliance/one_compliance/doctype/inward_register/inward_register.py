@@ -32,17 +32,25 @@ class InwardRegister(Document):
 
 @frappe.whitelist()
 def create_outward_register(source_name, target_doc = None):
-    def set_missing_values(source, target):
-        target.register_type = source.register_type
-    doc = get_mapped_doc(
-        'Inward Register',
-        source_name,
-        {
-        'Inward Register': {
-        'doctype': 'Outward Register',
-        },
-        },target_doc,set_missing_values)
-    return doc
+	''' Method to route to Outward Register from Inward Register '''
+	def set_missing_values(source, target):
+		target.register_type = source.register_type
+		target.customer = source.customer
+		target.document_register_type = []
+		for register_types in source.register_type_detail:
+			if register_types.status == 'Issued':
+				target.append('document_register_type', {
+				'document_register_type' : register_types.document_register_type
+				})
+	doc = get_mapped_doc(
+		'Inward Register',
+		source_name,
+		{
+		'Inward Register': {
+		'doctype': 'Outward Register',
+		},
+		},target_doc, set_missing_values)
+	return doc
 
 
 @frappe.whitelist()

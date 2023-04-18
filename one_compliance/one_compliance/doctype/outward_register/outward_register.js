@@ -16,7 +16,7 @@ frappe.ui.form.on('Outward Register', {
 		else {
 			frm.set_df_property('edit_return_date_and_time','hidden',1);
 		}
-		if(frm.doc.digital_signature == 1){
+		if(frm.doc.register_type == 'Digital Signature' && frm.doc.customer){
 			frm.add_custom_button('Add/View Digital Signature', () =>{
 				digital_signature_dialog(frm)
 			})

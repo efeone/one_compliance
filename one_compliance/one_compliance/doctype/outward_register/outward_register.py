@@ -5,7 +5,21 @@ import frappe
 from frappe.model.document import Document
 
 class OutwardRegister(Document):
-	pass
+
+	def on_submit(self):
+		self.update_inward_child_table()
+
+	def update_inward_child_table(self):
+		''' Method to update status of Inward child table based on Outward child table '''
+		inward_doc = frappe.get_doc('Inward Register', self.inward_register)
+		for document_types in self.document_register_type:
+			document_doc = document_types.document_register_type
+			for register_types in inward_doc.register_type_detail:
+				if register_types.document_register_type == document_doc:
+					register_types.status = 'Returned'
+					register_types.outward_register = self.name
+		inward_doc.save()
+
 
 @frappe.whitelist()
 def disable_add_or_view_digital_signature_button(customer):
