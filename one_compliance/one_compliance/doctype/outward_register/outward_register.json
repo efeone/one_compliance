@@ -9,7 +9,6 @@
  "engine": "InnoDB",
  "field_order": [
   "if_outward_only",
-  "digital_signature",
   "inward_register",
   "register_type",
   "general_register_type",
@@ -22,7 +21,6 @@
   "returned_date",
   "returned_time",
   "edit_return_date_and_time",
-  "status",
   "customer",
   "returned_through",
   "specify_others",
@@ -43,7 +41,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Register Type",
-   "options": "\nGeneral\nDocument",
+   "options": "\nGeneral\nDocument\nDigital Signature",
    "reqd": 1
   },
   {
@@ -126,23 +124,6 @@
    "options": "General Register Type List"
   },
   {
-   "depends_on": "eval:doc.register_type == 'Document'",
-   "fetch_from": "inward_register.document_register_type",
-   "fieldname": "document_register_type",
-   "fieldtype": "Table MultiSelect",
-   "label": "Document Register Type",
-   "mandatory_depends_on": "eval:doc.register_type == 'Document'",
-   "options": "Document Register Type List"
-  },
-  {
-   "fieldname": "status",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Status",
-   "options": "open\nPartially Returned\nReturned\nPending"
-  },
-  {
    "fieldname": "signature_tab",
    "fieldtype": "Tab Break",
    "label": "Signature"
@@ -173,6 +154,7 @@
   },
   {
    "default": "0",
+   "depends_on": "eval:!(doc.inward_register)",
    "fieldname": "if_outward_only",
    "fieldtype": "Check",
    "label": "If Outward Only"
@@ -206,17 +188,18 @@
    "label": "Edit Return Date and Time"
   },
   {
-   "default": "0",
-   "depends_on": "eval:doc.if_outward_only == 0",
-   "fieldname": "digital_signature",
-   "fieldtype": "Check",
-   "label": "Digital Signature"
+   "depends_on": "eval:doc.register_type == 'Document'",
+   "fieldname": "document_register_type",
+   "fieldtype": "Table MultiSelect",
+   "label": "Document Register Type",
+   "mandatory_depends_on": "eval:doc.register_type == 'Document'",
+   "options": "Document Register Type List"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-05 12:29:38.933271",
+ "modified": "2023-04-13 15:38:47.531299",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Outward Register",
