@@ -3,6 +3,27 @@
 
 frappe.ui.form.on('Outward Register', {
 	refresh: function(frm) {
+
+		//set filter for inward register field 
+		frm.set_query('inward_register', function() {
+			return {
+				filters: {
+					status: ['not in', ['Closed']]
+				}
+			}
+		});
+
+		frm.set_query('document_register_type', function(doc, cdt, cdn) {
+			// To set filter for document register type field
+            var d = locals[cdt][cdn];
+							return {
+								query: 'one_compliance.one_compliance.doctype.outward_register.outward_register.set_filter_for_document_register_type',
+								filters: {
+									'inward_register': frm.doc.inward_register
+								}
+							};
+        });
+
     if(frm.is_new()) {
 			//Set the return_by default as session user
       frm.set_value("returned_by",frappe.session.user)

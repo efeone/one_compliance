@@ -91,7 +91,7 @@
   },
   {
    "fieldname": "person_contact_number",
-   "fieldtype": "Data",
+   "fieldtype": "Phone",
    "label": "Person Contact Number",
    "reqd": 1
   },
@@ -165,12 +165,14 @@
    "label": "Remarks"
   },
   {
+   "allow_on_submit": 1,
    "depends_on": "eval:doc.register_type == 'Document'",
    "fieldname": "status",
    "fieldtype": "Select",
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Open\nReturned\nPartially Returned"
+   "options": "Open\nClosed\nPartially Returned",
+   "read_only": 1
   },
   {
    "fieldname": "authority_signature",
@@ -193,13 +195,14 @@
    "fieldname": "register_type_detail",
    "fieldtype": "Table",
    "label": "Register Type Detail",
-   "options": "Register Type Detail"
+   "options": "Register Type Detail",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-18 09:43:01.713455",
+ "modified": "2023-04-20 14:48:19.655762",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Inward Register",

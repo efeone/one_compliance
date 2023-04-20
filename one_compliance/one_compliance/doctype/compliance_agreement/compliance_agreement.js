@@ -4,7 +4,10 @@ frappe.ui.form.on('Compliance Agreement',{
       // setting filer for sub category //
       let child = locals[cdt][cdn];
           return {
-              filters: {'compliance_category': child.compliance_category}
+              filters: {
+                'compliance_category': child.compliance_category,
+                enabled: 1
+              }
           };
       });
 

@@ -29,3 +29,23 @@ def disable_add_or_view_digital_signature_button(customer):
 		for digital_signature in digital_signature_doc.digital_signature_details:
 			if digital_signature.register_type == 'Outward Register':
 				return 1
+
+@frappe.whitelist()
+def set_filter_for_document_register_type(doctype, txt, searchfield, start, page_len, filters):
+	''' Method to set filter on document register type field to get Issued document registers '''
+	query = '''
+		SELECT
+			rtd.document_register_type
+		FROM
+			`tabRegister Type Detail` as rtd ,
+			`tabInward Register` as ir
+		WHERE
+			ir.name = rtd.parent AND
+			rtd.status = 'Issued' AND
+			ir.name = %(inward_register)s
+		'''
+	values = frappe.db.sql(query.format(**{
+		}), {
+		'inward_register': filters['inward_register'],
+	})
+	return values
