@@ -67,6 +67,7 @@
    "reqd": 1
   },
   {
+   "default": "+91-",
    "fieldname": "receiver_contact_number",
    "fieldtype": "Phone",
    "label": "Receiver Contact Number",
@@ -199,7 +200,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-20 14:49:15.114756",
+ "modified": "2023-04-21 09:51:34.907443",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Outward Register",

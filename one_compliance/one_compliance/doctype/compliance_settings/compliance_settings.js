@@ -52,7 +52,7 @@ frappe.ui.form.on('Compliance Settings', {
     frm.set_query('project_complete_notification_for_customer', function(){
       return {
         filters: {
-          doctype_name : 'Task'
+          doctype_name : 'Project'
         }
       }
     })
