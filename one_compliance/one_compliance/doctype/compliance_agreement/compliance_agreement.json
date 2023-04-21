@@ -121,7 +121,6 @@
    "options": "Opportunity"
   },
   {
-   "default": "Today",
    "fieldname": "valid_from",
    "fieldtype": "Date",
    "label": "Valid From",
@@ -182,7 +181,8 @@
    "fieldname": "invoice_based_on",
    "fieldtype": "Select",
    "label": "Invoice Based On",
-   "options": "\nConsolidated\nProject"
+   "options": "\nConsolidated\nProject",
+   "reqd": 1
   },
   {
    "default": "0",
@@ -194,7 +194,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-17 11:29:44.054959",
+ "modified": "2023-04-20 11:40:23.165744",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",

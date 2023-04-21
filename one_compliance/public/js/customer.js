@@ -54,7 +54,7 @@ frappe.ui.form.on('Customer',{
     view_compliance_agreemet(frm)
     }
     // Create sales invoice against compliance_agreement
-    
+
     frappe.call({
       method: 'one_compliance.one_compliance.doc_events.customer.check_invoice_based_on_and_project_status',
       args:{
