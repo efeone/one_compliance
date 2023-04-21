@@ -86,6 +86,8 @@ def view_credential_details(customer,purpose):
             return [username, password, url]
         else:
             frappe.throw(_('Credential not configured for this Purpose'))
+    else:
+        frappe.throw(title = _('ALERT !!'),msg = _('Credential not configured for this Purpose'))
 
 @frappe.whitelist()
 def view_customer_documents(customer,compliance_sub_category):
@@ -97,6 +99,9 @@ def view_customer_documents(customer,compliance_sub_category):
             return [document_attachment]
         else:
             frappe.throw(_('Document not attached for this sub category'))
+    else:
+        frappe.throw(title = _('ALERT !!'),msg = _('Document not attached for this sub category'))
+
 
 
 

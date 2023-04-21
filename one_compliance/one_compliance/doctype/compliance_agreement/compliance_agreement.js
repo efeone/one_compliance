@@ -1,5 +1,6 @@
 frappe.ui.form.on('Compliance Agreement',{
   refresh :function(frm){
+    frm.set_df_property('compliance_category', 'reqd', 1)
     frm.set_query('compliance_sub_category','compliance_category_details',(frm,cdt,cdn) => {
       // setting filer for sub category //
       let child = locals[cdt][cdn];
