@@ -11,7 +11,10 @@
  "field_order": [
   "compliance_category",
   "department",
+  "column_break_yfl4n",
   "head_of_department",
+  "hod_name",
+  "section_break_hborw",
   "compliance_executive"
  ],
  "fields": [
@@ -31,6 +34,7 @@
    "options": "Department"
   },
   {
+   "fetch_from": "department.head_of_department",
    "fieldname": "head_of_department",
    "fieldtype": "Link",
    "label": "Head Of Department",
@@ -41,11 +45,27 @@
    "fieldtype": "Table",
    "label": "Compliance Executive",
    "options": "Compliance Executive"
+  },
+  {
+   "fetch_from": "head_of_department.employee_name",
+   "fieldname": "hod_name",
+   "fieldtype": "Data",
+   "label": "HOD Name",
+   "options": "employee_name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_yfl4n",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_hborw",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-06 12:52:57.235636",
+ "modified": "2023-04-17 12:32:21.172355",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Category",

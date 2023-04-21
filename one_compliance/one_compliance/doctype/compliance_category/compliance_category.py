@@ -22,3 +22,9 @@ def custom_button_for_sub_category(source_name, target_doc = None):
 		},
 		},target_doc, set_missing_values)
 	return doc
+
+
+@frappe.whitelist()
+def fetch_employees(department):
+	employee_list = frappe.db.get_list('Employee', filters={'department':department}, fields=['name', 'employee_name', 'designation'])
+	return employee_list

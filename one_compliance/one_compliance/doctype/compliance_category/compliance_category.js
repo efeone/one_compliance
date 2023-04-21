@@ -39,4 +39,31 @@ frappe.ui.form.on('Compliance Category', {
       });
     }
  },
+ department: function(frm) {
+  if(frm.doc.department){
+    frappe.call({
+      method: 'one_compliance.one_compliance.doctype.compliance_category.compliance_category.fetch_employees',
+      args:{
+        'department':frm.doc.department
+      },
+      callback: (r) =>{
+        if (r.message){
+          let compliance_executives = r.message;
+          if(compliance_executives && compliance_executives.length){
+            frm.clear_table('compliance_executive');
+            compliance_executives.forEach((compliance_executive) => {
+              let row = frm.add_child('compliance_executive', {
+                employee: compliance_executive.name,
+                employee_name: compliance_executive.employee_name,
+                designation: compliance_executive.designation
+              });
+            });
+          }
+          frm.refresh_field('compliance_executive');
+        }
+      }
+    })
+  }
+},
 });
+

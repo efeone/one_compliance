@@ -35,3 +35,23 @@ def create_project_template_custom_button(source_name, target_doc = None):
 def get_notification_details():
 	doc = frappe.get_doc('Compliance Settings')
 	return doc
+
+@frappe.whitelist()
+def set_filter_for_employee(doctype, txt, searchfield, start, page_len, filters):
+	# *Applied filter for employee in compliance_executive child table*
+	if filters:
+		query = '''
+			SELECT
+				ce.employee,ce.employee_name
+			FROM
+				`tabCompliance Executive` as ce,
+				`tabCompliance Category` as cc
+			WHERE
+				cc.name = ce.parent AND
+				cc.name = %(compliance_category)s
+			'''
+		values = frappe.db.sql(query.format(**{
+			}), {
+			'compliance_category': filters['compliance_category'],
+		})
+		return values

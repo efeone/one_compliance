@@ -23,6 +23,9 @@
   "department_details_section",
   "department",
   "head_of_department",
+  "column_break_bfbe1",
+  "hod_name",
+  "section_break_equxh",
   "compliance_executive",
   "notification_templates_section",
   "task_before_due_date_notification",
@@ -145,13 +148,13 @@
    "label": "Department Details"
   },
   {
-   "fetch_from": "compliance_category.department",
    "fieldname": "department",
    "fieldtype": "Link",
    "label": "Department",
    "options": "Department"
   },
   {
+   "fetch_from": "department.head_of_department",
    "fetch_if_empty": 1,
    "fieldname": "head_of_department",
    "fieldtype": "Link",
@@ -159,7 +162,7 @@
    "options": "Employee"
   },
   {
-   "default": "0",
+   "default": "1",
    "fieldname": "enabled",
    "fieldtype": "Check",
    "label": "Enabled"
@@ -184,11 +187,26 @@
    "fieldtype": "Int",
    "label": "Day",
    "mandatory_depends_on": "eval:doc.allow_repeat == 1"
+  },
+  {
+   "fetch_from": "head_of_department.employee_name",
+   "fieldname": "hod_name",
+   "fieldtype": "Data",
+   "label": "HOD Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_equxh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_bfbe1",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-06 15:10:18.435151",
+ "modified": "2023-04-21 12:09:40.150591",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
