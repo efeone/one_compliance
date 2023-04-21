@@ -153,14 +153,14 @@ def make_sales_invoice(source_name, target_doc=None):
 	return doclist
 
 def check_exist(target, compliance_category):
-    ''' checking if item allready exist in child table '''
-    exist = False
-    if target.items:
+	''' checking if item already exist in child table '''
+	exist = False
+	if target.items:
 		for item in target.items:
 			if compliance_category:
 				if item.item_name == compliance_category:
 					exist = True
-    return exist
+	return exist
 
 def calculate_rate(compliance_category_details, compliance_category):
 	rate = 0
