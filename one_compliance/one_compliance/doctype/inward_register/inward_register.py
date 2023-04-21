@@ -7,7 +7,7 @@ from frappe.model.mapper import *
 
 
 class InwardRegister(Document):
-	def validate(self):
+	def on_update_after_submit(self):
 		self.change_inward_status()
 
 	def change_inward_status(self):
@@ -20,14 +20,12 @@ class InwardRegister(Document):
 			if register_types.status != 'Returned':
 				is_returned = False
 		if is_issued == True:
-			self.status = 'Open'
+			frappe.db.set_value('Inward Register', self.name, 'status', 'Open')
 		else:
 			if is_returned == True:
-				self.status = 'Returned'
+				frappe.db.set_value('Inward Register', self.name, 'status', 'Closed')
 			else:
-				self.status = 'Partially Returned'
-
-
+				frappe.db.set_value('Inward Register', self.name, 'status', 'Partially Returned')
 
 
 @frappe.whitelist()

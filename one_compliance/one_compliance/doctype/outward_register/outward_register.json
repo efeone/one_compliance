@@ -68,7 +68,7 @@
   },
   {
    "fieldname": "receiver_contact_number",
-   "fieldtype": "Data",
+   "fieldtype": "Phone",
    "label": "Receiver Contact Number",
    "reqd": 1
   },
@@ -88,7 +88,7 @@
    "fieldname": "customer",
    "fieldtype": "Link",
    "label": "Customer",
-   "mandatory_depends_on": "eval:doc.digital_signature == 1",
+   "mandatory_depends_on": "eval:doc.register_type == 'Digital Signature'",
    "options": "Customer"
   },
   {
@@ -199,7 +199,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-13 15:38:47.531299",
+ "modified": "2023-04-20 14:49:15.114756",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Outward Register",
