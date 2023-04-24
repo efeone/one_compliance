@@ -30,7 +30,11 @@ def create_todo(doctype, name, assign_to, owner, description):
     todo.reference_name = name
     todo.description = description
     todo.allocated_to = assign_to
-    todo.date = frappe.utils.today()
+    due_date = frappe.utils.today()
+    if doctype =='Task':
+        if frappe.db.get_value(doctype, name, 'exp_end_date'):
+            due_date = frappe.db.get_value(doctype, name, 'exp_end_date')
+    todo.date = due_date
     todo.save(ignore_permissions = True)
 
 @frappe.whitelist()

@@ -69,6 +69,7 @@
   {
    "fieldname": "maximum_duration",
    "fieldtype": "Int",
+   "hidden": 1,
    "label": "Maximum Duration"
   },
   {
@@ -89,7 +90,7 @@
    "fieldtype": "Select",
    "label": "Repeat On",
    "mandatory_depends_on": "eval:doc.allow_repeat == 1",
-   "options": "\nMonthly\nQuarterly\nHalf yearly\nyearly"
+   "options": "\nMonthly\nQuarterly\nHalf Yearly\nYearly"
   },
   {
    "fieldname": "notification_templates_section",
@@ -206,7 +207,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-21 12:09:40.150591",
+ "modified": "2023-04-24 10:01:13.220437",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",

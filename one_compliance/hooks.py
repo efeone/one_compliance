@@ -134,6 +134,7 @@ scheduler_events = {
 	"daily": [
         'one_compliance.one_compliance.utils.task_daily_sheduler',
         'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.change_agreement_status_scheduler',
+        'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.compliance_agreement_daily_scheduler',
         'one_compliance.one_compliance.utils.notification_for_digital_signature_expiry'
 	],
 #	"hourly": [

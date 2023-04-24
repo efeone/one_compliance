@@ -8,7 +8,10 @@
  "engine": "InnoDB",
  "field_order": [
   "compliance_category",
+  "compliance_date",
+  "column_break_yy2oq",
   "compliance_sub_category",
+  "next_compliance_date",
   "rate"
  ],
  "fields": [
@@ -35,12 +38,35 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Rate"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "compliance_date",
+   "fieldtype": "Date",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "Compliance Date",
+   "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "next_compliance_date",
+   "fieldtype": "Date",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Next Compliance Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_yy2oq",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2023-04-04 16:33:19.660310",
+ "modified": "2023-04-23 22:16:32.394922",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Category Details",
