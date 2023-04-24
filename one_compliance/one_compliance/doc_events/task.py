@@ -37,3 +37,35 @@ def set_task_time_line(doc):
         exp_end_date = add_days(doc.exp_start_date, doc.duration)
         doc.db_set('exp_end_date', exp_end_date, update_modified=False)
         frappe.db.commit()
+
+@frappe.whitelist()
+def make_sales_invoice(doc, method):
+    # *The sales invoice will be automatic on the on update of the project*
+    if doc.status == 'Completed':
+        if frappe.db.exists('Project', doc.project):
+            project = frappe.get_doc ('Project',doc.project)
+            if project.status == 'Completed':
+                if frappe.db.exists('Compliance Agreement', project.compliance_agreement):
+                    compliance_agreement = frappe.get_doc ('Compliance Agreement', project.compliance_agreement)
+                    if compliance_agreement.invoice_based_on == 'Project':
+                        sales_invoice = frappe.new_doc('Sales Invoice')
+                        sales_invoice.customer = project.customer
+                        sales_invoice.posting_date = frappe.utils.today()
+                        sales_invoice.project = project.name
+                        income_account = frappe.db.get_value('Company',project.company, 'default_income_account')
+                        payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
+                        if payment_terms:
+                            sales_invoice.default_payment_terms_template = payment_terms
+                        if compliance_agreement.compliance_category_details:
+                            for sub_category in compliance_agreement.compliance_category_details:
+                                if frappe.db.exists('Compliance Sub Category', sub_category.compliance_sub_category):
+                                    sub_category_doc = frappe.get_doc('Compliance Sub Category', sub_category.compliance_sub_category)
+                                    if doc.compliance_sub_category == sub_category.compliance_sub_category:
+                                        sales_invoice.append('items', {
+                                        'item_name' : sub_category.compliance_sub_category,
+                                        'rate' : sub_category_doc.rate,
+                                        'qty' : 1,
+                                        'income_account' : income_account,
+                                        'description' : sub_category_doc.name
+                                        })
+                        sales_invoice.save()
