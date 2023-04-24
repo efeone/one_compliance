@@ -18,6 +18,7 @@
   "lead_name",
   "opportunity_name",
   "has_long_term_validity",
+  "posting_date",
   "valid_from",
   "valid_upto",
   "compliance_category_details_section",
@@ -165,10 +166,12 @@
    "label": "Signatures"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Open\nActive\nExpired\nHold\nCancelled"
+   "options": "Open\nActive\nExpired\nHold\nCancelled",
+   "read_only": 1
   },
   {
    "depends_on": "eval:doc.has_long_term_validity == 0",
@@ -189,12 +192,19 @@
    "fieldname": "has_long_term_validity",
    "fieldtype": "Check",
    "label": "Has Long Term Validity"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-04-20 11:40:23.165744",
+ "modified": "2023-04-23 20:13:16.627890",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
