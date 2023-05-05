@@ -68,4 +68,4 @@ def make_sales_invoice(doc, method):
                                         'income_account' : income_account,
                                         'description' : sub_category_doc.name
                                         })
-                        sales_invoice.save()
+                        sales_invoice.save(ignore_permissions=True)

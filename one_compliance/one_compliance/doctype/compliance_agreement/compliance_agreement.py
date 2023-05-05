@@ -115,7 +115,7 @@ def make_sales_invoice(source_name, target_doc=None):
 		target_doc,
 		set_missing_values
 	)
-	doclist.save()
+	doclist.save(ignore_permissions=True)
 
 	return doclist
 
@@ -206,7 +206,7 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		project.compliance_agreement = self.name
 		project.compliance_sub_category = compliance_sub_category
 		project.expected_start_date = compliance_date
-		project.save()
+		project.save(ignore_permissions=True)
 		frappe.db.commit()
 		frappe.msgprint('Project Created for {0}.'.format(compliance_sub_category), alert = 1)
 		project_template_doc = frappe.get_doc('Project Template', project_template)

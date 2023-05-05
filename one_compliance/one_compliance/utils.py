@@ -17,7 +17,7 @@ def create_notification_log(subject, type, for_user, email_content, document_typ
     notification_doc.email_content = email_content
     notification_doc.document_type = document_type
     notification_doc.document_name = document_name
-    notification_doc.save()
+    notification_doc.save(ignore_permissions=True)
     frappe.db.commit()
 
 @frappe.whitelist()
@@ -137,7 +137,7 @@ def update_digital_signature(digital_signature, register_type, register_name):
             digital_signature_detail.posting_date = register_doc.returned_date
             digital_signature_detail.posting_time = register_doc.returned_time
             digital_signature_detail.sender_receiver = register_doc.receiver_name
-        digital_signature_doc.save()
+        digital_signature_doc.save(ignore_permissions=True)
         frappe.db.commit()
         digital_signature_doc.reload()
         return True
