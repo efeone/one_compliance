@@ -210,7 +210,7 @@ scheduler_events = {
 # auth_hooks = [
 #	"one_compliance.auth.validate"
 # ]
-fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Director','Compliance Manager','Business Executive']]]},
+fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Director','Compliance Manager','Business Executive','Head Of Department']]]},
             {'dt': "Document Register Type"},
             {'dt': 'Customer Type'},
             {'dt': 'Workflow State', 'filters': [['name', 'in', ['Draft','Approved','Rejected','Pending','Sent to Customer','Customer Approval Waiting','Customer Approved','Customer Rejected']]]},
