@@ -8,12 +8,14 @@ frappe.ui.form.on('Compliance Sub Category', {
 		frm.set_query('employee', 'compliance_executive' ,(frm, cdt, cdn) => {
             // To set filter for employee in Compliance Executive child table
             var d = locals[cdt][cdn];
+		if (frm.compliance_category){
 			return {
 				query: 'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.set_filter_for_employee',
 				filters: {
 					'compliance_category': compliance_category
 				}
 			};
+		}
         });
 		if(!frm.is_new() && !frm.doc.project_template){
 			//custom button to create project template and route to  project template doctype

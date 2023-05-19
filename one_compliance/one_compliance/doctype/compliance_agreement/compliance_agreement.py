@@ -277,6 +277,9 @@ def set_compliance_dates(doc):
 						frappe.db.set_value(compliance_category.doctype, compliance_category.name, 'compliance_date', compliance_date)
 						frappe.db.set_value(compliance_category.doctype, compliance_category.name, 'next_compliance_date', next_compliance_date)
 						frappe.db.commit()
+					else:
+						compliance_category.compliance_date = doc.valid_from
+						frappe.db.commit()
 
 @frappe.whitelist()
 def compliance_agreement_daily_scheduler():
@@ -305,3 +308,7 @@ def update_compliance_dates(compliance_category_details_id):
 			frappe.db.set_value('Compliance Category Details', compliance_category_details_id, 'compliance_date', next_compliance_date)
 			frappe.db.set_value('Compliance Category Details', compliance_category_details_id, 'next_compliance_date', add_months(next_compliance_date, month_flag))
 			frappe.db.commit()
+        
+	else:
+		frappe.db.set_value('Compliance Category Details', compliance_category_details_id, 'compliance_date', getdate(today()))
+		frappe.db.commit()
