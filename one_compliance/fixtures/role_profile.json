@@ -326,7 +326,7 @@
  {
   "docstatus": 0,
   "doctype": "Role Profile",
-  "modified": "2023-05-03 10:58:12.053969",
+  "modified": "2023-06-07 12:57:22.305125",
   "name": "Director",
   "role_profile": "Director",
   "roles": [
@@ -341,6 +341,18 @@
     "parentfield": "roles",
     "parenttype": "Role Profile",
     "role": "Customer"
+   },
+   {
+    "parent": "Director",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Director",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Manager"
    }
   ]
  }

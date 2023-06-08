@@ -305,12 +305,6 @@
     "parenttype": "Module Profile"
    },
    {
-    "module": "Accounts",
-    "parent": "Director",
-    "parentfield": "block_modules",
-    "parenttype": "Module Profile"
-   },
-   {
     "module": "Buying",
     "parent": "Director",
     "parentfield": "block_modules",
@@ -427,7 +421,7 @@
   ],
   "docstatus": 0,
   "doctype": "Module Profile",
-  "modified": "2023-04-13 11:28:08.543870",
+  "modified": "2023-06-07 16:19:17.245777",
   "module_profile_name": "Director",
   "name": "Director"
  },
