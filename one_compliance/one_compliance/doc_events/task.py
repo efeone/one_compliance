@@ -20,7 +20,6 @@ def task_on_update(doc, method):
                         if email_id:
                             project_complete_notification_for_customer(project, email_id)
 
-
 @frappe.whitelist()
 def task_complete_notification_for_director(doc):
     context = get_context(doc)
@@ -40,7 +39,7 @@ def set_task_time_line(doc):
 
 @frappe.whitelist()
 def make_sales_invoice(doc, method):
-    # *The sales invoice will be automatic on the on update of the project*
+    # The sales invoice will be automatic on the on update of the project
     if doc.status == 'Completed':
         if frappe.db.exists('Project', doc.project):
             project = frappe.get_doc ('Project',doc.project)
@@ -56,16 +55,14 @@ def make_sales_invoice(doc, method):
                         payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
                         if payment_terms:
                             sales_invoice.default_payment_terms_template = payment_terms
-                        if compliance_agreement.compliance_category_details:
-                            for sub_category in compliance_agreement.compliance_category_details:
-                                if frappe.db.exists('Compliance Sub Category', sub_category.compliance_sub_category):
-                                    sub_category_doc = frappe.get_doc('Compliance Sub Category', sub_category.compliance_sub_category)
-                                    if doc.compliance_sub_category == sub_category.compliance_sub_category:
-                                        sales_invoice.append('items', {
-                                        'item_name' : sub_category.compliance_sub_category,
-                                        'rate' : sub_category_doc.rate,
-                                        'qty' : 1,
-                                        'income_account' : income_account,
-                                        'description' : sub_category_doc.name
-                                        })
+                        if frappe.db.exists('Compliance Sub Category', doc.compliance_sub_category):
+                            sub_category_doc = frappe.get_doc('Compliance Sub Category', doc.compliance_sub_category)
+                            if sub_category_doc.is_billable:
+                                sales_invoice.append('items', {
+                                    'item_name' : sub_category_doc.sub_category,
+                                    'rate' : sub_category_doc.rate,
+                                    'qty' : 1,
+                                    'income_account' : income_account,
+                                    'description' : sub_category_doc.name
+                                })
                         sales_invoice.save(ignore_permissions=True)

@@ -4,39 +4,19 @@ frappe.ui.form.on('Compliance Agreement',{
     frm.set_query('compliance_sub_category','compliance_category_details',(frm,cdt,cdn) => {
       // setting filer for sub category //
       let child = locals[cdt][cdn];
-          return {
-              filters: {
-                'compliance_category': child.compliance_category,
-                enabled: 1
-              }
-          };
-      });
-
-    // Create sales invoice against project and compliance_agreement
-    if(frm.doc.invoice_based_on){
-      frappe.call({
-        method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.check_project_status',
-        args:{
-          'compliance_agreement':frm.doc.name
-        },
-        callback: (r) =>{
-          if (r.message){
-            frm.add_custom_button('Create Sales Invoice', () => {
-              frappe.model.open_mapped_doc({
-                method: "one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.make_sales_invoice",
-                frm: cur_frm
-            })
-            })
-          }
+      return {
+        filters: {
+          'compliance_category': child.compliance_category,
+          'enabled': 1
         }
+      };
+    });
+
+    if(!frm.is_new()){
+      frm.add_custom_button('Set Agreement Status', () => {
+        set_agreement_status(frm)
       })
     }
-
-   if(!frm.is_new()){
-     frm.add_custom_button('Set Agreement Status', () => {
-       set_agreement_status(frm)
-     })
-   }
   },
   compliance_category:function(frm){
     set_sub_category_list(frm);
@@ -58,7 +38,6 @@ frappe.ui.form.on('Compliance Agreement',{
         }
       }
     });
-
   }
 });
 
