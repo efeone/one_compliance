@@ -4,7 +4,6 @@ from frappe.model.mapper import *
 from frappe import _
 from frappe.utils.user import get_users_with_role
 
-
 @frappe.whitelist()
 def set_customer_type_value(doc):
     '''
@@ -80,7 +79,6 @@ def customer_on_update(doc, method):
     set_customer_type_value(doc)
     create_user_from_customer(doc)
 
-
 def create_user_from_customer(doc):
     create_user_on_customer_creation = frappe.db.get_single_value('Compliance Settings', 'create_user_on_customer_creation')
     if create_user_on_customer_creation:
@@ -93,7 +91,7 @@ def create_user_from_customer(doc):
                 frappe.msgprint('User created for this customer', alert=True, indicator='green')
 
 @frappe.whitelist()
-def custom_button_for_view_Compliance_agreement(customer):
+def custom_button_for_view_compliance_agreement(customer):
     if frappe.db.exists('Compliance Agreement', {'customer':customer, 'status':'Active'}):
         compliance_agreement = frappe.db.get_value('Compliance Agreement', {'customer':customer, 'status':'Active'})
         return compliance_agreement
@@ -111,20 +109,17 @@ def send_clarification_message(customer,message):
 		msg = 'Mail Send', alert =1
 	 )
 
-
 @frappe.whitelist()
 def check_invoice_based_on_and_project_status(customer):
     if frappe.db.exists('Compliance Agreement',{'customer':customer,'status':'Active'}):
         invoice_based_on, compliance_agreement = frappe.db.get_value('Compliance Agreement',{'customer':customer,'status':'Active'}, ['invoice_based_on','name'])
-        print(invoice_based_on)
-        print(compliance_agreement)
         if invoice_based_on and invoice_based_on == 'Consolidated':
             if frappe.db.exists('Project',{'customer':customer,'compliance_agreement':compliance_agreement,'status':'Completed'}):
                 return True
 
 @frappe.whitelist()
 def make_sales_invoice(source_name, target_doc=None):
-    # *Method to create sales_invoice when invoice_based_on is Consolidated*
+    #Method to create sales_invoice when invoice_based_on is Consolidated
     def set_missing_values(source, target):
         compliance_agreement = frappe.get_doc('Compliance Agreement',{'customer':source_name, 'status':'Active'})
         company = frappe.db.get_value('Project',{'customer':source_name,'compliance_agreement':compliance_agreement.name},'company')
@@ -132,28 +127,28 @@ def make_sales_invoice(source_name, target_doc=None):
             income_account = frappe.db.get_value('Company',company, 'default_income_account')
         if compliance_agreement.compliance_category_details:
             for sub_category in compliance_agreement.compliance_category_details:
-                rate = calculate_rate(compliance_agreement.compliance_category_details, sub_category.compliance_category)
-                if compliance_agreement.invoice_based_on == 'Consolidated':
-                    if not check_exist(target, sub_category.compliance_category):
-                        if source.payment_terms: 
-                            target.append('items', {
-                                'item_name' : sub_category.compliance_category,
-                                'rate' : rate,
-                                'qty' : 1,
-                                'income_account' : income_account,
-                                'description' : sub_category.name,
-                                'default_payment_terms_template' : source.payment_terms,
-                            })
-                        else:
-                            target.append('items', {
-                                'item_name' : sub_category.compliance_category,
-                                'rate' : rate,
-                                'qty' : 1,
-                                'income_account' : income_account,
-                                'description' : sub_category.name,
-                            })
-
-
+                is_billable = frappe.db.get_value('Compliance Sub Category', sub_category.compliance_category, 'is_billable')
+                if is_billable:
+                    rate = calculate_rate(compliance_agreement.compliance_category_details, sub_category.compliance_category)
+                    if compliance_agreement.invoice_based_on == 'Consolidated':
+                        if not check_exist(target, sub_category.compliance_category):
+                            if source.payment_terms:
+                                target.append('items', {
+                                    'item_name' : sub_category.compliance_category,
+                                    'rate' : rate,
+                                    'qty' : 1,
+                                    'income_account' : income_account,
+                                    'description' : sub_category.name,
+                                    'default_payment_terms_template' : source.payment_terms,
+                                })
+                            else:
+                                target.append('items', {
+                                    'item_name' : sub_category.compliance_category,
+                                    'rate' : rate,
+                                    'qty' : 1,
+                                    'income_account' : income_account,
+                                    'description' : sub_category.name,
+                                })
     doclist = get_mapped_doc(
     'Customer',
     source_name,
@@ -164,22 +159,20 @@ def make_sales_invoice(source_name, target_doc=None):
             },
         },
     target_doc,
-    set_missing_values
+        set_missing_values
     )
     doclist.save()
     return doclist
 
 def check_exist(target, compliance_category):
-    ''' checking if item allready exist in child table '''
+    ''' checking if item already exist in child table '''
     exist = False
-    try:
-        if target.items:
-            for item in target.items:
-                if compliance_category:
-                    if item.item_name == compliance_category:
-                        exist = True
-    except:
-        exist = False
+    if target.items:
+        for item in target.items:
+            if compliance_category:
+                if item.item_name == compliance_category:
+                    exist = True
+                    break
     return exist
 
 def calculate_rate(compliance_category_details, compliance_category):

@@ -12,7 +12,7 @@ class ComplianceSubCategory(Document):
 
 	def validate_rate(self):
 		""" Method to validate rate """
-		if not self.rate :
+		if not self.rate and self.is_billable:
 			frappe.throw(_('Please Enter Valid Rate'))
 
 @frappe.whitelist()
@@ -25,8 +25,8 @@ def create_project_template_custom_button(source_name, target_doc = None):
 		'Compliance Sub Category',
 		source_name,
 		{
-		'Compliance Sub Category': {
-		'doctype': 'Project Template',
+			'Compliance Sub Category': {
+			'doctype': 'Project Template',
         },
 		}, target_doc, set_missing_values)
 	return doc

@@ -17,9 +17,9 @@
   "month",
   "day",
   "column_break_06mwn",
-  "maximum_duration",
-  "rate",
   "enabled",
+  "is_billable",
+  "rate",
   "department_details_section",
   "department",
   "head_of_department",
@@ -67,16 +67,13 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "maximum_duration",
-   "fieldtype": "Int",
-   "hidden": 1,
-   "label": "Maximum Duration"
-  },
-  {
+   "depends_on": "is_billable",
    "fieldname": "rate",
    "fieldtype": "Currency",
    "label": "Rate",
-   "reqd": 1
+   "mandatory_depends_on": "is_billable",
+   "non_negative": 1,
+   "precision": "2"
   },
   {
    "default": "0",
@@ -203,11 +200,17 @@
   {
    "fieldname": "column_break_bfbe1",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "is_billable",
+   "fieldtype": "Check",
+   "label": "Is Billable"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-24 10:01:13.220437",
+ "modified": "2023-07-04 12:51:51.992591",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",

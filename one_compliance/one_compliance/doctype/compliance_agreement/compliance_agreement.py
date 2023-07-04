@@ -77,48 +77,6 @@ def check_project_status(compliance_agreement):
 	if frappe.db.exists('Project', {'compliance_agreement':compliance_agreement, 'status':'Completed'}):
 		return True
 
-@frappe.whitelist()
-def make_sales_invoice(source_name, target_doc=None):
-	def set_missing_values(source, target):
-		if frappe.db.exists('Project', {'compliance_agreement':source.name}):
-			company = frappe.db.get_value('Project', {'compliance_agreement':source.name},'company')
-			income_account = frappe.db.get_value('Company',company, 'default_income_account')
-		if source.compliance_category_details:
-			for sub_category in source.compliance_category_details:
-				rate = calculate_rate(source.compliance_category_details, sub_category.compliance_category)
-				if source.invoice_based_on == 'Project':
-					target.append('items', {
-						'item_name' : sub_category.compliance_sub_category,
-						'rate' : sub_category.rate,
-						'qty' : 1,
-						'income_account' : income_account,
-						'description' : sub_category.name,
-					})
-				if source.invoice_based_on == 'Consolidated':
-					if not check_exist(target, sub_category.compliance_category):
-						target.append('items', {
-							'item_name' : sub_category.compliance_category,
-							'rate' : rate,
-							'qty' : 1,
-							'income_account' : income_account,
-							'description' : sub_category.name,
-						})
-	doclist = get_mapped_doc(
-		'Compliance Agreement',
-		source_name,
-		{
-			'Compliance Agreement':{
-                'doctype':'Sales Invoice'
-
-				},
-			},
-		target_doc,
-		set_missing_values
-	)
-	doclist.save(ignore_permissions=True)
-
-	return doclist
-
 def check_exist(target, compliance_category):
 	''' checking if item already exist in child table '''
 	exist = False
@@ -308,7 +266,7 @@ def update_compliance_dates(compliance_category_details_id):
 			frappe.db.set_value('Compliance Category Details', compliance_category_details_id, 'compliance_date', next_compliance_date)
 			frappe.db.set_value('Compliance Category Details', compliance_category_details_id, 'next_compliance_date', add_months(next_compliance_date, month_flag))
 			frappe.db.commit()
-        
+
 	else:
 		frappe.db.set_value('Compliance Category Details', compliance_category_details_id, 'compliance_date', getdate(today()))
 		frappe.db.commit()

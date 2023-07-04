@@ -207,7 +207,7 @@ d.show();
 
 let view_compliance_agreemet = function(frm) {
   frappe.call({
-    method : 'one_compliance.one_compliance.doc_events.customer.custom_button_for_view_Compliance_agreement',
+    method : 'one_compliance.one_compliance.doc_events.customer.custom_button_for_view_compliance_agreement',
     args :{
       'customer' : frm.doc.name
      },

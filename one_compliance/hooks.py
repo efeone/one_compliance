@@ -126,6 +126,9 @@ doc_events = {
     },
     'Customer':{
         'on_update':'one_compliance.one_compliance.doc_events.customer.customer_on_update'
+    },
+    'Sales Invoice':{
+        'on_submit':'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
     }
 }
 
