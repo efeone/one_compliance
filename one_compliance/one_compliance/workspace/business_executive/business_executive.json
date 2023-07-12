@@ -1,0 +1,115 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"0BGUNO0-SI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Business Executive</span>\",\"col\":12}},{\"id\":\"STV-ITWhxx\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Projects\",\"col\":3}},{\"id\":\"KRKIidNrAK\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Tasks\",\"col\":3}},{\"id\":\"bKqXrAa4i8\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Working Tasks\",\"col\":3}},{\"id\":\"Z6JfKzcA9-\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":3}},{\"id\":\"jPRzcDHFKj\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"XGfqP1rqbR\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Working Task\",\"col\":6}},{\"id\":\"R9yaqO4EQ0\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Open Taks\",\"col\":6}},{\"id\":\"qafiS4evqu\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer\",\"col\":3}},{\"id\":\"i_kcHpUGy7\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"wLFJFSqdKP\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Project\",\"col\":3}}]",
+ "creation": "2023-05-31 13:58:35.587653",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "star",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Business Executive",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Credentials",
+   "link_count": 0,
+   "link_to": "Customer Credentials",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Document",
+   "link_count": 0,
+   "link_to": "Customer Document",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Digital Signature",
+   "link_count": 0,
+   "link_to": "Digital Signature",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2023-07-12 14:50:52.149794",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Business Executive",
+ "number_cards": [
+  {
+   "label": "Projects",
+   "number_card_name": "Projects"
+  },
+  {
+   "label": "Open Tasks",
+   "number_card_name": "Open Tasks"
+  },
+  {
+   "label": "Working Tasks",
+   "number_card_name": "Working Tasks"
+  },
+  {
+   "label": "Overdue Tasks",
+   "number_card_name": "Overdue Tasks"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "One Compliance",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Task",
+   "label": "Working Task",
+   "quick_list_filter": "{\"status\":[\"=\",\"Working\"]}"
+  },
+  {
+   "document_type": "Task",
+   "label": "Open Taks",
+   "quick_list_filter": "{\"status\":[\"=\",\"Open\"]}"
+  }
+ ],
+ "roles": [
+  {
+   "role": "Business Executive"
+  }
+ ],
+ "sequence_id": 33.0,
+ "shortcuts": [
+  {
+   "color": "Red",
+   "doc_view": "Dashboard",
+   "label": "Dashboard",
+   "link_to": "Dashboard",
+   "type": "DocType"
+  },
+  {
+   "color": "Pink",
+   "doc_view": "List",
+   "label": "Project",
+   "link_to": "Project",
+   "stats_filter": "{\"_assign\":[\"is\",\"set\"]}",
+   "type": "DocType"
+  }
+ ],
+ "title": "Business Executive"
+}
