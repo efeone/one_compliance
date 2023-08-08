@@ -20,6 +20,7 @@
   "enabled",
   "is_billable",
   "rate",
+  "category_type",
   "department_details_section",
   "department",
   "head_of_department",
@@ -206,11 +207,19 @@
    "fieldname": "is_billable",
    "fieldtype": "Check",
    "label": "Is Billable"
+  },
+  {
+   "fetch_from": "compliance_category.category_type",
+   "fieldname": "category_type",
+   "fieldtype": "Link",
+   "label": "Category Type",
+   "options": "Category Type",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-07-04 12:51:51.992591",
+ "modified": "2023-08-08 14:59:52.737063",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",

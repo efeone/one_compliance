@@ -11,6 +11,7 @@
  "field_order": [
   "compliance_category",
   "department",
+  "category_type",
   "column_break_yfl4n",
   "head_of_department",
   "hod_name",
@@ -61,11 +62,18 @@
   {
    "fieldname": "section_break_hborw",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "category_type",
+   "fieldtype": "Link",
+   "label": "Category Type",
+   "options": "Category Type",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-17 12:32:21.172355",
+ "modified": "2023-08-08 10:38:52.686378",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Category",
