@@ -164,6 +164,7 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		project.compliance_agreement = self.name
 		project.compliance_sub_category = compliance_sub_category
 		project.expected_start_date = compliance_date
+		project.category_type = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'category_type')
 		project.save(ignore_permissions=True)
 		frappe.db.commit()
 		frappe.msgprint('Project Created for {0}.'.format(compliance_sub_category), alert = 1)
