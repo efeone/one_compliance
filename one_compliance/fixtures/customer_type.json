@@ -1,5 +1,19 @@
 [
  {
+  "customer_type": "Firm",
+  "docstatus": 0,
+  "doctype": "Customer Type",
+  "modified": "2023-08-01 10:05:44.615447",
+  "name": "Firm"
+ },
+ {
+  "customer_type": "LLP",
+  "docstatus": 0,
+  "doctype": "Customer Type",
+  "modified": "2023-08-01 10:06:55.475287",
+  "name": "LLP"
+ },
+ {
   "customer_type": "LLC",
   "docstatus": 0,
   "doctype": "Customer Type",

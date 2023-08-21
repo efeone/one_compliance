@@ -1,26 +1,32 @@
 [
  {
+  "appraisal_template": null,
+  "description": null,
+  "designation_name": "Manager",
+  "docstatus": 0,
+  "doctype": "Designation",
+  "modified": "2023-07-04 11:43:43.298857",
+  "name": "Manager",
+  "skills": []
+ },
+ {
+  "appraisal_template": null,
+  "description": null,
+  "designation_name": "Trainee",
+  "docstatus": 0,
+  "doctype": "Designation",
+  "modified": "2023-08-14 15:11:34.260741",
+  "name": "Trainee",
+  "skills": []
+ },
+ {
+  "appraisal_template": null,
   "description": null,
   "designation_name": "Head Of Department",
   "docstatus": 0,
   "doctype": "Designation",
   "modified": "2023-03-30 10:30:47.225128",
-  "name": "Head Of Department"
- },
- {
-  "description": null,
-  "designation_name": "Business Executive Trainee",
-  "docstatus": 0,
-  "doctype": "Designation",
-  "modified": "2023-03-30 14:23:12.741279",
-  "name": "Business Executive Trainee"
- },
- {
-  "description": null,
-  "designation_name": "Business Executive",
-  "docstatus": 0,
-  "doctype": "Designation",
-  "modified": "2023-03-30 15:39:17.915361",
-  "name": "Business Executive"
+  "name": "Head Of Department",
+  "skills": []
  }
 ]
