@@ -117,7 +117,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-08-19 11:33:41.855019",
+ "modified": "2023-08-22 12:32:55.504861",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Senior Manager",
@@ -154,7 +154,11 @@
    "quick_list_filter": "{\"status\":[\"=\",\"Open\"]}"
   }
  ],
- "roles": [],
+ "roles": [
+  {
+   "role": "Senior Manager"
+  }
+ ],
  "sequence_id": 39.0,
  "shortcuts": [],
  "title": "Senior Manager"
