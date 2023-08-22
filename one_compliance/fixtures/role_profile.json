@@ -2,6 +2,66 @@
  {
   "docstatus": 0,
   "doctype": "Role Profile",
+  "modified": "2023-08-14 14:59:54.867063",
+  "name": "Trainee",
+  "role_profile": "Trainee",
+  "roles": [
+   {
+    "parent": "Trainee",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Trainee"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-08-18 12:38:44.261821",
+  "name": "Head Of Department",
+  "role_profile": "Head Of Department",
+  "roles": [
+   {
+    "parent": "Head Of Department",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Head Of Department"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-08-14 15:05:30.794347",
+  "name": "Manager",
+  "role_profile": "Manager",
+  "roles": [
+   {
+    "parent": "Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manager"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-08-14 15:10:52.153251",
+  "name": "Senior Manager",
+  "role_profile": "Senior Manager",
+  "roles": [
+   {
+    "parent": "Senior Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Senior Manager"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
   "modified": "2023-04-27 10:15:13.912167",
   "name": "Super Admin",
   "role_profile": "Super Admin",
@@ -293,33 +353,6 @@
     "parentfield": "roles",
     "parenttype": "Role Profile",
     "role": "Workspace Manager"
-   }
-  ]
- },
- {
-  "docstatus": 0,
-  "doctype": "Role Profile",
-  "modified": "2023-05-04 11:02:02.471562",
-  "name": "Business Executive",
-  "role_profile": "Business Executive",
-  "roles": [
-   {
-    "parent": "Business Executive",
-    "parentfield": "roles",
-    "parenttype": "Role Profile",
-    "role": "Employee"
-   },
-   {
-    "parent": "Business Executive",
-    "parentfield": "roles",
-    "parenttype": "Role Profile",
-    "role": "Projects User"
-   },
-   {
-    "parent": "Business Executive",
-    "parentfield": "roles",
-    "parenttype": "Role Profile",
-    "role": "Business Executive"
    }
   ]
  },
