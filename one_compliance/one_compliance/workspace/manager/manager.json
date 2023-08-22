@@ -99,7 +99,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-08-19 11:41:10.576953",
+ "modified": "2023-08-22 12:33:25.610624",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Manager",
@@ -136,7 +136,11 @@
    "quick_list_filter": "{\"status\":[\"=\",\"Open\"]}"
   }
  ],
- "roles": [],
+ "roles": [
+  {
+   "role": "Manager"
+  }
+ ],
  "sequence_id": 40.0,
  "shortcuts": [],
  "title": "Manager"
