@@ -941,255 +941,255 @@
   "block_modules": [
    {
     "module": "Accounts",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Assets",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Audit Trail",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Automation",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Bulk Transaction",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Buying",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "CRM",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Communication",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Contacts",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Core",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Custom",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Desk",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "E-commerce",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "ERPNext Integrations",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Email",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Event Streaming",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "GST India",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Geo",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "HR",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Income Tax India",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Integrations",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Loan Management",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Maintenance",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Manufacturing",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Payroll",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Portal",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Printing",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Projects",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Quality Management",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Regional",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Selling",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Setup",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Social",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Stock",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Subcontracting",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Support",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Telephony",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Utilities",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "VAT India",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Website",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    },
    {
     "module": "Workflow",
-    "parent": "Trainee",
+    "parent": "Executive",
     "parentfield": "block_modules",
     "parenttype": "Module Profile"
    }
   ],
   "docstatus": 0,
   "doctype": "Module Profile",
-  "modified": "2023-08-21 14:59:29.553520",
-  "module_profile_name": "Trainee",
-  "name": "Trainee"
+  "modified": "2023-08-26 16:10:19.816549",
+  "module_profile_name": "Executive",
+  "name": "Executive"
  }
 ]

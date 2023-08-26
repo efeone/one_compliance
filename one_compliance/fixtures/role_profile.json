@@ -2,21 +2,6 @@
  {
   "docstatus": 0,
   "doctype": "Role Profile",
-  "modified": "2023-08-14 14:59:54.867063",
-  "name": "Trainee",
-  "role_profile": "Trainee",
-  "roles": [
-   {
-    "parent": "Trainee",
-    "parentfield": "roles",
-    "parenttype": "Role Profile",
-    "role": "Trainee"
-   }
-  ]
- },
- {
-  "docstatus": 0,
-  "doctype": "Role Profile",
   "modified": "2023-08-18 12:38:44.261821",
   "name": "Head Of Department",
   "role_profile": "Head Of Department",

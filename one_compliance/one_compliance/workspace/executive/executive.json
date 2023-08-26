@@ -1,0 +1,82 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"LlKtCQsuDB\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\">\ud835\udc04\ud835\udc31\ud835\udc1e\ud835\udc1c\ud835\udc2e\ud835\udc2d\ud835\udc22\ud835\udc2f\ud835\udc1e</span><br>\",\"col\":12}},{\"id\":\"O5os4Of7T6\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Project\",\"col\":3}},{\"id\":\"MRAZzEVkjE\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Tasks\",\"col\":3}},{\"id\":\"vPczNsZ2DN\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Working Tasks\",\"col\":3}},{\"id\":\"Tizv_1mD_1\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":3}},{\"id\":\"IKrpZUq5EP\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"uE2dWhJUsw\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Working Tasks\",\"col\":6}},{\"id\":\"WutUbLp1UD\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Open Tasks\",\"col\":6}},{\"id\":\"H7WW2T_L32\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"hAGg46YchE\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Document\",\"col\":3}},{\"id\":\"TiXriMOG03\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Credentials\",\"col\":3}},{\"id\":\"PiIURQH346\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Digital Signature\",\"col\":3}}]",
+ "creation": "2023-08-19 11:43:02.059794",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "users",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Executive",
+ "links": [],
+ "modified": "2023-08-26 16:58:54.637310",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Executive",
+ "number_cards": [
+  {
+   "label": "Project",
+   "number_card_name": "Projects"
+  },
+  {
+   "label": "Open Tasks",
+   "number_card_name": "Open Tasks"
+  },
+  {
+   "label": "Working Tasks",
+   "number_card_name": "Working Tasks"
+  },
+  {
+   "label": "Overdue Tasks",
+   "number_card_name": "Overdue Tasks"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "One Compliance",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Task",
+   "label": "Working Tasks",
+   "quick_list_filter": "{\"status\":[\"=\",\"Working\"]}"
+  },
+  {
+   "document_type": "Task",
+   "label": "Open Tasks",
+   "quick_list_filter": "{\"status\":[\"=\",\"Open\"]}"
+  }
+ ],
+ "roles": [
+  {
+   "role": "Executive"
+  }
+ ],
+ "sequence_id": 41.0,
+ "shortcuts": [
+  {
+   "color": "Red",
+   "doc_view": "List",
+   "label": "Customer Credentials",
+   "link_to": "Customer Credentials",
+   "type": "DocType"
+  },
+  {
+   "color": "Yellow",
+   "doc_view": "List",
+   "label": "Customer Document",
+   "link_to": "Customer Document",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "label": "Digital Signature",
+   "link_to": "Digital Signature",
+   "type": "DocType"
+  }
+ ],
+ "title": "Executive"
+}
