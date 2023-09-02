@@ -11,7 +11,12 @@ frappe.ui.form.on('Task',{
         });
       }
     }
-  },
+    if(!frm.is_new()){
+      frm.add_custom_button('Status Update', () => {
+        update_status(frm)
+      });
+    }
+  }
 });
 /* applied dialog instance to show customer Credential */
 
@@ -139,3 +144,32 @@ let customer_document = function (frm) {
            d.show();
          })
        }
+
+let update_status = function(frm){
+  let d = new frappe.ui.Dialog({
+    title: 'Enter details',
+    fields: [
+      {
+        label: 'Status',
+        fieldname: 'status',
+        fieldtype: 'Select',
+        options: 'Open\nWorking\nPending Review\nCompleted',
+        default:'Completed'
+      },
+      {
+        label: 'Completed By',
+        fieldname: 'completed_by',
+        fieldtype: 'Link',
+        options: 'User'
+      },
+      {
+        label: 'Completed On',
+        fieldname: 'completed_on',
+        fieldtype: 'Date',
+        default:'Today'
+      },
+    ]
+  });
+  d.set_value('completed_by', frappe.session.user)
+  d.show()
+}

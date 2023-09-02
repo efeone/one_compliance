@@ -8,7 +8,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "category_type"
+  "category_type",
+  "department"
  ],
  "fields": [
   {
@@ -18,11 +19,17 @@
    "label": "Category Type",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-08-08 10:42:38.860893",
+ "modified": "2023-08-31 15:09:28.783118",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Category Type",
