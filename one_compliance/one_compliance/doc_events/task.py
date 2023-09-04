@@ -6,6 +6,27 @@ from frappe.email.doctype.notification.notification import get_context
 from frappe.utils import *
 
 @frappe.whitelist()
+def append_users_to_project(doc, method):
+    if doc.assigned_to and doc.project:
+        if frappe.db.exists('Employee Group', doc.assigned_to):
+            employee_group = frappe.get_doc('Employee Group', doc.assigned_to)
+            for employee in employee_group.employee_list:
+                if employee.user_id:
+                    add_project_user_if_not_exists(doc.project, employee.user_id)
+
+def add_project_user_if_not_exists(project, user_id):
+    project_doc = frappe.get_doc('Project', project)
+    exists = False
+    for project_user in project_doc.users:
+        if project_user.user == user_id:
+            exists = True
+    if not exists:
+        project_doc.append('users', {
+            'user': user_id
+        })
+        project_doc.save()
+
+@frappe.whitelist()
 def task_on_update(doc, method):
     set_task_time_line(doc)
     if doc.status == 'Completed':
