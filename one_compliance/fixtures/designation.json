@@ -2,21 +2,21 @@
  {
   "appraisal_template": null,
   "description": null,
-  "designation_name": "Manager",
-  "docstatus": 0,
-  "doctype": "Designation",
-  "modified": "2023-07-04 11:43:43.298857",
-  "name": "Manager",
-  "skills": []
- },
- {
-  "appraisal_template": null,
-  "description": null,
   "designation_name": "Executive",
   "docstatus": 0,
   "doctype": "Designation",
   "modified": "2023-08-14 15:11:34.260741",
   "name": "Executive",
+  "skills": []
+ },
+ {
+  "appraisal_template": null,
+  "description": null,
+  "designation_name": "Manager",
+  "docstatus": 0,
+  "doctype": "Designation",
+  "modified": "2023-07-04 11:43:43.298857",
+  "name": "Manager",
   "skills": []
  },
  {
