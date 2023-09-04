@@ -373,5 +373,20 @@
     "role": "Sales Manager"
    }
   ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-04 13:33:34.316667",
+  "name": "Executive",
+  "role_profile": "Executive",
+  "roles": [
+   {
+    "parent": "Executive",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Executive"
+   }
+  ]
  }
 ]
