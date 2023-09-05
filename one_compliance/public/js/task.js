@@ -161,7 +161,7 @@ let update_status = function(frm){
         fieldname: 'status',
         fieldtype: 'Select',
         options: 'Open\nWorking\nPending Review\nCompleted',
-        default:'Completed'
+        default: 'Completed'
       },
       {
         label: 'Completed By',
@@ -173,10 +173,29 @@ let update_status = function(frm){
         label: 'Completed On',
         fieldname: 'completed_on',
         fieldtype: 'Date',
-        default:'Today'
+        default: 'Today'
       },
-    ]
+    ],
+    primary_action_label: 'Update',
+    primary_action(values) {
+      frappe.call({
+        method: 'one_compliance.one_compliance.doc_events.task.update_task_status',
+        args: {
+          'task_id': frm.doc.name,
+          'status': values.status,
+          'completed_by': values.completed_by,
+          'completed_on': values.completed_on
+        },
+        callback: function(r){
+          if (r.message){
+            d.hide();
+            frm.reload_doc();
+          }
+        }
+      });
+    },
   });
-  d.set_value('completed_by', frappe.session.user)
-  d.show()
-}
+  d.set_value('completed_by', frappe.session.user);
+d.show();
+};
+

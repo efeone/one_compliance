@@ -87,3 +87,15 @@ def make_sales_invoice(doc, method):
                                     'description' : sub_category_doc.name
                                 })
                         sales_invoice.save(ignore_permissions=True)
+
+@frappe.whitelist()
+def update_task_status(task_id, status, completed_by, completed_on):    
+    # Load the task document from the database
+    task_doc = frappe.get_doc("Task", task_id)
+    task_doc.completed_on = frappe.utils.getdate(completed_on)
+    task_doc.status = status
+    task_doc.completed_by = completed_by
+    task_doc.save()
+    frappe.db.commit()
+    frappe.msgprint("Project Status has been set to {0}".format(status), alert=True)
+    return True
