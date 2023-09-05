@@ -31,7 +31,14 @@ let customer_credentials = function (frm) {
            label: 'Purpose',
            fieldname: 'purpose',
            fieldtype: 'Link',
-           options: 'Credential Type'
+           options: 'Credential Type',
+           get_query: function () {
+             return {
+               filters: {
+                 'compliance_sub_category':frm.doc.compliance_sub_category
+               }
+             };
+           }
          }
        ],
        primary_action_label: 'View Credential',
