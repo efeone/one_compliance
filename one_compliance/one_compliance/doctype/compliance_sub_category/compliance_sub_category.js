@@ -26,6 +26,12 @@ frappe.ui.form.on('Compliance Sub Category', {
 				});
 			});
 		}
+		if(!frm.is_new() && frm.doc.project_template){
+			//custom button to create project and create project
+			frm.add_custom_button('Create Project', () =>{
+				create_project_dialog(frm)
+			});
+		}
 		if(frm.is_new()){
 			set_notification_templates(frm);
 		}
@@ -45,6 +51,71 @@ frappe.ui.form.on('Compliance Sub Category', {
 		}
 	  }
 });
+
+let create_project_dialog = function(frm){
+
+	let d = new frappe.ui.Dialog({
+    title: 'Enter details',
+    fields: [
+        {
+            label: 'Customer',
+            fieldname: 'customer',
+            fieldtype: 'Link',
+						options: 'Customer',
+						reqd: 1,
+						get_query: function () {
+              return {
+                filters: {
+                  disabled: 0
+                }
+              };
+            }
+        },
+        {
+            label: 'Project Template',
+            fieldname: 'project_template',
+            fieldtype: 'Link',
+						options: 'Project Template',
+						reqd: 1,
+						default: frm.doc.project_template
+        },
+        {
+            label: 'Expected Start Date',
+            fieldname: 'expected_start_date',
+            fieldtype: 'Date',
+						reqd: 1,
+						default: 'Today'
+        },
+				{
+            label: 'Expected End Date',
+            fieldname: 'expected_end_date',
+						reqd: 1,
+            fieldtype: 'Date'
+        }
+    ],
+    size: 'lare',
+    primary_action_label: 'Create Project',
+    primary_action(values) {
+			frappe.call({
+				method:'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.create_project_manually',
+				args:{
+					'project_template':values.project_template ,
+					'customer': values.customer,
+					'expected_start_date': values.expected_start_date,
+					'expected_end_date': values.expected_end_date,
+				},
+				callback:function(r){
+					if (r.message) {
+						frm.reload_doc()
+					}
+				}
+			});
+        d.hide();
+    }
+});
+
+d.show();
+}
 
 let set_notification_templates = function(frm){
 	frappe.call({

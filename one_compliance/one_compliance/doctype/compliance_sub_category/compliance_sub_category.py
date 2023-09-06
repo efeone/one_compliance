@@ -16,6 +16,23 @@ class ComplianceSubCategory(Document):
 			frappe.throw(_('Please Enter Valid Rate'))
 
 @frappe.whitelist()
+def create_project_manually(customer, project_template, expected_start_date, expected_end_date):
+	compliance_sub_category = frappe.db.get_value('Project Template', project_template, 'compliance_sub_category')
+	today = frappe.utils.today()
+	project_name = customer + '-' + compliance_sub_category + '-' + today
+	if not frappe.db.exists('Project', { 'project_name':project_name }):
+		project = frappe.new_doc('Project')
+		project.project_name = project_name
+		project.project_template = project_template
+		project.customer = customer
+		project.expected_start_date = expected_start_date
+		project.expected_end_date = expected_end_date
+		project.save()
+		frappe.msgprint("Project Created",alert = 1)
+	else:
+		frappe.msgprint("Project already created!")
+
+@frappe.whitelist()
 def create_project_template_custom_button(source_name, target_doc = None):
 	''' Method to get project template for custom button using mapdoc '''
 	def set_missing_values(source, target):

@@ -2,7 +2,7 @@ frappe.ui.form.on('Task',{
   refresh(frm){
     let roles = frappe.user_roles;
     if(roles.includes('Compliance Manager') || roles.includes('Director')){
-      if (frm.doc.is_template == 0){
+      if(!frm.is_new() && frm.doc.is_template == 0){
         frm.add_custom_button('View Credential', () => {
           customer_credentials(frm)
         });
@@ -198,4 +198,3 @@ let update_status = function(frm){
   d.set_value('completed_by', frappe.session.user);
 d.show();
 };
-
