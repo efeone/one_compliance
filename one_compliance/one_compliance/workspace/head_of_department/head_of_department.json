@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"eNZsLGfnRc\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Head Of Department</span>\",\"col\":12}},{\"id\":\"M_XiFtuCIx\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Projects\",\"col\":3}},{\"id\":\"nOULog5_9z\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":3}},{\"id\":\"3o5EyHpMOD\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Tasks\",\"col\":3}},{\"id\":\"RhpY6fkgD9\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Working Tasks\",\"col\":3}},{\"id\":\"J4j_f0vu0Q\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Projects\",\"col\":6}},{\"id\":\"2ps5lvc4gK\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Open Tasks\",\"col\":6}},{\"id\":\"R_DvDrBF4d\",\"type\":\"card\",\"data\":{\"card_name\":\"CRM\",\"col\":3}},{\"id\":\"lZ5qkON8Wq\",\"type\":\"card\",\"data\":{\"card_name\":\"Compliances\",\"col\":3}},{\"id\":\"vWmzpB3UOu\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":3}},{\"id\":\"6LpiCUe1OZ\",\"type\":\"card\",\"data\":{\"card_name\":\"Registers\",\"col\":3}},{\"id\":\"X889A_I05w\",\"type\":\"card\",\"data\":{\"card_name\":\"Other\",\"col\":3}}]",
+ "content": "[{\"id\":\"eNZsLGfnRc\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Head Of Department</span>\",\"col\":12}},{\"id\":\"VymWmkaqHV\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"My Projects\",\"col\":6}},{\"id\":\"M_XiFtuCIx\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Projects\",\"col\":6}},{\"id\":\"nOULog5_9z\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":4}},{\"id\":\"3o5EyHpMOD\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Tasks\",\"col\":4}},{\"id\":\"RhpY6fkgD9\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Working Tasks\",\"col\":4}},{\"id\":\"Df2Jyoh7m3\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"J4j_f0vu0Q\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Projects\",\"col\":6}},{\"id\":\"2ps5lvc4gK\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Open Tasks\",\"col\":6}},{\"id\":\"8XVGY0Euy4\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"R_DvDrBF4d\",\"type\":\"card\",\"data\":{\"card_name\":\"CRM\",\"col\":3}},{\"id\":\"vWmzpB3UOu\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":3}},{\"id\":\"6LpiCUe1OZ\",\"type\":\"card\",\"data\":{\"card_name\":\"Registers\",\"col\":3}},{\"id\":\"X889A_I05w\",\"type\":\"card\",\"data\":{\"card_name\":\"Other\",\"col\":3}},{\"id\":\"lZ5qkON8Wq\",\"type\":\"card\",\"data\":{\"card_name\":\"Compliances\",\"col\":3}}]",
  "creation": "2023-05-30 13:59:22.086858",
  "custom_blocks": [],
  "docstatus": 0,
@@ -183,7 +183,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-08-01 12:34:31.925232",
+ "modified": "2023-09-07 11:37:22.088005",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Head Of Department",
@@ -226,6 +226,16 @@
   }
  ],
  "sequence_id": 32.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Yellow",
+   "doc_view": "List",
+   "format": "{} Assigned",
+   "label": "My Projects",
+   "link_to": "Project",
+   "stats_filter": "{\"_assign\":[\"like\",\"%Head Of Department%\"],\"status\":[\"=\",null]},\n{\n    \"_assign\": [\"like\", '%' + frappe.session.user + '%'],\n    \"status\": \"Open\"\n}",
+   "type": "DocType"
+  }
+ ],
  "title": "Head Of Department"
 }

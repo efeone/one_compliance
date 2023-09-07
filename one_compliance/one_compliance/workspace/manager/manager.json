@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"TquB5FCd5G\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\">\ud835\udc0c\ud835\udc1a\ud835\udc27\ud835\udc1a\ud835\udc20\ud835\udc1e\ud835\udc2b</span><br>\",\"col\":12}},{\"id\":\"b2s6-oxZRx\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Project\",\"col\":3}},{\"id\":\"IaWeuJYvCf\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Tasks\",\"col\":3}},{\"id\":\"nFs6llHPEd\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Working Tasks\",\"col\":3}},{\"id\":\"cVMfmJo5rZ\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":3}},{\"id\":\"o7E9rUeOfG\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Working Tasks\",\"col\":6}},{\"id\":\"XpxAvIQAA_\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Open Tasks\",\"col\":6}},{\"id\":\"1JhzIxJhmH\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer\",\"col\":3}},{\"id\":\"xe3yJoEUF4\",\"type\":\"card\",\"data\":{\"card_name\":\"Tasks\",\"col\":3}}]",
+ "content": "[{\"id\":\"TquB5FCd5G\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\">\ud835\udc0c\ud835\udc1a\ud835\udc27\ud835\udc1a\ud835\udc20\ud835\udc1e\ud835\udc2b</span><br>\",\"col\":12}},{\"id\":\"QEs-TUFkXY\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"My Projects\",\"col\":6}},{\"id\":\"b2s6-oxZRx\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Project\",\"col\":6}},{\"id\":\"IaWeuJYvCf\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Tasks\",\"col\":4}},{\"id\":\"nFs6llHPEd\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Working Tasks\",\"col\":4}},{\"id\":\"cVMfmJo5rZ\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":4}},{\"id\":\"JejxpAMntn\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"o7E9rUeOfG\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Working Tasks\",\"col\":6}},{\"id\":\"XpxAvIQAA_\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Open Tasks\",\"col\":6}},{\"id\":\"slVPDnaofp\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"1JhzIxJhmH\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer\",\"col\":3}},{\"id\":\"xe3yJoEUF4\",\"type\":\"card\",\"data\":{\"card_name\":\"Tasks\",\"col\":3}}]",
  "creation": "2023-08-18 16:59:15.408260",
  "custom_blocks": [],
  "docstatus": 0,
@@ -99,7 +99,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-08-22 12:33:25.610624",
+ "modified": "2023-09-07 12:20:33.655756",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Manager",
@@ -142,6 +142,16 @@
   }
  ],
  "sequence_id": 40.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "format": "{} Assigned",
+   "label": "My Projects",
+   "link_to": "Project",
+   "stats_filter": "{\"_assign\":[\"like\",\"%Manager%\"],\"status\":[\"=\",null]},\n{\n    \"_assign\": [\"like\", '%' + frappe.session.user + '%'],\n    \"status\": \"Open\"\n}",
+   "type": "DocType"
+  }
+ ],
  "title": "Manager"
 }
