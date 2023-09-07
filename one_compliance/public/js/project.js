@@ -1,20 +1,64 @@
 frappe.ui.form.on('Project',{
     refresh(frm){
-      
+      if(!frm.is_new()){
+        setTimeout(() => {
+            frm.remove_custom_button('Duplicate Project with Tasks','Actions')
+            frm.remove_custom_button('Set Project Status','Actions')
+            })
+      }
+
         let roles = frappe.user_roles;
     		if(roles.includes('Compliance Manager') || roles.includes('Director')){
-        frm.add_custom_button('View Credential', () => {
-  				customer_credentials(frm)
-        });
-        frm.add_custom_button('View Documents', () =>{
-          customer_documents(frm)
-        })
-
+          if(!frm.is_new()){
+            frm.add_custom_button('View Credential', () => {
+      				customer_credentials(frm)
+            });
+            frm.add_custom_button('View Documents', () =>{
+              customer_documents(frm)
+            })
+          }
+    }
+    if(!frm.is_new()){
+      frm.add_custom_button('Set Project Status', () => {
+        update_project_status(frm)
+      });
     }
   }
 });
-/* applied dialog instance to show customer Credential */
 
+let set_status = function(frm, status) {
+  frappe.confirm(__('Set Project and all Tasks to status {0}?', [status.bold()]), () => {
+    frappe.xcall('one_compliance.one_compliance.doc_events.project.set_project_status',
+      {project: frm.doc.name, status: status}).then(() => {
+      frm.reload_doc();
+    });
+  });
+}
+
+let update_project_status = function(frm){
+  let d = new frappe.ui.Dialog({
+      title: 'Set Project Status',
+      fields: [
+        {
+          "fieldname": "status",
+          "fieldtype": "Select",
+          "label": "Status",
+          "reqd": 1,
+          "options": "\nOpen\nHold\nCompleted\nCancelled",
+        },
+      ],
+      size: 'small',
+      primary_action: function() {
+        set_status(frm, d.get_values().status);
+        d.hide();
+      },
+      primary_action_label: __("Set Project Status")
+  });
+
+  d.show();
+}
+
+/* applied dialog instance to show customer Credential */
 let customer_credentials = function (frm) {
   let d = new frappe.ui.Dialog({
     title: 'Enter details',
@@ -23,7 +67,14 @@ let customer_credentials = function (frm) {
         label: 'Purpose',
         fieldname: 'purpose',
         fieldtype: 'Link',
-        options: 'Credential Type'
+        options: 'Credential Type',
+        get_query: function () {
+          return {
+            filters: {
+              'compliance_sub_category':frm.doc.compliance_sub_category
+            }
+          };
+        }
       }
     ],
     primary_action_label: 'View Credential',

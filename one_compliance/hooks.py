@@ -118,7 +118,9 @@ doc_events = {
         'on_update':['one_compliance.one_compliance.doc_events.task.task_on_update',
                     'one_compliance.one_compliance.doc_events.task.make_sales_invoice',
                     ],
-        'validate':['one_compliance.one_compliance.doc_events.task.append_users_to_project'],
+        'validate':['one_compliance.one_compliance.doc_events.task.append_users_to_project',
+                    'one_compliance.one_compliance.doc_events.task.set_task_status_to_hold',
+                   ],
     },
     'Project':{
         'on_update':[

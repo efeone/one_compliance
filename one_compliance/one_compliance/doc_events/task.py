@@ -13,6 +13,18 @@ def append_users_to_project(doc, method):
             for employee in employee_group.employee_list:
                 if employee.user_id:
                     add_project_user_if_not_exists(doc.project, employee.user_id)
+@frappe.whitelist()
+def set_task_status_to_hold(doc, method):
+    if doc.hold == 1:
+        frappe.db.set_value("Task", doc.name, "status", "Hold")
+
+@frappe.whitelist()
+def update_expected_dates_in_task(doc):
+    if doc.doctype == "Task":
+        doc.exp_start_date = frappe.utils.today()
+        doc.exp_end_date = add_days(doc.exp_start_date, doc.duration)
+        doc.save()
+    frappe.db.commit()
 
 def add_project_user_if_not_exists(project, user_id):
     project_doc = frappe.get_doc('Project', project)
@@ -89,7 +101,7 @@ def make_sales_invoice(doc, method):
                         sales_invoice.save(ignore_permissions=True)
 
 @frappe.whitelist()
-def update_task_status(task_id, status, completed_by, completed_on):    
+def update_task_status(task_id, status, completed_by, completed_on):
     # Load the task document from the database
     task_doc = frappe.get_doc("Task", task_id)
     task_doc.completed_on = frappe.utils.getdate(completed_on)
