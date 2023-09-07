@@ -160,7 +160,7 @@ let update_status = function(frm){
         label: 'Status',
         fieldname: 'status',
         fieldtype: 'Select',
-        options: 'Open\nWorking\nPending Review\nCompleted',
+        options: 'Open\nWorking\nPending Review\nCompleted\nHold',
         default: 'Completed'
       },
       {
