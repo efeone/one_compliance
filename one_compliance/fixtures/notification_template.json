@@ -1,20 +1,20 @@
 [
  {
-  "content": "Task {{ doc.name }} has a due date of {{ doc.exp_end_date }}. Take necessary actions to complete it ASAP",
+  "content": "Task {{doc.subject}} ({{ doc.name }}) has a due date of {{ doc.exp_end_date }}. Take necessary actions to complete it ASAP",
   "docstatus": 0,
   "doctype": "Notification Template",
   "doctype_name": "Task",
-  "modified": "2023-04-20 10:50:40.278520",
+  "modified": "2023-09-11 10:00:39.128604",
   "name": "Task Before Due Date Notification",
   "notification_name": "Task Before Due Date Notification",
   "subject": "{{ doc.exp_end_date }}  is the due date of {{ doc.name }}"
  },
  {
-  "content": "Task {{ doc.name }} has reached its due date. Take necessary actions to complete it ASAP",
+  "content": "Task {{doc.subject}} ({{ doc.name }}) has reached its due date. Take necessary actions to complete it ASAP",
   "docstatus": 0,
   "doctype": "Notification Template",
   "doctype_name": "Task",
-  "modified": "2023-04-20 10:48:21.157305",
+  "modified": "2023-09-11 10:00:27.980201",
   "name": "Task Overdue Notification for Employee",
   "notification_name": "Task Overdue Notification for Employee",
   "subject": "Today is the due date of {{ doc.name }}"
@@ -30,41 +30,41 @@
   "subject": "Your Digital Signature will expire on {{ doc.expiry_date }}"
  },
  {
-  "content": "Dear Director,\nTask {{ doc.name }} which is assigned to the Employee {{ doc.assigned_to }} has reached its due date. Take necessary actions to complete it ASAP",
+  "content": "Dear Director,\nTask {{doc.subject}} ({{ doc.name }}) which is assigned to the Employee {{ doc.assigned_to }} has reached its due date. Take necessary actions to complete it ASAP",
   "docstatus": 0,
   "doctype": "Notification Template",
   "doctype_name": "Task",
-  "modified": "2023-04-20 11:52:31.196711",
+  "modified": "2023-09-11 10:01:05.643907",
   "name": "Task Overdue Notification for Director",
   "notification_name": "Task Overdue Notification for Director",
   "subject": "Today is the due date of {{ doc.name }}"
  },
  {
-  "content": "Dear Director,\nNo actions performed against Task {{ doc.name }}, which is assigned to the Employee {{ doc.assigned_to }}. Take necessary actions to complete it ASAP",
+  "content": "Dear Director,\nNo actions performed against Task {{doc.subject}} ({{ doc.name }}), which is assigned to the Employee {{ doc.assigned_to }}. Take necessary actions to complete it ASAP",
   "docstatus": 0,
   "doctype": "Notification Template",
   "doctype_name": "Task",
-  "modified": "2023-04-20 11:52:12.187366",
+  "modified": "2023-09-11 10:00:51.063737",
   "name": "No Action Taken Notification for Director",
   "notification_name": "No Action Taken Notification for Director",
   "subject": "No actions performed against Task {{ doc.name }}"
  },
  {
-  "content": "Dear Director,\nTask {{ doc.name }} which is assigned to the Employee {{ doc.assigned_to }} has been Completed.",
+  "content": "Dear Director,\nTask {{doc.subject}} ({{ doc.name }}) which is assigned to the Employee {{ doc.assigned_to }} has been Completed.",
   "docstatus": 0,
   "doctype": "Notification Template",
   "doctype_name": "Task",
-  "modified": "2023-04-20 11:59:45.030770",
+  "modified": "2023-09-11 10:01:18.063341",
   "name": "Task Complete Notification for Director",
   "notification_name": "Task Complete Notification for Director",
   "subject": "Task {{ doc.name }} has been Completed"
  },
  {
-  "content": "Dear {{ doc.customer_name }},\nProject {{ doc.name }} for Compliance Sub Category : {{ doc.compliance_sub_category }} has been Completed.",
+  "content": "Dear {{ doc.customer_name }},\nProject {{doc.project_name}} ({{ doc.name }}) for Compliance Sub Category : {{ doc.compliance_sub_category }} has been Completed.",
   "docstatus": 0,
   "doctype": "Notification Template",
   "doctype_name": "Project",
-  "modified": "2023-04-20 12:06:19.526232",
+  "modified": "2023-09-11 10:01:28.303612",
   "name": "Project Complete Notification For Customer",
   "notification_name": "Project Complete Notification For Customer",
   "subject": "Project {{ doc.name }} has been Completed"
