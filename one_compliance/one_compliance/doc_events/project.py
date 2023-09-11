@@ -19,7 +19,7 @@ def project_complete_notification_for_customer(doc, email_id):
 	send_notification(doc, email_id, context, 'project_complete_notification_for_customer')
 
 @frappe.whitelist()
-def set_project_status(project, status):
+def set_project_status(project, status, comment=None):
 	"""
 	set status for project and all related tasks
 	"""
@@ -37,10 +37,11 @@ def set_project_status(project, status):
 			frappe.db.set_value("Task", task.name, "hold", 0)
 			task_doc = frappe.get_doc('Task', task.name)
 			update_expected_dates_in_task(task_doc)
-
 	project.status = status
 	if status == "Hold":
 		project.hold = 1
 	elif status == "Open":
 		project.hold = 0
+	if comment:
+		project.add_comment('Comment', comment)
 	project.save()

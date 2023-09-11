@@ -26,10 +26,10 @@ frappe.ui.form.on('Project',{
   }
 });
 
-let set_status = function(frm, status) {
+let set_status = function(frm, status, comment) {
   frappe.confirm(__('Set Project and all Tasks to status {0}?', [status.bold()]), () => {
     frappe.xcall('one_compliance.one_compliance.doc_events.project.set_project_status',
-      {project: frm.doc.name, status: status}).then(() => {
+      {project: frm.doc.name, status: status, comment: comment}).then(() => {
       frm.reload_doc();
     });
   });
@@ -46,10 +46,17 @@ let update_project_status = function(frm){
           "reqd": 1,
           "options": "\nOpen\nHold\nCompleted\nCancelled",
         },
+        {
+          "fieldname": "comment",
+          "fieldtype": "Small Text",
+          "label": "Comment",
+          "depends_on": "eval:doc.status == 'Hold'",
+          "mandatory_depends_on": "eval:doc.status == 'Hold'",
+        },
       ],
       size: 'small',
       primary_action: function() {
-        set_status(frm, d.get_values().status);
+        set_status(frm, d.get_values().status, d.get_values().comment);
         d.hide();
       },
       primary_action_label: __("Set Project Status")
