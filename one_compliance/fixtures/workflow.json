@@ -4,7 +4,7 @@
   "doctype": "Workflow",
   "document_type": "Compliance Agreement",
   "is_active": 1,
-  "modified": "2023-09-12 11:36:15.297707",
+  "modified": "2023-09-13 10:55:26.669350",
   "name": "Compliance Agreement Workflow",
   "override_status": 0,
   "send_email_alert": 1,
@@ -110,6 +110,19 @@
     "parentfield": "states",
     "parenttype": "Workflow",
     "state": "Customer Rejected",
+    "update_field": "status",
+    "update_value": "Cancelled"
+   },
+   {
+    "allow_edit": "Director",
+    "doc_status": "2",
+    "is_optional_state": 0,
+    "message": null,
+    "next_action_email_template": null,
+    "parent": "Compliance Agreement Workflow",
+    "parentfield": "states",
+    "parenttype": "Workflow",
+    "state": "Cancelled",
     "update_field": "status",
     "update_value": "Cancelled"
    }

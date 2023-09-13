@@ -125,7 +125,7 @@ let set_agreement_status = function(frm){
             fieldname: 'status',
             fieldtype: 'Select',
             reqd: 1,
-            options: 'Open\nHold',
+            options: 'Open\nHold\nCancelled',
         },
     ],
     primary_action_label: 'Set Agreement Status',
