@@ -176,8 +176,13 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 				update_compliance_dates(compliance_category_details_id)
 		if not compliance_date:
 			compliance_date = getdate(frappe.utils.today())
+		repeat_on = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'repeat_on')
+		if repeat_on == "Yearly":
+			naming = getdate(today()).year
+		else:
+			naming = getdate(today()).strftime("%B")
 		project = frappe.new_doc('Project')
-		project.project_name = self.customer_name + '-' + compliance_sub_category + '-' + str(compliance_date)
+		project.project_name = self.customer_name + '-' + compliance_sub_category + '-' + str(naming)
 		project.customer = self.customer
 		project.compliance_agreement = self.name
 		project.compliance_sub_category = compliance_sub_category
