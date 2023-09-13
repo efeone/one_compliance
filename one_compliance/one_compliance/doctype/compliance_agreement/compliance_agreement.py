@@ -35,6 +35,10 @@ class ComplianceAgreement(Document):
 		self.validate_agreement_dates()
 		self.change_agreement_status()
 
+	def on_trash(self):
+		delete_project_and_task(self.name)
+
+
 	def validate_agreement_dates(self):
 		if self.posting_date:
 			if getdate(self.posting_date) > getdate(today()):
@@ -130,9 +134,23 @@ def check_exist_list(self, compliance_sub_category):
 
 @frappe.whitelist()
 def set_agreement_status(agreement_id, status):
-    frappe.db.set_value('Compliance Agreement', agreement_id, 'status', status)
-    frappe.db.commit()
-    return True
+	if status == 'Cancelled':
+		frappe.db.set_value('Compliance Agreement', agreement_id, 'workflow_state', status)
+		frappe.db.set_value('Compliance Agreement', agreement_id, 'docstatus', 2)
+	frappe.db.set_value('Compliance Agreement', agreement_id, 'status', status)
+	frappe.db.commit()
+	return True
+
+@frappe.whitelist()
+def delete_project_and_task(agreement_id):
+	if frappe.db.exists('Project',{'compliance_agreement': agreement_id}):
+		project_list = frappe.db.get_all('Project', filters={'compliance_agreement': agreement_id})
+		for project in project_list:
+			task_list = frappe.db.get_all('Task', filters={'project': project.name})
+			for task in task_list:
+				frappe.db.delete('Task', task.name)
+			frappe.db.delete('Project', project.name)
+			frappe.msgprint('Agreement Deleted {0}.'.format(agreement_id), alert = 1)
 
 @frappe.whitelist()
 def check_project_exists_or_not(compliance_sub_category, compliance_agreement):
