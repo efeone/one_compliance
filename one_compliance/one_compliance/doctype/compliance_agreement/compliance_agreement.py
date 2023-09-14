@@ -47,24 +47,6 @@ class ComplianceAgreement(Document):
 			if getdate(self.valid_from) > getdate(self.valid_upto):
 				frappe.throw('From Date cannot be greater than Valid Upto Date')
 
-	@frappe.whitelist()
-	def list_sub_category(self):
-		rate = 0
-		if self.compliance_category:
-			for compliance_category in self.compliance_category:
-				compliance_sub_category_list = get_compliance_sub_category_list(compliance_category)
-				if compliance_sub_category_list:
-					for compliance_sub_category in compliance_sub_category_list:
-						rate += compliance_sub_category.rate
-						if not check_exist_list(self, compliance_sub_category):
-							self.append('compliance_category_details',{
-								'compliance_category':compliance_sub_category.compliance_category,
-								'compliance_sub_category':compliance_sub_category.name,
-								'rate':compliance_sub_category.rate
-							})
-			self.total = rate
-			return True
-
 	def change_agreement_status(self):
 		if self.status != 'Hold':
 			if self.valid_from:
@@ -117,9 +99,10 @@ def change_agreement_status_scheduler():
 				self.create_project_if_not_exists()
 			frappe.db.commit()
 
+@frappe.whitelist()
 def get_compliance_sub_category_list(compliance_category):
 	'''method used for list sub category'''
-	sub_category_list = frappe.db.get_list('Compliance Sub Category', filters = {'compliance_category':compliance_category.compliance_category, 'enabled':1}, fields = ['rate','name','compliance_category'])
+	sub_category_list = frappe.db.get_list('Compliance Sub Category', filters = {'compliance_category':compliance_category, 'enabled':1}, fields = ['rate','name','compliance_category'])
 	return sub_category_list
 
 def check_exist_list(self, compliance_sub_category):
