@@ -112,7 +112,10 @@ doctype_js = {
 
 doc_events = {
 	"Project Template": {
-		"after_insert": "one_compliance.one_compliance.doc_events.project_template.update_project_template",
+		"after_insert": ["one_compliance.one_compliance.doc_events.project_template.update_project_template",
+                        ],
+        'validate': ['one_compliance.one_compliance.doc_events.project_template.calculate_project_duration'
+                    ],
 	},
     'Task':{
         'on_update':['one_compliance.one_compliance.doc_events.task.task_on_update',
@@ -124,8 +127,11 @@ doc_events = {
     },
     'Project':{
         'on_update':[
-                    'one_compliance.one_compliance.doc_events.project.project_on_update'
-                    ]
+                    'one_compliance.one_compliance.doc_events.project.project_on_update',
+                    ],
+        'after_insert':[
+                        'one_compliance.one_compliance.doc_events.project.update_expected_end_date_in_project',
+                       ],
     },
     'Customer':{
         'on_update':'one_compliance.one_compliance.doc_events.customer.customer_on_update'
