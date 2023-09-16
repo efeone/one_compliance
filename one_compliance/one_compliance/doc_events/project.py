@@ -3,6 +3,7 @@ from frappe.model.mapper import get_mapped_doc
 from one_compliance.one_compliance.utils import send_notification
 from frappe.email.doctype.notification.notification import get_context
 from one_compliance.one_compliance.doc_events.task import update_expected_dates_in_task
+from frappe.utils import *
 
 @frappe.whitelist()
 def project_on_update(doc, method):
@@ -45,3 +46,13 @@ def set_project_status(project, status, comment=None):
 	if comment:
 		project.add_comment('Comment', comment)
 	project.save()
+
+@frappe.whitelist()
+def update_expected_end_date_in_project(doc, method):
+	if doc.compliance_sub_category:
+		project_template = frappe.db.get_value('Compliance Sub Category', doc.compliance_sub_category, 'project_template')
+		if doc.expected_start_date and project_template:
+			project_duration = frappe.db.get_value('Project Template', project_template, 'custom_project_duration')
+			doc.expected_end_date = add_days(doc.expected_start_date, project_duration)
+			doc.save()
+		frappe.db.commit
