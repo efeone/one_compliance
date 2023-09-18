@@ -56,3 +56,14 @@ def update_expected_end_date_in_project(doc, method):
 			doc.expected_end_date = add_days(doc.expected_start_date, project_duration)
 			doc.save()
 		frappe.db.commit
+
+@frappe.whitelist()
+def set_status_to_overdue():
+	projects = frappe.db.get_all('Project', filters= {'status': ['not in',['Cancelled','Hold','Completed']]})
+	if projects:
+		for project in projects:
+			doc = frappe.get_doc('Project', project.name)
+			today = getdate(frappe.utils.today())
+			if today > getdate(doc.expected_end_date):
+				frappe.db.set_value('Project', project.name, 'status', 'Overdue')
+			frappe.db.commit()

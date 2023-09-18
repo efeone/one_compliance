@@ -57,10 +57,24 @@ def task_daily_sheduler():
                                 send_notification(doc, assign, context, 'task_overdue_notification_for_employee')
                                 send_notification_to_roles(doc, 'Director', context, 'task_overdue_notification_for_director')
                             if days_diff == 1:
-                                send_notification(doc, assign, context, 'task_before_due_date__notification')
+                                send_notification(doc, assign, context, 'task_before_due_date_notification')
                         if doc.exp_start_date:
                             if doc.status == 'Open' and (getdate(doc.exp_start_date) < getdate(today)):
                                 send_notification_to_roles(doc, 'Director', context, 'no_action_taken_notification_for_director')
+
+@frappe.whitelist()
+def project_overdue_notification():
+    if frappe.db.exists('Project', {'status': ['not in',['Cancelled','Hold','Completed']]}):
+        projects = frappe.db.get_all('Project', filters= {'status': ['not in',['Cancelled','Hold','Completed']]})
+        if projects:
+            for project in projects:
+                doc = frappe.get_doc('Project', project.name)
+                today = frappe.utils.today()
+                context = get_context(doc)
+                if doc.expected_end_date:
+                    days_diff = date_diff(getdate(doc.expected_end_date), getdate(today))
+                    if days_diff == 1:
+                        send_notification_to_roles(doc, 'Director', context, 'project_before_due_date_notification')
 
 @frappe.whitelist()
 def send_notification(doc, for_user, context, notification_template_fieldname):
@@ -105,8 +119,6 @@ def view_customer_documents(customer,compliance_sub_category):
             frappe.throw(_('Document not attached for this sub category'))
     else:
         frappe.throw(title = _('ALERT !!'),msg = _('Document not attached for this sub category'))
-
-
 
 
 @frappe.whitelist()

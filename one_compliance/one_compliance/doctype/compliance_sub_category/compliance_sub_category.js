@@ -141,6 +141,9 @@ let set_notification_templates = function(frm){
 				if(!frm.doc.project_complete_notification_for_customer){
 					frm.set_value('project_complete_notification_for_customer', r.message.project_complete_notification_for_customer)
 				}
+				if(!frm.doc.project_before_due_date_notification){
+					frm.set_value('project_before_due_date_notification', r.message.project_before_due_date_notification)
+				}
 			}
 		}
 	})

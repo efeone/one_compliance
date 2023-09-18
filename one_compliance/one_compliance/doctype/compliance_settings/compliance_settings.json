@@ -17,7 +17,8 @@
   "column_break_xwbwy",
   "task_complete_notification_for_director",
   "no_action_taken_notification_for_director",
-  "project_complete_notification_for_customer"
+  "project_complete_notification_for_customer",
+  "project_before_due_date_notification"
  ],
  "fields": [
   {
@@ -81,12 +82,18 @@
    "fieldtype": "Link",
    "label": "Digital Signature Expiry Notification",
    "options": "Notification Template"
+  },
+  {
+   "fieldname": "project_before_due_date_notification",
+   "fieldtype": "Link",
+   "label": "Project Before Due Date Notification ",
+   "options": "Notification Template"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-04-01 16:26:43.797296",
+ "modified": "2023-09-16 15:44:08.578651",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
