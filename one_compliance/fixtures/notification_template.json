@@ -1,5 +1,15 @@
 [
  {
+  "content": "Project {{ doc.name }} has a due date of {{ doc.expected_end_date }}. Take necessary actions to complete it ASAP",
+  "docstatus": 0,
+  "doctype": "Notification Template",
+  "doctype_name": "Project",
+  "modified": "2023-09-18 11:24:19.357520",
+  "name": "Project Before Due Date Notification",
+  "notification_name": "Project Before Due Date Notification",
+  "subject": "{{ doc.expected_end_date }}  is the due date of {{ doc.name }} - {{doc.project_name}} "
+ },
+ {
   "content": "Task {{ doc.name }} has a due date of {{ doc.exp_end_date }}. Take necessary actions to complete it ASAP",
   "docstatus": 0,
   "doctype": "Notification Template",
