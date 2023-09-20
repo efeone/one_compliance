@@ -133,7 +133,7 @@ def delete_project_and_task(agreement_id):
 			for task in task_list:
 				frappe.db.delete('Task', task.name)
 			frappe.db.delete('Project', project.name)
-			frappe.msgprint('Agreement Deleted {0}.'.format(agreement_id), alert = 1)
+		frappe.msgprint('Agreement Deleted {0}.'.format(agreement_id), alert = 1)
 
 @frappe.whitelist()
 def check_project_exists_or_not(compliance_sub_category, compliance_agreement):
@@ -178,6 +178,7 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		for template_task in project_template_doc.tasks:
 			''' Method to create task against created project from the Project Template '''
 			template_task_doc = frappe.get_doc('Task', template_task.task)
+			user_name = frappe.get_cached_value("User", frappe.session.user, "full_name")
 			task_doc = frappe.new_doc('Task')
 			task_doc.compliance_sub_category = compliance_sub_category
 			task_doc.subject = template_task.subject
@@ -195,11 +196,14 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 					employee = frappe.db.get_value('Employee', template_task.employee_or_group, 'user_id')
 					if employee:
 						create_todo('Task', task_doc.name, employee, employee, 'Task {0} Assigned Successfully'.format(task_doc.name))
+						create_notification_log('{0} Assigned a New Task {1} to You'.format(user_name, task_doc.name),'Mention', employee, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
 				if template_task.type == "Employee Group":
 					employee_group = frappe.get_doc('Employee Group', template_task.employee_or_group)
 					if employee_group.employee_list:
 						for employee in employee_group.employee_list:
 							create_todo('Task', task_doc.name, employee.user_id, employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name))
+							create_notification_log('{0} Assigned a New Task {1} to you'.format(user_name, task_doc.name),'Mention', employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
+
 		frappe.db.commit()
 	else:
 		frappe.throw( title = _('ALERT !!'), msg = _('Project Template does not exist for {0}'.format(compliance_sub_category)))
