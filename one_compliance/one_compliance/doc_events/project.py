@@ -67,3 +67,28 @@ def set_status_to_overdue():
 			if today > getdate(doc.expected_end_date):
 				frappe.db.set_value('Project', project.name, 'status', 'Overdue')
 			frappe.db.commit()
+
+@frappe.whitelist()
+def get_permission_query_conditions(user):
+    """
+    Method used to set the permission to get the list of docs (Example: list view query)
+    Called from the permission_query_conditions of hooks for the DocType Issue
+    args:
+        user: name of User object or current user
+    return conditions query
+    """
+    if not user:
+        user = frappe.session.user
+
+    user_roles = frappe.get_roles(user)
+    if "Administrator" in user_roles:
+        return None
+
+    if "Manager" in user_roles or "Executive" in user_roles:
+        conditions = """(tabProject._assign like '%{user}%')""" \
+            .format(user=user)
+        return conditions
+    else:
+        return None
+
+

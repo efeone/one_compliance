@@ -90,9 +90,9 @@ doctype_js = {
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-#	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
+permission_query_conditions = {
+	"Project": "one_compliance.one_compliance.doc_events.project.get_permission_query_conditions",
+}
 #
 # has_permission = {
 #	"Event": "frappe.desk.doctype.event.event.has_permission",
