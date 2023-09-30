@@ -2,7 +2,358 @@
  {
   "docstatus": 0,
   "doctype": "Role Profile",
-  "modified": "2023-08-18 12:38:44.261821",
+  "modified": "2023-09-30 12:07:55.486644",
+  "name": "Inventory",
+  "role_profile": "Inventory",
+  "roles": [
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock Manager"
+   },
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Item Manager"
+   },
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Inventory",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:07:50.106988",
+  "name": "Manufacturing",
+  "role_profile": "Manufacturing",
+  "roles": [
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manufacturing User"
+   },
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Manufacturing Manager"
+   },
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Manufacturing",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:07:44.601453",
+  "name": "Accounts",
+  "role_profile": "Accounts",
+  "roles": [
+   {
+    "parent": "Accounts",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts User"
+   },
+   {
+    "parent": "Accounts",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Accounts",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Accounts",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:07:31.420572",
+  "name": "Sales",
+  "role_profile": "Sales",
+  "roles": [
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales User"
+   },
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Manager"
+   },
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Sales",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:07:09.731916",
+  "name": "Purchase",
+  "role_profile": "Purchase",
+  "roles": [
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Item Manager"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Stock User"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase User"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Purchase Manager"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Purchase",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:07:02.199879",
+  "name": "HR",
+  "role_profile": "HR",
+  "roles": [
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR User"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "HR Manager"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Leave Approver"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Expense Approver"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "HR",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:06:46.954952",
+  "name": "Consultant",
+  "role_profile": "Consultant ",
+  "roles": [
+   {
+    "parent": "Consultant",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Consultant",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:05:52.141791",
+  "name": "Administrative Manager",
+  "role_profile": "Administrative Manager",
+  "roles": [
+   {
+    "parent": "Administrative Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Administrative Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:05:44.548664",
+  "name": "Administrative assistant",
+  "role_profile": "Administrative assistant ",
+  "roles": [
+   {
+    "parent": "Administrative assistant",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Administrative assistant",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:05:33.979390",
+  "name": "Business development Manager",
+  "role_profile": "Business development Manager",
+  "roles": [
+   {
+    "parent": "Business development Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Business development Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:08:00.392449",
+  "name": "Business Executive",
+  "role_profile": "Business Executive",
+  "roles": [
+   {
+    "parent": "Business Executive",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Business Executive",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Projects User"
+   },
+   {
+    "parent": "Business Executive",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   }
+  ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2023-09-30 12:05:07.953584",
   "name": "Head Of Department",
   "role_profile": "Head Of Department",
   "roles": [
@@ -11,13 +362,25 @@
     "parentfield": "roles",
     "parenttype": "Role Profile",
     "role": "Head Of Department"
+   },
+   {
+    "parent": "Head Of Department",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Head Of Department",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
    }
   ]
  },
  {
   "docstatus": 0,
   "doctype": "Role Profile",
-  "modified": "2023-08-14 15:05:30.794347",
+  "modified": "2023-09-30 12:03:57.110852",
   "name": "Manager",
   "role_profile": "Manager",
   "roles": [
@@ -26,13 +389,25 @@
     "parentfield": "roles",
     "parenttype": "Role Profile",
     "role": "Manager"
+   },
+   {
+    "parent": "Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
    }
   ]
  },
  {
   "docstatus": 0,
   "doctype": "Role Profile",
-  "modified": "2023-08-14 15:10:52.153251",
+  "modified": "2023-09-30 12:04:55.021197",
   "name": "Senior Manager",
   "role_profile": "Senior Manager",
   "roles": [
@@ -41,13 +416,25 @@
     "parentfield": "roles",
     "parenttype": "Role Profile",
     "role": "Senior Manager"
+   },
+   {
+    "parent": "Senior Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Senior Manager",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
    }
   ]
  },
  {
   "docstatus": 0,
   "doctype": "Role Profile",
-  "modified": "2023-04-27 10:15:13.912167",
+  "modified": "2023-09-30 12:04:24.953806",
   "name": "Super Admin",
   "role_profile": "Super Admin",
   "roles": [
@@ -338,13 +725,43 @@
     "parentfield": "roles",
     "parenttype": "Role Profile",
     "role": "Workspace Manager"
+   },
+   {
+    "parent": "Super Admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Super Admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Expense Approver"
+   },
+   {
+    "parent": "Super Admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Leave Approver"
+   },
+   {
+    "parent": "Super Admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Interviewer"
+   },
+   {
+    "parent": "Super Admin",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Senior Manager"
    }
   ]
  },
  {
   "docstatus": 0,
   "doctype": "Role Profile",
-  "modified": "2023-06-07 12:57:22.305125",
+  "modified": "2023-09-30 12:04:45.863763",
   "name": "Director",
   "role_profile": "Director",
   "roles": [
@@ -371,13 +788,25 @@
     "parentfield": "roles",
     "parenttype": "Role Profile",
     "role": "Sales Manager"
+   },
+   {
+    "parent": "Director",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Director",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
    }
   ]
  },
  {
   "docstatus": 0,
   "doctype": "Role Profile",
-  "modified": "2023-09-04 13:33:34.316667",
+  "modified": "2023-09-30 12:05:20.099996",
   "name": "Executive",
   "role_profile": "Executive",
   "roles": [
@@ -386,6 +815,18 @@
     "parentfield": "roles",
     "parenttype": "Role Profile",
     "role": "Executive"
+   },
+   {
+    "parent": "Executive",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Executive",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
    }
   ]
  }
