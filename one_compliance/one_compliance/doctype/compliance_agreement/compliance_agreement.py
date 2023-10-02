@@ -174,9 +174,9 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		if repeat_on == "Yearly":
 			naming = naming_year
 		elif repeat_on == "Quarterly":
-			naming = naming_year + ' ' + naming_quarter
+			naming = str(naming_year) + ' ' + naming_quarter
 		else:
-			naming = naming_year + ' ' + naming_month
+			naming = str(naming_year) + ' ' + naming_month
 		project = frappe.new_doc('Project')
 		project.project_name = self.customer_name + '-' + compliance_sub_category + '-' + str(naming)
 		project.customer = self.customer
