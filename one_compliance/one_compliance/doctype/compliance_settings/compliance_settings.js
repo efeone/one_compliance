@@ -3,6 +3,11 @@
 
 frappe.ui.form.on('Compliance Settings', {
 	refresh: function(frm) {
+    if (frappe.session.user == "Administrator"){
+      frm.add_custom_button('Create Projects', () => {
+        create_projects_manually_perticular_date(frm)
+      })
+    }
     //filter for task_before_due_date_notification based on doctype
     frm.set_query('task_before_due_date_notification', function(){
       return {
@@ -67,3 +72,37 @@ frappe.ui.form.on('Compliance Settings', {
     })
 	}
 });
+
+let create_projects_manually_perticular_date = function(frm){
+  //function to set the craete of compliance project manually 
+  let d = new frappe.ui.Dialog({
+    title: 'Manual Project Creation',
+    fields: [
+        {
+            label: 'Starting Date',
+            fieldname: 'starting_date',
+            fieldtype: 'Date',
+            reqd: 1
+        },
+    ],
+    primary_action_label: 'Create Project',
+    primary_action(values) {
+      if(values.starting_date){
+        frappe.call({
+          method:'one_compliance.one_compliance.doctype.compliance_settings.compliance_settings.manual_project_creations',
+          args:{
+            'starting_date': values.starting_date,
+          },
+          callback:function(r){
+            if (r.message) {
+              frm.reload_doc()
+            }
+          }
+        });
+      }
+        d.hide();
+    }
+  });
+  d.show();
+}
+
