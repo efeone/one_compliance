@@ -544,12 +544,6 @@
     "parenttype": "Module Profile"
    },
    {
-    "module": "HR",
-    "parent": "Senior Manager",
-    "parentfield": "block_modules",
-    "parenttype": "Module Profile"
-   },
-   {
     "module": "Income Tax India",
     "parent": "Senior Manager",
     "parentfield": "block_modules",
@@ -678,7 +672,7 @@
   ],
   "docstatus": 0,
   "doctype": "Module Profile",
-  "modified": "2023-08-21 14:58:33.119494",
+  "modified": "2023-10-03 12:04:03.975372",
   "module_profile_name": "Senior Manager",
   "name": "Senior Manager"
  },
@@ -793,12 +787,6 @@
     "parenttype": "Module Profile"
    },
    {
-    "module": "HR",
-    "parent": "Manager",
-    "parentfield": "block_modules",
-    "parenttype": "Module Profile"
-   },
-   {
     "module": "Income Tax India",
     "parent": "Manager",
     "parentfield": "block_modules",
@@ -933,7 +921,7 @@
   ],
   "docstatus": 0,
   "doctype": "Module Profile",
-  "modified": "2023-08-21 14:59:08.134553",
+  "modified": "2023-10-03 12:03:51.668117",
   "module_profile_name": "Manager",
   "name": "Manager"
  },
@@ -1048,12 +1036,6 @@
     "parenttype": "Module Profile"
    },
    {
-    "module": "HR",
-    "parent": "Executive",
-    "parentfield": "block_modules",
-    "parenttype": "Module Profile"
-   },
-   {
     "module": "Income Tax India",
     "parent": "Executive",
     "parentfield": "block_modules",
@@ -1188,7 +1170,7 @@
   ],
   "docstatus": 0,
   "doctype": "Module Profile",
-  "modified": "2023-09-02 14:48:56.785877",
+  "modified": "2023-10-03 12:01:53.208799",
   "module_profile_name": "Executive",
   "name": "Executive"
  }
