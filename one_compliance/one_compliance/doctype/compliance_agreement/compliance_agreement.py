@@ -151,6 +151,8 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 	'''
 	self = frappe.get_doc('Compliance Agreement', compliance_agreement)
 	project_template  = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_template')
+	project_template_doc = frappe.get_doc('Project Template', project_template)
+	print(project_template_doc.custom_project_duration)
 	if project_template:
 		compliance_date = False
 		if compliance_category_details_id:
@@ -179,15 +181,17 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 			naming = str(naming_year) + ' ' + naming_month
 		project = frappe.new_doc('Project')
 		project.project_name = self.customer_name + '-' + compliance_sub_category + '-' + str(naming)
+		project.project_template = project_template
 		project.customer = self.customer
 		project.compliance_agreement = self.name
 		project.compliance_sub_category = compliance_sub_category
 		project.expected_start_date = compliance_date
 		project.category_type = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'category_type')
+		if project_template_doc.custom_project_duration:
+			project.expected_end_date = add_days(compliance_date, project_template_doc.custom_project_duration)
 		project.save(ignore_permissions=True)
 		frappe.db.commit()
 		frappe.msgprint('Project Created for {0}.'.format(compliance_sub_category), alert = 1)
-		project_template_doc = frappe.get_doc('Project Template', project_template)
 		for template_task in project_template_doc.tasks:
 			''' Method to create task against created project from the Project Template '''
 			template_task_doc = frappe.get_doc('Task', template_task.task)
