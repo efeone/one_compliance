@@ -102,7 +102,7 @@ def change_agreement_status_scheduler():
 @frappe.whitelist()
 def get_compliance_sub_category_list(compliance_category):
 	'''method used for list sub category'''
-	sub_category_list = frappe.db.get_list('Compliance Sub Category', filters = {'compliance_category':compliance_category, 'enabled':1}, fields = ['rate','name','compliance_category'])
+	sub_category_list = frappe.db.get_list('Compliance Sub Category', filters = {'compliance_category':compliance_category, 'enabled':1}, fields = ['rate','name','compliance_category', 'sub_category'])
 	return sub_category_list
 
 def check_exist_list(self, compliance_sub_category):

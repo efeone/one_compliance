@@ -71,6 +71,7 @@ let update_compliance_category = function(frm){
           r.message.forEach(row =>{
             let compliance_category_table = frm.add_child('compliance_category_details');
             compliance_category_table.compliance_category = row.compliance_category;
+            compliance_category_table.sub_category_name = row.sub_category;
             compliance_category_table.compliance_sub_category = row.name;
             compliance_category_table.rate = row.rate;
             rate = rate + row.rate;
