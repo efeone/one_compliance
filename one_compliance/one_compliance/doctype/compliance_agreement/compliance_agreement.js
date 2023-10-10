@@ -16,6 +16,11 @@ frappe.ui.form.on('Compliance Agreement',{
       frm.add_custom_button('Set Agreement Status', () => {
         set_agreement_status(frm)
       })
+      if (frappe.session.user == "Administrator"){
+        frm.add_custom_button('Create Project', () => {
+          create_project(frm)
+        });
+      }
     }
   },
   compliance_category:function(frm){
@@ -130,3 +135,72 @@ let set_agreement_status = function(frm){
   });
   d.show();
 }
+
+let create_project = function(frm){
+  let compliance_categories = frm.doc.compliance_category;
+  compliance_categories = compliance_categories.map(item => item.compliance_category);
+  let compliance_sub_categories = frm.doc.compliance_category_details;
+  compliance_sub_categories = compliance_sub_categories.map(item => item.compliance_sub_category);
+  let d = new frappe.ui.Dialog({
+    title: 'Create Project',
+    fields: [
+      {
+        label: 'Start Date',
+        fieldname: 'start_date',
+        fieldtype: 'Date',
+        reqd: 1,
+      },
+      {
+        label: 'Compliance Category',
+        fieldname: 'compliance_category',
+        fieldtype: 'Link',
+        reqd: 1,
+        options: 'Compliance Category',
+      },
+      {
+        label: 'Compliance Sub Category',
+        fieldname: 'compliance_sub_category',
+        fieldtype: 'Link',
+        reqd: 1,
+        options: 'Compliance Sub Category'
+      }
+    ],
+    primary_action_label: 'Submit',
+    primary_action(values) {
+      if (values.start_date && values.compliance_category && values.compliance_sub_category) {
+        frappe.call({
+          method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_project_against_sub_category',
+          args: {
+            'compliance_agreement': frm.doc.name,
+            'compliance_sub_category': values.compliance_sub_category,
+            'compliance_date': values.start_date
+          },
+          callback: function(r) {
+            if (r.message) {
+              frm.reload_doc();
+            }
+          }
+        });
+      } 
+      d.hide();
+    }
+  });
+
+  d.fields_dict.compliance_sub_category.get_query = function() {
+    return {
+        filters: {
+            'compliance_category': d.get_value('compliance_category'),
+            'name': ['in', compliance_sub_categories]
+        }
+    };
+  };
+  d.fields_dict.compliance_category.get_query = function() {
+    return {
+        filters: {
+            'name': ['in', compliance_categories]
+        }
+    };
+  };
+  d.show();
+};
+

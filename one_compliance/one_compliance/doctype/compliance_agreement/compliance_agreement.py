@@ -145,16 +145,15 @@ def check_project_exists_or_not(compliance_sub_category, compliance_agreement):
 	return False
 
 @frappe.whitelist()
-def create_project_against_sub_category(compliance_agreement, compliance_sub_category, compliance_category_details_id=None):
+def create_project_against_sub_category(compliance_agreement, compliance_sub_category, compliance_category_details_id=None, compliance_date=None):
 	'''
 		Method to create Project against selected Sub Category
 	'''
 	self = frappe.get_doc('Compliance Agreement', compliance_agreement)
 	project_template  = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_template')
 	project_template_doc = frappe.get_doc('Project Template', project_template)
-	print(project_template_doc.custom_project_duration)
 	if project_template:
-		compliance_date = False
+		# compliance_date = False
 		if compliance_category_details_id:
 			if frappe.db.get_value('Compliance Category Details', compliance_category_details_id, 'compliance_date'):
 				compliance_date = frappe.db.get_value('Compliance Category Details', compliance_category_details_id, 'compliance_date')
@@ -204,8 +203,8 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 			task_doc.exp_start_date = compliance_date
 			if template_task_doc.expected_time:
 				task_doc.expected_time = template_task_doc.expected_time
-			if template_task_doc.duration:
-				task_doc.duration = template_task_doc.duration
+			if template_task.custom_task_duration:
+				task_doc.duration = template_task.custom_task_duration
 			task_doc.save(ignore_permissions=True)
 			if template_task.type and template_task.employee_or_group:
 				frappe.db.set_value('Task', task_doc.name, 'assigned_to', template_task.employee_or_group)
