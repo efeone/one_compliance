@@ -49,7 +49,7 @@ def set_project_status(project, status, comment=None):
 
 @frappe.whitelist()
 def update_expected_end_date_in_project(doc, method):
-	if doc.compliance_sub_category:
+	if not doc.expected_end_date and doc.compliance_sub_category:
 		project_template = frappe.db.get_value('Compliance Sub Category', doc.compliance_sub_category, 'project_template')
 		if doc.expected_start_date and project_template:
 			project_duration = frappe.db.get_value('Project Template', project_template, 'custom_project_duration')

@@ -113,9 +113,7 @@ permission_query_conditions = {
 doc_events = {
 	"Project Template": {
 		"after_insert": ["one_compliance.one_compliance.doc_events.project_template.update_project_template",
-                        ],
-        'validate': ['one_compliance.one_compliance.doc_events.project_template.calculate_project_duration'
-                    ],
+                        ]
 	},
     'Task':{
         'on_update':['one_compliance.one_compliance.doc_events.task.task_on_update',
