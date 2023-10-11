@@ -1,0 +1,117 @@
+{
+ "actions": [],
+ "autoname": "CS.####",
+ "creation": "2023-03-21 09:41:52.326630",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "general_configurations_section",
+  "create_user_on_customer_creation",
+  "notification_settings_section",
+  "task_before_due_date_notification",
+  "task_overdue_notification_for_employee",
+  "task_overdue_notification_for_director",
+  "digital_signature_expiry_notification",
+  "column_break_xwbwy",
+  "task_complete_notification_for_director",
+  "no_action_taken_notification_for_director",
+  "project_complete_notification_for_customer",
+  "project_before_due_date_notification"
+ ],
+ "fields": [
+  {
+   "fieldname": "notification_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Notification Settings"
+  },
+  {
+   "fieldname": "column_break_xwbwy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "task_overdue_notification_for_employee",
+   "fieldtype": "Link",
+   "label": "Task Overdue Notification for Employee",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_overdue_notification_for_director",
+   "fieldtype": "Link",
+   "label": "Task Overdue Notification for Director",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_complete_notification_for_director",
+   "fieldtype": "Link",
+   "label": "Task Complete Notification for Director",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "no_action_taken_notification_for_director",
+   "fieldtype": "Link",
+   "label": "No Action Taken Notification for Director",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "task_before_due_date_notification",
+   "fieldtype": "Link",
+   "label": "Task Before Due Date Notification ",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "project_complete_notification_for_customer",
+   "fieldtype": "Link",
+   "label": "Project Complete Notification For Customer",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "general_configurations_section",
+   "fieldtype": "Section Break",
+   "label": "General Configurations"
+  },
+  {
+   "default": "1",
+   "fieldname": "create_user_on_customer_creation",
+   "fieldtype": "Check",
+   "label": "Create user on Customer Creation"
+  },
+  {
+   "fieldname": "digital_signature_expiry_notification",
+   "fieldtype": "Link",
+   "label": "Digital Signature Expiry Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "project_before_due_date_notification",
+   "fieldtype": "Link",
+   "label": "Project Before Due Date Notification ",
+   "options": "Notification Template"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2023-09-16 15:44:08.578651",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Compliance Settings",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,175 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"tjwzD73pvI\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h2\\\">\ud835\udc12\ud835\udc1e\ud835\udc27\ud835\udc22\ud835\udc28\ud835\udc2b \ud835\udc0c\ud835\udc1a\ud835\udc27\ud835\udc1a\ud835\udc20\ud835\udc1e\ud835\udc2b</span><br>\",\"col\":12}},{\"id\":\"G-l6FZVeT0\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"My Projects\",\"col\":6}},{\"id\":\"UW4vjcylFN\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Projects\",\"col\":6}},{\"id\":\"VYGtR_vlno\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Tasks\",\"col\":4}},{\"id\":\"_DQgM8_FFB\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":4}},{\"id\":\"cQHpvWz8AZ\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Working Tasks\",\"col\":4}},{\"id\":\"QKpqERSfBL\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"dXezJoKrdy\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Open Projects\",\"col\":6}},{\"id\":\"-r7DqDSXl2\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Open Tasks\",\"col\":6}},{\"id\":\"b7frht9O41\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"kmvY9iGdt8\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":3}},{\"id\":\"XikthC26Qc\",\"type\":\"card\",\"data\":{\"card_name\":\"Registeres\",\"col\":3}},{\"id\":\"NQxt3rImi9\",\"type\":\"card\",\"data\":{\"card_name\":\"Customer\",\"col\":3}}]",
+ "creation": "2023-08-18 13:28:45.706793",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "color-review-points",
+ "idx": 0,
+ "is_hidden": 0,
+ "label": "Senior Manager",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Projects",
+   "link_count": 2,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Projects",
+   "link_count": 0,
+   "link_to": "Project",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Project Template",
+   "link_count": 0,
+   "link_to": "Project Template",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Registeres",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Inward Register",
+   "link_count": 0,
+   "link_to": "Inward Register",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Outward Register",
+   "link_count": 0,
+   "link_to": "Outward Register",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Digital Signature",
+   "link_count": 0,
+   "link_to": "Digital Signature",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 3,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 0,
+   "link_to": "Customer",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Credentials",
+   "link_count": 0,
+   "link_to": "Customer Credentials",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer Documents",
+   "link_count": 0,
+   "link_to": "Customer Document",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2023-09-07 12:20:04.445338",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Senior Manager",
+ "number_cards": [
+  {
+   "label": "Open Projects",
+   "number_card_name": "Projects"
+  },
+  {
+   "label": "Open Tasks",
+   "number_card_name": "Open Tasks"
+  },
+  {
+   "label": "Overdue Tasks",
+   "number_card_name": "Overdue Tasks"
+  },
+  {
+   "label": "Working Tasks",
+   "number_card_name": "Working Tasks"
+  }
+ ],
+ "owner": "Administrator",
+ "parent_page": "One Compliance",
+ "public": 1,
+ "quick_lists": [
+  {
+   "document_type": "Project",
+   "label": "Open Projects",
+   "quick_list_filter": "{\"status\":[\"=\",\"Open\"]}"
+  },
+  {
+   "document_type": "Task",
+   "label": "Open Tasks",
+   "quick_list_filter": "{\"status\":[\"=\",\"Open\"]}"
+  }
+ ],
+ "roles": [
+  {
+   "role": "Senior Manager"
+  }
+ ],
+ "sequence_id": 39.0,
+ "shortcuts": [
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "format": "{} Assigned",
+   "label": "My Projects",
+   "link_to": "Project",
+   "stats_filter": "{\"_assign\":[\"like\",\"%Senior Manager%\"],\"status\":[\"=\",null]},\n{\n    \"_assign\": [\"like\", '%' + frappe.session.user + '%'],\n    \"status\": \"Open\"\n}",
+   "type": "DocType"
+  }
+ ],
+ "title": "Senior Manager"
+}

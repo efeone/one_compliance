@@ -1,0 +1,185 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "DS.####",
+ "creation": "2023-03-30 10:53:36.118774",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "company_name",
+  "director_name",
+  "director_email",
+  "digital_signature_key",
+  "status",
+  "column_break_tcpzq",
+  "customer_name",
+  "expiry_date",
+  "pan_number",
+  "din_number",
+  "notify_on_expiration",
+  "notify_before",
+  "notify_before_unit",
+  "digital_signature_expiry_notification",
+  "section_break_yhybq",
+  "digital_signature_details"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "digital_signature_key",
+   "fieldtype": "Password",
+   "in_list_view": 1,
+   "label": "Digital Signature Key",
+   "reqd": 1
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Expiry Date",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "notify_on_expiration",
+   "fieldtype": "Check",
+   "label": "Notify on Expiration"
+  },
+  {
+   "depends_on": "eval:doc.notify_on_expiration == 1",
+   "fieldname": "notify_before",
+   "fieldtype": "Int",
+   "label": "Notify Before",
+   "mandatory_depends_on": "eval:doc.notify_on_expiration == 1"
+  },
+  {
+   "depends_on": "eval:doc.notify_on_expiration == 1",
+   "fieldname": "notify_before_unit",
+   "fieldtype": "Select",
+   "label": "Notify Before Unit",
+   "mandatory_depends_on": "eval:doc.notify_on_expiration == 1",
+   "options": "\nDay\nWeek\nMonth"
+  },
+  {
+   "fieldname": "digital_signature_details",
+   "fieldtype": "Table",
+   "in_standard_filter": 1,
+   "label": "Digital Signature Details",
+   "options": "Digital Signature Details",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Company Name"
+  },
+  {
+   "fieldname": "director_name",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Director Name",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_tcpzq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "\nAvailable\nNot Available",
+   "read_only": 1
+  },
+  {
+   "fieldname": "director_email",
+   "fieldtype": "Data",
+   "label": "Director Email",
+   "mandatory_depends_on": "eval:doc.notify_on_expiration == 1",
+   "options": "Email"
+  },
+  {
+   "depends_on": "eval:doc.notify_on_expiration == 1",
+   "fetch_from": "compliance_settings.digital_signature_expiry_notification",
+   "fieldname": "digital_signature_expiry_notification",
+   "fieldtype": "Link",
+   "label": "Digital Signature Expiry Notification",
+   "options": "Notification Template"
+  },
+  {
+   "fieldname": "section_break_yhybq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "pan_number",
+   "fieldtype": "Data",
+   "label": "PAN Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "din_number",
+   "fieldtype": "Data",
+   "label": "DIN Number",
+   "reqd": 1,
+   "unique": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-04-12 15:23:03.968761",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Digital Signature",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": " director_name",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

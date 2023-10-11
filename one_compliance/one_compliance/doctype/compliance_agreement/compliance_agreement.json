@@ -1,0 +1,236 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "CA.####",
+ "creation": "2023-03-09 15:59:46.439522",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "workflow_state",
+  "customer",
+  "customer_name",
+  "customer_type",
+  "status",
+  "invoice_based_on",
+  "column_break_czvvr",
+  "lead_name",
+  "opportunity_name",
+  "has_long_term_validity",
+  "posting_date",
+  "valid_from",
+  "valid_upto",
+  "compliance_category_details_section",
+  "compliance_category",
+  "compliance_category_details",
+  "total",
+  "payments_details_tab",
+  "default_payment_terms_template",
+  "terms_and_condition_tab",
+  "terms_and_condition",
+  "signatures_tab",
+  "authority_signature",
+  "column_break_qxw6c",
+  "customer_signature",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name"
+  },
+  {
+   "fetch_from": "customer.payment_terms",
+   "fieldname": "default_payment_terms_template",
+   "fieldtype": "Link",
+   "label": "Default Payment Terms Template",
+   "options": "Payment Terms Template"
+  },
+  {
+   "fieldname": "terms_and_condition_tab",
+   "fieldtype": "Tab Break",
+   "label": "Terms and Condition"
+  },
+  {
+   "fieldname": "terms_and_condition",
+   "fieldtype": "Link",
+   "label": "Terms and Condition",
+   "options": "Terms and Conditions"
+  },
+  {
+   "fieldname": "compliance_category_details_section",
+   "fieldtype": "Section Break",
+   "label": "Compliance Category Details"
+  },
+  {
+   "fieldname": "compliance_category_details",
+   "fieldtype": "Table",
+   "label": "Compliance Category Details",
+   "options": "Compliance Category Details"
+  },
+  {
+   "fetch_from": "customer.compliance_customer_type",
+   "fieldname": "customer_type",
+   "fieldtype": "Data",
+   "label": "Customer Type"
+  },
+  {
+   "fieldname": "column_break_czvvr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payments_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Payments Details"
+  },
+  {
+   "fieldname": "compliance_category",
+   "fieldtype": "Table MultiSelect",
+   "label": "Compliance Category",
+   "options": "Compliance Category List"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Compliance Agreement",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "lead_name",
+   "fieldtype": "Link",
+   "label": "From Lead",
+   "options": "Lead"
+  },
+  {
+   "fieldname": "opportunity_name",
+   "fieldtype": "Link",
+   "label": "From Opportunity",
+   "options": "Opportunity"
+  },
+  {
+   "fieldname": "valid_from",
+   "fieldtype": "Date",
+   "label": "Valid From",
+   "reqd": 1
+  },
+  {
+   "fieldname": "total",
+   "fieldtype": "Data",
+   "label": "Total Rate"
+  },
+  {
+   "allow_on_submit": 1,
+   "depends_on": "eval:doc.workflow_state == 'Customer Approval Waiting'",
+   "fieldname": "customer_signature",
+   "fieldtype": "Signature",
+   "label": "Customer ",
+   "mandatory_depends_on": "eval:doc.workflow_state == 'Customer Approval Waiting'"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "authority_signature",
+   "fieldtype": "Signature",
+   "label": "Authority ",
+   "mandatory_depends_on": "eval:doc.workflow_state == 'Pending'"
+  },
+  {
+   "fieldname": "column_break_qxw6c",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Workflow State",
+   "no_copy": 1,
+   "options": "Workflow State"
+  },
+  {
+   "fieldname": "signatures_tab",
+   "fieldtype": "Tab Break",
+   "label": "Signatures"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Open\nActive\nExpired\nHold\nCancelled",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.has_long_term_validity == 0",
+   "fieldname": "valid_upto",
+   "fieldtype": "Date",
+   "label": "Valid Upto",
+   "mandatory_depends_on": "eval:doc.has_long_term_validity == 0"
+  },
+  {
+   "fieldname": "invoice_based_on",
+   "fieldtype": "Select",
+   "label": "Invoice Based On",
+   "options": "\nConsolidated\nProject",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "has_long_term_validity",
+   "fieldtype": "Check",
+   "label": "Has Long Term Validity"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Posting Date",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2023-08-22 17:03:42.483194",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Compliance Agreement",
+ "name_case": "Title Case",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "customer_name",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "customer_name"
+}

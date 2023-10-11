@@ -1,0 +1,82 @@
+[
+ {
+  "content": "Project {{ doc.name }} has a due date of {{ doc.expected_end_date }}. Take necessary actions to complete it ASAP",
+  "docstatus": 0,
+  "doctype": "Notification Template",
+  "doctype_name": "Project",
+  "modified": "2023-09-18 11:24:19.357520",
+  "name": "Project Before Due Date Notification",
+  "notification_name": "Project Before Due Date Notification",
+  "subject": "{{ doc.expected_end_date }}  is the due date of {{ doc.name }} - {{doc.project_name}} "
+ },
+ {
+  "content": "Task {{ doc.name }} has a due date of {{ doc.exp_end_date }}. Take necessary actions to complete it ASAP",
+  "docstatus": 0,
+  "doctype": "Notification Template",
+  "doctype_name": "Task",
+  "modified": "2023-09-16 09:30:47.749254",
+  "name": "Task Before Due Date Notification",
+  "notification_name": "Task Before Due Date Notification",
+  "subject": "{{ doc.exp_end_date }}  is the due date of {{ doc.name }} - {{doc.subject}} "
+ },
+ {
+  "content": "Task {{ doc.name }} has reached its due date. Take necessary actions to complete it ASAP",
+  "docstatus": 0,
+  "doctype": "Notification Template",
+  "doctype_name": "Task",
+  "modified": "2023-09-16 09:31:15.558600",
+  "name": "Task Overdue Notification for Employee",
+  "notification_name": "Task Overdue Notification for Employee",
+  "subject": "Today is the due date of {{ doc.name }} - {{doc.subject}} "
+ },
+ {
+  "content": "Dear {{ doc.director_name }},\nYour Digital Signature will expire on {{ doc.expiry_date }}.",
+  "docstatus": 0,
+  "doctype": "Notification Template",
+  "doctype_name": "Digital Signature",
+  "modified": "2023-04-20 10:53:14.782035",
+  "name": "Digital Signature Expiry Notification",
+  "notification_name": "Digital Signature Expiry Notification",
+  "subject": "Your Digital Signature will expire on {{ doc.expiry_date }}"
+ },
+ {
+  "content": "Dear Director,\nTask {{ doc.name }} which is assigned to the Employee {{ doc.assigned_to }} has reached its due date. Take necessary actions to complete it ASAP",
+  "docstatus": 0,
+  "doctype": "Notification Template",
+  "doctype_name": "Task",
+  "modified": "2023-09-16 09:28:55.797166",
+  "name": "Task Overdue Notification for Director",
+  "notification_name": "Task Overdue Notification for Director",
+  "subject": "Today is the due date of {{ doc.name }} - {{doc.subject}} "
+ },
+ {
+  "content": "Dear Director,\nNo actions performed against Task {{ doc.name }}, which is assigned to the Employee {{ doc.assigned_to }}. Take necessary actions to complete it ASAP",
+  "docstatus": 0,
+  "doctype": "Notification Template",
+  "doctype_name": "Task",
+  "modified": "2023-09-16 09:29:34.254631",
+  "name": "No Action Taken Notification for Director",
+  "notification_name": "No Action Taken Notification for Director",
+  "subject": "No actions performed against Task {{ doc.name }} - {{doc.subject}} "
+ },
+ {
+  "content": "Dear Director,\nTask {{ doc.name }} which is assigned to the Employee {{ doc.assigned_to }} has been Completed.",
+  "docstatus": 0,
+  "doctype": "Notification Template",
+  "doctype_name": "Task",
+  "modified": "2023-09-16 09:28:15.498468",
+  "name": "Task Complete Notification for Director",
+  "notification_name": "Task Complete Notification for Director",
+  "subject": "Task {{ doc.name }}- {{doc.subject}} has been Completed"
+ },
+ {
+  "content": "Dear {{ doc.customer_name }},\nProject {{ doc.name }} for Compliance Sub Category : {{ doc.compliance_sub_category }} has been Completed.",
+  "docstatus": 0,
+  "doctype": "Notification Template",
+  "doctype_name": "Project",
+  "modified": "2023-09-16 09:31:59.883338",
+  "name": "Project Complete Notification For Customer",
+  "notification_name": "Project Complete Notification For Customer",
+  "subject": "Project {{ doc.name }} - {{ doc.project_name}} has been Completed"
+ }
+]

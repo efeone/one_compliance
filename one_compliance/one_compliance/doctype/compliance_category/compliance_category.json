@@ -1,0 +1,153 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 1,
+ "autoname": "field:compliance_category",
+ "creation": "2023-03-08 14:43:23.143379",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "compliance_category",
+  "department",
+  "category_type",
+  "column_break_yfl4n",
+  "head_of_department",
+  "hod_name",
+  "section_break_hborw",
+  "compliance_executive"
+ ],
+ "fields": [
+  {
+   "fieldname": "compliance_category",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Compliance Category",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "fetch_from": "department.head_of_department",
+   "fieldname": "head_of_department",
+   "fieldtype": "Link",
+   "ignore_user_permissions": 1,
+   "label": "Head Of Department",
+   "options": "Employee"
+  },
+  {
+   "fieldname": "compliance_executive",
+   "fieldtype": "Table",
+   "label": "Compliance Executive",
+   "options": "Compliance Executive"
+  },
+  {
+   "fetch_from": "head_of_department.employee_name",
+   "fieldname": "hod_name",
+   "fieldtype": "Data",
+   "label": "HOD Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_yfl4n",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_hborw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "category_type",
+   "fieldtype": "Link",
+   "label": "Category Type",
+   "options": "Category Type",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-10-11 17:43:29.064756",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Compliance Category",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "if_owner": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Director",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Head Of Department",
+   "select": 1,
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Senior Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Manager",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Executive",
+   "share": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

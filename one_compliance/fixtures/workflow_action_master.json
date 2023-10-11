@@ -1,0 +1,72 @@
+[
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-16 10:44:05.020868",
+  "name": "Sent to Customer",
+  "workflow_action_name": "Sent to Customer"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-16 10:45:07.655678",
+  "name": "Customer Approval",
+  "workflow_action_name": "Customer Approval"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-16 10:46:17.783814",
+  "name": "Customer Reject",
+  "workflow_action_name": "Customer Reject"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-16 11:26:32.875913",
+  "name": "Customer Approval waiting",
+  "workflow_action_name": "Customer Approval waiting"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-08 10:08:55.708879",
+  "name": "Approve",
+  "workflow_action_name": "Approve"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-08 10:08:55.710316",
+  "name": "Reject",
+  "workflow_action_name": "Reject"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-08 10:08:55.711680",
+  "name": "Review",
+  "workflow_action_name": "Review"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-13 15:59:30.273879",
+  "name": "Request for Review",
+  "workflow_action_name": "Request for Review"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-13 16:02:18.959081",
+  "name": "Approved",
+  "workflow_action_name": "Approved"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2023-03-13 16:03:22.036772",
+  "name": "Rejected",
+  "workflow_action_name": "Rejected"
+ }
+]
