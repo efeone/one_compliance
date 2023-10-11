@@ -38,6 +38,7 @@
    "fetch_from": "department.head_of_department",
    "fieldname": "head_of_department",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
    "label": "Head Of Department",
    "options": "Employee"
   },
@@ -52,7 +53,6 @@
    "fieldname": "hod_name",
    "fieldtype": "Data",
    "label": "HOD Name",
-   "options": "employee_name",
    "read_only": 1
   },
   {
@@ -73,7 +73,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-09-18 12:08:03.153777",
+ "modified": "2023-10-11 17:43:29.064756",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Category",
