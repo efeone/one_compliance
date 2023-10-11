@@ -205,6 +205,7 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 				task_doc.expected_time = template_task_doc.expected_time
 			if template_task.custom_task_duration:
 				task_doc.duration = template_task.custom_task_duration
+				task_doc.exp_end_date = add_days(compliance_date, template_task.custom_task_duration)
 			task_doc.save(ignore_permissions=True)
 			if template_task.type and template_task.employee_or_group:
 				frappe.db.set_value('Task', task_doc.name, 'assigned_to', template_task.employee_or_group)
