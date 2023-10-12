@@ -10,11 +10,11 @@
   "subject": "{{ doc.expected_end_date }}  is the due date of {{ doc.name }} - {{doc.project_name}} "
  },
  {
-  "content": "Task {{ doc.name }} for {{ doc.customer }} {{ doc.compliance_category }} has a due date of {{ doc.exp_end_date }}. Take necessary actions to complete it ASAP",
+  "content": "Task {{ doc.name }} for {{ doc.customer }} {{ doc.compliance_sub_category }} has a due date of {{ doc.exp_end_date }}. Take necessary actions to complete it ASAP",
   "docstatus": 0,
   "doctype": "Notification Template",
   "doctype_name": "Task",
-  "modified": "2023-10-12 12:16:30.846856",
+  "modified": "2023-10-12 14:45:06.975930",
   "name": "Task Before Due Date Notification",
   "notification_name": "Task Before Due Date Notification",
   "subject": "{{ doc.exp_end_date }}  is the due date of {{ doc.name }} for {{ doc.customer }}  - {{doc.subject}} "
@@ -50,24 +50,24 @@
   "subject": "Today is the due date of {{ doc.customer }}  - {{doc.subject}} "
  },
  {
-  "content": "Dear Director,\nNo actions performed against Task {{ doc.name }} for {{ doc.customer }} {{ doc.compliance_category }}, which is assigned to the Employee {{ doc.assigned_to }}. Take necessary actions to complete it ASAP",
+  "content": "Dear Director,\nNo actions performed against Task {{ doc.name }} for {{ doc.customer }} {{ doc.compliance_sub_category }}, which is assigned to the Employee {{ doc.assigned_to }}. Take necessary actions to complete it ASAP",
   "docstatus": 0,
   "doctype": "Notification Template",
   "doctype_name": "Task",
-  "modified": "2023-10-12 12:17:18.599744",
+  "modified": "2023-10-12 14:44:42.471122",
   "name": "No Action Taken Notification for Director",
   "notification_name": "No Action Taken Notification for Director",
   "subject": "No actions performed against Task {{ doc.name }}  for {{ doc.customer }}  - {{doc.subject}} "
  },
  {
-  "content": "Dear Director,\nTask {{ doc.name }} for {{ doc.customer }} {{ doc.compliance_category }}, which is assigned to the Employee {{ doc.assigned_to }} has been Completed.",
+  "content": "Dear Director,\nTask {{ doc.name }} for {{ doc.customer }} {{ doc.compliance_sub_category }}, which is assigned to the Employee {{ doc.assigned_to }} has been Completed.",
   "docstatus": 0,
   "doctype": "Notification Template",
   "doctype_name": "Task",
-  "modified": "2023-10-12 12:17:59.304963",
+  "modified": "2023-10-12 14:39:53.141036",
   "name": "Task Complete Notification for Director",
   "notification_name": "Task Complete Notification for Director",
-  "subject": "Task {{ doc.name }} for {{ doc.customer }} - {{doc.subject}} has been Completed"
+  "subject": "Task {{ doc.name }} for {{ doc.customer }} - {{ doc.subject }} has been Completed"
  },
  {
   "content": "Dear {{ doc.customer_name }},\nProject {{ doc.name }} for Compliance Sub Category : {{ doc.compliance_sub_category }} has been Completed.",
