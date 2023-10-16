@@ -189,3 +189,88 @@ def send_notification_for_digital_signature(doc, for_user, context, notification
         content = frappe.render_template(content_template, context)
         frappe.sendmail(recipients=[for_user], subject=subject, message=content)
         frappe.db.commit()
+
+@frappe.whitelist()
+def gst_overdue():
+    '''Method to view GST overdue in number card'''
+    query = """
+    SELECT 
+        COUNT(*) as count
+    FROM 
+        `tabProject`
+    WHERE 
+        status = 'Overdue' AND category_type = 'GST'
+    """
+    project_count = frappe.db.sql(query, as_dict=True)
+    if project_count and project_count[0].get('count') is not None:
+        return project_count[0]['count']
+    else:
+        return 0
+
+@frappe.whitelist()
+def income_tax_overdue():
+    '''Method to view Income Tax overdue in number card'''
+    query = """
+    SELECT 
+        COUNT(*) as count
+    FROM 
+        `tabProject`
+    WHERE 
+        status = 'Overdue' AND category_type = 'Income Tax'
+    """
+    project_count = frappe.db.sql(query, as_dict=True)
+    if project_count and project_count[0].get('count') is not None:
+        return project_count[0]['count']
+    else:
+        return 0
+    
+@frappe.whitelist()
+def consulting_overdue():
+    '''Method to view Income Tax overdue in number card'''
+    query = """
+    SELECT 
+        COUNT(*) as count
+    FROM 
+        `tabProject`
+    WHERE 
+        status = 'Overdue' AND category_type = 'Income Tax'
+    """
+    project_count = frappe.db.sql(query, as_dict=True)
+    if project_count and project_count[0].get('count') is not None:
+        return project_count[0]['count']
+    else:
+        return 0
+
+@frappe.whitelist()
+def compliance_overdue():
+    '''Method to view  Compliance overdue in number card'''
+    query = """
+    SELECT 
+        COUNT(*) as count
+    FROM 
+        `tabProject`
+    WHERE 
+        status = 'Overdue' AND category_type = 'Compliance'
+    """
+    project_count = frappe.db.sql(query, as_dict=True)
+    if project_count and project_count[0].get('count') is not None:
+        return project_count[0]['count']
+    else:
+        return 0
+
+@frappe.whitelist()
+def audit_overdue():
+    '''Method to view  Audit overdue in number card'''
+    query = """
+    SELECT 
+        COUNT(*) as count
+    FROM 
+        `tabProject`
+    WHERE 
+        status = 'Overdue' AND category_type = 'Audit'
+    """
+    project_count = frappe.db.sql(query, as_dict=True)
+    if project_count and project_count[0].get('count') is not None:
+        return project_count[0]['count']
+    else:
+        return 0

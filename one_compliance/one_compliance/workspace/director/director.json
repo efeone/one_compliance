@@ -5,7 +5,7 @@
    "label": "Profit and Loss"
   }
  ],
- "content": "[{\"id\":\"_3YxgsxYfR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Director</span>\",\"col\":12}},{\"id\":\"RDJdlfXOuB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"My Projects\",\"col\":3}},{\"id\":\"MRCZDGbowq\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Customer\",\"col\":3}},{\"id\":\"1G9uYI5nGw\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Projects\",\"col\":3}},{\"id\":\"zzmGkEsDMz\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Agreements\",\"col\":3}},{\"id\":\"ZzvILO8fel\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":3}},{\"id\":\"dUxiNrOmQ2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Outgoing Bills\",\"col\":3}},{\"id\":\"Ebgo5AM3nY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Incoming Bills\",\"col\":3}},{\"id\":\"BHPbGtdAFv\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Incoming Payment\",\"col\":3}},{\"id\":\"R-7SVQBKOk\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Outgoing Payment\",\"col\":3}},{\"id\":\"udS6tN2T5K\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Profit and Loss\",\"col\":12}},{\"id\":\"J1fbqXtuQh\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Projects\",\"col\":6}},{\"id\":\"awPLQnVH51\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Compliance Agreement\",\"col\":6}},{\"id\":\"-sAR96e1WE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"HC7kvMzDtR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Short Links</b></span>\",\"col\":12}},{\"id\":\"d2fCUaEK-H\",\"type\":\"card\",\"data\":{\"card_name\":\"CRM\",\"col\":3}},{\"id\":\"UkvzaFc6Vb\",\"type\":\"card\",\"data\":{\"card_name\":\"compliances\",\"col\":3}},{\"id\":\"XuzCDFI3RS\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":3}},{\"id\":\"CZUbcaW7LK\",\"type\":\"card\",\"data\":{\"card_name\":\"Registers\",\"col\":3}},{\"id\":\"hlTo11muXl\",\"type\":\"card\",\"data\":{\"card_name\":\"Other\",\"col\":3}}]",
+ "content": "[{\"id\":\"_3YxgsxYfR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Director</span>\",\"col\":12}},{\"id\":\"RDJdlfXOuB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"My Projects\",\"col\":3}},{\"id\":\"MRCZDGbowq\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Customer\",\"col\":3}},{\"id\":\"1G9uYI5nGw\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Projects\",\"col\":3}},{\"id\":\"zzmGkEsDMz\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Agreements\",\"col\":3}},{\"id\":\"ZzvILO8fel\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":3}},{\"id\":\"Ebgo5AM3nY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Incoming Bills\",\"col\":3}},{\"id\":\"BHPbGtdAFv\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Incoming Payment\",\"col\":3}},{\"id\":\"R-7SVQBKOk\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Outgoing Payment\",\"col\":3}},{\"id\":\"2kc3FRd1rS\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"Wj7bnLLqac\",\"type\":\"paragraph\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Category Type Overdue</span>\",\"col\":12}},{\"id\":\"ic5ka3BF45\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"GST OverDue\",\"col\":4}},{\"id\":\"p7ZEDyiIFD\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Income Tax Overdue\",\"col\":4}},{\"id\":\"CncaVHYExp\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Consulting Overdue\",\"col\":4}},{\"id\":\"XG8n8kPe9G\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Compliance Overdue\",\"col\":4}},{\"id\":\"tJxqPM5CvQ\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Audit Overdue\",\"col\":4}},{\"id\":\"udS6tN2T5K\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Profit and Loss\",\"col\":12}},{\"id\":\"J1fbqXtuQh\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Projects\",\"col\":6}},{\"id\":\"awPLQnVH51\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Compliance Agreement\",\"col\":6}},{\"id\":\"-sAR96e1WE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"HC7kvMzDtR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Short Links</b></span>\",\"col\":12}},{\"id\":\"d2fCUaEK-H\",\"type\":\"card\",\"data\":{\"card_name\":\"CRM\",\"col\":3}},{\"id\":\"UkvzaFc6Vb\",\"type\":\"card\",\"data\":{\"card_name\":\"compliances\",\"col\":3}},{\"id\":\"XuzCDFI3RS\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":3}},{\"id\":\"CZUbcaW7LK\",\"type\":\"card\",\"data\":{\"card_name\":\"Registers\",\"col\":3}},{\"id\":\"hlTo11muXl\",\"type\":\"card\",\"data\":{\"card_name\":\"Other\",\"col\":3}}]",
  "creation": "2023-05-30 07:49:00.396405",
  "custom_blocks": [],
  "docstatus": 0,
@@ -248,18 +248,34 @@
    "type": "Link"
   }
  ],
- "modified": "2023-09-07 11:38:53.382166",
+ "modified": "2023-10-12 17:46:50.393607",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Director",
  "number_cards": [
   {
+   "label": "Consulting Overdue",
+   "number_card_name": "Consulting Overdue"
+  },
+  {
+   "label": "Income Tax Overdue",
+   "number_card_name": "Income Tax Overdue"
+  },
+  {
+   "label": "GST OverDue",
+   "number_card_name": "GST OverDue"
+  },
+  {
    "label": "Open Projects",
    "number_card_name": "Projects"
   },
   {
-   "label": "Total Outgoing Bills",
-   "number_card_name": "Total Outgoing Bills"
+   "label": "Audit Overdue",
+   "number_card_name": "Audit Overdue"
+  },
+  {
+   "label": "Compliance Overdue",
+   "number_card_name": "Compliance Overdue"
   },
   {
    "label": "Customer",
