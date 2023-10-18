@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:director_name",
+ "autoname": "format:DIR-{YY}-{#####}",
  "creation": "2023-10-18 12:00:29.285495",
  "default_view": "List",
  "doctype": "DocType",
@@ -9,31 +9,72 @@
  "engine": "InnoDB",
  "field_order": [
   "director_name",
-  "din"
+  "customer_type",
+  "email",
+  "phone",
+  "column_break_axdhp",
+  "din",
+  "pan_no"
  ],
  "fields": [
   {
    "fieldname": "director_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Director Name",
    "unique": 1
   },
   {
    "fieldname": "din",
    "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "DIN",
    "no_copy": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Customer Type",
+   "options": "Customer Type"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "phone",
+   "fieldtype": "Data",
+   "label": "Phone",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "pan_no",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "PAN No"
+  },
+  {
+   "fieldname": "column_break_axdhp",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-18 12:01:15.824448",
+ "modified": "2023-10-18 14:25:01.262922",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Director",
  "name_case": "Title Case",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {
@@ -49,7 +90,9 @@
    "write": 1
   }
  ],
+ "search_fields": "director_name,din,email",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "director_name"
 }
