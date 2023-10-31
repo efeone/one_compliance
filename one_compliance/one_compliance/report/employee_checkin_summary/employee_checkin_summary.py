@@ -89,12 +89,6 @@ def get_data(filters):
     if filters.get("department"):
         query += " AND e.department = '{0}'".format(filters.get("department"))  
 
-    if filters.get("period"):
-        timespan = filters.get("period") 
-        to_date = today()
-        from_date = get_from_date_from_timespan(to_date, timespan)
-        query += " AND ec.creation BETWEEN '{from_date}' AND '{to_date}'".format(from_date=from_date, to_date=to_date)
-
     query += " GROUP BY ec.employee, ec.employee_name, e.department, DATE(ec.time)"
     query += " ORDER BY date DESC" 
 
