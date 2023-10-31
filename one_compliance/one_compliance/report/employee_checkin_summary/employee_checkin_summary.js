@@ -8,25 +8,13 @@ frappe.query_reports["Employee Checkin Summary"] = {
 		"fieldname": "from_date",
 		"label": __("From Date"),
 		"fieldtype": "Date",
-		"default": frappe.datetime.get_today()
+		"default": frappe.datetime.month_start()
 	  },
 	  {
 		"fieldname": "to_date",
 		"label": __("To Date"),
 		"fieldtype": "Date",
-		"default": frappe.datetime.get_today()
-	  },
-	  {
-		"fieldname": "period",
-		"label": __("Period"),
-		"fieldtype": "Select",
-		"options": [
-		  { "value": "", "label": __("Select Period") },
-		  { "value": "Last Week", "label": __("Weekly") },
-		  { "value": "Last Month", "label": __("Monthly") },
-		  { "value": "Last Quarter", "label": __("Quarterly") },
-		  { "value": "Last Year", "label": __("Yearly") },
-		],
+		"default":  frappe.datetime.month_end()
 	  },
 	  {
 		"fieldname": "department",
@@ -36,18 +24,4 @@ frappe.query_reports["Employee Checkin Summary"] = {
 	  },
 	],
   };
-  
-  // Add event listeners to handle clearing of date filters
-  frappe.ui.form.on("Employee Checkin Summary", {
-	from_date: function(frm) {
-	  if (!frm.doc.from_date) {
-		frm.doc.from_date = "";
-	  }
-	},
-	to_date: function(frm) {
-	  if (!frm.doc.to_date) {
-		frm.doc.to_date = "";
-	  }
-	},
-  });
   
