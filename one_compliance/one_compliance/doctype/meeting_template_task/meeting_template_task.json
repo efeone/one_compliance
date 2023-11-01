@@ -1,0 +1,44 @@
+{
+ "actions": [],
+ "creation": "2023-10-31 11:35:19.889412",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "task",
+  "subject",
+  "assigned_to"
+ ],
+ "fields": [
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "label": "Task",
+   "options": "Task"
+  },
+  {
+   "fetch_from": "task.subject",
+   "fieldname": "subject",
+   "fieldtype": "Read Only",
+   "label": "Subject"
+  },
+  {
+   "fetch_from": "task.assigned_to",
+   "fieldname": "assigned_to",
+   "fieldtype": "Read Only",
+   "label": "Assigned To"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-10-31 11:37:11.098763",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Meeting Template Task",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
