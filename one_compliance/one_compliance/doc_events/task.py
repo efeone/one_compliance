@@ -88,8 +88,8 @@ def make_sales_invoice(doc, method):
                         payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
                         if payment_terms:
                             sales_invoice.default_payment_terms_template = payment_terms
-                        if frappe.db.exists('Compliance Sub Category', doc.compliance_sub_category):
-                            sub_category_doc = frappe.get_doc('Compliance Sub Category', doc.compliance_sub_category)
+                        if frappe.db.exists('Compliance Sub Category', project.compliance_sub_category):
+                            sub_category_doc = frappe.get_doc('Compliance Sub Category', project.compliance_sub_category)
                             if sub_category_doc.is_billable:
                                 sales_invoice.append('items', {
                                     'item_name' : sub_category_doc.sub_category,

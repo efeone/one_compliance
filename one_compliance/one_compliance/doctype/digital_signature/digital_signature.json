@@ -10,6 +10,7 @@
  "field_order": [
   "customer",
   "company_name",
+  "director",
   "director_name",
   "director_email",
   "digital_signature_key",
@@ -91,6 +92,7 @@
    "label": "Company Name"
   },
   {
+   "fetch_from": "director.director_name",
    "fieldname": "director_name",
    "fieldtype": "Data",
    "in_filter": 1,
@@ -124,6 +126,7 @@
    "read_only": 1
   },
   {
+   "fetch_from": "director.email",
    "fieldname": "director_email",
    "fieldtype": "Data",
    "label": "Director Email",
@@ -143,22 +146,30 @@
    "fieldtype": "Section Break"
   },
   {
+   "fetch_from": "director.pan_no",
    "fieldname": "pan_number",
    "fieldtype": "Data",
    "label": "PAN Number",
    "reqd": 1
   },
   {
+   "fetch_from": "director.din",
    "fieldname": "din_number",
    "fieldtype": "Data",
    "label": "DIN Number",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "director",
+   "fieldtype": "Link",
+   "label": "Director",
+   "options": "Director"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-04-12 15:23:03.968761",
+ "modified": "2023-10-18 14:27:14.556649",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Digital Signature",
