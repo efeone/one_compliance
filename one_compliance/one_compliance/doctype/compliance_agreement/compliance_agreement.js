@@ -16,7 +16,7 @@ frappe.ui.form.on('Compliance Agreement',{
       frm.add_custom_button('Set Agreement Status', () => {
         set_agreement_status(frm)
       })
-      if (frappe.session.user == "Administrator"){
+      if (frappe.user_roles.includes('Director')){
         frm.add_custom_button('Create Project', () => {
           create_project(frm)
         });
@@ -167,21 +167,25 @@ let create_project = function(frm){
     ],
     primary_action_label: 'Submit',
     primary_action(values) {
-      if (values.start_date && values.compliance_category && values.compliance_sub_category) {
-        frappe.call({
-          method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_project_against_sub_category',
-          args: {
-            'compliance_agreement': frm.doc.name,
-            'compliance_sub_category': values.compliance_sub_category,
-            'compliance_date': values.start_date
-          },
-          callback: function(r) {
-            if (r.message) {
-              frm.reload_doc();
+      frm.doc.compliance_category_details.forEach((item) => {
+        if (item.compliance_sub_category == values.compliance_sub_category){
+          frappe.call({
+            method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_project_against_sub_category',
+            args: {
+              'compliance_agreement': frm.doc.name,
+              'compliance_sub_category': values.compliance_sub_category,
+              'compliance_date': values.start_date,
+              'compliance_category_details_id': item.name
+            },
+            callback: function(r) {
+              if (r.message) {
+                frm.reload_doc();
+              }
             }
-          }
-        });
-      } 
+          });
+
+        }
+      });
       d.hide();
     }
   });
