@@ -14,14 +14,6 @@ def project_on_update(doc, method):
 			if email_id:
 				project_complete_notification_for_customer(doc, email_id)
 
-@frappe.whitelist()
-def project_validation(doc, method):
-	'''
-		Method used for checking project against Compliance Sub Category
-	'''
-	if frappe.db.exists('Project', {'status': 'Open', 'compliance_agreement':doc.compliance_agreement, 'compliance_sub_category':doc.compliance_sub_category}):
-		frappe.throw(_("Already have open project"))
-	return False
 
 @frappe.whitelist()
 def project_complete_notification_for_customer(doc, email_id):
