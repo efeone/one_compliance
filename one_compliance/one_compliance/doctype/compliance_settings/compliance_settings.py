@@ -11,7 +11,7 @@ class ComplianceSettings(Document):
 @frappe.whitelist()
 def manual_project_creations(starting_date):
 	if starting_date:
-		manual_project_creations_docts()
+		manual_project_creations_docts(starting_date)
 		agreements = frappe.db.get_all('Compliance Agreement', filters = {'status': 'Active'})
 		if agreements:
 			for agreement in agreements:
@@ -31,7 +31,7 @@ def create_project_if_not_exists(self, starting_date):
 						create_project_against_sub_category(self.name, compliance_category.compliance_sub_category, compliance_category.name)
 
 
-def manual_project_creations_docts():
+def manual_project_creations_docts(starting_date):
 	starting_date = 1
 	if starting_date:
 		agreements = frappe.db.get_all('Compliance Agreement', filters = {'status': 'Active'})
@@ -42,7 +42,7 @@ def manual_project_creations_docts():
 					for compliance_category in self.compliance_category_details:
 						compliance_category_details_id = compliance_category.name
 						if compliance_category.compliance_date and compliance_category.next_compliance_date:
-							if compliance_category.compliance_date < compliance_category.next_compliance_date and (compliance_category.next_compliance_date < getdate(today())):
+							if compliance_category.compliance_date < compliance_category.next_compliance_date and (compliance_category.next_compliance_date < getdate(starting_date)):
 								compliance_sub_category, compliance_date, next_compliance_date = frappe.db.get_value('Compliance Category Details', compliance_category_details_id, ['compliance_sub_category', 'compliance_date', 'next_compliance_date'])
 								repeat_on = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'repeat_on')
 								month_flag = 0
