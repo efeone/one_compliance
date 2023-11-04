@@ -9,7 +9,8 @@
  "field_order": [
   "general_configurations_section",
   "create_user_on_customer_creation",
-  "notification_settings_section",
+  "role_of_project_creator",
+  "tab_break_us4n3",
   "task_before_due_date_notification",
   "task_overdue_notification_for_employee",
   "task_overdue_notification_for_director",
@@ -21,11 +22,6 @@
   "project_before_due_date_notification"
  ],
  "fields": [
-  {
-   "fieldname": "notification_settings_section",
-   "fieldtype": "Section Break",
-   "label": "Notification Settings"
-  },
   {
    "fieldname": "column_break_xwbwy",
    "fieldtype": "Column Break"
@@ -88,12 +84,23 @@
    "fieldtype": "Link",
    "label": "Project Before Due Date Notification ",
    "options": "Notification Template"
+  },
+  {
+   "fieldname": "role_of_project_creator",
+   "fieldtype": "Link",
+   "label": "Role Allowed to Create Project from Agreements",
+   "options": "Role"
+  },
+  {
+   "fieldname": "tab_break_us4n3",
+   "fieldtype": "Tab Break",
+   "label": "Notification Settings"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-09-16 15:44:08.578651",
+ "modified": "2023-11-04 10:53:58.518421",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",

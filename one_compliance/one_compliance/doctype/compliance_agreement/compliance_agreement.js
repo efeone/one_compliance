@@ -16,11 +16,14 @@ frappe.ui.form.on('Compliance Agreement',{
       frm.add_custom_button('Set Agreement Status', () => {
         set_agreement_status(frm)
       })
-      if (frappe.user_roles.includes('Director')){
-        frm.add_custom_button('Create Project', () => {
-          create_project(frm)
-        });
-      }
+      frappe.db.get_single_value('Compliance Settings','role_of_project_creator')
+        .then(role_of_project_creator => {
+          if (frappe.user_roles.includes(role_of_project_creator)){
+            frm.add_custom_button('Create Project', () => {
+              create_project(frm)
+            });
+          }
+        })
     }
   },
   compliance_category:function(frm){
