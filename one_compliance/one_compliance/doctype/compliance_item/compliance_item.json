@@ -1,0 +1,89 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:item_code",
+ "creation": "2023-11-02 17:00:46.522371",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_code",
+  "item_name",
+  "compliance_sub_category",
+  "column_break_gllai",
+  "item_group",
+  "is_service_item"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Data",
+   "label": "Item Code",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Item Name"
+  },
+  {
+   "fieldname": "item_group",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Item Group",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "is_service_item",
+   "fieldtype": "Check",
+   "label": "Is Service Item"
+  },
+  {
+   "fieldname": "compliance_sub_category",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Compliance Sub Category"
+  },
+  {
+   "fieldname": "column_break_gllai",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-11-06 12:20:12.376985",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Compliance Item",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "search_fields": "item_name, item_group",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "item_name",
+ "track_changes": 1
+}

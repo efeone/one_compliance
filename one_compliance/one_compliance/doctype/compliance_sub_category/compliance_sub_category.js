@@ -2,6 +2,31 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Compliance Sub Category', {
+	before_save: function(frm) {
+        if (frm.doc.is_billable && frm.doc.is_service_item) {
+            const item_name = frm.doc.compliance_item;
+            const item_group = "Services";
+            const is_service_item = frm.doc.is_service_item;
+						const sub_category = frm.doc.sub_category;
+
+            frappe.call({
+                method: 'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.create_compliance_item_from_sub_category',
+                args: {
+                    item: item_name,
+                    item_group: item_group,
+                    is_service_item: is_service_item,
+										sub_category:sub_category
+                },
+                callback: function(r) {
+                    if (r.message) {
+                        console.log('Compliance Item Created:', r.message);
+                    } else {
+                        console.log('Failed to create Compliance Item');
+                    }
+                }
+            });
+        }
+    },
 	refresh: function(frm) {
 		let compliance_category = frm.doc.compliance_category
 		// Applied filter in child table for active employee
@@ -34,6 +59,27 @@ frappe.ui.form.on('Compliance Sub Category', {
 		}
 		if(frm.is_new()){
 			set_notification_templates(frm);
+		}
+		if(frm.doc.is_billable && frm.doc.is_service_item){
+			frm.add_custom_button(__('Change Item'), function() {
+            const new_item_name = frm.doc.compliance_item;
+						const sub_category = frm.doc.sub_category;
+
+                if (new_item_name) {
+                    frappe.call({
+                        method: 'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.change_item_and_update_compliance',
+                        args: {
+                            new_item_name: new_item_name,
+														sub_category:sub_category
+                        },
+                        callback: function(response) {
+                            if (response.message) {
+                                frm.reload_doc();
+                            }
+                        }
+                    });
+                }
+        });
 		}
 	},
 	validate: function(frm) {

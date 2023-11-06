@@ -78,3 +78,55 @@ def set_filter_for_employee(doctype, txt, searchfield, start, page_len, filters)
             'compliance_category': filters['compliance_category']
             }
         )
+
+@frappe.whitelist()
+def create_compliance_item_from_sub_category(item, item_group, is_service_item, sub_category):
+
+    # Create a new Compliance Item document
+    compliance_item = frappe.get_doc({
+        "doctype": "Compliance Item",
+        "item_name": item,
+        "item_code": item,
+        "item_group": item_group,
+        "is_service_item": is_service_item,
+		"compliance_sub_category":sub_category
+    })
+
+    # Save the Compliance Item document
+    compliance_item.insert()
+
+    frappe.msgprint("Compliance Item Created: {}".format(compliance_item.name), indicator="green", alert=1)
+
+    return compliance_item.name
+
+@frappe.whitelist()
+def change_item_and_update_compliance(new_item_name, sub_category):
+    # Find the compliance_sub_category document based on the sub_category
+    doc = frappe.get_doc('Compliance Sub Category', {'sub_category': sub_category})
+
+    if doc:
+        # Set the new item name
+        doc.compliance_item = new_item_name
+        doc.save()
+
+        # Find and update the existing Compliance Item with the new item name
+        compliance_item = frappe.get_doc('Compliance Item', {'compliance_sub_category': sub_category})
+        if compliance_item:
+            compliance_item.item_name = new_item_name
+            compliance_item.item_code = new_item_name
+
+            # Create a new Compliance Item with the updated name
+            new_compliance_item = frappe.copy_doc(compliance_item)
+            new_compliance_item.name = new_item_name
+            new_compliance_item.insert()
+
+            # Delete the old Compliance Item
+            frappe.delete_doc('Compliance Item', compliance_item.name)
+
+            frappe.msgprint("Compliance Item Updated: {}".format(new_compliance_item.name), indicator="green", alert=1)
+        else:
+            frappe.msgprint("Compliance Item not found for updating.")
+        return new_compliance_item.name
+
+    else:
+        frappe.msgprint("Compliance Sub Category not found for updating.")
