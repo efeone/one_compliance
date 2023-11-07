@@ -92,6 +92,7 @@ doctype_js = {
 
 permission_query_conditions = {
 	"Project": "one_compliance.one_compliance.doc_events.project.get_permission_query_conditions",
+    "Task": "one_compliance.one_compliance.doc_events.task.get_permission_query_conditions",
 }
 #
 # has_permission = {
