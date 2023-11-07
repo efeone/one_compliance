@@ -111,3 +111,20 @@ def update_task_status(task_id, status, completed_by, completed_on):
     frappe.db.commit()
     frappe.msgprint("Project Status has been set to {0}".format(status), alert=True)
     return True
+
+@frappe.whitelist()
+def get_permission_query_conditions(user):
+   
+    if not user:
+        user = frappe.session.user
+
+    user_roles = frappe.get_roles(user)
+    if "Administrator" in user_roles:
+        return None
+
+    if "Manager" in user_roles or "Executive" in user_roles:
+        conditions = """(tabTask._assign like '%{user}%')""" \
+            .format(user=user)
+        return conditions
+    else:
+        return None
