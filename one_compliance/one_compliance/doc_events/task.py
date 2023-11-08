@@ -77,20 +77,20 @@ def make_sales_invoice(doc, method):
         if frappe.db.exists('Project', doc.project):
             project = frappe.get_doc ('Project',doc.project)
             if project.status == 'Completed':
-                if frappe.db.exists('Compliance Agreement', project.compliance_agreement):
-                    compliance_agreement = frappe.get_doc ('Compliance Agreement', project.compliance_agreement)
-                    if compliance_agreement.invoice_based_on == 'Project':
-                        sales_invoice = frappe.new_doc('Sales Invoice')
-                        sales_invoice.customer = project.customer
-                        sales_invoice.posting_date = frappe.utils.today()
-                        sales_invoice.project = project.name
-                        income_account = frappe.db.get_value('Company',project.company, 'default_income_account')
-                        payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
-                        if payment_terms:
-                            sales_invoice.default_payment_terms_template = payment_terms
-                        if frappe.db.exists('Compliance Sub Category', project.compliance_sub_category):
-                            sub_category_doc = frappe.get_doc('Compliance Sub Category', project.compliance_sub_category)
-                            if sub_category_doc.is_billable:
+                 if frappe.db.exists('Compliance Sub Category', project.compliance_sub_category):
+                    sub_category_doc = frappe.get_doc('Compliance Sub Category', project.compliance_sub_category)
+                    if sub_category_doc.is_billable:
+                        if frappe.db.exists('Compliance Agreement', project.compliance_agreement):
+                            invoice_based_on = frappe.db.get_value('Compliance Agreement', project.compliance_agreement, 'invoice_based_on')
+                            if invoice_based_on == 'Project':
+                                sales_invoice = frappe.new_doc('Sales Invoice')
+                                sales_invoice.customer = project.customer
+                                sales_invoice.posting_date = frappe.utils.today()
+                                sales_invoice.project = project.name
+                                income_account = frappe.db.get_value('Company',project.company, 'default_income_account')
+                                payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
+                                if payment_terms:
+                                    sales_invoice.default_payment_terms_template = payment_terms
                                 sales_invoice.append('items', {
                                     'item_name' : sub_category_doc.sub_category,
                                     'rate' : sub_category_doc.rate,
@@ -98,7 +98,7 @@ def make_sales_invoice(doc, method):
                                     'income_account' : income_account,
                                     'description' : sub_category_doc.name
                                 })
-                        sales_invoice.save(ignore_permissions=True)
+                                sales_invoice.save(ignore_permissions=True)
 
 @frappe.whitelist()
 def update_task_status(task_id, status, completed_by, completed_on):
