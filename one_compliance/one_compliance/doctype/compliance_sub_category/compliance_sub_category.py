@@ -78,3 +78,24 @@ def set_filter_for_employee(doctype, txt, searchfield, start, page_len, filters)
             'compliance_category': filters['compliance_category']
             }
         )
+
+@frappe.whitelist()
+def create_compliance_item_from_sub_category(item):
+
+	# Fetch the 'Services' Item Group
+    item_group = frappe.get_value("Item Group", {"item_group_name": "Services"})
+
+    # Create a new Compliance Item document
+    compliance_item = frappe.get_doc({
+        "doctype": "Compliance Item",
+        "item_name": item,
+        "item_code": item,
+        "item_group": item_group
+    })
+
+    # Save the Compliance Item document
+    compliance_item.insert()
+
+    frappe.msgprint("Compliance Item Created: {}".format(compliance_item.name), indicator="green", alert=1)
+
+    return compliance_item.name
