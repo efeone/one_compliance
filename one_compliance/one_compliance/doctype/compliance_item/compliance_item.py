@@ -57,7 +57,6 @@ def create_or_update_item(self, item=None):
 	for compliance_item_field in compliance_item_fields:
 		item_doc.set(compliance_item_field, self.get(compliance_item_field))
 
-	item_doc.gst_hsn_code = '010130'
 	item_doc.is_service_item = 1
 	item_doc.is_stock_item = 0
 	item_doc.include_item_in_manufacturing = 0
