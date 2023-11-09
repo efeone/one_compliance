@@ -239,13 +239,13 @@
    "fieldname": "item_code",
    "fieldtype": "Link",
    "label": "Item Code",
-   "options": "Compliance Item",
+   "options": "Item",
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-09 12:04:38.721599",
+ "modified": "2023-11-09 15:20:48.686043",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
