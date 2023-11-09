@@ -2,28 +2,6 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Compliance Sub Category', {
-	before_save: function(frm) {
-        if (frm.doc.is_billable) {
-            const item_name = frm.doc.item_code;
-
-            frappe.call({
-                method: 'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.create_compliance_item_from_sub_category',
-                args: {
-                    item: item_name
-                },
-                callback: function(r) {
-                    if (r.message) {
-												frm.set_value('compliance_item', r.message);
-                        frm.save();
-                        console.log('Compliance Item Created:', r.message);
-
-                    } else {
-                        console.log('Failed to create Compliance Item');
-                    }
-                }
-            });
-        }
-    },
 	refresh: function(frm) {
 		let compliance_category = frm.doc.compliance_category
 		// Applied filter in child table for active employee
