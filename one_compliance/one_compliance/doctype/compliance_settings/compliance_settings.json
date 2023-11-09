@@ -9,7 +9,10 @@
  "field_order": [
   "general_configurations_section",
   "create_user_on_customer_creation",
+  "section_break_saeum",
   "role_of_project_creator",
+  "column_break_fl7nk",
+  "compliance_service_item_group",
   "tab_break_us4n3",
   "task_before_due_date_notification",
   "task_overdue_notification_for_employee",
@@ -95,12 +98,26 @@
    "fieldname": "tab_break_us4n3",
    "fieldtype": "Tab Break",
    "label": "Notification Settings"
+  },
+  {
+   "fieldname": "compliance_service_item_group",
+   "fieldtype": "Link",
+   "label": "Compliance Service Item Group",
+   "options": "Item Group"
+  },
+  {
+   "fieldname": "column_break_fl7nk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_saeum",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-11-04 10:53:58.518421",
+ "modified": "2023-11-08 16:53:04.131509",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",

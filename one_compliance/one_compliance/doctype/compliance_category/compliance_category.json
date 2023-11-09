@@ -16,7 +16,8 @@
   "head_of_department",
   "hod_name",
   "section_break_hborw",
-  "compliance_executive"
+  "compliance_executive",
+  "connections_tab"
  ],
  "fields": [
   {
@@ -29,8 +30,12 @@
    "unique": 1
   },
   {
+   "columns": 1,
    "fieldname": "department",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Department",
    "options": "Department"
   },
@@ -49,9 +54,11 @@
    "options": "Compliance Executive"
   },
   {
+   "columns": 1,
    "fetch_from": "head_of_department.employee_name",
    "fieldname": "hod_name",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "HOD Name",
    "read_only": 1
   },
@@ -61,19 +68,29 @@
   },
   {
    "fieldname": "section_break_hborw",
-   "fieldtype": "Section Break"
+   "fieldtype": "Tab Break",
+   "label": "Compliance Executive"
   },
   {
    "fieldname": "category_type",
    "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Category Type",
    "options": "Category Type",
    "reqd": 1
+  },
+  {
+   "fieldname": "connections_tab",
+   "fieldtype": "Tab Break",
+   "label": "Connections",
+   "show_dashboard": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-11 17:43:29.064756",
+ "modified": "2023-11-08 16:27:50.123093",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Category",
@@ -147,7 +164,9 @@
    "share": 1
   }
  ],
+ "search_fields": "compliance_category,department,category_type",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "compliance_category"
 }
