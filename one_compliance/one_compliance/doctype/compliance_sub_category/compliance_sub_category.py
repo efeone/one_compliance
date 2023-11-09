@@ -9,6 +9,9 @@ from frappe import _
 class ComplianceSubCategory(Document):
 	def validate(self):
 		self.validate_rate()
+		if self.is_billable and not self.item_code:
+			sub_cat_item = create_compliance_item_from_sub_category(self.sub_category)
+			self.item_code = sub_cat_item
 
 	def validate_rate(self):
 		""" Method to validate rate """
@@ -44,7 +47,7 @@ def create_project_template_custom_button(source_name, target_doc = None):
 		{
 			'Compliance Sub Category': {
 			'doctype': 'Project Template',
-        },
+		},
 		}, target_doc, set_missing_values)
 	return doc
 
@@ -56,46 +59,48 @@ def get_notification_details():
 
 @frappe.whitelist()
 def set_filter_for_employee(doctype, txt, searchfield, start, page_len, filters):
-    # Applied filter for employee in compliance_executive child table
-    searchfields = frappe.get_meta(doctype).get_search_fields()
-    searchfields = " or ".join("ce." + field + " like %(txt)s" for field in searchfields)
-    if filters['compliance_category']:
-        return frappe.db.sql(
-            """SELECT
-                ce.employee,ce.employee_name
-            FROM
-                `tabCompliance Executive` as ce,
-                `tabCompliance Category` as cc
-            WHERE
-                ({key})
-                and cc.name = ce.parent
-                and cc.name = %(compliance_category)s
-            """.format(
-                key=searchfields,
-            ),
-            {
-            "txt": "%" + txt + "%",
-            'compliance_category': filters['compliance_category']
-            }
-        )
+	# Applied filter for employee in compliance_executive child table
+	searchfields = frappe.get_meta(doctype).get_search_fields()
+	searchfields = " or ".join("ce." + field + " like %(txt)s" for field in searchfields)
+	if filters['compliance_category']:
+		return frappe.db.sql(
+			"""SELECT
+				ce.employee,ce.employee_name
+			FROM
+				`tabCompliance Executive` as ce,
+				`tabCompliance Category` as cc
+			WHERE
+				({key})
+				and cc.name = ce.parent
+				and cc.name = %(compliance_category)s
+			""".format(
+				key=searchfields,
+			),
+			{
+			"txt": "%" + txt + "%",
+			'compliance_category': filters['compliance_category']
+			}
+		)
 
 @frappe.whitelist()
-def create_compliance_item_from_sub_category(item):
+def create_compliance_item_from_sub_category(sub_category):
 
-	# Fetch the 'Services' Item Group
-    item_group = frappe.get_value("Item Group", {"item_group_name": "Services"})
+	if not frappe.db.exists('Compliance Item', {'item_code':sub_category}):
+		# Fetch the 'Services' Item Group
+		item_group = frappe.get_value("Item Group", {"item_group_name": "Services"})
 
-    # Create a new Compliance Item document
-    compliance_item = frappe.get_doc({
-        "doctype": "Compliance Item",
-        "item_name": item,
-        "item_code": item,
-        "item_group": item_group
-    })
 
-    # Save the Compliance Item document
-    compliance_item.insert()
-
-    frappe.msgprint("Compliance Item Created: {}".format(compliance_item.name), indicator="green", alert=1)
-
-    return compliance_item.name
+		# Create a new Compliance Item document
+		compliance_item = frappe.get_doc({
+			"doctype": "Compliance Item",
+			"item_name": sub_category,
+			"item_code": sub_category,
+			"item_group": item_group
+		})
+		# Save the Compliance Item document
+		compliance_item.insert()
+		frappe.msgprint("Compliance Item Created: {}".format(compliance_item.name), indicator="green", alert=1)
+		return compliance_item.name
+	else:
+		return  frappe.get_value("Compliance Item", {"item_code": sub_category})
+	return compliance_item.name

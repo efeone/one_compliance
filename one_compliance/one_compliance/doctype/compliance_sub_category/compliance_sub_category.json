@@ -22,7 +22,6 @@
   "is_billable",
   "rate",
   "item_code",
-  "compliance_item",
   "department_details_section",
   "department",
   "head_of_department",
@@ -237,22 +236,16 @@
   },
   {
    "depends_on": "is_billable",
-   "fieldname": "compliance_item",
+   "fieldname": "item_code",
    "fieldtype": "Link",
-   "label": "Compliance Item",
+   "label": "Item Code",
    "options": "Compliance Item",
    "read_only": 1
-  },
-  {
-   "depends_on": "is_billable",
-   "fieldname": "item_code",
-   "fieldtype": "Data",
-   "label": "Item Code"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-08 12:42:51.942686",
+ "modified": "2023-11-09 12:04:38.721599",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
