@@ -92,6 +92,7 @@ def make_sales_invoice(doc, method):
                                 if payment_terms:
                                     sales_invoice.default_payment_terms_template = payment_terms
                                 sales_invoice.append('items', {
+                                    'item_code' : sub_category_doc.item_code,
                                     'item_name' : sub_category_doc.sub_category,
                                     'rate' : sub_category_doc.rate,
                                     'qty' : 1,
