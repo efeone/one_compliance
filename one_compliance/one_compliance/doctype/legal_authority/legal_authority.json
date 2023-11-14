@@ -1,30 +1,22 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:DIR-{YY}-{#####}",
+ "autoname": "format:LA-{YY}-{#####}",
  "creation": "2023-10-18 12:00:29.285495",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "director_name",
-  "customer_type",
+  "person_name",
   "email",
   "phone",
+  "authority_type_list",
   "column_break_axdhp",
-  "din",
-  "pan_no"
+  "pan_no",
+  "din"
  ],
  "fields": [
-  {
-   "fieldname": "director_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Director Name",
-   "unique": 1
-  },
   {
    "fieldname": "din",
    "fieldtype": "Data",
@@ -35,44 +27,53 @@
    "unique": 1
   },
   {
-   "fieldname": "customer_type",
-   "fieldtype": "Link",
-   "in_filter": 1,
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Customer Type",
-   "options": "Customer Type"
-  },
-  {
    "fieldname": "email",
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Email",
-   "options": "Email"
+   "options": "Email",
+   "reqd": 1
   },
   {
    "fieldname": "phone",
    "fieldtype": "Data",
    "label": "Phone",
-   "options": "Phone"
+   "options": "Phone",
+   "reqd": 1
   },
   {
    "fieldname": "pan_no",
    "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "PAN No"
+   "label": "PAN No",
+   "reqd": 1
   },
   {
    "fieldname": "column_break_axdhp",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "person_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Person Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "authority_type_list",
+   "fieldtype": "Table MultiSelect",
+   "label": "Authority Type List",
+   "options": "Authority Type List"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-18 14:25:01.262922",
+ "modified": "2023-11-14 13:07:59.241236",
  "modified_by": "Administrator",
  "module": "One Compliance",
- "name": "Director",
+ "name": "Legal Authority",
  "name_case": "Title Case",
  "naming_rule": "Expression",
  "owner": "Administrator",
@@ -88,11 +89,23 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Director",
+   "share": 1,
+   "write": 1
   }
  ],
- "search_fields": "director_name,din,email",
+ "search_fields": "person_name,email,phone,pan_no",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],
- "title_field": "director_name"
+ "title_field": "person_name"
 }

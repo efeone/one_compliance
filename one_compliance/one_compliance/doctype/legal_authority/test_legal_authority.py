@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestDirector(FrappeTestCase):
+class TestLegalAuthority(FrappeTestCase):
 	pass
