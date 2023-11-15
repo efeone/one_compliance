@@ -11,32 +11,11 @@ frappe.ui.form.on('Customer',{
     }
   },
   refresh: function(frm){
-    if(!frm.is_new() && frm.doc.customer_contacts){
-      frappe.call({
-        method:"one_compliance.one_compliance.doc_events.customer.set_allow_edit",
-        args: {
-          'customer_contacts': frm.doc.customer_contacts
-        },
-        callback:function(r){
-          if (r.message){
-            frm.refresh_field('customer_contacts')
-          }
-        }
-      });
-    }
     setTimeout(() => {
       frm.remove_custom_button('Pricing Rule','Create');
       frm.remove_custom_button('Get Customer Group Details','Actions');
     })
     if(!frm.is_new()){
-      frm.set_query('contact','customer_contacts', (doc, cdt, cdn) => { /* applied filter in contact to get corresponding customer */
-        return {
-          query: 'one_compliance.one_compliance.doc_events.customer.filter_contact',
-          filters: {
-            customer_name: doc.name
-          }
-        }
-      });
       let roles = frappe.user_roles;
       if(roles.includes('Compliance Manager') || roles.includes('Director')){
       frm.add_custom_button('Add/View Credential', () => {
