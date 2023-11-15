@@ -89,12 +89,14 @@ def make_sales_invoice(doc, method):
                                 sales_invoice.project = project.name
                                 income_account = frappe.db.get_value('Company',project.company, 'default_income_account')
                                 payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
+                                rate = get_rate_from_compliance_agreement(project.compliance_agreement, project.compliance_sub_category)
+                                rate = rate if rate else sub_category_doc.rate
                                 if payment_terms:
                                     sales_invoice.default_payment_terms_template = payment_terms
                                 sales_invoice.append('items', {
                                     'item_code' : sub_category_doc.item_code,
                                     'item_name' : sub_category_doc.sub_category,
-                                    'rate' : sub_category_doc.rate,
+                                    'rate' : rate,
                                     'qty' : 1,
                                     'income_account' : income_account,
                                     'description' : sub_category_doc.name
@@ -129,3 +131,16 @@ def get_permission_query_conditions(user):
         return conditions
     else:
         return None
+
+@frappe.whitelist()
+def get_rate_from_compliance_agreement(compliance_agreement, compliance_sub_category):
+    rate_result = frappe.db.sql(
+		"""
+		select rate
+		from `tabCompliance Category Details`
+		where parent=%s and compliance_sub_category=%s""",
+        (compliance_agreement, compliance_sub_category),
+        as_dict=1,
+        )
+    if rate_result:
+        return rate_result[0].rate
