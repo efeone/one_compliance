@@ -45,6 +45,7 @@
   },
   {
    "fetch_from": "customer.payment_terms",
+   "fetch_if_empty": 1,
    "fieldname": "default_payment_terms_template",
    "fieldtype": "Link",
    "label": "Default Payment Terms Template",
@@ -204,7 +205,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-08-22 17:03:42.483194",
+ "modified": "2023-11-16 16:27:57.006880",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
