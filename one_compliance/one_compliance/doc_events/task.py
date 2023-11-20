@@ -87,7 +87,8 @@ def make_sales_invoice(doc, method):
                                 sales_invoice.customer = project.customer
                                 sales_invoice.posting_date = frappe.utils.today()
                                 sales_invoice.project = project.name
-                                income_account = frappe.db.get_value('Company',project.company, 'default_income_account')
+                                sub_category_income_account = sub_category_doc.income_account
+                                income_account = sub_category_income_account if sub_category_income_account else frappe.db.get_value('Company',project.company, 'default_income_account')
                                 payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
                                 rate = get_rate_from_compliance_agreement(project.compliance_agreement, project.compliance_sub_category)
                                 rate = rate if rate else sub_category_doc.rate
@@ -101,6 +102,18 @@ def make_sales_invoice(doc, method):
                                     'income_account' : income_account,
                                     'description' : sub_category_doc.name
                                 })
+                                if project.custom_have_reimbursement:
+                                    item_code, item_name, description = frappe.db.get_value('Item', project.custom_reimbursement_item , ['name', 'item_name', 'description'])
+                                    reimbursement_amount = project.custom_reimbursement_amount
+                                    reimbursement_income_account = project.custom_reimbursement_income_account
+                                    sales_invoice.append('items', {
+                                        'item_code' : item_code,
+                                        'item_name' : item_name,
+                                        'rate' : reimbursement_amount,
+                                        'qty' : 1,
+                                        'income_account' : reimbursement_income_account,
+                                        'description' : description
+                                    })
                                 sales_invoice.save(ignore_permissions=True)
 
 @frappe.whitelist()
