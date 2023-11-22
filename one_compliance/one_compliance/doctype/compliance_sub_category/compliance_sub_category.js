@@ -35,6 +35,23 @@ frappe.ui.form.on('Compliance Sub Category', {
 		if(frm.is_new()){
 			set_notification_templates(frm);
 		}
+		if (frm.doc.item_code) {
+        if (frm.doc.enabled) {
+            frappe.call({
+                method: 'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.enable_related_item',
+                args: {
+                    'item_name': frm.doc.item_code
+                }
+            });
+        } else {
+            frappe.call({
+                method: 'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.disable_related_item',
+                args: {
+                    'item_name': frm.doc.item_code
+                }
+            });
+        }
+    }
 	},
 	validate: function(frm) {
 		if (frm.doc.day) {
@@ -49,7 +66,7 @@ frappe.ui.form.on('Compliance Sub Category', {
 		  frm.clear_table('compliance_executive');
 		  frm.refresh_field('compliance_executive');
 		}
-	  }
+  }
 });
 
 let create_project_dialog = function(frm){

@@ -13,10 +13,20 @@ class ComplianceSubCategory(Document):
 			sub_cat_item = create_compliance_item_from_sub_category(self.sub_category)
 			self.item_code = sub_cat_item
 
+		# Check if the subcategory name is changed
+		if self.get_doc_before_save() and self.get_doc_before_save().sub_category != self.sub_category:
+			self.item_code = self.sub_category
+			update_related_item_name(self.get_doc_before_save().sub_category, self.sub_category, self.compliance_category)
+
 	def validate_rate(self):
 		""" Method to validate rate """
 		if not self.rate and self.is_billable:
 			frappe.throw(_('Please Enter Valid Rate'))
+
+	def after_delete(self):
+		# Delete related Compliance Items
+		delete_related_items(self.sub_category)
+
 
 @frappe.whitelist()
 def create_project_manually(customer, project_template, expected_start_date, expected_end_date):
@@ -95,6 +105,7 @@ def create_compliance_item_from_sub_category(sub_category):
 			"item_name": sub_category,
 			"item_code": sub_category,
 			"item_group": item_group,
+			"is_service_item":True,
 			"is_stock_item": False,
 			"include_item_in_manufacturing": False
 		})
@@ -105,3 +116,53 @@ def create_compliance_item_from_sub_category(sub_category):
 	else:
 		return  frappe.get_value("Item", {"item_code": sub_category})
 	return compliance_item.name
+
+@frappe.whitelist()
+def disable_related_item(item_name):
+	frappe.db.set_value('Item', item_name, 'disabled', 1)
+	frappe.db.commit()
+
+@frappe.whitelist()
+def enable_related_item(item_name):
+	frappe.db.set_value('Item', item_name, 'disabled', 0)
+	frappe.db.commit()
+
+@frappe.whitelist()
+def delete_related_items(item_name):
+	frappe.delete_doc('Item', item_name, ignore_permissions=True)
+	frappe.db.commit()
+
+	frappe.msgprint("Compliance Item Deleted: {}".format(item_name), indicator="green", alert=1)
+
+@frappe.whitelist()
+def update_related_item_name(old_sub_category, new_sub_category, compliance_category):
+	# Update Compliance Item name and code based on the new subcategory
+	item = frappe.get_doc("Item", {"item_name": old_sub_category})
+
+	if item:
+		item.item_name = new_sub_category
+		item.item_code = new_sub_category
+		item.save()
+
+		# Rename the doctype in the Item
+		frappe.rename_doc('Item', old_sub_category, new_sub_category, force=True)
+
+		rename_compliance_subcategory(old_sub_category, new_sub_category, compliance_category)
+
+	frappe.msgprint("Compliance Item Name Updated: {} -> {}".format(old_sub_category, new_sub_category), indicator="blue", alert=1)
+
+@frappe.whitelist()
+def rename_compliance_subcategory(old_sub_category, new_sub_category, compliance_category):
+    # Formulate the old and new doctype names
+    old_doctype_name = f"{compliance_category}-{old_sub_category}"
+    new_doctype_name = f"{compliance_category}-{new_sub_category}"
+
+    doc = frappe.get_all("Compliance Sub Category", filters={'name': old_doctype_name})
+
+    if doc:
+        # Update the found document's subcategory field and name
+        frappe.db.set_value('Compliance Sub Category', doc[0].name, 'sub_category', new_sub_category)
+        frappe.rename_doc('Compliance Sub Category', doc[0].name, new_doctype_name, force=True)
+
+        frappe.msgprint("Compliance Subcategory Doctype Name Updated: {} -> {}".format(old_doctype_name, new_doctype_name), indicator="blue", alert=1)
+    
