@@ -22,6 +22,8 @@
   "is_billable",
   "rate",
   "item_code",
+  "income_account",
+  "have_reimbursement",
   "department_details_section",
   "department",
   "head_of_department",
@@ -241,11 +243,25 @@
    "label": "Item Code",
    "options": "Item",
    "read_only": 1
+  },
+  {
+   "depends_on": "is_billable",
+   "fieldname": "income_account",
+   "fieldtype": "Link",
+   "label": "Income Account",
+   "options": "Account"
+  },
+  {
+   "default": "0",
+   "depends_on": "is_billable",
+   "fieldname": "have_reimbursement",
+   "fieldtype": "Check",
+   "label": "Have Reimbursement"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-09 15:20:48.686043",
+ "modified": "2023-11-20 17:03:36.558667",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
