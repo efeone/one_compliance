@@ -70,6 +70,7 @@
    "label": "Compliance Category Details"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "compliance_category_details",
    "fieldtype": "Table",
    "label": "Compliance Category Details",
@@ -212,6 +213,7 @@
    "options": "\nMonthly\nQuarterly\nHalf Yearly\nYearly"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
@@ -222,7 +224,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-12-02 10:49:03.849357",
+ "modified": "2023-12-02 13:12:47.614303",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",

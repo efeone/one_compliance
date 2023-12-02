@@ -87,6 +87,7 @@ def make_sales_invoice(doc, method):
                                 sales_invoice.customer = project.customer
                                 sales_invoice.posting_date = frappe.utils.today()
                                 sales_invoice.project = project.name
+                                sales_invoice.company = project.company
                                 sub_category_income_account = sub_category_doc.income_account
                                 income_account = sub_category_income_account if sub_category_income_account else frappe.db.get_value('Company',project.company, 'default_income_account')
                                 payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
@@ -100,7 +101,8 @@ def make_sales_invoice(doc, method):
                                     'rate' : rate,
                                     'qty' : 1,
                                     'income_account' : income_account,
-                                    'description' : sub_category_doc.name
+                                    'description' : sub_category_doc.name,
+                                    'cost_center' : project.cost_center
                                 })
                                 if project.custom_have_reimbursement:
                                     item_code, item_name, description = frappe.db.get_value('Item', project.custom_reimbursement_item , ['name', 'item_name', 'description'])

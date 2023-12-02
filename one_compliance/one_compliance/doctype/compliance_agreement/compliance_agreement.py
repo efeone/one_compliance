@@ -179,6 +179,8 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		else:
 			naming = str(naming_year) + ' ' + naming_month
 		project = frappe.new_doc('Project')
+		project.company = self.company
+		project.cost_center = frappe.get_cached_value("Company", self.company, "cost_center")
 		project.project_name = self.customer_name + '-' + compliance_sub_category + '-' + str(naming)
 		# project.project_template = project_template
 		project.customer = self.customer
@@ -200,6 +202,7 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 			task_doc.compliance_sub_category = compliance_sub_category
 			task_doc.subject = template_task.subject
 			task_doc.project = project.name
+			task_doc.company = project.company
 			task_doc.project_name = project.project_name
 			task_doc.category_type = project.category_type
 			task_doc.exp_start_date = compliance_date
