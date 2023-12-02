@@ -9,6 +9,7 @@
  "engine": "InnoDB",
  "field_order": [
   "workflow_state",
+  "company",
   "customer",
   "customer_name",
   "customer_type",
@@ -209,12 +210,19 @@
    "label": "Invoice Generation",
    "mandatory_depends_on": "eval: doc.invoice_based_on == \"Consolidated\"",
    "options": "\nMonthly\nQuarterly\nHalf Yearly\nYearly"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-11-17 10:44:51.816298",
+ "modified": "2023-12-02 10:49:03.849357",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
