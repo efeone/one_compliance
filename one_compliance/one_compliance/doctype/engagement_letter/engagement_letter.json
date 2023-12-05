@@ -10,14 +10,33 @@
   "customer_type",
   "lead",
   "opportunity",
-  "full_name"
+  "column_break_4mdhg",
+  "full_name",
+  "column_break_avmgr",
+  "posting_date",
+  "section_break_vrchz",
+  "city",
+  "state",
+  "country",
+  "column_break_qumqu",
+  "email",
+  "mobile",
+  "payment_tab",
+  "payment_type",
+  "payment_terms_template",
+  "payment_schedule",
+  "section_break_xfou9",
+  "terms",
+  "description"
  ],
  "fields": [
   {
    "fieldname": "customer_type",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Customer Type",
-   "options": "\nLead\nOpportunity"
+   "options": "\nLead\nOpportunity",
+   "reqd": 1
   },
   {
    "depends_on": "eval:doc.customer_type=='Lead'",
@@ -37,11 +56,98 @@
    "fieldtype": "Link",
    "label": "Opportunity",
    "options": "Opportunity"
+  },
+  {
+   "fieldname": "column_break_4mdhg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_vrchz",
+   "fieldtype": "Section Break",
+   "label": "Address & Contacts"
+  },
+  {
+   "fieldname": "city",
+   "fieldtype": "Data",
+   "label": "City"
+  },
+  {
+   "fieldname": "state",
+   "fieldtype": "Data",
+   "label": "State"
+  },
+  {
+   "fieldname": "country",
+   "fieldtype": "Data",
+   "label": "Country"
+  },
+  {
+   "fieldname": "column_break_qumqu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email"
+  },
+  {
+   "fieldname": "mobile",
+   "fieldtype": "Data",
+   "label": "Mobile"
+  },
+  {
+   "fieldname": "payment_tab",
+   "fieldtype": "Tab Break",
+   "label": "Payment"
+  },
+  {
+   "fieldname": "payment_type",
+   "fieldtype": "Link",
+   "label": "Payment Type",
+   "options": "Payment Method"
+  },
+  {
+   "fieldname": "payment_terms_template",
+   "fieldtype": "Link",
+   "label": "Payment Terms Template",
+   "options": "Payment Terms Template"
+  },
+  {
+   "fieldname": "payment_schedule",
+   "fieldtype": "Table",
+   "label": "Payment Schedule",
+   "options": "Payment Schedule"
+  },
+  {
+   "fieldname": "section_break_xfou9",
+   "fieldtype": "Section Break",
+   "label": "Terms & Conditions"
+  },
+  {
+   "fieldname": "terms",
+   "fieldtype": "Link",
+   "label": "Terms",
+   "options": "Terms and Conditions"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "posting_date",
+   "fieldtype": "Date",
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_avmgr",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-27 15:14:24.065551",
+ "modified": "2023-12-05 11:04:15.749732",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter",
