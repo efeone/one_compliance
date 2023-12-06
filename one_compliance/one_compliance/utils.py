@@ -84,8 +84,7 @@ def send_notification(doc, for_user, context, notification_template_fieldname):
         subject_template, content_template = frappe.db.get_value('Notification Template', notification_template, ['subject', 'content'])
         subject = frappe.render_template(subject_template, context)
         content = frappe.render_template(content_template, context)
-        pass
-        # create_notification_log(subject, 'Mention', for_user, content, doc.doctype, doc.name)
+        create_notification_log(subject, 'Mention', for_user, content, doc.doctype, doc.name)
 
 @frappe.whitelist()
 def send_notification_to_roles(doc, role, context, notification_template_fieldname):
