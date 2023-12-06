@@ -188,6 +188,9 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		project.compliance_sub_category = compliance_sub_category
 		project.expected_start_date = compliance_date
 		project.custom_have_reimbursement = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'have_reimbursement')
+		if project.custom_have_reimbursement:
+			project.custom_reimbursement_item = frappe.db.get_single_value("Compliance Settings", 'default_reimbursement_item')
+			project.custom_reimbursement_income_account = frappe.db.get_single_value("Compliance Settings", 'default__reimbursement_income_account')
 		project.category_type = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'category_type')
 		if project_template_doc.custom_project_duration:
 			project.expected_end_date = add_days(compliance_date, project_template_doc.custom_project_duration)

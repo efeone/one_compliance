@@ -96,8 +96,7 @@ def set_filter_for_employee(doctype, txt, searchfield, start, page_len, filters)
 def create_compliance_item_from_sub_category(sub_category):
 	if not frappe.db.exists('Item', {'item_code':sub_category}):
 		# Fetch the 'Services' Item Group
-		item_group = frappe.get_value("Item Group", {"item_group_name": "Services"})
-
+		item_group = frappe.db.get_single_value("Compliance Settings", 'compliance_service_item_group')
 
 		# Create a new Compliance Item document
 		compliance_item = frappe.get_doc({
