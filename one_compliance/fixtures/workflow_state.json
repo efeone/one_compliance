@@ -79,5 +79,32 @@
   "name": "Cancelled",
   "style": "Danger",
   "workflow_state_name": "Cancelled"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2023-12-08 15:49:19.818661",
+  "name": "Proforma Invoice",
+  "style": "Info",
+  "workflow_state_name": "Proforma Invoice"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2023-12-08 15:49:57.440701",
+  "name": "Tax Invoice",
+  "style": "Success",
+  "workflow_state_name": "Tax Invoice"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2023-12-09 14:04:17.808593",
+  "name": "Verified",
+  "style": "Primary",
+  "workflow_state_name": "Verified"
  }
 ]
