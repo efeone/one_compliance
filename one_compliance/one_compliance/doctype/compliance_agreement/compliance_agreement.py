@@ -187,6 +187,8 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		project.compliance_agreement = self.name
 		project.compliance_sub_category = compliance_sub_category
 		project.expected_start_date = compliance_date
+		project.custom_project_service = compliance_sub_category + '-' + str(naming)
+		project.notes = compliance_sub_category + '-' + str(naming)
 		project.custom_have_reimbursement = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'have_reimbursement')
 		if project.custom_have_reimbursement:
 			project.custom_reimbursement_item = frappe.db.get_single_value("Compliance Settings", 'default_reimbursement_item')
