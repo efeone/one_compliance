@@ -101,7 +101,7 @@ def make_sales_invoice(doc, method):
 									'rate' : rate,
 									'qty' : 1,
 									'income_account' : income_account,
-									'description' : sub_category_doc.name,
+									'description' : project.custom_project_service,
 									'cost_center' : project.cost_center
 								})
 								if project.custom_have_reimbursement:
