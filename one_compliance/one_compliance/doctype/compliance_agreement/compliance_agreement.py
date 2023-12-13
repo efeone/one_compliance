@@ -161,9 +161,11 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		if not compliance_date:
 			compliance_date = getdate(frappe.utils.today())
 		repeat_on = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'repeat_on')
-		previous_month_date = add_months(getdate(today()), -1)
-		naming_year = getdate(today()).year
-		naming_month = getdate(previous_month_date).strftime("%B")
+		project_based_on_prior_phase = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_based_on_prior_phase')
+		previous_month_date = add_months(getdate(compliance_date), -1)
+		previous_year_date =  add_years(getdate(compliance_date), -1)
+		naming_year = getdate(previous_year_date).year if project_based_on_prior_phase else getdate(compliance_date).year
+		naming_month = getdate(previous_month_date).strftime("%B") if project_based_on_prior_phase else getdate(compliance_date).strftime("%B")
 		if naming_month in ['January', 'February', 'March']:
 			naming_quarter = 'Quarter 1'
 		elif naming_month in ['April', 'May', 'June']:
