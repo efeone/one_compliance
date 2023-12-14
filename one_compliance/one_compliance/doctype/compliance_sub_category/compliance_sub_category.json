@@ -17,6 +17,7 @@
   "repeat_on",
   "month",
   "day",
+  "project_based_on_prior_phase",
   "column_break_06mwn",
   "enabled",
   "is_billable",
@@ -257,11 +258,17 @@
    "fieldname": "have_reimbursement",
    "fieldtype": "Check",
    "label": "Have Reimbursement"
+  },
+  {
+   "default": "1",
+   "fieldname": "project_based_on_prior_phase",
+   "fieldtype": "Check",
+   "label": "Project based on Prior Phase"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-11-20 17:03:36.558667",
+ "modified": "2023-12-13 15:46:25.060673",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
