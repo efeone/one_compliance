@@ -15,6 +15,8 @@ class ComplianceAgreement(Document):
 		self.create_project_if_not_exists()
 
 	def before_insert(self):
+		# from hrms.hr.doctype.shift_type.shift_type import process_auto_attendance_for_all_shifts
+
 		self.status = "Open"
 
 	def create_project_if_not_exists(self):
@@ -163,8 +165,7 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		repeat_on = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'repeat_on')
 		project_based_on_prior_phase = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_based_on_prior_phase')
 		previous_month_date = add_months(getdate(compliance_date), -1)
-		previous_year_date =  add_years(getdate(compliance_date), -1)
-		naming_year = getdate(previous_year_date).year if project_based_on_prior_phase else getdate(compliance_date).year
+		naming_year = getdate(previous_month_date).year if project_based_on_prior_phase else getdate(compliance_date).year
 		naming_month = getdate(previous_month_date).strftime("%B") if project_based_on_prior_phase else getdate(compliance_date).strftime("%B")
 		if naming_month in ['January', 'February', 'March']:
 			naming_quarter = 'Quarter 1'
