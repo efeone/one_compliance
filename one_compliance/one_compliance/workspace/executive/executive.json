@@ -12,7 +12,7 @@
  "is_hidden": 0,
  "label": "Executive",
  "links": [],
- "modified": "2023-10-21 14:31:39.072311",
+ "modified": "2023-12-20 15:06:44.435824",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Executive",
@@ -71,7 +71,7 @@
    "format": "{} Assigned",
    "label": "My Projects",
    "link_to": "Project",
-   "stats_filter": "{\"_assign\":[\"like\",\"%Executive%\"],\"status\":[\"=\",null]},\n{\n    \"_assign\": [\"like\", '%' + frappe.session.user + '%'],\n    \"status\": \"Open\"\n}",
+   "stats_filter": "{\"_assign\":[\"like\",\"%Administrator%\"],\"status\":[\"in\",[\"Open\",\"Overdue\",null]]}",
    "type": "DocType"
   },
   {
