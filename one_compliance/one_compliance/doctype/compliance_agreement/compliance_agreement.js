@@ -25,6 +25,27 @@ frappe.ui.form.on('Compliance Agreement',{
           }
         })
     }
+
+    // Conditional check for creating a sales invoice
+    if (frm.doc.invoice_based_on == 'Consolidated' && frm.doc.invoice_generation && frm.doc.valid_from) {
+        let current_date = frappe.datetime.nowdate();
+        let invoice_date = '';
+
+        if (frm.doc.invoice_generation == 'Monthly') {
+            invoice_date = frappe.datetime.add_months(frm.doc.valid_from, 1);
+        } else if (frm.doc.invoice_generation == 'Quarterly') {
+            invoice_date = frappe.datetime.add_months(frm.doc.valid_from, 3);
+        } else if (frm.doc.invoice_generation == 'Half Yearly') {
+            invoice_date = frappe.datetime.add_months(frm.doc.valid_from, 6);
+        } else if (frm.doc.invoice_generation == 'Yearly') {
+            invoice_date = frappe.datetime.add_years(frm.doc.valid_from, 1);
+        }
+
+        if (invoice_date == current_date) {
+            // Call your function to create the sales invoice here
+            create_sales_invoice(frm, invoice_date);
+        }
+    }
   },
   compliance_category:function(frm){
     update_compliance_category(frm);
@@ -211,3 +232,15 @@ let create_project = function(frm){
   d.show();
 };
 
+let create_sales_invoice = function(frm, invoice_date) {
+  frappe.call({
+    method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.make_sales_invoice',
+        args: {
+            compliance_agreement: frm.doc.name,
+            invoice_date: invoice_date
+        },
+        callback: function(response) {
+
+        }
+  })
+}

@@ -312,3 +312,60 @@ def update_compliance_dates(compliance_category_details_id):
 	else:
 		frappe.db.set_value('Compliance Category Details', compliance_category_details_id, 'compliance_date', getdate(today()))
 		frappe.db.commit()
+
+@frappe.whitelist()
+def make_sales_invoice(compliance_agreement, invoice_date):
+    compliance_agreement_doc = frappe.get_doc("Compliance Agreement", compliance_agreement)
+    if not compliance_agreement_doc:
+        frappe.throw(_("Compliance Agreement not found"))
+
+    projectlist = frappe.get_all(
+        "Project",
+        filters={
+            "compliance_agreement": compliance_agreement,
+            "status": "Completed",
+            "expected_start_date": (">", compliance_agreement_doc.valid_from),
+            "expected_end_date": ("<", invoice_date),
+        },
+        fields=["name", "customer", "compliance_sub_category", "company"]
+    )
+    print(projectlist)
+
+    if(projectlist and len(projectlist) > 0):
+        sales_invoice = frappe.new_doc("Sales Invoice")
+        for project in projectlist:
+            sales_invoice.customer = project.customer
+            sales_invoice.posting_date = frappe.utils.today()
+            income_account = frappe.db.get_value('Company', project.company, 'default_income_account')
+            payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement, 'default_payment_terms_template')
+            rate = get_rate_from_compliance_agreement(project.compliance_agreement, project.compliance_sub_category)
+            sub_category_doc = frappe.get_doc("Compliance Sub Category", project.compliance_sub_category)
+            rate = rate if rate else sub_category_doc.rate
+
+            if payment_terms:
+                sales_invoice.default_payment_terms_template = payment_terms
+
+            sales_invoice.append('items', {
+                'item_code': sub_category_doc.item_code,
+                'item_name': sub_category_doc.sub_category,
+                'rate': rate,
+                'qty': 1,
+                'income_account': income_account,
+                'description': sub_category_doc.name
+            })
+
+        sales_invoice.insert()
+        frappe.msgprint(_("Sales Invoices created successfully."))
+
+@frappe.whitelist()
+def get_rate_from_compliance_agreement(compliance_agreement, compliance_sub_category):
+    rate_result = frappe.db.sql(
+		"""
+		select rate
+		from `tabCompliance Category Details`
+		where parent=%s and compliance_sub_category=%s""",
+        (compliance_agreement, compliance_sub_category),
+        as_dict=1,
+        )
+    if rate_result:
+        return rate_result[0].rate
