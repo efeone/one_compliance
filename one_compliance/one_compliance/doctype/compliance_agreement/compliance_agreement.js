@@ -231,8 +231,6 @@ let create_sales_invoice = function(frm, invoice_date) {
         }
   })
 }
-
-
   const get_invoice_dates = (frm) => {
     if (frm.doc.invoice_based_on == 'Consolidated' && frm.doc.invoice_generation && frm.doc.valid_from) {
         let current_date = frappe.datetime.nowdate();
