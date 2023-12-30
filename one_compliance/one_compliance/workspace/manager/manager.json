@@ -99,7 +99,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-10-21 14:30:42.925905",
+ "modified": "2023-12-20 15:06:15.218826",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Manager",
@@ -149,7 +149,7 @@
    "format": "{} Assigned",
    "label": "My Projects",
    "link_to": "Project",
-   "stats_filter": "{\"_assign\":[\"like\",\"%Manager%\"],\"status\":[\"=\",null]},\n{\n    \"_assign\": [\"like\", '%' + frappe.session.user + '%'],\n    \"status\": \"Open\"\n}",
+   "stats_filter": "{\"_assign\":[\"like\",\"%Administrator%\"],\"status\":[\"in\",[\"Open\",\"Overdue\",null]]}",
    "type": "DocType"
   },
   {
