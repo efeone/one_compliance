@@ -118,6 +118,7 @@ def make_sales_invoice(doc, method):
 										'description' : description
 									})
 								sales_invoice.save(ignore_permissions=True)
+								frappe.db.set_value('Project', project.name, 'is_invoiced', 1)
 
 @frappe.whitelist()
 def update_task_status(task_id, status, completed_by, completed_on):
@@ -133,7 +134,7 @@ def update_task_status(task_id, status, completed_by, completed_on):
 
 @frappe.whitelist()
 def get_permission_query_conditions(user):
-   
+
 	if not user:
 		user = frappe.session.user
 
