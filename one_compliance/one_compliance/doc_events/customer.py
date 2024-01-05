@@ -46,6 +46,32 @@ def create_agreement_custom_button(source_name, target_doc = None):
     return doc
 
 @frappe.whitelist()
+def create_project_custom_button(source_name, target_doc = None):
+    def set_missing_values(source, target):
+        target.customer_name= source.customer_name
+        target.lead_name = source.lead_name
+        target.opportunity_name= source.opportunity_name
+    doc = get_mapped_doc(
+        'Customer',
+        source_name,
+        {
+        'Customer': {
+        'doctype': 'Project',
+        },
+        },target_doc,set_missing_values)
+    return doc
+
+@frappe.whitelist()
+def create_payment_entry(mode_of_payment, paid_amount, customer):
+    new_pe_doc = frappe.new_doc('Payment Entry')
+    new_pe_doc.party_type = 'Customer'
+    new_pe_doc.party = customer
+    new_pe_doc.mode_of_payment = mode_of_payment
+    new_pe_doc.paid_amount = paid_amount
+    new_pe_doc.save()
+    return new_pe_doc.name
+
+@frappe.whitelist()
 def filter_contact(doctype, txt, searchfield, start, page_len, filters):
     '''
         Method used to filter contact
@@ -95,6 +121,20 @@ def custom_button_for_view_compliance_agreement(customer):
     if frappe.db.exists('Compliance Agreement', {'customer':customer, 'status':'Active'}):
         compliance_agreement = frappe.db.get_value('Compliance Agreement', {'customer':customer, 'status':'Active'})
         return compliance_agreement
+    else:
+        return 0
+
+@frappe.whitelist()
+def custom_button_for_view_project(customer):
+    if frappe.db.exists('Project', {'customer':customer}):
+        return 1
+    else:
+        return 0
+
+@frappe.whitelist()
+def custom_button_for_view_payment(party_type, party):
+    if frappe.db.exists('Payment Entry', {'party_type':party_type, 'party':party}):
+        return 1
     else:
         return 0
 

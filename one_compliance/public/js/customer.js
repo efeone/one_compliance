@@ -31,6 +31,8 @@ frappe.ui.form.on('Customer',{
       });
     }
     view_compliance_agreemet(frm)
+    view_project(frm)
+    view_payment_entry(frm)
     }
     // Create sales invoice against compliance_agreement
 
@@ -194,19 +196,72 @@ let view_compliance_agreemet = function(frm) {
      if(r.message){
        frm.add_custom_button('View Agreement', ()=>{
          frappe.set_route('Form','Compliance Agreement', r.message)
-      })
+      }, __('Create'))
      }
      else{
-       frm.add_custom_button('Create Agreement', () => { /* Add a custom button to get compliance agreement details */
+       frm.add_custom_button('Agreement', () => { /* Add a custom button to get compliance agreement details */
          frappe.model.open_mapped_doc({
            method: 'one_compliance.one_compliance.doc_events.customer.create_agreement_custom_button',
            frm: cur_frm
          });
-       });
+       }, __('Create'));
       }
      }
  })
 }
+let view_project = function(frm) {
+  frappe.call({
+    method : 'one_compliance.one_compliance.doc_events.customer.custom_button_for_view_project',
+    args :{
+      'customer' : frm.doc.name
+     },
+     callback : function(r){
+       if(r.message){
+         frm.add_custom_button('Consultant Project', ()=>{
+           frappe.model.open_mapped_doc({
+             method: 'one_compliance.one_compliance.doc_events.customer.create_project_custom_button',
+             frm: cur_frm
+           });
+         }, __('Create'));
+       }
+}
+})
+}
+let view_payment_entry = function(frm) {
+  frm.add_custom_button('Payment', () => {
+    let d = new frappe.ui.Dialog({
+      title: 'Enter Details',
+      fields: [
+        {
+          label: 'Mode of Payment',
+          fieldname: 'mode_of_payment',
+          fieldtype: 'Link',
+          reqd: 1,
+          options: 'Mode of Payment',
+        },
+        {
+          label: 'Paid Amount',
+          fieldname: 'paid_amount',
+          fieldtype: 'Currency',
+          reqd: 1,
+        },
+      ],
+      primary_action_label: 'Create Payment',
+      primary_action(values) {
+        // Use the values directly in the frappe.model.open_mapped_doc
+        frappe.call('one_compliance.one_compliance.doc_events.customer.create_payment_entry', {
+            mode_of_payment: values.mode_of_payment,
+            paid_amount: values.paid_amount,
+            customer: frm.doc.name
+        }).then(r => {
+            console.log(`Payment Entry ${r.message} has been created`)
+        })
+        d.hide();
+      },
+    });
+    d.show();
+  }, __('Create'));
+};
 
 let send_clarification_message = function (frm){
   let d = new frappe.ui.Dialog({
