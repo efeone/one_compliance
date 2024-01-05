@@ -312,3 +312,37 @@ def update_compliance_dates(compliance_category_details_id):
 	else:
 		frappe.db.set_value('Compliance Category Details', compliance_category_details_id, 'compliance_date', getdate(today()))
 		frappe.db.commit()
+
+
+@frappe.whitelist()
+def validate_date_range(customer, valid_from, compliance_category_details,valid_upto=None):
+    compliance_category_details = json.loads(compliance_category_details)
+
+    for compliance_category_detail in compliance_category_details:
+        sub_category_name = compliance_category_detail.get("sub_category_name")
+
+        existing_agreements = frappe.get_all(
+            "Compliance Agreement",
+            filters={
+                "customer": customer,
+                "valid_from": (">=", valid_from),
+                "valid_upto": ("<=", valid_upto),
+		
+            },
+            fields=["name"],
+        )
+
+        for compliance_agreement in existing_agreements:
+
+            if frappe.db.exists(
+                "Compliance Category Details",
+                {
+                    "parent": compliance_agreement["name"],
+                    "sub_category_name": sub_category_name,
+					
+                },
+            ):
+                return 0	
+
+    return 1
+
