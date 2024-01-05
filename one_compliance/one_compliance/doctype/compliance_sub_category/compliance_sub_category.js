@@ -52,6 +52,13 @@ frappe.ui.form.on('Compliance Sub Category', {
             });
         }
     }
+	frm.set_query('income_account', function() {
+		return {
+			filters: {
+				root_type: 'Income' 
+			}
+		};
+	});
 	},
 	validate: function(frm) {
 		if (frm.doc.day) {
