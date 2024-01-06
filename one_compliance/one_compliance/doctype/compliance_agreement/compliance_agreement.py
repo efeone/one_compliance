@@ -67,7 +67,7 @@ class ComplianceAgreement(Document):
 	        filters={
 	            "compliance_agreement": self.name,
 	            "status": "Completed",
-	            "expected_start_date": (">=", self.valid_from),
+	            "expected_start_date": (">=", self.invoice_date),
 	            "expected_end_date": ("<", self.next_invoice_date),
 	        },
 	        fields=["name", "customer", "compliance_sub_category", "company"]
@@ -98,10 +98,11 @@ class ComplianceAgreement(Document):
 	            })
 
 	        sales_invoice.insert()
-	        self.next_invoice_date = calculate_next_invoice_date(self.invoice_date, self.invoice_generation)
+	        self.invoice_date = self.next_invoice_date
+	        self.next_invoice_date = calculate_next_invoice_date(self.invoice_date, self.invoice_generation, self.valid_upto)
 	        self.save()
 
-def calculate_next_invoice_date(current_invoice_date, invoice_generation):
+def calculate_next_invoice_date(current_invoice_date, invoice_generation, valid_upto):
     if invoice_generation == 'Monthly':
         next_invoice_date = frappe.utils.add_months(current_invoice_date, 1)
     elif invoice_generation == 'Quarterly':
@@ -112,7 +113,13 @@ def calculate_next_invoice_date(current_invoice_date, invoice_generation):
         next_invoice_date = frappe.utils.add_years(current_invoice_date, 1)
     else:
         next_invoice_date = current_invoice_date
-    return next_invoice_date
+
+    if valid_upto and next_invoice_date <= valid_upto:
+	    return next_invoice_date
+    elif valid_upto and next_invoice_date > valid_upto:
+	    return valid_upto
+    else:
+    	return next_invoice_date
 
 @frappe.whitelist()
 def check_project_status(compliance_agreement):
@@ -342,7 +349,7 @@ def compliance_agreement_daily_scheduler():
 		for agreement in agreements:
 			self = frappe.get_doc('Compliance Agreement', agreement.name)
 			self.create_project_if_not_exists()
-			if self.invoice_based_on == 'Consolidated':
+			if self.invoice_based_on == 'Consolidated' and self.next_invoice_date == date.today():
 				print(self.name)
 				self.make_sales_invoice()
 		frappe.db.commit()
