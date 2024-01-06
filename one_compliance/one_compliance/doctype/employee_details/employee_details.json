@@ -1,63 +1,60 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2023-10-18 12:12:41.777971",
+ "creation": "2024-01-02 09:51:25.368257",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "task_id",
-  "subject",
-  "project",
-  "compliance_sub_category"
+  "employee",
+  "designation",
+  "employee_name",
+  "department"
  ],
  "fields": [
   {
-   "fetch_from": "task.project",
-   "fieldname": "project",
-   "fieldtype": "Data",
-   "in_filter": 1,
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Project"
-  },
-  {
-   "fetch_from": "task.subject",
-   "fieldname": "subject",
-   "fieldtype": "Data",
-   "in_filter": 1,
-   "in_list_view": 1,
-   "in_standard_filter": 1,
-   "label": "Subject"
-  },
-  {
-   "columns": 2,
-   "fetch_from": "id.subject",
-   "fieldname": "task_id",
+   "fieldname": "employee",
    "fieldtype": "Link",
    "in_filter": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Task Id",
-   "options": "Task"
+   "label": "Employee",
+   "options": "Employee"
   },
   {
-   "fieldname": "compliance_sub_category",
+   "fieldname": "designation",
    "fieldtype": "Link",
    "in_filter": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
-   "label": "Compliance Sub Category",
-   "options": "Compliance Sub Category"
+   "label": "Designation",
+   "options": "Designation"
+  },
+  {
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Department",
+   "options": "Department"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-01-02 11:19:22.929680",
+ "modified": "2024-01-02 11:09:43.756625",
  "modified_by": "Administrator",
  "module": "One Compliance",
- "name": "Task Reassign",
+ "name": "Employee Details",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",

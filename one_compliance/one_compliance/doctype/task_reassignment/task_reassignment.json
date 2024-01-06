@@ -1,0 +1,183 @@
+{
+ "actions": [],
+ "creation": "2023-12-05 13:06:49.141061",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "assignment_type",
+  "column_break_w0gtb",
+  "employee",
+  "add_employee",
+  "add_to_subcategories",
+  "filters_section",
+  "department",
+  "sub_category",
+  "column_break_lwccr",
+  "category",
+  "assigned_to",
+  "task_reassigns_section",
+  "task_reassigns",
+  "column_break_x0pun",
+  "assign_to",
+  "section_break_fyzdz",
+  "compliance_categories",
+  "compliance_executives"
+ ],
+ "fields": [
+  {
+   "fieldname": "assignment_type",
+   "fieldtype": "Select",
+   "label": "Assignment Type",
+   "options": "\nTransfer\nAssign",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_w0gtb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.assignment_type == 'Transfer'",
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "depends_on": "eval: doc.assignment_type == 'Assign'",
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "label": "Employee",
+   "options": "User"
+  },
+  {
+   "depends_on": "eval: doc.compliance_executives && doc.compliance_categories",
+   "fieldname": "add_employee",
+   "fieldtype": "Button",
+   "label": "Add Employee"
+  },
+  {
+   "fieldname": "add_to_subcategories",
+   "fieldtype": "Button",
+   "label": "Add To Subcategories"
+  },
+  {
+   "depends_on": "eval:(doc.task_reassigns).length || (doc.assign_to).length",
+   "fieldname": "task_reassigns_section",
+   "fieldtype": "Section Break",
+   "label": "Task Reassigning Entries"
+  },
+  {
+   "fieldname": "task_reassigns",
+   "fieldtype": "Table",
+   "label": "Task Reassigns",
+   "options": "Task Reassign"
+  },
+  {
+   "fieldname": "section_break_fyzdz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval: doc.employee",
+   "fieldname": "compliance_categories",
+   "fieldtype": "Link",
+   "label": "Compliance Categories",
+   "options": "Compliance Category"
+  },
+  {
+   "depends_on": "eval: doc.compliance_categories",
+   "fieldname": "compliance_executives",
+   "fieldtype": "Table",
+   "label": "Compliance Executives",
+   "options": "Compliance Executive",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval: doc.assignment_type == 'Transfer'",
+   "fieldname": "sub_category",
+   "fieldtype": "Link",
+   "label": "Sub Category",
+   "options": "Compliance Sub Category"
+  },
+  {
+   "fieldname": "column_break_x0pun",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "assign_to",
+   "fieldtype": "Table",
+   "label": "Assign To",
+   "options": "Employee Details"
+  },
+  {
+   "depends_on": "eval: doc.assignment_type === 'Transfer'",
+   "fieldname": "filters_section",
+   "fieldtype": "Section Break",
+   "label": "Filters"
+  },
+  {
+   "depends_on": "eval: doc.assignment_type == 'Transfer'",
+   "fieldname": "assigned_to",
+   "fieldtype": "Link",
+   "label": "Assigned To",
+   "options": "User"
+  },
+  {
+   "depends_on": "eval: doc.assignment_type == 'Transfer'",
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "label": "Category",
+   "options": "Compliance Category"
+  },
+  {
+   "fieldname": "column_break_lwccr",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "hide_toolbar": 1,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-01-02 11:10:38.864101",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Task Reassignment",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Director",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Senior Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
