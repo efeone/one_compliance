@@ -6,11 +6,6 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "assignment_type",
-  "column_break_w0gtb",
-  "employee",
-  "add_employee",
-  "add_to_subcategories",
   "filters_section",
   "department",
   "sub_category",
@@ -20,48 +15,15 @@
   "task_reassigns_section",
   "task_reassigns",
   "column_break_x0pun",
-  "assign_to",
-  "section_break_fyzdz",
-  "compliance_categories",
-  "compliance_executives"
+  "assign_to"
  ],
  "fields": [
   {
-   "fieldname": "assignment_type",
-   "fieldtype": "Select",
-   "label": "Assignment Type",
-   "options": "\nTransfer\nAssign",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_w0gtb",
-   "fieldtype": "Column Break"
-  },
-  {
-   "depends_on": "eval: doc.assignment_type == 'Transfer'",
    "fieldname": "department",
    "fieldtype": "Link",
    "in_list_view": 1,
    "label": "Department",
    "options": "Department"
-  },
-  {
-   "depends_on": "eval: doc.assignment_type == 'Assign'",
-   "fieldname": "employee",
-   "fieldtype": "Link",
-   "label": "Employee",
-   "options": "User"
-  },
-  {
-   "depends_on": "eval: doc.compliance_executives && doc.compliance_categories",
-   "fieldname": "add_employee",
-   "fieldtype": "Button",
-   "label": "Add Employee"
-  },
-  {
-   "fieldname": "add_to_subcategories",
-   "fieldtype": "Button",
-   "label": "Add To Subcategories"
   },
   {
    "depends_on": "eval:(doc.task_reassigns).length || (doc.assign_to).length",
@@ -76,26 +38,6 @@
    "options": "Task Reassign"
   },
   {
-   "fieldname": "section_break_fyzdz",
-   "fieldtype": "Section Break"
-  },
-  {
-   "depends_on": "eval: doc.employee",
-   "fieldname": "compliance_categories",
-   "fieldtype": "Link",
-   "label": "Compliance Categories",
-   "options": "Compliance Category"
-  },
-  {
-   "depends_on": "eval: doc.compliance_categories",
-   "fieldname": "compliance_executives",
-   "fieldtype": "Table",
-   "label": "Compliance Executives",
-   "options": "Compliance Executive",
-   "read_only": 1
-  },
-  {
-   "depends_on": "eval: doc.assignment_type == 'Transfer'",
    "fieldname": "sub_category",
    "fieldtype": "Link",
    "label": "Sub Category",
@@ -112,20 +54,17 @@
    "options": "Employee Details"
   },
   {
-   "depends_on": "eval: doc.assignment_type === 'Transfer'",
    "fieldname": "filters_section",
    "fieldtype": "Section Break",
    "label": "Filters"
   },
   {
-   "depends_on": "eval: doc.assignment_type == 'Transfer'",
    "fieldname": "assigned_to",
    "fieldtype": "Link",
    "label": "Assigned To",
    "options": "User"
   },
   {
-   "depends_on": "eval: doc.assignment_type == 'Transfer'",
    "fieldname": "category",
    "fieldtype": "Link",
    "label": "Category",
@@ -140,10 +79,10 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-01-02 11:10:38.864101",
+ "modified": "2024-01-08 15:38:23.663416",
  "modified_by": "Administrator",
  "module": "One Compliance",
- "name": "Task Reassignment",
+ "name": "Task Bulk Assignment",
  "owner": "Administrator",
  "permissions": [
   {
