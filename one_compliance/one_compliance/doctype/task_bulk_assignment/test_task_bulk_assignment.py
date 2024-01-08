@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestTaskReassignment(FrappeTestCase):
+class TestTaskBulkAssignment(FrappeTestCase):
 	pass

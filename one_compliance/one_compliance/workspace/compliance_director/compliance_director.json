@@ -5,7 +5,7 @@
    "label": "Profit and Loss"
   }
  ],
- "content": "[{\"id\":\"_3YxgsxYfR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Director</span>\",\"col\":12}},{\"id\":\"NHl2PP0rRm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"My Tasks\",\"col\":3}},{\"id\":\"RDJdlfXOuB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"My Projects\",\"col\":3}},{\"id\":\"QiRBOyBwrt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Employee Checkin Summary\",\"col\":3}},{\"id\":\"xXwfc2rWSN\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task Assigning Tool\",\"col\":3}},{\"id\":\"MRCZDGbowq\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Customer\",\"col\":3}},{\"id\":\"1G9uYI5nGw\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Projects\",\"col\":3}},{\"id\":\"zzmGkEsDMz\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Agreements\",\"col\":3}},{\"id\":\"ZzvILO8fel\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":3}},{\"id\":\"dUxiNrOmQ2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Outgoing Bills\",\"col\":3}},{\"id\":\"Ebgo5AM3nY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Incoming Bills\",\"col\":3}},{\"id\":\"BHPbGtdAFv\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Incoming Payment\",\"col\":3}},{\"id\":\"R-7SVQBKOk\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Outgoing Payment\",\"col\":3}},{\"id\":\"udS6tN2T5K\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Profit and Loss\",\"col\":12}},{\"id\":\"uR8RRr0peR\",\"type\":\"paragraph\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Category Type Overdue</span>\",\"col\":12}},{\"id\":\"v5as6bTBsg\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"GST Overdue\",\"col\":4}},{\"id\":\"7AbBTEK-Ya\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Income Tax Overdue\",\"col\":4}},{\"id\":\"woNwfP-27i\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Consulting Overdue\",\"col\":4}},{\"id\":\"jhLdD6gYs9\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Compliance Overdue\",\"col\":4}},{\"id\":\"AYXMF50A99\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Audit Overdue\",\"col\":4}},{\"id\":\"J1fbqXtuQh\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Projects\",\"col\":6}},{\"id\":\"awPLQnVH51\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Compliance Agreement\",\"col\":6}},{\"id\":\"-sAR96e1WE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"HC7kvMzDtR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Short Links</b></span>\",\"col\":12}},{\"id\":\"d2fCUaEK-H\",\"type\":\"card\",\"data\":{\"card_name\":\"CRM\",\"col\":3}},{\"id\":\"UkvzaFc6Vb\",\"type\":\"card\",\"data\":{\"card_name\":\"compliances\",\"col\":3}},{\"id\":\"XuzCDFI3RS\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":3}},{\"id\":\"CZUbcaW7LK\",\"type\":\"card\",\"data\":{\"card_name\":\"Registers\",\"col\":3}},{\"id\":\"hlTo11muXl\",\"type\":\"card\",\"data\":{\"card_name\":\"Other\",\"col\":3}}]",
+ "content": "[{\"id\":\"_3YxgsxYfR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Director</span>\",\"col\":12}},{\"id\":\"NHl2PP0rRm\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"My Tasks\",\"col\":3}},{\"id\":\"RDJdlfXOuB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"My Projects\",\"col\":3}},{\"id\":\"QiRBOyBwrt\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Employee Checkin Summary\",\"col\":3}},{\"id\":\"0UCV0XsAz3\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task Bulk Assignment\",\"col\":3}},{\"id\":\"MRCZDGbowq\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Customer\",\"col\":3}},{\"id\":\"1G9uYI5nGw\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Open Projects\",\"col\":3}},{\"id\":\"zzmGkEsDMz\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Active Agreements\",\"col\":3}},{\"id\":\"ZzvILO8fel\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Overdue Tasks\",\"col\":3}},{\"id\":\"dUxiNrOmQ2\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Outgoing Bills\",\"col\":3}},{\"id\":\"Ebgo5AM3nY\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Incoming Bills\",\"col\":3}},{\"id\":\"BHPbGtdAFv\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Incoming Payment\",\"col\":3}},{\"id\":\"R-7SVQBKOk\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Total Outgoing Payment\",\"col\":3}},{\"id\":\"udS6tN2T5K\",\"type\":\"chart\",\"data\":{\"chart_name\":\"Profit and Loss\",\"col\":12}},{\"id\":\"uR8RRr0peR\",\"type\":\"paragraph\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Category Type Overdue</span>\",\"col\":12}},{\"id\":\"v5as6bTBsg\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"GST Overdue\",\"col\":4}},{\"id\":\"7AbBTEK-Ya\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Income Tax Overdue\",\"col\":4}},{\"id\":\"woNwfP-27i\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Consulting Overdue\",\"col\":4}},{\"id\":\"jhLdD6gYs9\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Compliance Overdue\",\"col\":4}},{\"id\":\"AYXMF50A99\",\"type\":\"number_card\",\"data\":{\"number_card_name\":\"Audit Overdue\",\"col\":4}},{\"id\":\"J1fbqXtuQh\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Projects\",\"col\":6}},{\"id\":\"awPLQnVH51\",\"type\":\"quick_list\",\"data\":{\"quick_list_name\":\"Compliance Agreement\",\"col\":6}},{\"id\":\"-sAR96e1WE\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"HC7kvMzDtR\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\"><b>Short Links</b></span>\",\"col\":12}},{\"id\":\"d2fCUaEK-H\",\"type\":\"card\",\"data\":{\"card_name\":\"CRM\",\"col\":3}},{\"id\":\"UkvzaFc6Vb\",\"type\":\"card\",\"data\":{\"card_name\":\"compliances\",\"col\":3}},{\"id\":\"XuzCDFI3RS\",\"type\":\"card\",\"data\":{\"card_name\":\"Projects\",\"col\":3}},{\"id\":\"CZUbcaW7LK\",\"type\":\"card\",\"data\":{\"card_name\":\"Registers\",\"col\":3}},{\"id\":\"hlTo11muXl\",\"type\":\"card\",\"data\":{\"card_name\":\"Other\",\"col\":3}}]",
  "creation": "2023-05-30 07:49:00.396405",
  "custom_blocks": [],
  "docstatus": 0,
@@ -248,7 +248,7 @@
    "type": "Link"
   }
  ],
- "modified": "2023-12-20 15:05:16.272433",
+ "modified": "2024-01-08 16:42:11.691250",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Director",
@@ -338,17 +338,17 @@
   {
    "color": "Grey",
    "doc_view": "List",
-   "format": "{} Assigned",
-   "label": "My Tasks",
-   "link_to": "Task",
-   "stats_filter": "{\n    \"_assign\": [\"like\", '%' + frappe.session.user + '%'],\n    \n}",
+   "label": "Task Bulk Assignment",
+   "link_to": "Task Bulk Assignment",
    "type": "DocType"
   },
   {
    "color": "Grey",
    "doc_view": "List",
-   "label": "Task Assigning Tool",
-   "link_to": "Task Assigning Tool",
+   "format": "{} Assigned",
+   "label": "My Tasks",
+   "link_to": "Task",
+   "stats_filter": "{\n    \"_assign\": [\"like\", '%' + frappe.session.user + '%'],\n    \n}",
    "type": "DocType"
   },
   {
