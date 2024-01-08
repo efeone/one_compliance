@@ -14,7 +14,7 @@ frappe.ui.form.on('Compliance Agreement', {
                 valid_from: frm.doc.valid_from,
                 valid_upto: frm.doc.valid_upto,
                 compliance_category_details: frm.doc.compliance_category_details
-              
+
             },
             callback: function (r) {
               console.log(r);
@@ -23,7 +23,7 @@ frappe.ui.form.on('Compliance Agreement', {
                       "Another agreement exists within the specified date range. Please choose different dates."
                   ));
                   frappe.validated = false; // Do not save the document
-              
+
               }
             }
         });
@@ -57,7 +57,14 @@ frappe.ui.form.on('Compliance Agreement', {
         })
     }
   },
-  compliance_category: function (frm) {
+  invoice_generation: function(frm){
+    get_invoice_dates(frm);
+  },
+
+  valid_from: function(frm){
+    get_invoice_dates(frm);
+  },
+  compliance_category:function(frm){
     update_compliance_category(frm);
   },
   setup: function (frm) {
@@ -240,4 +247,24 @@ let create_project = function (frm) {
     };
   };
   d.show();
+};
+
+const get_invoice_dates = (frm) => {
+    if (frm.doc.invoice_based_on == 'Consolidated' && frm.doc.invoice_generation && frm.doc.valid_from) {
+        frm.set_value('invoice_date', frm.doc.valid_from);
+
+        let next_invoice_date;
+
+        if (frm.doc.invoice_generation == 'Monthly') {
+            next_invoice_date = frappe.datetime.add_months(frm.doc.valid_from, 1);
+        } else if (frm.doc.invoice_generation == 'Quarterly') {
+            next_invoice_date = frappe.datetime.add_months(frm.doc.valid_from, 3);
+        } else if (frm.doc.invoice_generation == 'Half Yearly') {
+            next_invoice_date = frappe.datetime.add_months(frm.doc.valid_from, 6);
+        } else if (frm.doc.invoice_generation == 'Yearly') {
+            next_invoice_date = frappe.datetime.add_years(frm.doc.valid_from, 1);
+        }
+
+        frm.set_value('next_invoice_date', next_invoice_date);
+    }
 };
