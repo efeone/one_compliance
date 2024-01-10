@@ -11,21 +11,33 @@ frappe.query_reports["Compliance Agreement Summary"] = {
             "options": "Customer",
         },
         {
-            "label":__("Compliance Category"),
-            "fieldname": "compliance_category",
-            "fieldtype":"Link",
-            "options": "Compliance Category",
-        },
-        {
-            "label":__("Sub Category Name"),
-            "fieldname":"sub_category_name",
-            "fieldtype":"Data",
+            "label": __("Agreement"),
+            "fieldname": "name",
+            "fieldtype": "Data",
         },
         {
             "label":__("Valid From"),
             "fieldname":"valid_from",
             "fieldtype":"Date",
         },
+        {
+            "label":__("Compliance Category"),
+            "fieldname": "compliance_category",
+            "fieldtype":"Link",
+            "options": "Compliance Category",
+        },
+        {
+            "label":__("Compliance Sub Category"),
+            "fieldname": "compliance_sub_category",
+            "fieldtype":"Link",
+            "options": "Compliance Sub Category",
+        },
+        {
+            "label":__("Sub Category Name"),
+            "fieldname":"sub_category_name",
+            "fieldtype":"Data",
+        },
+        
         {
             "label":__("Compliance Date"),
             "fieldname":"compliance_date",
