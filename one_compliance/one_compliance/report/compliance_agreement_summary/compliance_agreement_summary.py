@@ -25,6 +25,18 @@ def get_columns(filters):
             "width": 200
         },
         {
+            "label": _("Agreement"),
+            "fieldname": "name",
+            "fieldtype": "data",
+            "width": 200
+        },
+        {
+            "label":_("Valid From"),
+            "fieldname":"valid_from",
+            "fieldtype":"Date",
+            "width": 200
+        },
+        {
             "label":_("Compliance Category"),
             "fieldname": "compliance_category",
             "fieldtype":"Link",
@@ -32,15 +44,16 @@ def get_columns(filters):
             "width": 200
         },
         {
-            "label":_("Sub Category Name"),
-            "fieldname":"sub_category_name",
-            "fieldtype":"Data",
+            "label":_("Compliance Sub Category"),
+            "fieldname":"compliance_sub_category",
+            "fieldtype":"Link",
+            "options":"Compliance Sub Category",
             "width": 200
         },
         {
-            "label":_("Valid From"),
-            "fieldname":"valid_from",
-            "fieldtype":"Date",
+            "label":_("Sub Category Name"),
+            "fieldname":"sub_category_name",
+            "fieldtype":"Data",
             "width": 200
         },
         {
@@ -63,8 +76,10 @@ def get_data(filters):
     query = """
         SELECT
             ca.customer AS customer,
+            ca.name,
             ca.valid_from,
             ccd.compliance_category,
+            ccd.compliance_sub_category,
             ccd.sub_category_name,
             ccd.compliance_date,
             ccd.next_compliance_date
@@ -80,8 +95,14 @@ def get_data(filters):
     if filters.get("customer"):
         query += " AND ca.customer = '{0}'".format(filters.get("customer"))
 
+    if filters.get("name"):
+        query += " AND ca.name = '{0}'".format(filters.get("name"))
+
     if filters.get("compliance_category"):
         query += " AND ccd.compliance_category = '{0}'".format(filters.get("compliance_category"))
+
+    if filters.get("compliance_sub_category"):
+        query += " AND ccd.compliance_sub_category = '{0}'".format(filters.get("compliance_sub_category"))
 
     if filters.get("sub_category_name"):
         query += " AND ccd.sub_category_name = '{0}'".format(filters.get("sub_category_name"))
@@ -92,7 +113,7 @@ def get_data(filters):
     if filters.get("next_compliance_date"):
         query += " AND ccd.next_compliance_date = '{0}'".format(filters.get("next_compliance_date"))
 
-    query += " GROUP BY ca.name, ccd.compliance_category, ccd.sub_category_name, ca.valid_from, ccd.compliance_date, ccd.next_compliance_date;"
+    query += " GROUP BY ca.name, ccd.compliance_category,ccd.compliance_sub_category, ccd.sub_category_name, ca.valid_from, ccd.compliance_date, ccd.next_compliance_date;"
 
     # Execute the query and fetch data
     data = frappe.db.sql(query, as_dict=True)
