@@ -121,6 +121,28 @@ def make_sales_invoice(doc, method):
 								frappe.db.set_value('Project', project.name, 'is_invoiced', 1)
 
 @frappe.whitelist()
+def check_payable_task(task):
+	task_template = frappe.get_all("Task", filters = {"subject":task, "status":"Template"}, fields = ['name','custom_is_payable'])
+	if task_template:
+		is_payable = task_template[0].get("custom_is_payable")
+		if(is_payable):
+			return True
+		else:
+			return False
+
+@frappe.whitelist()
+def check_reimbursement(project_id):
+	project = frappe.get_doc("Project", project_id)
+	have_reimbursement = project.get("custom_have_reimbursement") if project else None
+	field_to_check_1 = project.get("custom_reimbursement_item") if project else None
+	field_to_check_2 = project.get("custom_reimbursement_income_account") if project else None
+	field_to_check_3 = project.get("custom_reimbursement_amount") if project else None
+	if have_reimbursement and field_to_check_1 is not None and field_to_check_2 is not None and field_to_check_3 is not None:
+		return True
+	else:
+		return False
+
+@frappe.whitelist()
 def update_task_status(task_id, status, completed_by, completed_on):
 	# Load the task document from the database
 	task_doc = frappe.get_doc("Task", task_id)
