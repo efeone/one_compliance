@@ -1,0 +1,41 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-12-14 11:20:07.001351",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "deliverables",
+  "description"
+ ],
+ "fields": [
+  {
+   "columns": 5,
+   "fieldname": "deliverables",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Deliverables"
+  },
+  {
+   "columns": 5,
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Description"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-12-14 11:39:21.364156",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Deliverables",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
