@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:full_name",
+ "autoname": "format:{full_name}-{engagement_letter_types}",
  "creation": "2023-10-31 16:45:45.648733",
  "default_view": "List",
  "doctype": "DocType",
@@ -74,14 +74,15 @@
   "working_team_section",
   "working_team",
   "employees",
-  "project_name"
+  "project"
  ],
  "fields": [
   {
+   "depends_on": "eval: doc.engagement_letter_types == \"Consulting Engagement Letter\"",
+   "fetch_from": "opportunity.contact_person",
    "fieldname": "full_name",
    "fieldtype": "Data",
-   "label": "Full Name",
-   "unique": 1
+   "label": "Full Name"
   },
   {
    "fieldname": "opportunity",
@@ -172,14 +173,13 @@
    "fieldname": "posting_date",
    "fieldtype": "Date",
    "in_list_view": 1,
-   "label": "Date",
-   "reqd": 1
+   "label": "Date"
   },
   {
    "fieldname": "engagement_letter_types",
    "fieldtype": "Select",
    "label": "Engagement Letter types",
-   "options": "\nPreliminary analysis & report\nConsulting Engagement Letter"
+   "options": "Preliminary analysis & report\nConsulting Engagement Letter"
   },
   {
    "depends_on": "eval: doc.engagement_letter_types == \"Consulting Engagement Letter\"",
@@ -424,10 +424,10 @@
    "label": "Territory"
   },
   {
-   "fetch_from": "opportunity.customer_group",
    "fieldname": "customer_group",
-   "fieldtype": "Data",
-   "label": "Customer Group"
+   "fieldtype": "Link",
+   "label": "Customer Group",
+   "options": "Customer Group"
   },
   {
    "default": "Company",
@@ -438,18 +438,19 @@
    "reqd": 1
   },
   {
-   "fieldname": "project_name",
-   "fieldtype": "Data",
-   "label": "Project Name"
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "label": "Project",
+   "options": "Project"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-21 09:35:03.112486",
+ "modified": "2024-01-11 15:32:06.238417",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter",
- "naming_rule": "By fieldname",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

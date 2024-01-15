@@ -14,10 +14,21 @@ frappe.ui.form.on('Engagement Letter', {
         if (!frm.doc.__islocal) {
             // Form has been saved, add the custom button
             frm.add_custom_button(__('Approve'), function () {
-                frm.trigger("make_customer");
-                frm.trigger("make_project");
+                if (frm.doc.engagement_letter_types === 'Consulting Engagement Letter') {
+                    // Execute make_customer and make_project only for Consulting Engagement Letter
+                    frm.trigger("make_customer");
+                    frm.trigger("make_project");
+                }
+                else if(frm.doc.engagement_letter_types === 'Preliminary analysis & report') {
+                    frm.set_value('engagement_letter_types', 'Consulting Engagement Letter');
+                    frm.trigger("create_engagement_letter");
+                    
+                }
+                
+                
             });
         }
+
     },
     make_customer: function (frm) {
         frappe.call({
@@ -41,25 +52,14 @@ frappe.ui.form.on('Engagement Letter', {
             frm: cur_frm
         });
     },
-    lead: function (frm) {
-        if (frm.doc.lead) {
-            frappe.call({
-                method: 'frappe.client.get_value',
-                args: {
-                    doctype: 'Lead',
-                    filters: { name: frm.doc.lead },
-                    fieldname: ['lead_name', 'email_id', 'mobile_no']
-                },
-                callback: function (r) {
-                    if (r.message) {
-                        frm.set_value('full_name', r.message.lead_name);
-                        frm.set_value('email', r.message.email_id);
-                        frm.set_value('mobile', r.message.mobile_no);
-                    }
-                }
-            });
-        }
+    create_engagement_letter: function (frm) {
+
+        frappe.model.open_mapped_doc({
+            method: 'one_compliance.one_compliance.doctype.engagement_letter.engagement_letter.create_engagement_letter',
+            frm: cur_frm
+        });
     },
+    
     opportunity: function (frm) {
         if (frm.doc.opportunity) {
             frappe.call({

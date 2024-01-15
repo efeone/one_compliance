@@ -38,6 +38,28 @@ def get_working_team(employee_group):
 
 
 @frappe.whitelist()
+def create_engagement_letter(source_name,target_doc=None):
+
+    def set_missing_values(source, target):
+        target.engagement_letter_types = 'Consulting Engagement Letter'
+    
+    doc = get_mapped_doc(
+        "Engagement Letter",
+        source_name,
+        {
+            "Engagement Letter": {
+                "doctype": "Engagement Letter",
+                "field_map": {
+                    "name": "engagement_letter",
+                },
+            }
+        },
+        target_doc,
+        set_missing_values
+    )
+    return doc
+
+@frappe.whitelist()
 def make_project(source_name,target_name=None):
     
     doclist = get_mapped_doc(
@@ -54,6 +76,5 @@ def make_project(source_name,target_name=None):
 
     
     return doclist
-
 
 
