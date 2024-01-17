@@ -18,6 +18,7 @@
   "month",
   "day",
   "project_based_on_prior_phase",
+  "project_name_year_type",
   "column_break_06mwn",
   "enabled",
   "is_billable",
@@ -264,11 +265,17 @@
    "fieldname": "project_based_on_prior_phase",
    "fieldtype": "Check",
    "label": "Project based on Prior Phase"
+  },
+  {
+   "fieldname": "project_name_year_type",
+   "fieldtype": "Link",
+   "label": "Project Name Year Type",
+   "options": "Project Name Year Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-12-13 15:46:25.060673",
+ "modified": "2024-01-17 10:09:22.960978",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
