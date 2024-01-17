@@ -96,7 +96,6 @@ function make_filters(page) {
 				{ label: "Working", value: "working" },
 				{ label: "Pending Review", value: "pending_review" },
 				{ label: "Overdue", value: "overdue" },
-				{ label: "Template", value: "template" },
 				{ label: "Hold", value: "hold" },
 				{ label: "Completed", value: "completed" },
 				{ label: "Cancelled", value: "cancelled" },
@@ -130,6 +129,18 @@ function refresh_jobs(page){
 							var projectName = $(this).attr("project-id");
 							var assignees = $(this).attr("assignees");
               showTimeEntryDialog(taskName, projectName, assignees);
+            });
+
+						page.body.find(".documentButton").on("click", function () {
+							var subCategory = $(this).attr("sub-category");
+							var customer = $(this).attr("customer");
+              cusomerDocuments(subCategory, customer);
+            });
+
+						page.body.find(".credentialButton").on("click", function () {
+							var subCategory = $(this).attr("sub-category");
+							var customer = $(this).attr("customer");
+              cusomerCredentials(subCategory, customer);
             });
 
 						set_status_colors();
@@ -231,4 +242,108 @@ function set_status_colors() {
             element.style.color = 'red';
         }
     });
+}
+
+function cusomerDocuments(subCategory, customer) {
+	frappe.call({
+		method:'one_compliance.one_compliance.utils.view_customer_documents',
+		args:{
+			'customer': customer,
+			'compliance_sub_category': subCategory
+		},
+		callback:function(r){
+			if (r.message){
+					var newd = new frappe.ui.Dialog({
+						 title: 'Document details',
+						 fields: [
+							 {
+								 label: 'Document Attachment',
+								 fieldname: 'document_attachment',
+								 fieldtype: 'Data',
+								 read_only: 1,
+								 default:r.message[0]
+							 },
+						 ],
+						 primary_action_label : 'Download',
+						 primary_action(value){
+							 window.open(r.message[0])
+						 }
+					 });
+					 newd.show();
+				 }
+			 }
+	 });
+}
+
+function cusomerCredentials(subCategory, customer){
+	let d = new frappe.ui.Dialog({
+		title: 'Enter details',
+		fields: [
+			{
+				label: 'Purpose',
+				fieldname: 'purpose',
+				fieldtype: 'Link',
+				options: 'Credential Type',
+				get_query: function () {
+					return {
+						filters: {
+							'compliance_sub_category': subCategory
+						}
+					};
+				}
+			}
+		],
+		primary_action_label: 'View Credential',
+		primary_action(values) {
+			frappe.call({
+				method:'one_compliance.one_compliance.utils.view_credential_details',
+				args:{
+					'customer': customer,
+					'purpose': values.purpose
+				},
+				callback:function(r){
+					if (r.message){
+						d.hide();
+						let newd = new frappe.ui.Dialog({
+							title: 'Credential details',
+							fields: [
+								{
+									label: 'Username',
+									fieldname: 'username',
+									fieldtype: 'Data',
+									read_only: 1,
+									default:r.message[0]
+								},
+								{
+									label: 'Password',
+									fieldame: 'password',
+									fieldtype: 'Data',
+									read_only: 1,
+									default:r.message[1]
+								},
+								{
+									label: 'Url',
+									fieldname: 'url',
+									fieldtype: 'Data',
+									options: 'URL',
+									read_only: 1,
+									default:r.message[2]
+								 }
+								],
+								 primary_action_label: 'Close',
+								 primary_action(value) {
+									 newd.hide();
+								 },
+								 secondary_action_label : 'Go To URL',
+								 secondary_action(value){
+									 window.open(r.message[2])
+								 }
+							 });
+							 newd.show();
+						 }
+					 }
+				 })
+			 }
+		 });
+		 d.show();
 }
