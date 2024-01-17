@@ -1,0 +1,54 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<div class="row header-row" style="margin-top:5px;">
+    <div class="col-md-2 text-center">Task</div>
+    <div class="col-md-2 text-center">Start - End Date</div>
+    <div class="col-md-2 text-center">Compliance Category</div>
+    <div class="col-md-2 text-center">Compliance Sub Category</div>
+    <div class="col-md-2 text-center">Assignee</div>
+    <div class="col-md-2">Status</div>
+</div>
+{% for data in task_list %}
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-2" style="padding: inherit;">
+                    <p class="card-title">{{data.subject}}</p>
+                    <p class="card-subtitle mb-2 text-muted">{{ data.project_name }}</p>
+                    <p class="card-text">
+                        Customer: {{data.customer}}
+                    </p>
+                </div>
+                <div class="col-md-2 text-center" style="padding: inherit;">
+                    {{ data.exp_start_date }} <br>- {{ data.exp_end_date }}
+                </div>
+                <div class="col-md-2 text-center" style="padding: inherit;">
+                    {{ data.compliance_category }}
+                </div>
+                <div class="col-md-2 text-center" style="padding: inherit;">
+                    {{ data.compliance_sub_category }}
+                </div>
+                <div class="col-md-2 text-center" style="padding: inherit;">
+                    <p class="card-text">
+                        {% if data._assign %}
+                            {% for assignee in data._assign %}
+                                {{ assignee }}<br>
+                            {% endfor %}
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-2" style="padding: inherit;">
+                  {{ data.status }}
+                    <button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}" project-id="{{ data.project }}" assignees="{{ data._assign }}">
+                        <i class="fas fa-clock"></i>
+                    </button>
+                    <button class="btn btn-outline-info btn-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </button>
+                    <button class="btn btn-outline-success btn-icon">
+                        <i class="fas fa-key"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
