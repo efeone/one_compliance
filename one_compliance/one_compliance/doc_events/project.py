@@ -60,7 +60,7 @@ def update_expected_end_date_in_project(doc, method):
 
 @frappe.whitelist()
 def set_status_to_overdue():
-	projects = frappe.db.get_all('Project', filters= {'status': ['not in',['Cancelled','Hold','Completed']]})
+	projects = frappe.db.get_all('Project', filters= {'status': ['not in',['Cancelled','Hold','Completed', 'Invoiced']]})
 	if projects:
 		for project in projects:
 			doc = frappe.get_doc('Project', project.name)
