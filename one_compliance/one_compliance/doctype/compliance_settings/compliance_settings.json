@@ -15,6 +15,8 @@
   "column_break_fl7nk",
   "default_reimbursement_item",
   "default__reimbursement_income_account",
+  "section_break_rzgch",
+  "project_naming_years",
   "tab_break_us4n3",
   "task_before_due_date_notification",
   "task_overdue_notification_for_employee",
@@ -127,12 +129,22 @@
    "fieldtype": "Link",
    "label": "Default Reimbursement Item",
    "options": "Item"
+  },
+  {
+   "fieldname": "project_naming_years",
+   "fieldtype": "Table",
+   "label": "Project Naming Years",
+   "options": "Project Naming Years"
+  },
+  {
+   "fieldname": "section_break_rzgch",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-12-06 13:35:55.050454",
+ "modified": "2024-01-16 15:16:02.236925",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
