@@ -16,7 +16,7 @@
     }
 
     .card-subtitle {
-        color: #6c757d;
+        color: purple;
         margin-bottom: 15px;
     }
 
@@ -25,6 +25,6 @@
     }
 
     .btn-icon {
-        margin-right: 5px;
+        margin-right: 2px;
         padding: 8px;
     }

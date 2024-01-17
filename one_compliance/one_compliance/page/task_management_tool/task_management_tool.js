@@ -103,7 +103,7 @@ function make_filters(page) {
 			],
 			default: "open",
 		change() {
-			frappe.msgprint(toDateField.get_value());
+			refresh_jobs(page);
 		}
 	});
 }
@@ -113,9 +113,15 @@ function show(page){
 }
 
 function refresh_jobs(page){
+	// Clear existing tasks from the page
+  page.body.find(".task-entry").remove();
+
+	const selectedStatus = page.fields_dict.status.get_value();
+
 	frappe.call({
 			method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.get_task",
-			callback: (r) => {
+			 args: { status: selectedStatus },
+			 callback: (r) => {
 				if (r.message && r.message.length>0) {
 						$(frappe.render_template("task_management_tool", {task_list:r.message})).appendTo(page.body);
 
@@ -125,6 +131,8 @@ function refresh_jobs(page){
 							var assignees = $(this).attr("assignees");
               showTimeEntryDialog(taskName, projectName, assignees);
             });
+
+						set_status_colors();
 				}
 			},
 			freeze: true,
@@ -207,4 +215,20 @@ function showTimeEntryDialog(taskName, projectName, assignees) {
 
     // Show the dialog
     dialog.show();
+}
+
+function set_status_colors() {
+    const statusElements = document.querySelectorAll('.col-md-1[status-span]');
+
+    statusElements.forEach(element => {
+        const status = element.getAttribute('status-span');
+
+        if (status === 'Open') {
+            element.style.color = 'blue';
+        } else if (status === 'Completed') {
+            element.style.color = 'green';
+        } else if (status === 'Overdue') {
+            element.style.color = 'red';
+        }
+    });
 }
