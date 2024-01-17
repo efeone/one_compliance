@@ -1,0 +1,30 @@
+.card {
+        margin: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .card-subtitle {
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+
+    .card-text {
+        margin-bottom: 15px;
+    }
+
+    .btn-icon {
+        margin-right: 5px;
+        padding: 8px;
+    }
