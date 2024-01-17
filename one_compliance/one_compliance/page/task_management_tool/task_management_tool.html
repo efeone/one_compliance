@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-<div class="row header-row" style="margin-top:5px;">
+<div class="row header-row task-entry" style="margin-top:5px;">
     <div class="col-md-2 text-center">Task</div>
     <div class="col-md-2 text-center">Start - End Date</div>
     <div class="col-md-2 text-center">Compliance Category</div>
@@ -8,14 +8,14 @@
     <div class="col-md-2">Status</div>
 </div>
 {% for data in task_list %}
-    <div class="card">
+    <div class="card task-entry">
         <div class="card-body">
             <div class="row">
                 <div class="col-md-2" style="padding: inherit;">
-                    <p class="card-title">{{data.subject}}</p>
-                    <p class="card-subtitle mb-2 text-muted">{{ data.project_name }}</p>
+                    <p class="card-title" style="color: orange;">{{data.subject}}</p>
+                    <p class="card-subtitle mb-2">{{ data.project_name }}</p>
                     <p class="card-text">
-                        Customer: {{data.customer}}
+                        Customer: <span style="color: green;">{{data.customer}}</span>
                     </p>
                 </div>
                 <div class="col-md-2 text-center" style="padding: inherit;">
@@ -36,8 +36,10 @@
                         {% endif %}
                     </p>
                 </div>
-                <div class="col-md-2" style="padding: inherit;">
+                <div class="col-md-1" style="padding: inherit; color:red;" status-span="{{ data.status }}">
                   {{ data.status }}
+                </div>
+                <div class="col-md-1" style="padding: inherit;">
                     <button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}" project-id="{{ data.project }}" assignees="{{ data._assign }}">
                         <i class="fas fa-clock"></i>
                     </button>

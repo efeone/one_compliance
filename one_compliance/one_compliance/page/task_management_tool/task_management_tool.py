@@ -2,12 +2,19 @@ import frappe
 from frappe.utils import get_datetime
 
 @frappe.whitelist()
-def get_task():
+def get_task(status = None):
     query = """
 	SELECT
         t.name,t.project,t.subject, t.project_name, t.customer, c.compliance_category, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status
     FROM
-        tabTask t JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name;"""
+        tabTask t JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
+    """
+
+    if status:
+            query += f" WHERE t.status = '{status}'"
+
+    query += ";"
+    
     task_list = frappe.db.sql(query, as_dict=1)
     for task in task_list:
         if task['_assign']:
