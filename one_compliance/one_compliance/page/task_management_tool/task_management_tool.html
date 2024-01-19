@@ -14,9 +14,11 @@
                 <div class="col-md-2" style="padding: inherit;">
                     <p class="card-title" style="color: orange;">{{data.subject}}</p>
                     <p class="card-subtitle mb-2">{{ data.project_name }}</p>
+                    {% if data.customer %}
                     <p class="card-text">
-                        Customer: <span style="color: green;">{{data.customer}}</span>
+                        Customer: <span style="font-weight:bold;">{{data.customer}}</span>
                     </p>
+                    {% endif %}
                 </div>
                 <div class="col-md-2 text-center" style="padding: inherit;">
                     {{ data.exp_start_date }} <br>- {{ data.exp_end_date }}
@@ -40,13 +42,13 @@
                   {{ data.status }}
                 </div>
                 <div class="col-md-1" style="padding: inherit;">
-                    <button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}" project-id="{{ data.project }}" assignees="{{ data._assign }}">
+                    <button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}" project-id="{{ data.project }}" assignees="{{ data._assign }}" data-toggle="tooltip" title="Time Sheet">
                         <i class="fas fa-clock"></i>
                     </button>
-                    <button class="btn btn-outline-info btn-icon">
+                    <button class="btn btn-outline-info btn-icon documentButton" sub-category="{{ data.compliance_sub_category }}" customer="{{ data.customer }}" data-toggle="tooltip" title="Documents">
                         <i class="fas fa-file-alt"></i>
                     </button>
-                    <button class="btn btn-outline-success btn-icon">
+                    <button class="btn btn-outline-success btn-icon credentialButton" sub-category="{{ data.compliance_sub_category }}" customer="{{ data.customer }}" data-toggle="tooltip" title="Credentials">
                         <i class="fas fa-key"></i>
                     </button>
                 </div>
