@@ -224,28 +224,66 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		if not compliance_date:
 			compliance_date = getdate(frappe.utils.today())
 		repeat_on = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'repeat_on')
+		year_type = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_name_year_type')
 		project_based_on_prior_phase = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_based_on_prior_phase')
 		previous_month_date = add_months(getdate(compliance_date), -1)
 		naming_year = getdate(previous_month_date).year if project_based_on_prior_phase else getdate(compliance_date).year
+		current_year = naming_year + 1
+		next_year = current_year + 1
 		naming_month = getdate(previous_month_date).strftime("%B") if project_based_on_prior_phase else getdate(compliance_date).strftime("%B")
-		if naming_month in ['January', 'February', 'March']:
-			naming_quarter = 'Quarter 1'
-		elif naming_month in ['April', 'May', 'June']:
-			naming_quarter = 'Quarter 2'
-		elif naming_month in ['July', 'August', 'September']:
-			naming_quarter = 'Quarter 3'
+		if year_type == 'Financial Year':
+			if naming_month in ['April', 'May', 'June']:
+				naming_quarter = 'Quarter 1'
+			elif naming_month in ['July', 'August', 'September']:
+				naming_quarter = 'Quarter 2'
+			elif naming_month in ['October', 'November', 'December']:
+				naming_quarter = 'Quarter 3'
+			else:
+				naming_quarter = 'Quarter 4'
+			if repeat_on == "Yearly":
+				naming = str(naming_year) + '-' + str(current_year)
+			elif repeat_on == "Quarterly":
+				naming = str(naming_year) +  '-' + str(current_year) + ' ' + naming_quarter
+			else:
+				naming = str(naming_year) +  '-' + str(current_year) + ' ' + naming_month
+
+		elif year_type == 'Assessment Year':
+			if naming_month in ['April', 'May', 'June']:
+				naming_quarter = 'Quarter 1'
+			elif naming_month in ['July', 'August', 'September']:
+				naming_quarter = 'Quarter 2'
+			elif naming_month in ['October', 'November', 'December']:
+				naming_quarter = 'Quarter 3'
+			else:
+				naming_quarter = 'Quarter 4'
+			if repeat_on == "Yearly":
+				naming = str(current_year) + '-' + str(next_year)
+			elif repeat_on == "Quarterly":
+				naming = str(current_year) +  '-' + str(next_year) + ' ' + naming_quarter
+			else:
+				naming = str(current_year) +  '-' + str(next_year) + ' ' + naming_month
+
 		else:
-			naming_quarter = 'Quarter 4'
-		if repeat_on == "Yearly":
-			naming = naming_year
-		elif repeat_on == "Quarterly":
-			naming = str(naming_year) + ' ' + naming_quarter
-		else:
-			naming = str(naming_year) + ' ' + naming_month
+			if naming_month in ['January', 'February', 'March']:
+				naming_quarter = 'Quarter 1'
+			elif naming_month in ['April', 'May', 'June']:
+				naming_quarter = 'Quarter 2'
+			elif naming_month in ['July', 'August', 'September']:
+				naming_quarter = 'Quarter 3'
+			else:
+				naming_quarter = 'Quarter 4'
+			if repeat_on == "Yearly":
+				naming = naming_year
+			elif repeat_on == "Quarterly":
+				naming = str(naming_year) + ' ' + naming_quarter
+			else:
+				naming = str(naming_year) + ' ' + naming_month
+
 		project = frappe.new_doc('Project')
 		project.company = self.company
 		project.cost_center = frappe.get_cached_value("Company", self.company, "cost_center")
 		project.project_name = self.customer_name + '-' + compliance_sub_category + '-' + str(naming)
+		print("project.project_name:", project.project_name)
 		# project.project_template = project_template
 		project.customer = self.customer
 		project.compliance_agreement = self.name
