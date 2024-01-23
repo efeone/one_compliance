@@ -50,7 +50,8 @@ function make_filters(page) {
 		default: get_employee_id(),
 		change() {
 			refresh_tasks(page);
-		}
+		},
+		read_only: frappe.session.user === 'Administrator' ? 0 : 1
 	});
 	let employeeGroupField = page.add_field({
 		label: __("Employee Group"),
@@ -240,7 +241,9 @@ function showTimeEntryDialog(taskName, projectName, assignees) {
 								fieldname: "employee",
 								fieldtype: 'Select',
 								options: assigneesList,
-                default: assigneesList[0]
+                default: get_employee(assigneesList, function (employee) {
+                    dialog.set_value("employee", employee);
+                })
 						},
             {
                 label: __("Project"),
@@ -302,6 +305,26 @@ function showTimeEntryDialog(taskName, projectName, assignees) {
 
     // Show the dialog
     dialog.show();
+}
+
+function get_employee(assigneesList, callback) {
+	if (frappe.session.user === 'Administrator') {
+			return assigneesList[0]
+	}
+	else {
+			frappe.call({
+					method: "frappe.client.get_value",
+					args: {
+							doctype: "Employee",
+							filters: { "user_id": frappe.session.user },
+							fieldname: "employee_name"
+					},
+					callback: function (response) {
+							var employeeName = response.message ? response.message.employee_name : null;
+							callback(employeeName);
+					}
+			});
+	}
 }
 
 function set_status_colors() {
