@@ -4,8 +4,24 @@
         border: 1px solid #ddd;
         border-radius: 8px;
         overflow: hidden;
+        padding: 2px;
+        background-color: #fff3ff;
     }
 
+    .layout-main-section.frappe-card {
+      background-color: #fdf7f9;
+    }
+
+    .page-form{
+      background-color: #fdf7f9;
+    }
+
+    .form-control.input-xs{
+      background-color: aliceblue;
+    }
+    .awesomplete .input-with-feedback {
+      background-color: aliceblue;
+    }
     .card-body {
         padding: 20px;
     }
@@ -16,7 +32,6 @@
     }
 
     .card-subtitle {
-        color: purple;
         margin-bottom: 15px;
     }
 
@@ -27,4 +42,11 @@
     .btn-icon {
         margin-right: 2px;
         padding: 8px;
+    }
+
+    .rounded-circle {
+      margin-top:5px;
+      padding: 0px 4px;
+      position: absolute;
+      right: 30px;
     }

@@ -12,37 +12,40 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-2" style="padding: inherit;">
-                    <p class="card-title" style="color: orange;">{{data.subject}}</p>
-                    <p class="card-subtitle mb-2">{{ data.project_name }}</p>
+                    <a class="card-title" style="color: orange;" href="/app/task/{{data.name}}">{{ data.subject }}</a><br>
+                    <a class="card-subtitle mb-2" href="/app/project/{{ data.project }}">{{ data.project_name }}</a>
                     {% if data.customer %}
                     <p class="card-text">
-                        Customer: <span style="font-weight:bold;">{{data.customer}}</span>
+                        Customer: <a style="font-weight:bold;" href="/app/customer/{{data.customer}}">{{ data.customer }}</a>
                     </p>
                     {% endif %}
                 </div>
                 <div class="col-md-2 text-center" style="padding: inherit;">
                     {{ data.exp_start_date }} <br>- {{ data.exp_end_date }}
                 </div>
-                <div class="col-md-2 text-center" style="padding: inherit;">
+                <a class="col-md-2 text-center" style="padding: inherit;" href="/app/compliance-category/{{ data.compliance_category }}">
                     {{ data.compliance_category }}
-                </div>
-                <div class="col-md-2 text-center" style="padding: inherit;">
+                </a>
+                <a class="col-md-2 text-center" style="padding: inherit;" href="/app/compliance-sub-category/{{ data.compliance_sub_category }}">
                     {{ data.compliance_sub_category }}
-                </div>
-                <div class="col-md-2 text-center" style="padding: inherit;">
+                </a>
+                <div class="col-md-2 text-center" style="padding: inherit; position:relative;">
                     <p class="card-text">
                         {% if data._assign %}
                             {% for assignee in data._assign %}
-                                {{ assignee }}<br>
+                                <a href="/app/employee/{{ assignee.employee_id }}">{{ assignee.employee_name }}</a><br>
                             {% endfor %}
                         {% endif %}
+                        <button class="btn btn-sm rounded-circle addAssigneeBtn" task-id="{{ data.name }}">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </p>
                 </div>
-                <div class="col-md-1" style="padding: inherit; color:red;" status-span="{{ data.status }}">
+                <div class="col-md-1 text-center" style="padding: inherit;" status-span="{{ data.status }}" task-name="{{ data.subject }}" project-id="{{ data.project }}" task-id="{{ data.name }}" is-payable="{{ data.is_payable }}">
                   {{ data.status }}
                 </div>
                 <div class="col-md-1" style="padding: inherit;">
-                    <button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}" project-id="{{ data.project }}" assignees="{{ data._assign }}" data-toggle="tooltip" title="Time Sheet">
+                    <button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}" project-id="{{ data.project }}" assignees="{{ data.employee_names }}" data-toggle="tooltip" title="Time Sheet">
                         <i class="fas fa-clock"></i>
                     </button>
                     <button class="btn btn-outline-info btn-icon documentButton" sub-category="{{ data.compliance_sub_category }}" customer="{{ data.customer }}" data-toggle="tooltip" title="Documents">
