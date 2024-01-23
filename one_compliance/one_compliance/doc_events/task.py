@@ -82,7 +82,7 @@ def make_sales_invoice(doc, method):
 					if sub_category_doc.is_billable:
 						if frappe.db.exists('Compliance Agreement', project.compliance_agreement):
 							invoice_based_on = frappe.db.get_value('Compliance Agreement', project.compliance_agreement, 'invoice_based_on')
-							if invoice_based_on == 'Project':
+							if invoice_based_on == 'Project' and not frappe.db.exists('Sales Invoice', {'project':project.name}):
 								sales_invoice = frappe.new_doc('Sales Invoice')
 								sales_invoice.customer = project.customer
 								sales_invoice.posting_date = frappe.utils.today()
