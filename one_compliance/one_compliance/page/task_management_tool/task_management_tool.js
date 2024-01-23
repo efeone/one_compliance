@@ -170,7 +170,7 @@ function refresh_tasks(page){
 							var taskName = $(this).attr("task-id");
 							var projectName = $(this).attr("project-id");
 							var assignees = $(this).attr("assignees");
-              showTimeEntryDialog(taskName, projectName, assignees);
+              showTimeEntryDialog(page, taskName, projectName, assignees);
             });
 
 						page.body.find(".documentButton").on("click", function () {
@@ -186,12 +186,30 @@ function refresh_tasks(page){
             });
 
 						set_status_colors();
+						hide_add_assignee_button(page.fields_dict.status.get_value());
+						assignee_and_completed_by_section(page.fields_dict.status.get_value());
 				}
 			},
 			freeze: true,
 			freeze_message: 'Loading Task List'
 		});
 
+}
+
+function hide_add_assignee_button(taskStatus) {
+    if (taskStatus === 'completed' || taskStatus === 'hold' || taskStatus === 'Cancelled') {
+        $('.addAssigneeBtn').hide();
+    } else {
+        $('.addAssigneeBtn').show();
+    }
+}
+
+function assignee_and_completed_by_section(taskStatus) {
+    if (taskStatus === 'completed') {
+        $('.assignee-section').hide();
+    } else {
+        $('.completed-by-section').hide();
+    }
 }
 
 function showAssignEntryDialog(taskName){
@@ -230,8 +248,13 @@ function showAssignEntryDialog(taskName){
     dialog.show();
 }
 // Function to show the dialog box
-function showTimeEntryDialog(taskName, projectName, assignees) {
+function showTimeEntryDialog(page, taskName, projectName, assignees) {
 	var assigneesList = assignees ? assignees.split(',') : [];
+
+	var status = page.fields_dict.status.get_value();
+  if (status === 'completed' | status === 'hold'| status === 'cancelled') {
+      return;
+  }
 
 	var dialog = new frappe.ui.Dialog({
         title: __("Time Entry Dialog"),
