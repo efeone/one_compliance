@@ -208,7 +208,7 @@ def check_project_exists_or_not(compliance_sub_category, compliance_agreement):
 	return False
 
 @frappe.whitelist()
-def create_project_against_sub_category(compliance_agreement, compliance_sub_category, compliance_category_details_id=None, compliance_date=None):
+def create_project_against_sub_category(compliance_agreement, compliance_category,compliance_sub_category, compliance_category_details_id=None, compliance_date=None):
 	'''
 		Method to create Project against selected Sub Category
 	'''
@@ -286,6 +286,7 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		# project.project_template = project_template
 		project.customer = self.customer
 		project.compliance_agreement = self.name
+		project.compliance_category = compliance_category
 		project.compliance_sub_category = compliance_sub_category
 		project.expected_start_date = compliance_date
 		project.custom_project_service = compliance_sub_category + '-' + str(naming)

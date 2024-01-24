@@ -214,6 +214,7 @@ let create_project = function (frm) {
             method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_project_against_sub_category',
             args: {
               'compliance_agreement': frm.doc.name,
+              'compliance_category' : values.compliance_category,
               'compliance_sub_category': values.compliance_sub_category,
               'compliance_date': values.start_date,
               'compliance_category_details_id': item.name
