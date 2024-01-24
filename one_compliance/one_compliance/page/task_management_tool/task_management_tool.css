@@ -1,11 +1,11 @@
 .card {
         margin: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border: 1px solid #ddd;
+        border: None;
         border-radius: 8px;
         overflow: hidden;
         padding: 2px;
-        background-color: #fff3ff;
+        background-color: aliceblue;
     }
 
     .layout-main-section.frappe-card {
@@ -16,12 +16,6 @@
       background-color: #fdf7f9;
     }
 
-    .form-control.input-xs{
-      background-color: aliceblue;
-    }
-    .awesomplete .input-with-feedback {
-      background-color: aliceblue;
-    }
     .card-body {
         padding: 20px;
     }

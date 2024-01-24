@@ -4,7 +4,8 @@
     <div class="col-md-2 text-center">Start - End Date</div>
     <div class="col-md-2 text-center">Compliance Category</div>
     <div class="col-md-2 text-center">Compliance Sub Category</div>
-    <div class="col-md-2 text-center">Assignee</div>
+    <div class="col-md-2 text-center assignee-section">Assigned To</div>
+    <div class="col-md-2 text-center completed-by-section">Completed By</div>
     <div class="col-md-2">Status</div>
 </div>
 {% for data in task_list %}
@@ -30,7 +31,7 @@
                     {{ data.compliance_sub_category }}
                 </a>
                 <div class="col-md-2 text-center" style="padding: inherit; position:relative;">
-                    <p class="card-text">
+                    <p class="card-text assignee-section">
                         {% if data._assign %}
                             {% for assignee in data._assign %}
                                 <a href="/app/employee/{{ assignee.employee_id }}">{{ assignee.employee_name }}</a><br>
@@ -39,6 +40,9 @@
                         <button class="btn btn-sm rounded-circle addAssigneeBtn" task-id="{{ data.name }}">
                             <i class="fas fa-plus"></i>
                         </button>
+                    </p>
+                    <p class="card-text completed-by-section">
+                        <a href="/app/employee/{{ data.completed_by_id }}" style="padding-left: 15px;">{{ data.completed_by_name }}</a><br>
                     </p>
                 </div>
                 <div class="col-md-1 text-center" style="padding: inherit;" status-span="{{ data.status }}" task-name="{{ data.subject }}" project-id="{{ data.project }}" task-id="{{ data.name }}" is-payable="{{ data.is_payable }}">

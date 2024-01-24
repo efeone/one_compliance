@@ -8,7 +8,7 @@ def get_task(status = None, task = None, project = None, customer = None, catego
 
     query = """
 	SELECT
-        t.name,t.project,t.subject, t.project_name, t.customer, c.compliance_category, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to
+        t.name,t.project,t.subject, t.project_name, t.customer, c.compliance_category, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by
     FROM
         tabTask t JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
     """
@@ -45,8 +45,6 @@ def get_task(status = None, task = None, project = None, customer = None, catego
 
     query += ";"
 
-    print(query)
-
     task_list = frappe.db.sql(query, as_dict=1)
     for task in task_list:
         task['employee_names'] = []
@@ -68,6 +66,17 @@ def get_task(status = None, task = None, project = None, customer = None, catego
         else:
             task['_assign'] = []
             task['employee_names'] = []
+
+        if task['completed_by']:
+            if task['completed_by'] == 'Administrator':
+                task['completed_by_name'] = 'Administrator'
+            else:
+                completed_by = frappe.get_value("Employee", {"user_id": task['completed_by']}, ["name", "employee_name"], as_dict=True)
+                task['completed_by_name'] = completed_by["employee_name"]
+                task['completed_by_id'] = completed_by["name"]
+        else:
+            task['completed_by_name'] = []
+            task['completed_by_id'] = []
 
         task['is_payable'] = check_payable_task(task['subject'])
     return task_list
