@@ -45,8 +45,6 @@ def get_task(status = None, task = None, project = None, customer = None, catego
 
     query += ";"
 
-    print(query)
-
     task_list = frappe.db.sql(query, as_dict=1)
     for task in task_list:
         task['employee_names'] = []
@@ -81,7 +79,6 @@ def get_task(status = None, task = None, project = None, customer = None, catego
             task['completed_by_id'] = []
 
         task['is_payable'] = check_payable_task(task['subject'])
-    print(task_list)
     return task_list
 
 @frappe.whitelist()

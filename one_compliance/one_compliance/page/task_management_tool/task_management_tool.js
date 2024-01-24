@@ -197,7 +197,7 @@ function refresh_tasks(page){
 }
 
 function hide_add_assignee_button(taskStatus) {
-    if (taskStatus === 'completed' || taskStatus === 'hold' || taskStatus === 'Cancelled') {
+    if (taskStatus === 'completed' || taskStatus === 'hold' || taskStatus === 'cancelled') {
         $('.addAssigneeBtn').hide();
     } else {
         $('.addAssigneeBtn').show();
