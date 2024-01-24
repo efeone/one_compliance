@@ -6,6 +6,7 @@ from frappe import _
 from frappe.utils import *
 from one_compliance.one_compliance.utils import *
 from datetime import datetime, timedelta
+from frappe import enqueue
 
 class ComplianceAgreement(Document):
 	''' Method used for validate Signature '''
@@ -25,7 +26,7 @@ class ComplianceAgreement(Document):
 				for compliance_category in self.compliance_category_details:
 					if not check_project_exists_or_not(compliance_category.compliance_sub_category, self.name):
 						if compliance_category.compliance_date and getdate(compliance_category.compliance_date) == getdate(today()):
-							create_project_against_sub_category(self.name, compliance_category.compliance_sub_category, compliance_category.name)
+							enqueue(create_project_against_sub_category, queue = 'long', now  = False, compliance_agreement = compliance_agreement, compliance_sub_category = compliance_sub_category)
 
 	def sign_validation(self):
 		if self.workflow_state == 'Approved' and not self.authority_signature:
