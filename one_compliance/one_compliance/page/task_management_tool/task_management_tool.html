@@ -2,7 +2,7 @@
 <div class="row header-row task-entry" style="margin-top:5px;">
     <div class="col-md-2 text-center">Task</div>
     <div class="col-md-2 text-center">Start - End Date</div>
-    <div class="col-md-2 text-center">Compliance Category</div>
+    <div class="col-md-2 text-center">Department</div>
     <div class="col-md-2 text-center">Compliance Sub Category</div>
     <div class="col-md-2 text-center assignee-section">Assigned To</div>
     <div class="col-md-2 text-center completed-by-section">Completed By</div>
@@ -24,8 +24,8 @@
                 <div class="col-md-2 text-center" style="padding: inherit;">
                     {{ data.exp_start_date }} <br>- {{ data.exp_end_date }}
                 </div>
-                <a class="col-md-2 text-center" style="padding: inherit;" href="/app/compliance-category/{{ data.compliance_category }}">
-                    {{ data.compliance_category }}
+                <a class="col-md-2 text-center" style="padding: inherit;" href="/app/department/{{ data.department }}">
+                    {{ data.department }}
                 </a>
                 <a class="col-md-2 text-center" style="padding: inherit;" href="/app/compliance-sub-category/{{ data.compliance_sub_category }}">
                     {{ data.compliance_sub_category }}
@@ -49,6 +49,10 @@
                   {{ data.status }}
                 </div>
                 <div class="col-md-1" style="padding: inherit;">
+                    <p class="start-time" task-id="{{ data.name }}" project-id="{{ data.project }}" ></p>
+                    <button class="btn btn-outline-warning btn-icon startButton" task-id="{{ data.name }}" project-id="{{ data.project }}" data-toggle="tooltip" title="Start Timer">
+                        <i class="fas fa-play"></i>
+                    </button>
                     <button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}" project-id="{{ data.project }}" assignees="{{ data.employee_names }}" data-toggle="tooltip" title="Time Sheet">
                         <i class="fas fa-clock"></i>
                     </button>

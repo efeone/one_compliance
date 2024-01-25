@@ -2,13 +2,13 @@ import frappe
 from frappe.utils import get_datetime
 
 @frappe.whitelist()
-def get_task(status = None, task = None, project = None, customer = None, category = None, sub_category = None, employee = None, employee_group = None, from_date = None, to_date = None):
+def get_task(status = None, task = None, project = None, customer = None, department = None, sub_category = None, employee = None, employee_group = None, from_date = None, to_date = None):
 
     user_id = f'"{employee}"' if id else None
 
     query = """
 	SELECT
-        t.name,t.project,t.subject, t.project_name, t.customer, c.compliance_category, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by
+        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by
     FROM
         tabTask t JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
     """
@@ -25,8 +25,8 @@ def get_task(status = None, task = None, project = None, customer = None, catego
     if customer:
             query += f" AND t.customer = '{customer}'"
 
-    if category:
-            query += f" AND c.compliance_category = '{category}'"
+    if department:
+            query += f" AND c.department = '{department}'"
 
     if sub_category:
             query += f" AND t.compliance_sub_category = '{sub_category}'"

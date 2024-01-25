@@ -5,8 +5,6 @@ frappe.pages['task-management-tool'].on_page_load = function(wrapper) {
 		single_column: true
 	});
 
-
-
 	page.main.addClass("frappe-card");
 
 	make_filters(page);
@@ -63,10 +61,10 @@ function make_filters(page) {
 		}
 	});
 	let categoryField = page.add_field({
-		label: __("Compliance Category"),
-		fieldname: "compliance_category",
+		label: __("Department"),
+		fieldname: "department",
 		fieldtype: "Link",
-		options: "Compliance Category",
+		options: "Department",
 		change() {
 			refresh_tasks(page);
 		}
@@ -137,7 +135,7 @@ function refresh_tasks(page){
 	const taskName = page.fields_dict.task.get_value();
 	const projectName = page.fields_dict.project.get_value();
 	const customerName = page.fields_dict.customer.get_value();
-	const category = page.fields_dict.compliance_category.get_value();
+	const department = page.fields_dict.department.get_value();
 	const subCategory = page.fields_dict.compliance_sub_category.get_value();
 	const employee = page.fields_dict.employee.get_value();
 	const employeeGroup = page.fields_dict.employee_group.get_value();
@@ -150,7 +148,7 @@ function refresh_tasks(page){
 				 			 task: taskName,
 							 project: projectName,
 							 customer: customerName,
-							 category: category,
+							 department: department,
 							 sub_category: subCategory,
 							 employee: employee,
 							 employee_group: employeeGroup,
@@ -166,11 +164,39 @@ function refresh_tasks(page){
               showAssignEntryDialog(taskName);
             });
 
+						page.body.find(".startButton").on("click", function () {
+	            var taskName = $(this).attr("task-id");
+	            var projectName = $(this).attr("project-id");
+
+	            var currentTime = frappe.datetime.now_datetime();
+	            var formattedTime = frappe.datetime.str_to_user(currentTime);
+
+							// Save start time in local storage
+    					localStorage.setItem("start-time-task-" + taskName + "-project-" + projectName, currentTime);
+
+	            // Find the specific "start-time" paragraph associated with the task and project
+	            var startTimeParagraph = page.body.find(".start-time[task-id='" + taskName + "'][project-id='" + projectName + "']");
+	            startTimeParagraph.text(formattedTime);
+		        });
+
+						page.body.find(".start-time").each(function () {
+				        var taskName = $(this).attr("task-id");
+				        var projectName = $(this).attr("project-id");
+				        var startTime = localStorage.getItem("start-time-task-" + taskName + "-project-" + projectName);
+
+				        if (startTime) {
+				            var formattedTime = frappe.datetime.str_to_user(startTime);
+				            $(this).text(formattedTime);
+				        }
+				    });
+
 						page.body.find(".timeEntryButton").on("click", function () {
 							var taskName = $(this).attr("task-id");
 							var projectName = $(this).attr("project-id");
 							var assignees = $(this).attr("assignees");
-              showTimeEntryDialog(page, taskName, projectName, assignees);
+							// Retrieve start time from local storage
+    					var startTime = localStorage.getItem("start-time-task-" + taskName + "-project-" + projectName);
+              showTimeEntryDialog(page, taskName, projectName, assignees, startTime);
             });
 
 						page.body.find(".documentButton").on("click", function () {
@@ -248,13 +274,22 @@ function showAssignEntryDialog(taskName){
     dialog.show();
 }
 // Function to show the dialog box
-function showTimeEntryDialog(page, taskName, projectName, assignees) {
+function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) {
 	var assigneesList = assignees ? assignees.split(',') : [];
 
 	var status = page.fields_dict.status.get_value();
   if (status === 'completed' | status === 'hold'| status === 'cancelled') {
       return;
   }
+
+	if(!startTime) {
+		msgprint('<i class="fas fa-play" style="color: orange;"></i> Start Timer')
+		return;
+	}
+
+	// Get the pre-filled from_time and to_time values
+  var fromTime = startTime
+  var toTime = frappe.datetime.now_datetime(); // Get the current date and time for the to_time field
 
 	var dialog = new frappe.ui.Dialog({
         title: __("Time Entry Dialog"),
@@ -280,6 +315,8 @@ function showTimeEntryDialog(page, taskName, projectName, assignees) {
                 fieldname: "from_time",
                 fieldtype: 'Datetime',
                 reqd: true,
+								read_only: 1,
+								default: fromTime,
             },
 						{
 							fieldtype: "Column Break",
@@ -304,9 +341,14 @@ function showTimeEntryDialog(page, taskName, projectName, assignees) {
                 fieldname: "to_time",
                 fieldtype: 'Datetime',
                 reqd: true,
+								read_only: 1,
+								default: toTime
             }
         ],
         primary_action: function (values) {
+						// Clear start time from local storage upon submitting timesheet
+						localStorage.removeItem("start-time-task-" + taskName + "-project-" + projectName);
+
 						frappe.call({
 								method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.create_timesheet",
 								args: {
