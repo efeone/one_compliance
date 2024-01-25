@@ -1,4 +1,5 @@
 import frappe
+import json
 from frappe import _
 from one_compliance.one_compliance.utils import send_notification
 from one_compliance.one_compliance.utils import send_notification_to_roles
@@ -145,11 +146,13 @@ def check_reimbursement(project_id):
 @frappe.whitelist()
 def update_task_status(task_id, status, completed_by, completed_on):
 	# Load the task document from the database
-	task_doc = frappe.get_doc("Task", task_id)
-	task_doc.completed_on = frappe.utils.getdate(completed_on)
-	task_doc.status = status
-	task_doc.completed_by = completed_by
-	task_doc.save()
+	task_id = json.loads(task_id)
+	for task in task_id:
+		task_doc = frappe.get_doc("Task", task)
+		task_doc.completed_on = frappe.utils.getdate(completed_on)
+		task_doc.status = status
+		task_doc.completed_by = completed_by
+		task_doc.save()
 	frappe.db.commit()
 	frappe.msgprint("Task Status has been set to {0}".format(status), alert=True)
 	return True
