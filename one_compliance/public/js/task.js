@@ -217,7 +217,7 @@ function update_task_status(values, d, frm) {
   frappe.call({
     method: 'one_compliance.one_compliance.doc_events.task.update_task_status',
     args: {
-      'task_id': frm.doc.name,
+      'task_id': [frm.doc.name],
       'status': values.status,
       'completed_by': values.completed_by,
       'completed_on': values.completed_on
