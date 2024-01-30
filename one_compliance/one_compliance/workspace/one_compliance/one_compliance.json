@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"5BUXDiF8R0\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">One Compliance</span>\",\"col\":12}},{\"id\":\"HEmaEhp7ie\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lead\",\"col\":3}},{\"id\":\"mhhZEA8cvN\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Opportunity\",\"col\":3}},{\"id\":\"oh2ffefeQz\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":3}},{\"id\":\"ERgvpoLwFk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Compliance Category\",\"col\":3}},{\"id\":\"_88kEmzxfQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Compliance Sub Category\",\"col\":3}},{\"id\":\"sL4M8ll55x\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Project Template\",\"col\":3}},{\"id\":\"WCuSG8lodn\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Compliance Agreement\",\"col\":3}},{\"id\":\"nn2D2Ro6cI\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Inward Register\",\"col\":3}},{\"id\":\"gH03a8MVtf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Outward Register\",\"col\":3}},{\"id\":\"se8gAdDVTb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Project\",\"col\":3}},{\"id\":\"gEkzPviwCg\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Compliance Settings\",\"col\":3}},{\"id\":\"R8QyqA6czU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Notification Template\",\"col\":3}},{\"id\":\"fOvE7-NEN-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Purpose\",\"col\":3}},{\"id\":\"gaS6YNkmz5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Credentials\",\"col\":3}},{\"id\":\"p1oNkqOyYf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Credential Type\",\"col\":3}},{\"id\":\"NTuP9AIB6R\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Document\",\"col\":3}},{\"id\":\"ljx0qdyTGh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"4LNINgA53i\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task Bulk Assignment\",\"col\":3}}]",
+ "content": "[{\"id\":\"5BUXDiF8R0\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">One Compliance</span>\",\"col\":12}},{\"id\":\"HEmaEhp7ie\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Lead\",\"col\":3}},{\"id\":\"mhhZEA8cvN\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Opportunity\",\"col\":3}},{\"id\":\"oh2ffefeQz\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer\",\"col\":3}},{\"id\":\"ERgvpoLwFk\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Compliance Category\",\"col\":3}},{\"id\":\"_88kEmzxfQ\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Compliance Sub Category\",\"col\":3}},{\"id\":\"sL4M8ll55x\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Project Template\",\"col\":3}},{\"id\":\"WCuSG8lodn\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Compliance Agreement\",\"col\":3}},{\"id\":\"nn2D2Ro6cI\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Inward Register\",\"col\":3}},{\"id\":\"gH03a8MVtf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Outward Register\",\"col\":3}},{\"id\":\"se8gAdDVTb\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Project\",\"col\":3}},{\"id\":\"gEkzPviwCg\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Compliance Settings\",\"col\":3}},{\"id\":\"R8QyqA6czU\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Notification Template\",\"col\":3}},{\"id\":\"fOvE7-NEN-\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Purpose\",\"col\":3}},{\"id\":\"gaS6YNkmz5\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Credentials\",\"col\":3}},{\"id\":\"p1oNkqOyYf\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Credential Type\",\"col\":3}},{\"id\":\"NTuP9AIB6R\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Customer Document\",\"col\":3}},{\"id\":\"ljx0qdyTGh\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dashboard\",\"col\":3}},{\"id\":\"4LNINgA53i\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task Bulk Assignment\",\"col\":3}},{\"id\":\"4H6utfMDZB\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Task Management Tool\",\"col\":3}}]",
  "creation": "2023-03-13 11:15:00.910081",
  "custom_blocks": [],
  "docstatus": 0,
@@ -12,7 +12,7 @@
  "is_hidden": 0,
  "label": "One Compliance",
  "links": [],
- "modified": "2024-01-08 16:36:53.333853",
+ "modified": "2024-01-24 12:13:55.151149",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "One Compliance",
@@ -30,6 +30,13 @@
    "label": "Task Bulk Assignment",
    "link_to": "Task Bulk Assignment",
    "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Task Management Tool",
+   "link_to": "task-management-tool",
+   "type": "Page"
   },
   {
    "color": "Grey",

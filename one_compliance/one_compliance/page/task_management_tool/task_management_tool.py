@@ -2,13 +2,13 @@ import frappe
 from frappe.utils import get_datetime
 
 @frappe.whitelist()
-def get_task(status = None, task = None, project = None, customer = None, category = None, sub_category = None, employee = None, employee_group = None, from_date = None, to_date = None):
+def get_task(status = None, task = None, project = None, customer = None, department = None, sub_category = None, employee = None, employee_group = None, from_date = None, to_date = None):
 
     user_id = f'"{employee}"' if id else None
 
     query = """
 	SELECT
-        t.name,t.project,t.subject, t.project_name, t.customer, c.compliance_category, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to
+        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by
     FROM
         tabTask t JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
     """
@@ -25,8 +25,8 @@ def get_task(status = None, task = None, project = None, customer = None, catego
     if customer:
             query += f" AND t.customer = '{customer}'"
 
-    if category:
-            query += f" AND c.compliance_category = '{category}'"
+    if department:
+            query += f" AND c.department = '{department}'"
 
     if sub_category:
             query += f" AND t.compliance_sub_category = '{sub_category}'"
@@ -44,8 +44,6 @@ def get_task(status = None, task = None, project = None, customer = None, catego
             query += f" AND t.exp_end_date < '{to_date}'"
 
     query += ";"
-
-    print(query)
 
     task_list = frappe.db.sql(query, as_dict=1)
     for task in task_list:
@@ -68,6 +66,17 @@ def get_task(status = None, task = None, project = None, customer = None, catego
         else:
             task['_assign'] = []
             task['employee_names'] = []
+
+        if task['completed_by']:
+            if task['completed_by'] == 'Administrator':
+                task['completed_by_name'] = 'Administrator'
+            else:
+                completed_by = frappe.get_value("Employee", {"user_id": task['completed_by']}, ["name", "employee_name"], as_dict=True)
+                task['completed_by_name'] = completed_by["employee_name"]
+                task['completed_by_id'] = completed_by["name"]
+        else:
+            task['completed_by_name'] = []
+            task['completed_by_id'] = []
 
         task['is_payable'] = check_payable_task(task['subject'])
     return task_list
