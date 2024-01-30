@@ -44,6 +44,11 @@ frappe.ui.form.on('Compliance Agreement', {
     });
 
     if (!frm.is_new()) {
+      if (frm.doc.workflow_state != 'Cancelled' && frm.doc.workflow_state != 'Reverse') {
+          frm.add_custom_button('Reverse', () => {
+              reverseFunction(frm);
+          });
+      }
       frm.add_custom_button('Set Agreement Status', () => {
         set_agreement_status(frm)
       })
@@ -175,6 +180,20 @@ let set_agreement_status = function (frm) {
     }
   });
   d.show();
+}
+
+let reverseFunction = function(frm){
+    frappe.call({
+        method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.reverse_function',
+        args: {
+            docname: frm.doc.name
+        },
+        callback: function(response) {
+            if (response.message) {
+                frappe.set_route('Form', 'Compliance Agreement', response.message);
+            }
+        }
+    });
 }
 
 let create_project = function (frm) {
