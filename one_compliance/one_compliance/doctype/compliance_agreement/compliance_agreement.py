@@ -215,6 +215,8 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 	self = frappe.get_doc('Compliance Agreement', compliance_agreement)
 	project_template  = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_template')
 	project_template_doc = frappe.get_doc('Project Template', project_template)
+	sub_category_doc = frappe.get_doc('Compliance Sub Category',compliance_sub_category)
+	head_of_department = frappe.db.get_value('Employee', {'employee':sub_category_doc.head_of_department}, 'user_id')
 	if project_template:
 		# compliance_date = False
 		if compliance_category_details_id:
@@ -290,6 +292,7 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		project.expected_start_date = compliance_date
 		project.custom_project_service = compliance_sub_category + '-' + str(naming)
 		project.notes = compliance_sub_category + '-' + str(naming)
+		project.allocated_to = head_of_department
 		project.custom_have_reimbursement = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'have_reimbursement')
 		if project.custom_have_reimbursement:
 			project.custom_reimbursement_item = frappe.db.get_single_value("Compliance Settings", 'default_reimbursement_item')
@@ -298,6 +301,19 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		if project_template_doc.custom_project_duration:
 			project.expected_end_date = add_days(compliance_date, project_template_doc.custom_project_duration)
 		project.save(ignore_permissions=True)
+		if project.compliance_sub_category:
+			if sub_category_doc and sub_category_doc.head_of_department:
+				# user = sub_category_doc.head_of_department
+				todo = frappe.new_doc('ToDo')
+				todo.status = 'Open'
+				todo.allocated_to = head_of_department
+				todo.description = "project  Assign to" + head_of_department
+				todo.reference_type = 'Project'
+				todo.reference_name = project.name
+				todo.assigned_by = frappe.session.user
+				todo.save(ignore_permissions=True)
+				if todo:
+					frappe.msgprint(("Project is assigned to {0}".format(head_of_department)),alert = 1)
 		frappe.db.commit()
 		frappe.msgprint('Project Created for {0}.'.format(compliance_sub_category), alert = 1)
 		for template_task in project_template_doc.tasks:
