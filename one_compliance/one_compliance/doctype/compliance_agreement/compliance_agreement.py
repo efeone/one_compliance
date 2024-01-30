@@ -475,3 +475,63 @@ def get_rate_from_compliance_agreement(compliance_agreement, compliance_sub_cate
         )
     if rate_result:
         return rate_result[0].rate
+
+
+@frappe.whitelist()
+def reverse_function(docname):
+    current_doc = frappe.get_doc('Compliance Agreement', docname)
+
+    # Retrieve child table data
+    child_table_data = frappe.get_all("Compliance Category Details",
+                                       filters={'parent': docname},
+                                       fields=['compliance_category', 'compliance_date', 'sub_category_name', 'next_compliance_date', 'rate'])
+    print(child_table_data)
+
+    # Check if there are any compliance dates in the current agreement
+    has_compliance_dates = any(row.get("compliance_date") and row.get("next_compliance_date") for row in child_table_data)
+
+    if not has_compliance_dates:
+        frappe.msgprint(_("Cannot reverse without recurring task."), alert=True)
+        return
+
+    # Create a new compliance agreement
+    new_doc = frappe.new_doc("Compliance Agreement")
+
+    # Copy all values from the current agreement to the new one
+    new_doc.update(current_doc.as_dict())
+
+    # Set the valid from date to the reverse date
+    new_doc.valid_from = frappe.utils.now_datetime()
+    new_doc.valid_upto = current_doc.valid_upto
+    new_doc.has_long_term_validity = current_doc.has_long_term_validity
+    new_doc.customer = current_doc.customer
+    new_doc.invoice_based_on = current_doc.invoice_based_on
+    new_doc.compliance_category = current_doc.compliance_category
+
+    # Filter out rows with both compliance_date and next_compliance_date as none
+    new_doc.compliance_category_details = []
+
+    for row in child_table_data:
+        if row.get("compliance_date") or row.get("next_compliance_date"):
+            new_row = new_doc.append("compliance_category_details", {})
+            new_row.compliance_category = row.get("compliance_category")
+            new_row.compliance_date = row.get("compliance_date")
+            new_row.sub_category_name = row.get("sub_category_name")
+            new_row.next_compliance_date = row.get("next_compliance_date")
+            new_row.rate = row.get("rate")
+
+    new_doc.workflow_state = 'Draft'
+    new_doc.docstatus = 0  # Set the document status to 'Draft'
+
+    # Save the new compliance agreement
+    new_doc.insert(ignore_permissions=True)
+
+    frappe.msgprint(_("Compliance Agreement reversed successfully."), alert=True)
+
+    # Check if the "disabled" field is not checked
+    if current_doc.disabled == 0:
+        # Set the disabled is 1 and status to "Reverse"
+        frappe.db.set_value('Compliance Agreement', docname, 'disabled', 1)
+        frappe.db.set_value('Compliance Agreement', docname, 'workflow_state', 'Reverse')
+
+    return new_doc.name

@@ -17,6 +17,7 @@
   "invoice_based_on",
   "invoice_generation",
   "column_break_czvvr",
+  "disabled",
   "lead_name",
   "opportunity_name",
   "has_long_term_validity",
@@ -175,8 +176,9 @@
    "allow_on_submit": 1,
    "fieldname": "status",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Status",
-   "options": "Open\nActive\nExpired\nHold\nCancelled",
+   "options": "Open\nActive\nExpired\nHold\nCancelled\nReverse",
    "read_only": 1
   },
   {
@@ -233,12 +235,18 @@
    "fieldname": "next_invoice_date",
    "fieldtype": "Date",
    "label": "Invoice End Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-05 12:33:54.501190",
+ "modified": "2024-01-29 13:11:12.819272",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
