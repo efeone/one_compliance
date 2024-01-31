@@ -25,10 +25,6 @@
         margin-bottom: 10px;
     }
 
-    .card-subtitle {
-        margin-bottom: 15px;
-    }
-
     .card-text {
         margin-bottom: 15px;
     }
@@ -44,4 +40,31 @@
       padding: 0px 4px;
       position: absolute;
       right: 30px;
+    }
+
+    .customer-link {
+        display: inline-block;
+        max-width: 100%; /* Adjust as needed */
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .customer-link:hover {
+        max-width: none;
+        white-space: nowrap;
+        overflow: visible;
+    }
+
+    .project-link{
+      display: inline-block;
+      max-width: 100%; /* Adjust as needed */
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .project-link:hover {
+        max-width: none;
+        white-space: normal;
     }

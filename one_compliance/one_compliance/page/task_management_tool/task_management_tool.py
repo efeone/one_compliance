@@ -8,7 +8,7 @@ def get_task(status = None, task = None, project = None, customer = None, depart
 
     query = """
 	SELECT
-        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by
+        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by, t.color
     FROM
         tabTask t JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
     """
@@ -43,7 +43,8 @@ def get_task(status = None, task = None, project = None, customer = None, depart
     if to_date:
             query += f" AND t.exp_end_date < '{to_date}'"
 
-    query += ";"
+    query += """ORDER BY
+            t.modified DESC;"""
 
     task_list = frappe.db.sql(query, as_dict=1)
     for task in task_list:
@@ -128,3 +129,12 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
 
         timesheet.insert(ignore_permissions=True)
         frappe.db.commit()
+
+@frappe.whitelist()
+def update_task_status(task, project, status):
+    task_doc = frappe.get_doc("Task", {"name":task,"project":project})
+
+    task_doc.status = status
+
+    task_doc.save()
+    return "success"
