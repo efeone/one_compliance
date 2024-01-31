@@ -1,26 +1,17 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:assessment_year",
  "creation": "2024-01-16 15:02:16.932940",
  "default_view": "List",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "assessment_year",
   "year_start_date",
   "column_break_qzadw",
   "year_end_date"
  ],
  "fields": [
-  {
-   "fieldname": "assessment_year",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Assessment Year Name",
-   "unique": 1
-  },
   {
    "fieldname": "column_break_qzadw",
    "fieldtype": "Column Break"
@@ -40,11 +31,11 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-18 16:14:55.641182",
+ "modified": "2024-01-30 16:29:21.462310",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Assessment Year",
- "naming_rule": "By fieldname",
+ "naming_rule": "By script",
  "owner": "Administrator",
  "permissions": [
   {
