@@ -164,9 +164,16 @@ function refresh_tasks(page){
               showAssignEntryDialog(taskName);
             });
 
+						page.body.find(".timeEntryButton").hide();
+
 						page.body.find(".startButton").on("click", function () {
 	            var taskName = $(this).attr("task-id");
 	            var projectName = $(this).attr("project-id");
+
+							var status = page.fields_dict.status.get_value();
+					    if (status === 'completed' || status === 'hold' || status === 'cancelled') {
+					        return;
+					    }
 
 	            var currentTime = frappe.datetime.now_datetime();
 	            var formattedTime = frappe.datetime.str_to_user(currentTime);
@@ -177,6 +184,11 @@ function refresh_tasks(page){
 	            // Find the specific "start-time" paragraph associated with the task and project
 	            var startTimeParagraph = page.body.find(".start-time[task-id='" + taskName + "'][project-id='" + projectName + "']");
 	            startTimeParagraph.text(formattedTime);
+
+							updateTaskStatus(page,taskName, projectName, "Working");
+
+							$(this).hide();
+							page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show();
 		        });
 
 						page.body.find(".start-time").each(function () {
@@ -184,10 +196,27 @@ function refresh_tasks(page){
 				        var projectName = $(this).attr("project-id");
 				        var startTime = localStorage.getItem("start-time-task-" + taskName + "-project-" + projectName);
 
+								if (startTime) {
+						        var storedDate = new Date(startTime);
+						        var currentDate = new Date();
+
+						        if (storedDate.getDate() !== currentDate.getDate() || storedDate.getMonth() !== currentDate.getMonth() || storedDate.getFullYear() !== currentDate.getFullYear()) {
+						            // If startTime doesn't belong to the current day, reset the values
+						            localStorage.removeItem("start-time-task-" + taskName + "-project-" + projectName);
+						            startTime = null;
+						        }
+						    }
 				        if (startTime) {
 				            var formattedTime = frappe.datetime.str_to_user(startTime);
 				            $(this).text(formattedTime);
+										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide();
+        						page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show();
 				        }
+								else {
+										$(this).text("");
+										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show();
+										page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide();
+								}
 				    });
 
 						page.body.find(".timeEntryButton").on("click", function () {
@@ -281,11 +310,6 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
   if (status === 'completed' | status === 'hold'| status === 'cancelled') {
       return;
   }
-
-	if(!startTime) {
-		msgprint('<i class="fas fa-play" style="color: orange;"></i> Start Timer')
-		return;
-	}
 
 	// Get the pre-filled from_time and to_time values
   var fromTime = startTime
@@ -396,10 +420,11 @@ function set_status_colors() {
 		const taskElements = document.querySelectorAll('.card.task-entry');
 
 		taskElements.forEach(taskElement => {
-				const statusElement = taskElement.querySelector('.col-md-1[status-span]');
+				const statusElement = taskElement.querySelector('[status-span]');
 				const status = statusElement.getAttribute('status-span');
 				const projectElement = taskElement.querySelector('.card-subtitle');
 				const isPayable = statusElement.getAttribute('is-payable') === '1';
+				let projectColor = projectElement.getAttribute('color')
 
         if (status === 'Open') {
 					statusElement.style.color = 'blue';
@@ -417,6 +442,10 @@ function set_status_colors() {
 						showTicIcon(statusElement, isPayable);
 						projectElement.style.color = 'tomato';
         }
+
+				if (projectColor) {
+		        projectElement.style.color = projectColor;
+		    }
     });
 		function showTicIcon(element, isPayable) {
 			if (!element.querySelector('.fa-check-circle')) {
@@ -625,4 +654,22 @@ function update_task_status(values, d, taskId) {
       }
     }
   });
+}
+
+function updateTaskStatus(page, taskName, projectName, status){
+	frappe.call({
+			method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.update_task_status", // Change this to your method name
+			args: {
+					task: taskName,
+					project: projectName,
+					status: status
+			},
+			callback: function (response) {
+					if (response.message === "success") {
+							page.fields_dict.status.set_value("working");
+					} else {
+							console.log("Failed to update task status");
+					}
+			}
+	});
 }

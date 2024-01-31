@@ -14,9 +14,9 @@
             <div class="row">
                 <div class="col-md-2" style="padding: inherit;">
                     <a class="card-title" style="color: orange;" href="/app/task/{{data.name}}">{{ data.subject }}</a><br>
-                    <a class="card-subtitle mb-2" href="/app/project/{{ data.project }}">{{ data.project_name }}</a>
+                    <a class="card-subtitle project-link" href="/app/project/{{ data.project }}" color="{{ data.color }}">{{ data.project_name }}</a>
                     {% if data.customer %}
-                    <p class="card-text">
+                    <p class="card-text customer-link">
                         Customer: <a style="font-weight:bold;" href="/app/customer/{{data.customer}}">{{ data.customer }}</a>
                     </p>
                     {% endif %}
@@ -45,11 +45,11 @@
                         <a href="/app/employee/{{ data.completed_by_id }}" style="padding-left: 15px;">{{ data.completed_by_name }}</a><br>
                     </p>
                 </div>
-                <div class="col-md-1 text-center" style="padding: inherit;" status-span="{{ data.status }}" task-name="{{ data.subject }}" project-id="{{ data.project }}" task-id="{{ data.name }}" is-payable="{{ data.is_payable }}">
-                  {{ data.status }}
+                <div class="col-md-1 text-center" style="padding: inherit;">
+                  <p status-span="{{ data.status }}" task-name="{{ data.subject }}" project-id="{{ data.project }}" task-id="{{ data.name }}" is-payable="{{ data.is_payable }}">{{ data.status }}</p>
+                  <p class="start-time" task-id="{{ data.name }}" project-id="{{ data.project }}" ></p>
                 </div>
                 <div class="col-md-1" style="padding: inherit;">
-                    <p class="start-time" task-id="{{ data.name }}" project-id="{{ data.project }}" ></p>
                     <button class="btn btn-outline-warning btn-icon startButton" task-id="{{ data.name }}" project-id="{{ data.project }}" data-toggle="tooltip" title="Start Timer">
                         <i class="fas fa-play"></i>
                     </button>
