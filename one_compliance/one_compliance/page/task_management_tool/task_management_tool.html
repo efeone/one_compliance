@@ -1,0 +1,69 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<div class="row header-row task-entry" style="margin-top:5px;">
+    <div class="col-md-2 text-center">Task</div>
+    <div class="col-md-2 text-center">Start - End Date</div>
+    <div class="col-md-2 text-center">Department</div>
+    <div class="col-md-2 text-center">Compliance Sub Category</div>
+    <div class="col-md-2 text-center assignee-section">Assigned To</div>
+    <div class="col-md-2 text-center completed-by-section">Completed By</div>
+    <div class="col-md-2">Status</div>
+</div>
+{% for data in task_list %}
+    <div class="card task-entry">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-2" style="padding: inherit;">
+                    <a class="card-title" style="color: orange;" href="/app/task/{{data.name}}">{{ data.subject }}</a><br>
+                    <a class="card-subtitle project-link" href="/app/project/{{ data.project }}" color="{{ data.color }}">{{ data.project_name }}</a>
+                    {% if data.customer %}
+                    <p class="card-text customer-link">
+                        Customer: <a style="font-weight:bold;" href="/app/customer/{{data.customer}}">{{ data.customer }}</a>
+                    </p>
+                    {% endif %}
+                </div>
+                <div class="col-md-2 text-center" style="padding: inherit;">
+                    {{ data.exp_start_date }} <br>- {{ data.exp_end_date }}
+                </div>
+                <a class="col-md-2 text-center" style="padding: inherit;" href="/app/department/{{ data.department }}">
+                    {{ data.department }}
+                </a>
+                <a class="col-md-2 text-center" style="padding: inherit;" href="/app/compliance-sub-category/{{ data.compliance_sub_category }}">
+                    {{ data.compliance_sub_category }}
+                </a>
+                <div class="col-md-2 text-center" style="padding: inherit; position:relative;">
+                    <p class="card-text assignee-section">
+                        {% if data._assign %}
+                            {% for assignee in data._assign %}
+                                <a href="/app/employee/{{ assignee.employee_id }}">{{ assignee.employee_name }}</a><br>
+                            {% endfor %}
+                        {% endif %}
+                        <button class="btn btn-sm rounded-circle addAssigneeBtn" task-id="{{ data.name }}">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </p>
+                    <p class="card-text completed-by-section">
+                        <a href="/app/employee/{{ data.completed_by_id }}" style="padding-left: 15px;">{{ data.completed_by_name }}</a><br>
+                    </p>
+                </div>
+                <div class="col-md-1 text-center" style="padding: inherit;">
+                  <p status-span="{{ data.status }}" task-name="{{ data.subject }}" project-id="{{ data.project }}" task-id="{{ data.name }}" is-payable="{{ data.is_payable }}">{{ data.status }}</p>
+                  <p class="start-time" task-id="{{ data.name }}" project-id="{{ data.project }}" ></p>
+                </div>
+                <div class="col-md-1" style="padding: inherit;">
+                    <button class="btn btn-outline-warning btn-icon startButton" task-id="{{ data.name }}" project-id="{{ data.project }}" data-toggle="tooltip" title="Start Timer">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}" project-id="{{ data.project }}" assignees="{{ data.employee_names }}" data-toggle="tooltip" title="Time Sheet">
+                        <i class="fas fa-clock"></i>
+                    </button>
+                    <button class="btn btn-outline-info btn-icon documentButton" sub-category="{{ data.compliance_sub_category }}" customer="{{ data.customer }}" data-toggle="tooltip" title="Documents">
+                        <i class="fas fa-file-alt"></i>
+                    </button>
+                    <button class="btn btn-outline-success btn-icon credentialButton" sub-category="{{ data.compliance_sub_category }}" customer="{{ data.customer }}" data-toggle="tooltip" title="Credentials">
+                        <i class="fas fa-key"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
