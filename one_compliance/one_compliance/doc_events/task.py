@@ -133,11 +133,8 @@ def check_payable_task(task):
 @frappe.whitelist()
 def check_reimbursement(project_id):
 	project = frappe.get_doc("Project", project_id)
-	have_reimbursement = project.get("custom_have_reimbursement") if project else None
-	field_to_check_1 = project.get("custom_reimbursement_item") if project else None
-	field_to_check_2 = project.get("custom_reimbursement_income_account") if project else None
-	field_to_check_3 = project.get("custom_reimbursement_amount") if project else None
-	if have_reimbursement and field_to_check_1 is not None and field_to_check_2 is not None and field_to_check_3 is not None:
+	have_reimbursement = project.get("custom_reimbursement_amount") if project else None
+	if have_reimbursement != 0.00:
 		return True
 	else:
 		return False
