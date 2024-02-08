@@ -99,6 +99,7 @@ function make_filters(page) {
 		fieldname: "status",
 		fieldtype: "Select",
 		options: [
+				{},
 				{ label: "Open", value: "open" },
 				{ label: "Working", value: "working" },
 				{ label: "Pending Review", value: "pending_review" },
@@ -107,7 +108,7 @@ function make_filters(page) {
 				{ label: "Completed", value: "completed" },
 				{ label: "Cancelled", value: "cancelled" },
 			],
-			default: "open",
+			default: "",
 		change() {
 			refresh_tasks(page);
 		}
@@ -455,8 +456,7 @@ function set_status_colors() {
         ticIcon.style.cursor = 'pointer';
 				ticIcon.title = 'Update Status';
 				if(isPayable) {
-					console.log(isPayable);
-            ticIcon.title += '\n(Payable Task)';
+          ticIcon.title += '\n(Payable Task)';
         }
 
         element.appendChild(document.createTextNode(' '));
@@ -467,7 +467,7 @@ function set_status_colors() {
         const projectId = element.getAttribute('project-id');
 
         ticIcon.addEventListener('click', function () {
-            update_status(taskName, projectId, taskId);
+            update_status(taskName, projectId, taskId, isPayable);
         });
 			}
     }
@@ -577,65 +577,64 @@ function cusomerCredentials(subCategory, customer){
 		 d.show();
 }
 
-function update_status(taskName, projectId, taskId) {
+function update_status(taskName, projectId, taskId, isPayable) {
+	let fields = [
+	    {
+	        label: 'Status',
+	        fieldname: 'status',
+	        fieldtype: 'Select',
+	        options: 'Open\nWorking\nPending Review\nCompleted\nHold',
+	        default: 'Completed'
+	    },
+	    {
+	        label: 'Completed By',
+	        fieldname: 'completed_by',
+	        fieldtype: 'Link',
+	        options: 'User'
+	    },
+	    {
+	        label: 'Completed On',
+	        fieldname: 'completed_on',
+	        fieldtype: 'Date',
+	        default: 'Today'
+	    }
+	];
+
+	if (isPayable) {
+	    fields.push({
+	        label: 'Reimbursement Amount',
+	        fieldname: 'reimbursement_amount',
+	        fieldtype: 'Currency',
+					reqd: true,
+	    });
+	}
 	let d = new frappe.ui.Dialog({
 		title: 'Enter details',
-		fields: [
-			{
-				label: 'Status',
-				fieldname: 'status',
-				fieldtype: 'Select',
-				options: 'Open\nWorking\nPending Review\nCompleted\nHold',
-				default: 'Completed'
-			},
-			{
-				label: 'Completed By',
-				fieldname: 'completed_by',
-				fieldtype: 'Link',
-				options: 'User'
-			},
-			{
-				label: 'Completed On',
-				fieldname: 'completed_on',
-				fieldtype: 'Date',
-				default: 'Today'
-			},
-		],
+		fields: fields,
 		primary_action_label: 'Update',
 		primary_action(values) {
-			frappe.call({
-				method: 'one_compliance.one_compliance.doc_events.task.check_payable_task',
-				args: {
-					'task': taskName,
-				},
-				callback: function(r){
-					if (r.message){
-						frappe.call({
-							method: 'one_compliance.one_compliance.doc_events.task.check_reimbursement',
-							args: {
-								'project_id': projectId
-							},
-							callback: function(resp){
-								if (!resp.message){
-									d.hide();
-									frappe.msgprint('Reimbursement Amount is not given.');
-									frappe.set_route("Form", "Project", projectId);
-								}
-								else {
-									update_task_status(values, d, taskId);
-								}
-							}
-						});
-					}
-					else {
-						update_task_status(values, d, taskId);
-					}
-				}
-			});
+			if (values.reimbursement_amount > 0) {
+            update_reimbursement_amount(values, projectId, d, taskId);
+        } 
 		},
 	});
 	d.set_value('completed_by', frappe.session.user);
 d.show();
+}
+
+function update_reimbursement_amount(values, projectId, d, taskId) {
+	frappe.call({
+		method: 'one_compliance.one_compliance.page.task_management_tool.task_management_tool.update_reimbursement_amount',
+		args: {
+			'project_id': projectId,
+			'reimbursement_amount': values.reimbursement_amount
+		},
+		callback: function(r){
+			if (r.message){
+				update_task_status(values, d, taskId)
+			}
+		}
+	});
 }
 
 function update_task_status(values, d, taskId) {
