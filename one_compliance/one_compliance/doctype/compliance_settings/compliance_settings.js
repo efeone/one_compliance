@@ -8,6 +8,11 @@ frappe.ui.form.on('Compliance Settings', {
         create_projects_manually_perticular_date(frm)
       })
     }
+		if (frappe.session.user == "Administrator"){
+      frm.add_custom_button('Change Compliance Date', () => {
+        change_perticular_compliance_date(frm)
+      })
+    }
     //filter for task_before_due_date_notification based on doctype
     frm.set_query('task_before_due_date_notification', function(){
       return {
@@ -81,7 +86,7 @@ frappe.ui.form.on('Compliance Settings', {
     frm.set_query('default_reimbursement_item', function() {
       return {
         filters: {
-          is_service_item: 1 
+          is_service_item: 1
         }
       };
     });
@@ -89,7 +94,7 @@ frappe.ui.form.on('Compliance Settings', {
 });
 
 let create_projects_manually_perticular_date = function(frm){
-  //function to set the craete of compliance project manually 
+  //function to set the craete of compliance project manually
   let d = new frappe.ui.Dialog({
     title: 'Manual Project Creation',
     fields: [
@@ -121,3 +126,35 @@ let create_projects_manually_perticular_date = function(frm){
   d.show();
 }
 
+let change_perticular_compliance_date = function(frm){
+  //function to change the compliance date manually
+  let d = new frappe.ui.Dialog({
+    title: 'Compliance Date Updation',
+    fields: [
+        {
+            label: 'Compliance Date',
+            fieldname: 'compliance_date',
+            fieldtype: 'Date',
+            reqd: 1
+        },
+    ],
+    primary_action_label: 'Change Compliance Date',
+    primary_action(values) {
+      if(values.compliance_date){
+        frappe.call({
+          method:'one_compliance.one_compliance.doctype.compliance_settings.compliance_settings.compliance_date_update',
+          args:{
+            'compliance_date': values.compliance_date,
+          },
+          callback:function(r){
+            if (r.message) {
+              frm.reload_doc()
+            }
+          }
+        });
+      }
+        d.hide();
+    }
+  });
+  d.show();
+}
