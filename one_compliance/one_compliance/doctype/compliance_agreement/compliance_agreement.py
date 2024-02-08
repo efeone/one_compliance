@@ -26,7 +26,7 @@ class ComplianceAgreement(Document):
 				for compliance_category in self.compliance_category_details:
 					if not check_project_exists_or_not(compliance_category.compliance_sub_category, self.name):
 						if compliance_category.compliance_date and getdate(compliance_category.compliance_date) == getdate(today()):
-							enqueue(create_project_against_sub_category, queue = 'long', now  = False, compliance_agreement = self.name, compliance_sub_category = compliance_category.compliance_sub_category)
+							enqueue(create_project_against_sub_category, queue = 'long', now  = False, compliance_agreement = self.name, compliance_sub_category = compliance_category.compliance_sub_category, compliance_category_details_id = compliance_category.name, compliance_date = compliance_category.compliance_date)
 
 	def sign_validation(self):
 		if self.workflow_state == 'Approved' and not self.authority_signature:
@@ -209,7 +209,7 @@ def check_project_exists_or_not(compliance_sub_category, compliance_agreement):
 	return False
 
 @frappe.whitelist()
-def create_project_against_sub_category(compliance_agreement, compliance_sub_category, compliance_category_details_id=None, compliance_date=None):
+def create_project_against_sub_category(compliance_agreement, compliance_sub_category, compliance_category_details_id, compliance_date):
 	'''
 		Method to create Project against selected Sub Category
 	'''
