@@ -3,18 +3,20 @@ from frappe.utils import get_datetime
 
 @frappe.whitelist()
 def get_task(status = None, task = None, project = None, customer = None, department = None, sub_category = None, employee = None, employee_group = None, from_date = None, to_date = None):
-
+    print(status)
     user_id = f'"{employee}"' if id else None
 
     query = """
 	SELECT
         t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by, t.color
     FROM
-        tabTask t JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
+        tabTask t LEFT JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
     """
 
     if status:
             query += f" WHERE t.status = '{status}'"
+    else:
+        query += " WHERE t.status IN ('open', 'working', 'overdue')"
 
     if task:
             query += f" AND t.name = '{task}'"
@@ -32,7 +34,7 @@ def get_task(status = None, task = None, project = None, customer = None, depart
             query += f" AND t.compliance_sub_category = '{sub_category}'"
 
     if employee:
-            query += f" AND JSON_CONTAINS(t._assign, '{user_id}', '$')"
+            query += f" AND t._assign LIKE '%{user_id}%'"
 
     if employee_group:
             query += f" AND t.assigned_to = '{employee_group}'"
@@ -43,7 +45,7 @@ def get_task(status = None, task = None, project = None, customer = None, depart
     if to_date:
             query += f" AND t.exp_end_date < '{to_date}'"
 
-    query += """ORDER BY
+    query += """ ORDER BY
             t.modified DESC;"""
 
     task_list = frappe.db.sql(query, as_dict=1)
@@ -129,6 +131,13 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
 
         timesheet.insert(ignore_permissions=True)
         frappe.db.commit()
+
+@frappe.whitelist()
+def update_reimbursement_amount(project_id, reimbursement_amount):
+    project = frappe.get_doc("Project", project_id)
+    project.custom_reimbursement_amount = reimbursement_amount
+    project.save()
+    return project
 
 @frappe.whitelist()
 def update_task_status(task, project, status):
