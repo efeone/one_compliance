@@ -133,10 +133,23 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
         frappe.db.commit()
 
 @frappe.whitelist()
-def update_reimbursement_amount(project_id, reimbursement_amount):
+def add_payable_amount(task_id, payable_amount):
+    print(payable_amount)
+    task = frappe.get_doc("Task", task_id)
+    task.custom_payable_amount = payable_amount
+    task.save()
+    update_reimbursement_amount(task.project)
+    return task
+
+@frappe.whitelist()
+def update_reimbursement_amount(project_id):
+    total_payable_amount = frappe.db.get_value("Task", {"project": project_id, "custom_payable_amount": (">", 0)},"sum(custom_payable_amount)")
+    print(total_payable_amount)
+    # Update reimbursement amount in the project
     project = frappe.get_doc("Project", project_id)
-    project.custom_reimbursement_amount = reimbursement_amount
+    project.custom_reimbursement_amount = total_payable_amount
     project.save()
+    frappe.db.commit()
     return project
 
 @frappe.whitelist()

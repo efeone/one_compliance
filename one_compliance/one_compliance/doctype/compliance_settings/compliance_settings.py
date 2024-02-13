@@ -30,9 +30,15 @@ def create_project_if_not_exists(self, starting_date):
 						create_project_against_sub_category(self.name, compliance_category.compliance_sub_category, compliance_category.name)
 
 @frappe.whitelist()
-def compliance_date_update(compliance_date):
+def compliance_date_update(compliance_date, compliance_agreement = None):
 	from one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement import update_compliance_dates
-	projects = frappe.db.get_all('Project',filters = {'expected_start_date': getdate(compliance_date)},fields = ['name','compliance_agreement'])
+
+	filters = {'expected_start_date': getdate(compliance_date)}
+
+	if compliance_agreement:
+		filters['compliance_agreement'] = compliance_agreement
+
+	projects = frappe.db.get_all('Project',filters = filters, fields = ['name','compliance_agreement'])
 	if projects:
 		for project in projects:
 			agreement = frappe.get_doc('Compliance Agreement', project.compliance_agreement)

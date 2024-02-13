@@ -137,6 +137,12 @@ let change_perticular_compliance_date = function(frm){
             fieldtype: 'Date',
             reqd: 1
         },
+				{
+						label: 'Compliance Agreement',
+						fieldname: 'compliance_agreement',
+						fieldtype: 'Link',
+						options: 'Compliance Agreement'
+				},
     ],
     primary_action_label: 'Change Compliance Date',
     primary_action(values) {
@@ -145,6 +151,7 @@ let change_perticular_compliance_date = function(frm){
           method:'one_compliance.one_compliance.doctype.compliance_settings.compliance_settings.compliance_date_update',
           args:{
             'compliance_date': values.compliance_date,
+						'compliance_agreement': values.compliance_agreement,
           },
           callback:function(r){
             if (r.message) {
