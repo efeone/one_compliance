@@ -1,14 +1,19 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-<div class="row header-row task-entry" style="margin-top:5px;">
-    <div class="col-md-2 text-center">Task</div>
-    <div class="col-md-2 text-center">Start - End Date</div>
-    <div class="col-md-2 text-center">Department</div>
-    <div class="col-md-2 text-center">Compliance Sub Category</div>
-    <div class="col-md-2 text-center assignee-section">Assigned To</div>
-    <div class="col-md-2 text-center completed-by-section">Completed By</div>
-    <div class="col-md-2">Status</div>
-</div>
-{% for data in task_list %}
+<div class="frappe-list">
+  <div class="result">
+    <header class="level list-row-head text-muted">
+      <div class="level-left list-header-subject" style="margin-top:5px;">
+          <div class="col-md-2 text-center">Task</div>
+          <div class="col-md-2 text-center">Start - End Date</div>
+          <div class="col-md-2 text-center">Department</div>
+          <div class="col-md-2 text-center">Compliance Sub Category</div>
+          <div class="col-md-2 text-center assignee-section">Assigned To</div>
+          <div class="col-md-2 text-center completed-by-section">Completed By</div>
+          <div class="col-md-2">Status</div>
+      </div>
+    </header>
+
+    {% for data in task_list %}
     <div class="card task-entry">
         <div class="card-body">
             <div class="row">
@@ -66,4 +71,6 @@
             </div>
         </div>
     </div>
-{% endfor %}
+    {% endfor %}
+  </div>
+</div>

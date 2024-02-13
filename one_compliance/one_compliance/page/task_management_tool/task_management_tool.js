@@ -19,27 +19,42 @@ function make_filters(page) {
 		fieldtype: "Link",
 		options: "Task",
 		change() {
-			refresh_tasks(page);
+			if (page.fields_dict.task.get_value()) {
+          refresh_tasks(page);
+      }
 		}
 	});
+	page.fields_dict.task.$input.on('change', function() {
+      refresh_tasks(page);
+  });
 	let projectField = page.add_field({
 		label: __("Project"),
 		fieldname: "project",
 		fieldtype: "Link",
 		options: "Project",
 		change() {
-			refresh_tasks(page);
+			if (page.fields_dict.project.get_value()) {
+          refresh_tasks(page);
+      }
 		}
 	});
+	page.fields_dict.project.$input.on('change', function() {
+      refresh_tasks(page);
+  });
 	let customerField = page.add_field({
 		label: __("Customer"),
 		fieldname: "customer",
 		fieldtype: "Link",
 		options:"Customer",
 		change() {
-			refresh_tasks(page);
+			if (page.fields_dict.customer.get_value()) {
+          refresh_tasks(page);
+      }
 		}
 	});
+	page.fields_dict.customer.$input.on('change', function() {
+      refresh_tasks(page);
+  });
 	let employeeField = page.add_field({
 		label: __("Employee"),
 		fieldname: "employee",
@@ -47,37 +62,57 @@ function make_filters(page) {
 		options: "User",
 		default: get_employee_id(),
 		change() {
-			refresh_tasks(page);
+			if (page.fields_dict.employee.get_value()) {
+          refresh_tasks(page);
+      }
 		},
 		read_only: frappe.session.user === 'Administrator' ? 0 : 1
 	});
+	page.fields_dict.employee.$input.on('change', function() {
+      refresh_tasks(page);
+  });
 	let employeeGroupField = page.add_field({
 		label: __("Employee Group"),
 		fieldname: "employee_group",
 		fieldtype: "Link",
 		options: "Employee Group",
 		change() {
-			refresh_tasks(page);
+			if (page.fields_dict.employee_group.get_value()) {
+          refresh_tasks(page);
+      }
 		}
 	});
+	page.fields_dict.employee_group.$input.on('change', function() {
+      refresh_tasks(page);
+  });
 	let categoryField = page.add_field({
 		label: __("Department"),
 		fieldname: "department",
 		fieldtype: "Link",
 		options: "Department",
 		change() {
-			refresh_tasks(page);
+			if (page.fields_dict.department.get_value()) {
+          refresh_tasks(page);
+      }
 		}
 	});
+	page.fields_dict.department.$input.on('change', function() {
+      refresh_tasks(page);
+  });
 	let subcategoryField = page.add_field({
 		label: __("Compliance Sub Category"),
 		fieldname: "compliance_sub_category",
 		fieldtype: "Link",
 		options: "Compliance Sub Category",
 		change() {
-			refresh_tasks(page);
+			if (page.fields_dict.compliance_sub_category.get_value()) {
+          refresh_tasks(page);
+      }
 		}
 	});
+	page.fields_dict.compliance_sub_category.$input.on('change', function() {
+      refresh_tasks(page);
+  });
 	let fromDateField = page.add_field({
 		label: __("From Date"),
 		fieldname: "from_date",
@@ -86,6 +121,9 @@ function make_filters(page) {
 			refresh_tasks(page);
 		}
 	});
+	page.fields_dict.from_date.$input.on('change', function() {
+      refresh_tasks(page);
+  });
 	let toDateField = page.add_field({
 		label: __("To Date"),
 		fieldname: "to_date",
@@ -94,6 +132,9 @@ function make_filters(page) {
 			refresh_tasks(page);
 		}
 	});
+	page.fields_dict.to_date.$input.on('change', function() {
+      refresh_tasks(page);
+  });
 	let status = page.add_field({
 		label: __("Status"),
 		fieldname: "status",
@@ -130,7 +171,7 @@ function show(page){
 
 function refresh_tasks(page){
 	// Clear existing tasks from the page
-  page.body.find(".task-entry").remove();
+  page.body.find(".frappe-list").remove();
 
 	const selectedStatus = page.fields_dict.status.get_value();
 	const taskName = page.fields_dict.task.get_value();
@@ -244,7 +285,10 @@ function refresh_tasks(page){
 						set_status_colors();
 						hide_add_assignee_button(page.fields_dict.status.get_value());
 						assignee_and_completed_by_section(page.fields_dict.status.get_value());
-				}
+				} else {
+            // If no tasks are found, append a message to the page body
+            $('<div class="frappe-list"></div>').appendTo(page.body).append('<div class="no-result text-muted flex justify-center align-center" style="text-align: center;"><p>No Task found with matching filters.</p></div>');
+        }
 			},
 			freeze: true,
 			freeze_message: 'Loading Task List'
@@ -614,20 +658,20 @@ function update_status(taskName, projectId, taskId, isPayable) {
 		primary_action_label: 'Update',
 		primary_action(values) {
 			if (values.reimbursement_amount > 0) {
-            update_reimbursement_amount(values, projectId, d, taskId);
-        } 
+            update_reimbursement_amount(values, d, taskId);
+        }
 		},
 	});
 	d.set_value('completed_by', frappe.session.user);
 d.show();
 }
 
-function update_reimbursement_amount(values, projectId, d, taskId) {
+function update_reimbursement_amount(values, d, taskId) {
 	frappe.call({
-		method: 'one_compliance.one_compliance.page.task_management_tool.task_management_tool.update_reimbursement_amount',
+		method: 'one_compliance.one_compliance.page.task_management_tool.task_management_tool.add_payable_amount',
 		args: {
-			'project_id': projectId,
-			'reimbursement_amount': values.reimbursement_amount
+			'task_id': taskId,
+			'payable_amount': values.reimbursement_amount
 		},
 		callback: function(r){
 			if (r.message){
