@@ -235,7 +235,7 @@ fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Director','Compliance Ma
             {'dt': 'Customer Type'},
             {'dt': 'Workflow State', 'filters': [['name', 'in', ['Draft','Approved','Rejected','Pending','Sent to Customer','Customer Approval Waiting','Customer Approved','Customer Rejected','Cancelled','Verified','Tax Invoice','Proforma Invoice']]]},
 			{'dt': 'Workflow', 'filters': [['name', 'in', ['Compliance Agreement Workflow','Sales Invoice Workflow']]]},
-			{'dt': 'Workflow Action Master', 'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval','Customer Reject','Customer Approval waiting','Cancelled','Generate Proforma Invoice','Generate Tax Invoice']]]},
+			{'dt': 'Workflow Action Master', 'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval','Customer Reject','Customer Approval waiting','Cancelled','Generate Proforma Invoice','Generate Tax Invoice','Cancel']]]},
             {'dt' : 'Notification Template'},
             {'dt': 'Designation', 'filters': [['name', 'in',['Director','Head Of Department','Senior Manager','Manager','Executive']]]},
             {'dt': 'Module Profile', 'filters': [['name', 'in', ['Director','Head Of Department','Super Admin','Senior Manager','Manager','Executive']]]},

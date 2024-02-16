@@ -30,13 +30,6 @@
  {
   "docstatus": 0,
   "doctype": "Workflow Action Master",
-  "modified": "2023-03-08 10:08:55.708879",
-  "name": "Approve",
-  "workflow_action_name": "Approve"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow Action Master",
   "modified": "2023-03-08 10:08:55.710316",
   "name": "Reject",
   "workflow_action_name": "Reject"
@@ -72,6 +65,13 @@
  {
   "docstatus": 0,
   "doctype": "Workflow Action Master",
+  "modified": "2023-03-08 10:08:55.708879",
+  "name": "Approve",
+  "workflow_action_name": "Approve"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
   "modified": "2023-12-09 14:00:45.124302",
   "name": "Generate Tax Invoice",
   "workflow_action_name": "Generate Tax Invoice"
@@ -82,5 +82,12 @@
   "modified": "2023-12-09 14:01:06.349251",
   "name": "Generate Proforma Invoice",
   "workflow_action_name": "Generate Proforma Invoice"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2024-02-16 15:59:04.169976",
+  "name": "Cancel",
+  "workflow_action_name": "Cancel"
  }
 ]
