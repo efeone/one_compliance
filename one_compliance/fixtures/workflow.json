@@ -11,6 +11,7 @@
   "states": [
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "0",
     "is_optional_state": 0,
     "message": null,
@@ -20,10 +21,12 @@
     "parenttype": "Workflow",
     "state": "Draft",
     "update_field": null,
-    "update_value": null
+    "update_value": null,
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "1",
     "is_optional_state": 0,
     "message": null,
@@ -33,10 +36,12 @@
     "parenttype": "Workflow",
     "state": "Pending",
     "update_field": null,
-    "update_value": null
+    "update_value": null,
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "1",
     "is_optional_state": 0,
     "message": null,
@@ -46,10 +51,12 @@
     "parenttype": "Workflow",
     "state": "Approved",
     "update_field": null,
-    "update_value": null
+    "update_value": null,
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "2",
     "is_optional_state": 0,
     "message": null,
@@ -59,10 +66,12 @@
     "parenttype": "Workflow",
     "state": "Rejected",
     "update_field": "status",
-    "update_value": "Cancelled"
+    "update_value": "Cancelled",
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "1",
     "is_optional_state": 0,
     "message": null,
@@ -72,10 +81,12 @@
     "parenttype": "Workflow",
     "state": "Sent to Customer",
     "update_field": null,
-    "update_value": null
+    "update_value": null,
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "1",
     "is_optional_state": 0,
     "message": null,
@@ -85,10 +96,12 @@
     "parenttype": "Workflow",
     "state": "Customer Approval Waiting",
     "update_field": null,
-    "update_value": null
+    "update_value": null,
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Customer",
+    "avoid_status_override": 0,
     "doc_status": "1",
     "is_optional_state": 0,
     "message": null,
@@ -98,10 +111,12 @@
     "parenttype": "Workflow",
     "state": "Customer Approved",
     "update_field": null,
-    "update_value": null
+    "update_value": null,
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Customer",
+    "avoid_status_override": 0,
     "doc_status": "2",
     "is_optional_state": 0,
     "message": null,
@@ -111,10 +126,12 @@
     "parenttype": "Workflow",
     "state": "Customer Rejected",
     "update_field": "status",
-    "update_value": "Cancelled"
+    "update_value": "Cancelled",
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "2",
     "is_optional_state": 0,
     "message": null,
@@ -124,7 +141,8 @@
     "parenttype": "Workflow",
     "state": "Cancelled",
     "update_field": "status",
-    "update_value": "Cancelled"
+    "update_value": "Cancelled",
+    "workflow_builder_id": null
    }
   ],
   "transitions": [
@@ -137,7 +155,8 @@
     "parent": "Compliance Agreement Workflow",
     "parentfield": "transitions",
     "parenttype": "Workflow",
-    "state": "Draft"
+    "state": "Draft",
+    "workflow_builder_id": null
    },
    {
     "action": "Approve",
@@ -148,7 +167,8 @@
     "parent": "Compliance Agreement Workflow",
     "parentfield": "transitions",
     "parenttype": "Workflow",
-    "state": "Pending"
+    "state": "Pending",
+    "workflow_builder_id": null
    },
    {
     "action": "Reject",
@@ -159,7 +179,8 @@
     "parent": "Compliance Agreement Workflow",
     "parentfield": "transitions",
     "parenttype": "Workflow",
-    "state": "Pending"
+    "state": "Pending",
+    "workflow_builder_id": null
    },
    {
     "action": "Sent to Customer",
@@ -170,7 +191,8 @@
     "parent": "Compliance Agreement Workflow",
     "parentfield": "transitions",
     "parenttype": "Workflow",
-    "state": "Approved"
+    "state": "Approved",
+    "workflow_builder_id": null
    },
    {
     "action": "Customer Approval",
@@ -181,7 +203,8 @@
     "parent": "Compliance Agreement Workflow",
     "parentfield": "transitions",
     "parenttype": "Workflow",
-    "state": "Customer Approval Waiting"
+    "state": "Customer Approval Waiting",
+    "workflow_builder_id": null
    },
    {
     "action": "Customer Reject",
@@ -192,9 +215,11 @@
     "parent": "Compliance Agreement Workflow",
     "parentfield": "transitions",
     "parenttype": "Workflow",
-    "state": "Customer Approval Waiting"
+    "state": "Customer Approval Waiting",
+    "workflow_builder_id": null
    }
   ],
+  "workflow_data": null,
   "workflow_name": "Compliance Agreement Workflow",
   "workflow_state_field": "workflow_state"
  },
@@ -203,13 +228,14 @@
   "doctype": "Workflow",
   "document_type": "Sales Invoice",
   "is_active": 1,
-  "modified": "2023-12-09 14:10:53.165901",
+  "modified": "2024-02-16 16:20:10.134732",
   "name": "Sales Invoice Workflow",
   "override_status": 0,
   "send_email_alert": 1,
   "states": [
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "0",
     "is_optional_state": 0,
     "message": null,
@@ -219,10 +245,12 @@
     "parenttype": "Workflow",
     "state": "Draft",
     "update_field": null,
-    "update_value": null
+    "update_value": null,
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "0",
     "is_optional_state": 0,
     "message": null,
@@ -232,10 +260,12 @@
     "parenttype": "Workflow",
     "state": "Verified",
     "update_field": null,
-    "update_value": null
+    "update_value": null,
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "0",
     "is_optional_state": 0,
     "message": null,
@@ -245,10 +275,12 @@
     "parenttype": "Workflow",
     "state": "Proforma Invoice",
     "update_field": null,
-    "update_value": null
+    "update_value": null,
+    "workflow_builder_id": null
    },
    {
     "allow_edit": "Director",
+    "avoid_status_override": 0,
     "doc_status": "1",
     "is_optional_state": 0,
     "message": null,
@@ -258,7 +290,23 @@
     "parenttype": "Workflow",
     "state": "Tax Invoice",
     "update_field": "",
-    "update_value": null
+    "update_value": null,
+    "workflow_builder_id": null
+   },
+   {
+    "allow_edit": "Director",
+    "avoid_status_override": 0,
+    "doc_status": "2",
+    "is_optional_state": 0,
+    "message": null,
+    "next_action_email_template": null,
+    "parent": "Sales Invoice Workflow",
+    "parentfield": "states",
+    "parenttype": "Workflow",
+    "state": "Cancelled",
+    "update_field": null,
+    "update_value": null,
+    "workflow_builder_id": null
    }
   ],
   "transitions": [
@@ -271,7 +319,8 @@
     "parent": "Sales Invoice Workflow",
     "parentfield": "transitions",
     "parenttype": "Workflow",
-    "state": "Draft"
+    "state": "Draft",
+    "workflow_builder_id": null
    },
    {
     "action": "Generate Proforma Invoice",
@@ -282,7 +331,8 @@
     "parent": "Sales Invoice Workflow",
     "parentfield": "transitions",
     "parenttype": "Workflow",
-    "state": "Verified"
+    "state": "Verified",
+    "workflow_builder_id": null
    },
    {
     "action": "Generate Tax Invoice",
@@ -293,9 +343,23 @@
     "parent": "Sales Invoice Workflow",
     "parentfield": "transitions",
     "parenttype": "Workflow",
-    "state": "Proforma Invoice"
+    "state": "Proforma Invoice",
+    "workflow_builder_id": null
+   },
+   {
+    "action": "Cancel",
+    "allow_self_approval": 1,
+    "allowed": "Director",
+    "condition": null,
+    "next_state": "Cancelled",
+    "parent": "Sales Invoice Workflow",
+    "parentfield": "transitions",
+    "parenttype": "Workflow",
+    "state": "Tax Invoice",
+    "workflow_builder_id": null
    }
   ],
+  "workflow_data": null,
   "workflow_name": "Sales Invoice Workflow",
   "workflow_state_field": "workflow_state"
  }
