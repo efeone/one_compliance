@@ -430,6 +430,10 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
 								},
 								callback: function (r) {
 										frappe.msgprint("Timesheet created successfully!");
+										page.body.find(".start-time[task-id='" + taskName + "'][project-id='" + projectName + "']").hide();
+										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show();
+										page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide();
+
 								}
 						});
             dialog.hide();
