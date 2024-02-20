@@ -160,7 +160,6 @@ def change_agreement_status_scheduler():
 			else:
 				frappe.db.set_value('Compliance Agreement', agreement.name, 'status', 'Active')
 				frappe.db.commit()
-				self.create_project_if_not_exists()
 			frappe.db.commit()
 
 @frappe.whitelist()
