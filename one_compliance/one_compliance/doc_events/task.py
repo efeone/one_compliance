@@ -133,40 +133,8 @@ def make_sales_invoice(doc, method):
 									'description' : project.custom_project_service,
 									'cost_center' : project.cost_center
 								})
-								if project.custom_have_reimbursement:
-									reimbursement_item = project.custom_reimbursement_item if project.custom_reimbursement_item else frappe.db.get_single_value("Compliance Settings", 'default_reimbursement_item')
-									reimbursement_income_account =project.custom_reimbursement_income_account if project.custom_reimbursement_income_account else frappe.db.get_single_value("Compliance Settings", 'default__reimbursement_income_account')
-									item_code, item_name, description = frappe.db.get_value('Item', reimbursement_item , ['name', 'item_name', 'description'])
-									reimbursement_amount = project.custom_reimbursement_amount or 0
-									sales_invoice.append('items', {
-										'item_code' : item_code,
-										'item_name' : item_name,
-										'rate' : reimbursement_amount,
-										'qty' : 1,
-										'income_account' : reimbursement_income_account,
-										'description' : description
-									})
 								sales_invoice.save(ignore_permissions=True)
 								frappe.db.set_value('Project', project.name, 'is_invoiced', 1)
-
-@frappe.whitelist()
-def check_payable_task(task):
-	task_template = frappe.get_all("Task", filters = {"subject":task, "status":"Template"}, fields = ['name','custom_is_payable'])
-	if task_template:
-		is_payable = task_template[0].get("custom_is_payable")
-		if(is_payable):
-			return True
-		else:
-			return False
-
-@frappe.whitelist()
-def check_reimbursement(project_id):
-	project = frappe.get_doc("Project", project_id)
-	have_reimbursement = project.get("custom_reimbursement_amount") if project else None
-	if have_reimbursement != 0.00:
-		return True
-	else:
-		return False
 
 @frappe.whitelist()
 def update_task_status(task_id, status, completed_by, completed_on):

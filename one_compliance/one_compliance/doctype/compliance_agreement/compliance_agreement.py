@@ -99,9 +99,10 @@ class ComplianceAgreement(Document):
 	            })
 
 	        sales_invoice.insert()
-	        self.invoice_date = self.next_invoice_date
-	        self.next_invoice_date = calculate_next_invoice_date(self.invoice_date, self.invoice_generation, self.valid_upto)
-	        self.save()
+	        frappe.db.set_value(self.doctype, self.name, "invoice_date", self.next_invoice_date)
+	        next_invoice_date = calculate_next_invoice_date(self.next_invoice_date, self.invoice_generation, self.valid_upto)
+	        frappe.db.set_value(self.doctype, self.name, "next_invoice_date", next_invoice_date)
+	        frappe.db.commit()
 
 def calculate_next_invoice_date(current_invoice_date, invoice_generation, valid_upto):
     if invoice_generation == 'Monthly':
@@ -253,10 +254,6 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		project.expected_start_date = compliance_date
 		project.custom_project_service = compliance_sub_category + '-' + str(naming)
 		project.notes = compliance_sub_category + '-' + str(naming)
-		project.custom_have_reimbursement = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'have_reimbursement')
-		if project.custom_have_reimbursement:
-			project.custom_reimbursement_item = frappe.db.get_single_value("Compliance Settings", 'default_reimbursement_item')
-			project.custom_reimbursement_income_account = frappe.db.get_single_value("Compliance Settings", 'default__reimbursement_income_account')
 		project.category_type = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'category_type')
 		if project_template_doc.custom_project_duration:
 			project.expected_end_date = add_days(compliance_date, project_template_doc.custom_project_duration)
