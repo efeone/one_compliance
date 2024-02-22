@@ -179,31 +179,17 @@ let update_status = function(frm){
     primary_action_label: 'Update',
     primary_action(values) {
       frappe.call({
-        method: 'one_compliance.one_compliance.doc_events.task.check_payable_task',
+        method: 'one_compliance.one_compliance.doc_events.task.update_task_status',
         args: {
-          'task': frm.doc.subject,
+          'task_id': frm.doc.name,
+          'status': values.status,
+          'completed_by': values.completed_by,
+          'completed_on': values.completed_on
         },
         callback: function(r){
           if (r.message){
-            frappe.call({
-              method: 'one_compliance.one_compliance.doc_events.task.check_reimbursement',
-              args: {
-                'project_id': frm.doc.project
-              },
-              callback: function(resp){
-                if (!resp.message){
-                  d.hide();
-                  frappe.msgprint('Reimbursement Amount is not given.');
-                  frappe.set_route("Form", "Project", frm.doc.project);
-                }
-                else {
-                  update_task_status(values, d, frm);
-                }
-              }
-            });
-          }
-          else {
-            update_task_status(values, d, frm);
+            d.hide();
+            frm.reload_doc();
           }
         }
       });
@@ -212,21 +198,3 @@ let update_status = function(frm){
   d.set_value('completed_by', frappe.session.user);
 d.show();
 };
-
-function update_task_status(values, d, frm) {
-  frappe.call({
-    method: 'one_compliance.one_compliance.doc_events.task.update_task_status',
-    args: {
-      'task_id': frm.doc.name,
-      'status': values.status,
-      'completed_by': values.completed_by,
-      'completed_on': values.completed_on
-    },
-    callback: function(r){
-      if (r.message){
-        d.hide();
-        frm.reload_doc();
-      }
-    }
-  });
-}
