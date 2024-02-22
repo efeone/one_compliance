@@ -4,6 +4,8 @@ from one_compliance.one_compliance.utils import send_notification
 from one_compliance.one_compliance.utils import send_notification_to_roles
 from frappe.email.doctype.notification.notification import get_context
 from frappe.utils import *
+from erpnext.accounts.party import get_party_account
+from erpnext.accounts.doctype.sales_invoice.sales_invoice import get_mode_of_payment_info
 
 @frappe.whitelist()
 def append_users_to_project(doc, method):
@@ -43,6 +45,8 @@ def task_on_update(doc, method):
 	set_task_time_line(doc)
 	if doc.status == 'Completed':
 		task_complete_notification_for_director(doc)
+		if doc.custom_is_payable:
+			create_journal_entry(doc)
 		if doc.project:
 			if frappe.db.exists('Project', doc.project):
 				project = frappe.get_doc ('Project', doc.project)
@@ -57,6 +61,31 @@ def task_on_update(doc, method):
 def task_complete_notification_for_director(doc):
 	context = get_context(doc)
 	send_notification_to_roles(doc, 'Director', context, 'task_complete_notification_for_director')
+
+@frappe.whitelist()
+def create_journal_entry(doc):
+	if doc.custom_payable_amount and doc.custom_mode_of_payment:
+		account = get_party_account('Customer', doc.customer, doc.company)
+		payment_account = get_mode_of_payment_info(doc.custom_mode_of_payment, doc.company)
+		default_account = payment_account[0]['default_account']
+		journal_entry = frappe.new_doc('Journal Entry')
+		journal_entry.voucher_type = 'Bank Entry'
+		journal_entry.cheque_no = doc.custom_reference_number
+		journal_entry.cheque_date = doc.custom_reference_date
+		journal_entry.user_remark = doc.custom_user_remark
+		journal_entry.posting_date = frappe.utils.today()
+		journal_entry.append('accounts', {
+            'account': account,
+            'party_type': 'Customer',
+            'party': doc.customer,
+            'debit_in_account_currency': doc.custom_payable_amount
+        })
+		journal_entry.append('accounts', {
+            'account': default_account,
+            'credit_in_account_currency': doc.custom_payable_amount
+        })
+		journal_entry.insert()
+		frappe.msgprint("Journal Entry is created Successfully", alert=True)
 
 @frappe.whitelist()
 def project_complete_notification_for_customer(doc, email_id):
