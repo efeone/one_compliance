@@ -75,21 +75,6 @@ frappe.ui.form.on('Compliance Settings', {
         }
       };
     });
-    frm.set_query('default__reimbursement_income_account', function() {
-			return {
-				filters: {
-					company: frm.doc.company_name,
-					root_type: 'Income'
-				}
-			};
-		});
-    frm.set_query('default_reimbursement_item', function() {
-      return {
-        filters: {
-          is_service_item: 1
-        }
-      };
-    });
 	}
 });
 
