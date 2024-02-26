@@ -201,6 +201,35 @@ function refresh_tasks(page){
 				if (r.message && r.message.length>0) {
 						$(frappe.render_template("task_management_tool", {task_list:r.message})).appendTo(page.body);
 
+						page.body.find(".task-entry").each(function() {
+						    var taskID = $(this).attr("task-id");
+						    var isPayableCheckbox = $(this).find(".is-payable-checkbox");
+						    var addPaymentButton = $(this).find(".paymentEntryButton");
+
+						    // Event handler for "Is Payable" checkbox
+						    isPayableCheckbox.on("change", function() {
+						        if ($(this).is(":checked")) {
+						            isPayableCheckbox.attr("is-payable", "1");
+						            addPaymentButton.show();
+						        } else {
+						            isPayableCheckbox.attr("is-payable", "0");
+						            addPaymentButton.hide();
+						        }
+						    });
+
+						    // Event handler for payment entry button
+						    addPaymentButton.on("click", function() {
+						        var taskId = $(this).attr("task-id");
+										var payableAmount = $(this).attr("payable-amount");
+										var modeOfPayment = $(this).attr("mode-of-payment");
+										var referenceNumber = $(this).attr("ref-num");
+										var referenceDate = $(this).attr("ref-date");
+										var userRemark = $(this).attr("remark");
+						        var isPayable = isPayableCheckbox.attr("is-payable");
+						        paymentEntryDialog(taskId, isPayable, addPaymentButton, payableAmount, modeOfPayment, referenceNumber, referenceDate, userRemark);
+						    });
+						});
+
 						page.body.find(".addAssigneeBtn").on("click", function () {
 							var taskName = $(this).attr("task-id");
               showAssignEntryDialog(taskName);
@@ -285,6 +314,7 @@ function refresh_tasks(page){
 						set_status_colors();
 						hide_add_assignee_button(page.fields_dict.status.get_value());
 						assignee_and_completed_by_section(page.fields_dict.status.get_value());
+						task_payment_info();
 				} else {
             // If no tasks are found, append a message to the page body
             $('<div class="frappe-list"></div>').appendTo(page.body).append('<div class="no-result text-muted flex justify-center align-center" style="text-align: center;"><p>No Task found with matching filters.</p></div>');
@@ -310,6 +340,80 @@ function assignee_and_completed_by_section(taskStatus) {
     } else {
         $('.completed-by-section').hide();
     }
+}
+
+function paymentEntryDialog(taskId, isPayable, addPaymentButton, payableAmount, modeOfPayment, referenceNumber, referenceDate, userRemark){
+	var dialog = new frappe.ui.Dialog({
+        title: __("Add Payment Info"),
+        fields: [
+					{
+							label: __("Task"),
+							fieldname: "task",
+							fieldtype: 'Link',
+							options: 'Task',
+							default: taskId,
+							read_only: 1,
+					},
+					{
+							label: __("Payable Amount"),
+							fieldname: "payable_amount",
+							fieldtype: 'Currency',
+							reqd: true,
+							default: payableAmount,
+					},
+					{
+							label: __("Mode of payment"),
+							fieldname: "mode_of_payment",
+							fieldtype: 'Link',
+							options: 'Mode of Payment',
+							reqd: true,
+							default: modeOfPayment
+					},
+					{
+						fieldtype: "Column Break",
+						fieldname: "col_break_1",
+					},
+					{
+							label: __("Reference Number"),
+							fieldname: "reference_number",
+							fieldtype: 'Data',
+							default: referenceNumber
+					},
+					{
+							label: __("Reference Date"),
+							fieldname: "reference_date",
+							fieldtype: 'Date',
+							default: referenceDate
+					},
+					{
+							label: __("User remark"),
+							fieldname: "user_remark",
+							fieldtype: 'Small Text',
+							default: userRemark
+					}
+        ],
+        primary_action: function (values) {
+						frappe.call({
+								method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.add_payment_info",
+								args: {
+                    task_id: taskId,
+										is_payable: isPayable,
+                    payable_amount: values.payable_amount,
+										mode_of_payment: values.mode_of_payment,
+										reference_number: values.reference_number,
+										reference_date: values.reference_date,
+										user_remark: values.user_remark,
+                },
+                callback: function (r) {
+                    frappe.msgprint("Payment info added successfully!");
+										addPaymentButton.show();
+                }
+						});
+            dialog.hide();
+        },
+        primary_action_label: __("Save")
+    });
+    dialog.show();
 }
 
 function showAssignEntryDialog(taskName){
@@ -472,23 +576,22 @@ function set_status_colors() {
 				const statusElement = taskElement.querySelector('[status-span]');
 				const status = statusElement.getAttribute('status-span');
 				const projectElement = taskElement.querySelector('.card-subtitle');
-				const isPayable = statusElement.getAttribute('is-payable') === '1';
 				let projectColor = projectElement.getAttribute('color')
 
         if (status === 'Open') {
 					statusElement.style.color = 'blue';
-					showTicIcon(statusElement, isPayable);
+					showTicIcon(statusElement);
 					projectElement.style.color = 'blue';
         } else if (status === 'Completed') {
             statusElement.style.color = 'green';
 						projectElement.style.color = 'green';
         } else if (status === 'Overdue') {
             statusElement.style.color = 'red';
-						showTicIcon(statusElement, isPayable);
+						showTicIcon(statusElement);
 						projectElement.style.color = 'red';
         } else if (status === 'Working') {
             statusElement.style.color = 'tomato';
-						showTicIcon(statusElement, isPayable);
+						showTicIcon(statusElement);
 						projectElement.style.color = 'tomato';
         }
 
@@ -496,16 +599,13 @@ function set_status_colors() {
 		        projectElement.style.color = projectColor;
 		    }
     });
-		function showTicIcon(element, isPayable) {
+		function showTicIcon(element) {
 			if (!element.querySelector('.fa-check-circle')) {
         const ticIcon = document.createElement('i');
         ticIcon.className = 'fas fa-check-circle';
         ticIcon.style.color = 'green';
         ticIcon.style.cursor = 'pointer';
 				ticIcon.title = 'Update Status';
-				if(isPayable) {
-          ticIcon.title += '\n(Payable Task)';
-        }
 
         element.appendChild(document.createTextNode(' '));
         element.appendChild(ticIcon);
@@ -515,7 +615,7 @@ function set_status_colors() {
         const projectId = element.getAttribute('project-id');
 
         ticIcon.addEventListener('click', function () {
-            update_status(taskName, projectId, taskId, isPayable);
+            update_status(taskName, projectId, taskId);
         });
 			}
     }
@@ -625,7 +725,7 @@ function cusomerCredentials(subCategory, customer){
 		 d.show();
 }
 
-function update_status(taskName, projectId, taskId, isPayable) {
+function update_status(taskName, projectId, taskId) {
 	let fields = [
 	    {
 	        label: 'Status',
@@ -648,59 +748,30 @@ function update_status(taskName, projectId, taskId, isPayable) {
 	    }
 	];
 
-	if (isPayable) {
-	    fields.push({
-	        label: 'Reimbursement Amount',
-	        fieldname: 'reimbursement_amount',
-	        fieldtype: 'Currency',
-					reqd: true,
-	    });
-	}
 	let d = new frappe.ui.Dialog({
 		title: 'Enter details',
 		fields: fields,
 		primary_action_label: 'Update',
 		primary_action(values) {
-			if (values.reimbursement_amount > 0) {
-            update_reimbursement_amount(values, d, taskId);
-        }
+			frappe.call({
+		    method: 'one_compliance.one_compliance.doc_events.task.update_task_status',
+		    args: {
+		      'task_id': taskId,
+		      'status': values.status,
+		      'completed_by': values.completed_by,
+		      'completed_on': values.completed_on
+		    },
+		    callback: function(r){
+		      if (r.message){
+		        d.hide();
+						location.reload();
+		      }
+		    }
+		  });
 		},
 	});
 	d.set_value('completed_by', frappe.session.user);
 d.show();
-}
-
-function update_reimbursement_amount(values, d, taskId) {
-	frappe.call({
-		method: 'one_compliance.one_compliance.page.task_management_tool.task_management_tool.add_payable_amount',
-		args: {
-			'task_id': taskId,
-			'payable_amount': values.reimbursement_amount
-		},
-		callback: function(r){
-			if (r.message){
-				update_task_status(values, d, taskId)
-			}
-		}
-	});
-}
-
-function update_task_status(values, d, taskId) {
-  frappe.call({
-    method: 'one_compliance.one_compliance.doc_events.task.update_task_status',
-    args: {
-      'task_id': taskId,
-      'status': values.status,
-      'completed_by': values.completed_by,
-      'completed_on': values.completed_on
-    },
-    callback: function(r){
-      if (r.message){
-        d.hide();
-				location.reload();
-      }
-    }
-  });
 }
 
 function updateTaskStatus(page, taskName, projectName, status){
@@ -718,5 +789,25 @@ function updateTaskStatus(page, taskName, projectName, status){
 							console.log("Failed to update task status");
 					}
 			}
+	});
+}
+
+function task_payment_info(){
+	const taskElements = document.querySelectorAll('.card.task-entry');
+
+	taskElements.forEach(taskElement => {
+
+		const checkboxField = taskElement.querySelector('.is-payable-checkbox');
+		const isPayable = checkboxField.getAttribute('is-payable');
+		const taskID = checkboxField.getAttribute('task-id');
+		const addPaymentButton = taskElement.querySelector(".paymentEntryButton");
+
+		if (isPayable === '1') {
+        checkboxField.checked = true;
+				addPaymentButton.style.display = "block";
+    }
+		else {
+				addPaymentButton.style.display = "none";
+		}
 	});
 }
