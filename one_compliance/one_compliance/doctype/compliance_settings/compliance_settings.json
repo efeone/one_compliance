@@ -12,9 +12,6 @@
   "section_break_saeum",
   "role_of_project_creator",
   "compliance_service_item_group",
-  "column_break_fl7nk",
-  "default_reimbursement_item",
-  "default__reimbursement_income_account",
   "tab_break_us4n3",
   "task_before_due_date_notification",
   "task_overdue_notification_for_employee",
@@ -109,30 +106,14 @@
    "options": "Item Group"
   },
   {
-   "fieldname": "column_break_fl7nk",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "section_break_saeum",
    "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "default__reimbursement_income_account",
-   "fieldtype": "Link",
-   "label": "Default  Reimbursement Income Account",
-   "options": "Account"
-  },
-  {
-   "fieldname": "default_reimbursement_item",
-   "fieldtype": "Link",
-   "label": "Default Reimbursement Item",
-   "options": "Item"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-12-06 13:35:55.050454",
+ "modified": "2024-02-26 15:35:36.230789",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
