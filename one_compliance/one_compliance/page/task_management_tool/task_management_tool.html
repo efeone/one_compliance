@@ -51,10 +51,11 @@
                     </p>
                 </div>
                 <div class="col-md-1 text-center" style="padding: inherit;">
-                  <p status-span="{{ data.status }}" task-name="{{ data.subject }}" project-id="{{ data.project }}" task-id="{{ data.name }}" is-payable="{{ data.is_payable }}">{{ data.status }}</p>
+                  <p status-span="{{ data.status }}" task-name="{{ data.subject }}" project-id="{{ data.project }}" task-id="{{ data.name }}">{{ data.status }}</p>
                   <p class="start-time" task-id="{{ data.name }}" project-id="{{ data.project }}" ></p>
                 </div>
                 <div class="col-md-1" style="padding: inherit;">
+                  <div class="">
                     <button class="btn btn-outline-warning btn-icon startButton" task-id="{{ data.name }}" project-id="{{ data.project }}" data-toggle="tooltip" title="Start Timer">
                         <i class="fas fa-play"></i>
                     </button>
@@ -67,6 +68,14 @@
                     <button class="btn btn-outline-success btn-icon credentialButton" sub-category="{{ data.compliance_sub_category }}" customer="{{ data.customer }}" data-toggle="tooltip" title="Credentials">
                         <i class="fas fa-key"></i>
                     </button>
+                  </div>
+                  <div style="padding-left: 5px;">
+                    <input type="checkbox" id="is_payable" name="is_payable" class="is-payable-checkbox" task-id="{{ data.name }}" is-payable="{{data.custom_is_payable}}" >
+                    <label for="is_payable">Is Payable</label>
+                    <button class="btn btn-outline-success btn-icon paymentEntryButton" task-id="{{ data.name }}" is-payable="{{ data.custom_is_payable }}" payable-amount="{{ data.custom_payable_amount }}" mode-of-payment="{{ data.custom_mode_of_payment }}" ref-num="{{ data.custom_reference_number }}" ref-date="{{ data.custom_reference_date }}" remark="{{ data.custom_user_remark }}" data-toggle="tooltip" title="Payment Entry">
+                        <i class="fas fa-wallet"></i>
+                    </button>
+                  </div>
                 </div>
             </div>
         </div>

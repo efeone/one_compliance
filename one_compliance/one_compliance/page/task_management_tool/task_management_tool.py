@@ -8,7 +8,8 @@ def get_task(status = None, task = None, project = None, customer = None, depart
 
     query = """
 	SELECT
-        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by, t.color
+        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by, t.color, t.custom_is_payable,
+        t.custom_payable_amount, t.custom_mode_of_payment,t.custom_reference_date,t.custom_reference_number,t.custom_user_remark
     FROM
         tabTask t LEFT JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
     """
@@ -81,16 +82,7 @@ def get_task(status = None, task = None, project = None, customer = None, depart
             task['completed_by_name'] = []
             task['completed_by_id'] = []
 
-        task['is_payable'] = check_payable_task(task['subject'])
     return task_list
-
-@frappe.whitelist()
-def check_payable_task(task):
-    query = f"""
-    SELECT custom_is_payable FROM `tabTask` WHERE subject = '{task}' AND status = 'Template';
-    """
-    result = frappe.db.sql(query, as_dict=True)
-    return result[0]['custom_is_payable'] if result else None
 
 @frappe.whitelist()
 def create_timesheet(project, task, employee, activity, from_time, to_time):
@@ -133,26 +125,6 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
         frappe.db.commit()
 
 @frappe.whitelist()
-def add_payable_amount(task_id, payable_amount):
-    print(payable_amount)
-    task = frappe.get_doc("Task", task_id)
-    task.custom_payable_amount = payable_amount
-    task.save()
-    update_reimbursement_amount(task.project)
-    return task
-
-@frappe.whitelist()
-def update_reimbursement_amount(project_id):
-    total_payable_amount = frappe.db.get_value("Task", {"project": project_id, "custom_payable_amount": (">", 0)},"sum(custom_payable_amount)")
-    print(total_payable_amount)
-    # Update reimbursement amount in the project
-    project = frappe.get_doc("Project", project_id)
-    project.custom_reimbursement_amount = total_payable_amount
-    project.save()
-    frappe.db.commit()
-    return project
-
-@frappe.whitelist()
 def update_task_status(task, project, status):
     task_doc = frappe.get_doc("Task", {"name":task,"project":project})
 
@@ -160,3 +132,16 @@ def update_task_status(task, project, status):
 
     task_doc.save()
     return "success"
+
+@frappe.whitelist()
+def add_payment_info(task_id, is_payable, payable_amount, mode_of_payment, reference_number = None, reference_date = None, user_remark = None):
+    task_doc = frappe.get_doc("Task", task_id)
+
+    task_doc.custom_is_payable = is_payable
+    task_doc.custom_payable_amount = payable_amount
+    task_doc.custom_mode_of_payment = mode_of_payment
+    task_doc.custom_reference_number = reference_number
+    task_doc.custom_reference_date = reference_date
+    task_doc.custom_user_remark = user_remark
+
+    task_doc.save()
