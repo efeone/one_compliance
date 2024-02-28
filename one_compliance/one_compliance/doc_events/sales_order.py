@@ -17,7 +17,6 @@ def get_compliance_subcategory(item_code):
 def create_project_from_sales_order(sales_order, start_date, item_code, priority, expected_end_date=None, remark=None):
     self = frappe.get_doc('Sales Order', sales_order)
     compliance_sub_category = frappe.get_doc('Compliance Sub Category',{'item_code':item_code})
-    print(compliance_sub_category.project_template)
     project_template  = compliance_sub_category.project_template
     project_template_doc = frappe.get_doc('Project Template', project_template)
     if project_template:
@@ -46,9 +45,14 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
         project.project_name = self.customer_name + '-' + compliance_sub_category.name + '-' + self.name + '-' + str(naming)
         project.customer = self.customer
         project.compliance_sub_category = compliance_sub_category.name
+        project.compliance_category = compliance_sub_category.compliance_category
         project.expected_start_date = start_date
         if expected_end_date:
-            project.expected_end_date = expected_end_date
+            days_diff = date_diff(getdate(expected_end_date), getdate(start_date))
+            if(days_diff > project_template_doc.custom_project_duration):
+                project.expected_end_date = expected_end_date
+            else:
+                project.expected_end_date = add_days(start_date, project_template_doc.custom_project_duration)
         else:
             if project_template_doc.custom_project_duration:
                 project.expected_end_date = add_days(start_date, project_template_doc.custom_project_duration)
@@ -56,10 +60,6 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
         project.custom_project_service = compliance_sub_category.name + '-' + str(naming)
         project.notes = remark
         project.sales_order = sales_order
-        project.custom_have_reimbursement = compliance_sub_category.have_reimbursement
-        if project.custom_have_reimbursement:
-            project.custom_reimbursement_item = frappe.db.get_single_value("Compliance Settings", 'default_reimbursement_item')
-            project.custom_reimbursement_income_account = frappe.db.get_single_value("Compliance Settings", 'default__reimbursement_income_account')
         project.category_type = compliance_sub_category.category_type
         project.save(ignore_permissions=True)
         frappe.db.commit()

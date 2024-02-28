@@ -15,13 +15,13 @@ let create_project_from_sales_order = function (frm) {
     title: 'Create Project',
     fields: [
       {
-        label: 'Start Date',
-        fieldname: 'start_date',
+        label: 'Expected Start Date',
+        fieldname: 'expected_start_date',
         fieldtype: 'Date',
         reqd: 1,
       },
       {
-        label: 'Item',
+        label: 'Service',
         fieldname: 'item',
         fieldtype: 'Link',
         options: 'Item',
@@ -96,7 +96,7 @@ let create_project_from_sales_order = function (frm) {
             method: 'one_compliance.one_compliance.doc_events.sales_order.create_project_from_sales_order',
             args: {
               sales_order: frm.doc.name,
-              start_date: values.start_date,
+              start_date: values.expected_start_date,
               expected_end_date: values.expected_end_date,
               item_code: values.item,
               priority: values.priority,
