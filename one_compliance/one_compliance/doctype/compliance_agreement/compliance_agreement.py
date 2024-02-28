@@ -35,7 +35,7 @@ class ComplianceAgreement(Document):
 			frappe.throw('Customer Signature is required for Customer Approval')
 
 	def validate(self):
-		self.validate_agreement_dates()
+		# self.validate_agreement_dates()
 		self.change_agreement_status()
 
 	def on_trash(self):
