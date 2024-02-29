@@ -10,7 +10,7 @@ class ComplianceSubCategory(Document):
 	def validate(self):
 		self.validate_rate()
 		if self.is_billable and not self.item_code:
-			sub_cat_item = create_compliance_item_from_sub_category(self.sub_category)
+			sub_cat_item = create_compliance_item_from_sub_category(self.sub_category, self.rate)
 			self.item_code = sub_cat_item
 
 		# Check if the subcategory name is changed
@@ -93,7 +93,7 @@ def set_filter_for_employee(doctype, txt, searchfield, start, page_len, filters)
 		)
 
 @frappe.whitelist()
-def create_compliance_item_from_sub_category(sub_category):
+def create_compliance_item_from_sub_category(sub_category, rate):
 	if not frappe.db.exists('Item', {'item_code':sub_category}):
 		# Fetch the 'Services' Item Group
 		item_group = frappe.db.get_single_value("Compliance Settings", 'compliance_service_item_group')
@@ -110,11 +110,27 @@ def create_compliance_item_from_sub_category(sub_category):
 		})
 		# Save the Compliance Item document
 		compliance_item.insert()
+		make_item_price(sub_category,rate)
 		frappe.msgprint("Compliance Item Created: {}".format(compliance_item.name), indicator="green", alert=1)
 		return compliance_item.name
 	else:
 		return  frappe.get_value("Item", {"item_code": sub_category})
 	return compliance_item.name
+
+@frappe.whitelist()
+def make_item_price(sub_category, rate):
+    price_list_name = frappe.db.get_value(
+        "Selling Settings", None, "selling_price_list"
+    ) or frappe.db.get_value("Price List", {"selling": 1})
+    frappe.get_doc(
+        {
+            "doctype": "Item Price",
+            "price_list": price_list_name,
+            "item_code": sub_category,
+            "price_list_rate": rate,
+            "valid_from": frappe.utils.today(),
+        }
+    ).insert(ignore_permissions=True, ignore_mandatory=True)
 
 @frappe.whitelist()
 def disable_related_item(item_name):
@@ -164,4 +180,3 @@ def rename_compliance_subcategory(old_sub_category, new_sub_category, compliance
         frappe.rename_doc('Compliance Sub Category', doc[0].name, new_doctype_name, force=True)
 
         frappe.msgprint("Compliance Subcategory Doctype Name Updated: {} -> {}".format(old_doctype_name, new_doctype_name), indicator="blue", alert=1)
-    
