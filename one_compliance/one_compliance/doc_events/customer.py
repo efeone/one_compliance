@@ -3,6 +3,7 @@ import json
 from frappe.model.mapper import *
 from frappe import _
 from frappe.utils.user import get_users_with_role
+from frappe.desk.form.assign_to import add as add_assignment
 
 @frappe.whitelist()
 def set_customer_type_value(doc):
@@ -221,3 +222,15 @@ def calculate_rate(compliance_category_details, compliance_category):
 		if category.compliance_category == compliance_category:
 			rate += category.rate
 	return rate
+
+def create_task_from_opportunity(doc, method):
+    if(doc.opportunity_name):
+        opportunity = frappe.get_doc('Opportunity',doc.opportunity_name)
+        if(opportunity.custom_documents_required):
+            for document_required in opportunity.custom_documents_required:
+                task = frappe.new_doc('Task')
+                task.subject = document_required.document_required
+                task.insert(ignore_permissions = True)
+
+                user_id = frappe.get_value('Employee', document_required.responsibilities, 'user_id')
+                add_assignment({"doctype": "Task", "name": task.name, "assign_to": [user_id]})
