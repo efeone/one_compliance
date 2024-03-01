@@ -201,34 +201,15 @@ function refresh_tasks(page){
 				if (r.message && r.message.length>0) {
 						$(frappe.render_template("task_management_tool", {task_list:r.message})).appendTo(page.body);
 
-						page.body.find(".task-entry").each(function() {
-						    var taskID = $(this).attr("task-id");
-						    var isPayableCheckbox = $(this).find(".is-payable-checkbox");
-						    var addPaymentButton = $(this).find(".paymentEntryButton");
-
-						    // Event handler for "Is Payable" checkbox
-						    isPayableCheckbox.on("change", function() {
-						        if ($(this).is(":checked")) {
-						            isPayableCheckbox.attr("is-payable", "1");
-						            addPaymentButton.show();
-						        } else {
-						            isPayableCheckbox.attr("is-payable", "0");
-						            addPaymentButton.hide();
-						        }
-						    });
-
-						    // Event handler for payment entry button
-						    addPaymentButton.on("click", function() {
-						        var taskId = $(this).attr("task-id");
-										var payableAmount = $(this).attr("payable-amount");
-										var modeOfPayment = $(this).attr("mode-of-payment");
-										var referenceNumber = $(this).attr("ref-num");
-										var referenceDate = $(this).attr("ref-date");
-										var userRemark = $(this).attr("remark");
-						        var isPayable = isPayableCheckbox.attr("is-payable");
-						        paymentEntryDialog(taskId, isPayable, addPaymentButton, payableAmount, modeOfPayment, referenceNumber, referenceDate, userRemark);
-						    });
-						});
+						page.body.find(".paymentEntryButton").on("click", function () {
+							var taskId = $(this).attr("task-id");
+							var payableAmount = $(this).attr("payable-amount");
+							var modeOfPayment = $(this).attr("mode-of-payment");
+							var referenceNumber = $(this).attr("ref-num");
+							var referenceDate = $(this).attr("ref-date");
+							var userRemark = $(this).attr("remark");
+							paymentEntryDialog(taskId, payableAmount, modeOfPayment, referenceNumber, referenceDate, userRemark);
+            });
 
 						page.body.find(".addAssigneeBtn").on("click", function () {
 							var taskName = $(this).attr("task-id");
@@ -314,7 +295,6 @@ function refresh_tasks(page){
 						set_status_colors();
 						hide_add_assignee_button(page.fields_dict.status.get_value());
 						assignee_and_completed_by_section(page.fields_dict.status.get_value());
-						task_payment_info();
 				} else {
             // If no tasks are found, append a message to the page body
             $('<div class="frappe-list"></div>').appendTo(page.body).append('<div class="no-result text-muted flex justify-center align-center" style="text-align: center;"><p>No Task found with matching filters.</p></div>');
@@ -342,7 +322,7 @@ function assignee_and_completed_by_section(taskStatus) {
     }
 }
 
-function paymentEntryDialog(taskId, isPayable, addPaymentButton, payableAmount, modeOfPayment, referenceNumber, referenceDate, userRemark){
+function paymentEntryDialog(taskId, payableAmount, modeOfPayment, referenceNumber, referenceDate, userRemark){
 	var dialog = new frappe.ui.Dialog({
         title: __("Add Payment Info"),
         fields: [
@@ -397,7 +377,6 @@ function paymentEntryDialog(taskId, isPayable, addPaymentButton, payableAmount, 
 								method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.add_payment_info",
 								args: {
                     task_id: taskId,
-										is_payable: isPayable,
                     payable_amount: values.payable_amount,
 										mode_of_payment: values.mode_of_payment,
 										reference_number: values.reference_number,
@@ -406,7 +385,6 @@ function paymentEntryDialog(taskId, isPayable, addPaymentButton, payableAmount, 
                 },
                 callback: function (r) {
                     frappe.msgprint("Payment info added successfully!");
-										addPaymentButton.show();
                 }
 						});
             dialog.hide();
@@ -789,25 +767,5 @@ function updateTaskStatus(page, taskName, projectName, status){
 							console.log("Failed to update task status");
 					}
 			}
-	});
-}
-
-function task_payment_info(){
-	const taskElements = document.querySelectorAll('.card.task-entry');
-
-	taskElements.forEach(taskElement => {
-
-		const checkboxField = taskElement.querySelector('.is-payable-checkbox');
-		const isPayable = checkboxField.getAttribute('is-payable');
-		const taskID = checkboxField.getAttribute('task-id');
-		const addPaymentButton = taskElement.querySelector(".paymentEntryButton");
-
-		if (isPayable === '1') {
-        checkboxField.checked = true;
-				addPaymentButton.style.display = "block";
-    }
-		else {
-				addPaymentButton.style.display = "none";
-		}
 	});
 }

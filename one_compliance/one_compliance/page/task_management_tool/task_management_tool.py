@@ -134,10 +134,10 @@ def update_task_status(task, project, status):
     return "success"
 
 @frappe.whitelist()
-def add_payment_info(task_id, is_payable, payable_amount, mode_of_payment, reference_number = None, reference_date = None, user_remark = None):
+def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number = None, reference_date = None, user_remark = None):
     task_doc = frappe.get_doc("Task", task_id)
 
-    task_doc.custom_is_payable = is_payable
+    task_doc.custom_is_payable = 1
     task_doc.custom_payable_amount = payable_amount
     task_doc.custom_mode_of_payment = mode_of_payment
     task_doc.custom_reference_number = reference_number
