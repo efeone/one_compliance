@@ -70,8 +70,6 @@
                     </button>
                   </div>
                   <div style="padding-left: 5px;">
-                    <input type="checkbox" id="is_payable" name="is_payable" class="is-payable-checkbox" task-id="{{ data.name }}" is-payable="{{data.custom_is_payable}}" >
-                    <label for="is_payable">Is Payable</label>
                     <button class="btn btn-outline-success btn-icon paymentEntryButton" task-id="{{ data.name }}" is-payable="{{ data.custom_is_payable }}" payable-amount="{{ data.custom_payable_amount }}" mode-of-payment="{{ data.custom_mode_of_payment }}" ref-num="{{ data.custom_reference_number }}" ref-date="{{ data.custom_reference_date }}" remark="{{ data.custom_user_remark }}" data-toggle="tooltip" title="Payment Entry">
                         <i class="fas fa-wallet"></i>
                     </button>
