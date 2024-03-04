@@ -79,6 +79,14 @@ let create_project_from_sales_order = function (frm) {
         read_only: true
       },
       {
+          label: __("Assign To"),
+          fieldname: "assign_to",
+          fieldtype: 'MultiSelectPills',
+          get_data: function (txt) {
+            return frappe.db.get_link_options("Employee", txt);
+          },
+      },
+      {
         fieldtype: "Section Break",
         fieldname: "col_break_1",
       },
@@ -100,7 +108,8 @@ let create_project_from_sales_order = function (frm) {
               expected_end_date: values.expected_end_date,
               item_code: values.item,
               priority: values.priority,
-              remark: values.remark
+              remark: values.remark,
+              assign_to: values.assign_to
             },
             callback: function (r) {
               if (r.message) {
