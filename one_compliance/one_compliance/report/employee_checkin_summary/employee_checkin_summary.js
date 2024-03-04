@@ -19,9 +19,13 @@ frappe.query_reports["Employee Checkin Summary"] = {
 	  {
 		"fieldname": "department",
 		"label": __("Department"),
-		"fieldtype": "Select",
-		"options": "\nGST - C\nIncome Tax - C\nROC - C\nConsulting - C",
-	  },
-	],
+		"fieldtype": "Link",
+		"options": "Department",
+		"get_query": function () {
+			return {
+				"doctype": "Department",
+			};
+		}
+	  }	],
   };
   
