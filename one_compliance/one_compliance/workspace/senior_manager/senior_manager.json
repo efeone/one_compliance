@@ -117,8 +117,8 @@
    "type": "Link"
   }
  ],
- "modified": "2023-12-20 14:54:51.909799",
- "modified_by": "Administrator",
+ "modified": "2024-03-04 22:57:44.408449",
+ "modified_by": "sayyaf@cpasconsultancy.com",
  "module": "One Compliance",
  "name": "Senior Manager",
  "number_cards": [
@@ -167,7 +167,7 @@
    "format": "{} Assigned",
    "label": "My Projects",
    "link_to": "Project",
-   "stats_filter": "{\"_assign\":[\"like\",\"%Administrator%\"],\"status\":[\"in\",[\"Open\",\"Overdue\",null]]}",
+   "stats_filter": "{\"_assign\":[\"like\", '%' + frappe.session.user + '%'],\"status\":[\"in\",[\"Open\",\"Overdue\",null]]}",
    "type": "DocType"
   },
   {
