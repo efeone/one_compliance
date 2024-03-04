@@ -248,7 +248,7 @@
    "type": "Link"
   }
  ],
- "modified": "2024-01-08 16:42:11.691250",
+ "modified": "2024-03-01 13:30:57.668987",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Director",
@@ -332,7 +332,7 @@
    "format": "{} Assigned",
    "label": "My Projects",
    "link_to": "Project",
-   "stats_filter": "{\"_assign\":[\"like\",\"%Administrator%\"],\"status\":[\"in\",[\"Open\",\"Overdue\",null]]}",
+   "stats_filter": "{\"_assign\":[\"like\", '%' + frappe.session.user + '%'],\"status\":[\"in\",[\"Open\",\"Overdue\",null]]}",
    "type": "DocType"
   },
   {

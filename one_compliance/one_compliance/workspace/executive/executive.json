@@ -12,8 +12,8 @@
  "is_hidden": 0,
  "label": "Executive",
  "links": [],
- "modified": "2023-12-20 15:06:44.435824",
- "modified_by": "Administrator",
+ "modified": "2024-03-04 22:58:02.008163",
+ "modified_by": "sayyaf@cpasconsultancy.com",
  "module": "One Compliance",
  "name": "Executive",
  "number_cards": [
@@ -71,7 +71,7 @@
    "format": "{} Assigned",
    "label": "My Projects",
    "link_to": "Project",
-   "stats_filter": "{\"_assign\":[\"like\",\"%Administrator%\"],\"status\":[\"in\",[\"Open\",\"Overdue\",null]]}",
+   "stats_filter": "{\"_assign\":[\"like\", '%' + frappe.session.user + '%'],\"status\":[\"in\",[\"Open\",\"Overdue\",null]]}",
    "type": "DocType"
   },
   {
