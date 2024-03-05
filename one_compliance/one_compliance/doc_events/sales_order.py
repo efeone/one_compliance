@@ -67,6 +67,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
             project.notes = remark
             project.sales_order = sales_order
             project.category_type = compliance_sub_category.category_type
+            project.department = compliance_sub_category.department
             project.save(ignore_permissions=True)
             if project.compliance_sub_category:
                 if compliance_sub_category and compliance_sub_category.head_of_department:
@@ -100,6 +101,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
                 task_doc.project_name = project.project_name
                 task_doc.category_type = project.category_type
                 task_doc.exp_start_date = start_date
+                task_doc.department = compliance_sub_category.department
                 if template_task_doc.expected_time:
                     task_doc.expected_time = template_task_doc.expected_time
                 if template_task.custom_task_duration:
