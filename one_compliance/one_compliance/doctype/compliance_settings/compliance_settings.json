@@ -12,6 +12,8 @@
   "section_break_saeum",
   "role_of_project_creator",
   "compliance_service_item_group",
+  "column_break_gnzz",
+  "customer_type",
   "tab_break_us4n3",
   "task_before_due_date_notification",
   "task_overdue_notification_for_employee",
@@ -108,12 +110,22 @@
   {
    "fieldname": "section_break_saeum",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_gnzz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Link",
+   "label": "Customer Type",
+   "options": "Customer Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-02-26 15:35:36.230789",
+ "modified": "2024-03-05 12:14:05.271619",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
