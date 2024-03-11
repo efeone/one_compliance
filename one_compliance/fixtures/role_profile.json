@@ -829,5 +829,50 @@
     "role": "Employee Self Service"
    }
   ]
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Role Profile",
+  "modified": "2024-03-06 11:12:07.718434",
+  "name": "Founder",
+  "role_profile": "Founder",
+  "roles": [
+   {
+    "parent": "Founder",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Accounts Manager"
+   },
+   {
+    "parent": "Founder",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Customer"
+   },
+   {
+    "parent": "Founder",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee"
+   },
+   {
+    "parent": "Founder",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Employee Self Service"
+   },
+   {
+    "parent": "Founder",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Founder"
+   },
+   {
+    "parent": "Founder",
+    "parentfield": "roles",
+    "parenttype": "Role Profile",
+    "role": "Sales Manager"
+   }
+  ]
  }
 ]
