@@ -89,7 +89,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
                         create_todo('Project', project.name, user, user, 'Project {0} Assigned Successfully'.format(project.name))
                         create_notification_log('{0} Assigned a New Project {1} to You'.format(user_name, project.name),'Mention', user, 'Project {0} Assigned Successfully'.format(project.name), project.doctype, project.name)
             frappe.msgprint('Project Created for {0}.'.format(compliance_sub_category.name), alert = 1)
-            for template_task in project_template_doc.tasks:
+            for template_task in reversed(project_template_doc.tasks):
                 ''' Method to create task against created project from the Project Template '''
                 template_task_doc = frappe.get_doc('Task', template_task.task)
                 user_name = frappe.get_cached_value("User", frappe.session.user, "full_name")
@@ -107,6 +107,12 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
                 if template_task.custom_task_duration:
                     task_doc.duration = template_task.custom_task_duration
                     task_doc.exp_end_date = add_days(start_date, template_task.custom_task_duration)
+                if template_task_doc.depends_on:
+                    for depends_task in template_task_doc.depends_on:
+                        dependent_task = frappe.get_doc('Task', {'project':project.name,'subject':depends_task.subject}, 'name')
+                        task_doc.append("depends_on", {
+                            "task": dependent_task.name,
+                        })
                 task_doc.save(ignore_permissions=True)
                 if project.compliance_sub_category:
                     if compliance_sub_category and compliance_sub_category.head_of_department:

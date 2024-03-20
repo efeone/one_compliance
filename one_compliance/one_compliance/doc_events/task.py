@@ -56,6 +56,21 @@ def task_on_update(doc, method):
 						email_id = frappe.db.get_value('Customer', project.customer, 'email_id')
 						if email_id:
 							project_complete_notification_for_customer(project, email_id)
+		# Check if this task is a dependency for other tasks
+		dependent_tasks = frappe.get_all('Task Depends On', filters={'task': doc.name}, fields=['parent'])
+		for dependent_task in dependent_tasks:
+			task = frappe.get_doc('Task', dependent_task.parent)
+			all_dependencies_completed = True
+			# Check if all dependent tasks are completed
+			for dependency in task.depends_on:
+				dependency_doc = frappe.get_doc('Task', dependency.task)
+				if dependency_doc.status != 'Completed':
+					all_dependencies_completed = False
+					break
+			# If all dependencies are completed, mark the dependent task as completed
+			if all_dependencies_completed and task.status != 'Completed':
+				task.status = 'Completed'
+				task.save()
 
 @frappe.whitelist()
 def task_complete_notification_for_director(doc):
