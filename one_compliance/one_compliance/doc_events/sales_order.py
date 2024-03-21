@@ -4,6 +4,17 @@ from one_compliance.one_compliance.utils import *
 from datetime import datetime, timedelta
 
 @frappe.whitelist()
+def create_project_on_submit(doc, method):
+    assign_to = []
+    if(doc.custom_create_project_automatically):
+        for employee_list in doc.custom_assign_to:
+            employee_name = frappe.get_doc('Employee', employee_list.employee)
+            assign_to.append(employee_name.name)
+            assign_to_str = json.dumps(assign_to)
+        for item in doc.items:
+            create_project_from_sales_order(doc.name, doc.custom_expected_start_date, item.item_code, doc.custom_priority, assign_to_str, doc.custom_expected_end_date)
+
+@frappe.whitelist()
 def get_compliance_subcategory(item_code):
     # Fetch compliance subcategory based on the item code
     compliance_subcategory = frappe.get_doc('Compliance Sub Category', {'item_code': item_code})
@@ -48,7 +59,11 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
             project = frappe.new_doc('Project')
             project.company = self.company
             project.cost_center = frappe.get_cached_value("Company", self.company, "cost_center")
-            project.project_name = self.customer_name + '-' + compliance_sub_category.name + '-' + self.name + '-' + str(naming)
+            add_compliance_category_in_project_name = frappe.db.get_single_value('Compliance Settings', 'add_compliance_category_in_project_name')
+    		if add_compliance_category_in_project_name:
+                project.project_name = self.customer_name + '-' + compliance_sub_category.name + '-' + self.name + '-' + str(naming)
+            else:
+                project.project_name = self.customer_name + '-' + self.name + '-' + str(naming)
             project.customer = self.customer
             project.compliance_sub_category = compliance_sub_category.name
             project.compliance_category = compliance_sub_category.compliance_category

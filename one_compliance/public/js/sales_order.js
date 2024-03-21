@@ -1,6 +1,14 @@
 frappe.ui.form.on('Sales Order', {
+    onload: function(frm) {
+      if(frm.is_new()){
+        frappe.db.get_single_value('Compliance Settings', 'create_project_from_sales_order_automatically').then(value => {
+            // Set value of check field in Sales Order form
+            frm.set_value('custom_create_project_automatically', value);
+        });
+      }
+    },
     refresh: function(frm) {
-      if(!frm.is_new() && frm.doc.docstatus == 1){
+      if(!frm.is_new() && frm.doc.docstatus == 1 && !frm.doc.custom_create_project_automatically){
         frm.add_custom_button('Create Project', () => {
           create_project_from_sales_order(frm)
         })
@@ -133,3 +141,27 @@ let create_project_from_sales_order = function (frm) {
   };
   d.show();
 }
+
+frappe.ui.form.on('Sales Order Item', {
+  item_code: function(frm, cdt, cdn) {
+    var child_doc = locals[cdt][cdn];
+    if (child_doc.item_code) {
+      frappe.call({
+        method: 'frappe.client.get_value',
+        args: {
+            doctype: 'Compliance Sub Category',
+            filters: {
+                item_code: child_doc.item_code
+            },
+            fieldname: ['compliance_category', 'name']
+        },
+        callback: function(response) {
+          if (response.message) {
+              child_doc.custom_compliance_category = response.message.compliance_category
+              child_doc.custom_compliance_subcategory = response.message.name
+          }
+        }
+      });
+    }
+	}
+});
