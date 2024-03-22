@@ -143,6 +143,9 @@ doc_events = {
     },
     'Opportunity':{
         'after_save':'one_compliance.one_compliance.doc_events.oppotunity.make_engagement_letter'
+    },
+    'Sales Order':{
+        'on_submit':'one_compliance.one_compliance.doc_events.sales_order.create_project_on_submit'
     }
 }
 

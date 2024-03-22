@@ -9,6 +9,9 @@
  "field_order": [
   "general_configurations_section",
   "create_user_on_customer_creation",
+  "add_compliance_category_in_project_name",
+  "column_break_begm",
+  "create_project_from_sales_order_automatically",
   "section_break_saeum",
   "role_of_project_creator",
   "compliance_service_item_group",
@@ -120,12 +123,28 @@
    "fieldtype": "Link",
    "label": "Customer Type",
    "options": "Customer Type"
+  },
+  {
+   "default": "0",
+   "fieldname": "create_project_from_sales_order_automatically",
+   "fieldtype": "Check",
+   "label": "Create Project from Sales Order Automatically"
+  },
+  {
+   "fieldname": "column_break_begm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "add_compliance_category_in_project_name",
+   "fieldtype": "Check",
+   "label": "Add Compliance Category in Project Name"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-03-05 12:14:05.271619",
+ "modified": "2024-03-20 15:36:55.326441",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
