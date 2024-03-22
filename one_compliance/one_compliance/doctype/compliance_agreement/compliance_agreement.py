@@ -252,7 +252,7 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 		if add_compliance_category_in_project_name:
 			project.project_name = self.customer_name + '-' + compliance_sub_category + '-' + str(naming)
 		else:
-			project.project_name = self.customer_name + '-' + str(naming)
+			project.project_name = self.customer_name + '-' + frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'sub_category') + '-' + str(naming)
 		# project.project_template = project_template
 		project.customer = self.customer
 		project.compliance_agreement = self.name
