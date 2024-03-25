@@ -13,6 +13,7 @@ frappe.ui.form.on('Sales Order', {
           create_project_from_sales_order(frm)
         })
       }
+      frm.set_value('delivery_date', frappe.datetime.get_today());
     }
 });
 
