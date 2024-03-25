@@ -208,151 +208,94 @@ def check_project_exists_or_not(compliance_sub_category, compliance_agreement):
 	return False
 
 @frappe.whitelist()
-def create_project_against_sub_category(compliance_agreement, compliance_category,compliance_sub_category, compliance_category_details_id=None, compliance_date=None):
-	'''
-		Method to create Project against selected Sub Category
-	'''
-	self = frappe.get_doc('Compliance Agreement', compliance_agreement)
-	project_template  = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_template')
-	project_template_doc = frappe.get_doc('Project Template', project_template)
-	sub_category_doc = frappe.get_doc('Compliance Sub Category',compliance_sub_category)
-	head_of_department = frappe.db.get_value('Employee', {'employee':sub_category_doc.head_of_department}, 'user_id')
-	if project_template:
-		# compliance_date = False
-		if compliance_category_details_id:
-			if frappe.db.get_value('Compliance Category Details', compliance_category_details_id, 'compliance_date'):
-				compliance_date = frappe.db.get_value('Compliance Category Details', compliance_category_details_id, 'compliance_date')
-				update_compliance_dates(compliance_category_details_id)
-		if not compliance_date:
-			compliance_date = getdate(frappe.utils.today())
-		repeat_on = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'repeat_on')
-		year_type = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_name_year_type')
-		project_based_on_prior_phase = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_based_on_prior_phase')
-		previous_month_date = add_months(getdate(compliance_date), -1)
-		naming_year = getdate(previous_month_date).year if project_based_on_prior_phase else getdate(compliance_date).year
-		current_year = naming_year + 1
-		next_year = current_year + 1
-		naming_month = getdate(previous_month_date).strftime("%B") if project_based_on_prior_phase else getdate(compliance_date).strftime("%B")
-		if year_type == 'Financial Year':
-			if naming_month in ['April', 'May', 'June']:
-				naming_quarter = 'Quarter 1'
-			elif naming_month in ['July', 'August', 'September']:
-				naming_quarter = 'Quarter 2'
-			elif naming_month in ['October', 'November', 'December']:
-				naming_quarter = 'Quarter 3'
-			else:
-				naming_quarter = 'Quarter 4'
-			if repeat_on == "Yearly":
-				naming = str(naming_year) + '-' + str(current_year)
-			elif repeat_on == "Quarterly":
-				naming = str(naming_year) +  '-' + str(current_year) + ' ' + naming_quarter
-			else:
-				naming = str(naming_year) +  '-' + str(current_year) + ' ' + naming_month
-
-		elif year_type == 'Assessment Year':
-			if naming_month in ['April', 'May', 'June']:
-				naming_quarter = 'Quarter 1'
-			elif naming_month in ['July', 'August', 'September']:
-				naming_quarter = 'Quarter 2'
-			elif naming_month in ['October', 'November', 'December']:
-				naming_quarter = 'Quarter 3'
-			else:
-				naming_quarter = 'Quarter 4'
-			if repeat_on == "Yearly":
-				naming = str(current_year) + '-' + str(next_year)
-			elif repeat_on == "Quarterly":
-				naming = str(current_year) +  '-' + str(next_year) + ' ' + naming_quarter
-			else:
-				naming = str(current_year) +  '-' + str(next_year) + ' ' + naming_month
-
-		else:
-			if naming_month in ['January', 'February', 'March']:
-				naming_quarter = 'Quarter 1'
-			elif naming_month in ['April', 'May', 'June']:
-				naming_quarter = 'Quarter 2'
-			elif naming_month in ['July', 'August', 'September']:
-				naming_quarter = 'Quarter 3'
-			else:
-				naming_quarter = 'Quarter 4'
-			if repeat_on == "Yearly":
-				naming = naming_year
-			elif repeat_on == "Quarterly":
-				naming = str(naming_year) + ' ' + naming_quarter
-			else:
-				naming = str(naming_year) + ' ' + naming_month
-
-		project = frappe.new_doc('Project')
-		project.company = self.company
-		project.cost_center = frappe.get_cached_value("Company", self.company, "cost_center")
-		project.project_name = self.customer_name + '-' + compliance_sub_category + '-' + str(naming)
-		# project.project_template = project_template
-		project.customer = self.customer
-		project.compliance_agreement = self.name
-		project.compliance_category = compliance_category
-		project.compliance_sub_category = compliance_sub_category
-		project.expected_start_date = compliance_date
-		project.custom_project_service = compliance_sub_category + '-' + str(naming)
-		project.notes = compliance_sub_category + '-' + str(naming)
-		project.allocated_to = head_of_department
-		project.custom_have_reimbursement = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'have_reimbursement')
-		if project.custom_have_reimbursement:
-			project.custom_reimbursement_item = frappe.db.get_single_value("Compliance Settings", 'default_reimbursement_item')
-			project.custom_reimbursement_income_account = frappe.db.get_single_value("Compliance Settings", 'default__reimbursement_income_account')
-		project.category_type = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'category_type')
-		if project_template_doc.custom_project_duration:
-			project.expected_end_date = add_days(compliance_date, project_template_doc.custom_project_duration)
-		project.save(ignore_permissions=True)
-		if project.compliance_sub_category:
-			if sub_category_doc and sub_category_doc.head_of_department:
-				# user = sub_category_doc.head_of_department
-				todo = frappe.new_doc('ToDo')
-				todo.status = 'Open'
-				todo.allocated_to = head_of_department
-				todo.description = "project  Assign to" + head_of_department
-				todo.reference_type = 'Project'
-				todo.reference_name = project.name
-				todo.assigned_by = frappe.session.user
-				todo.save(ignore_permissions=True)
-				if todo:
-					frappe.msgprint(("Project is assigned to {0}".format(head_of_department)),alert = 1)
-		frappe.db.commit()
-		frappe.msgprint('Project Created for {0}.'.format(compliance_sub_category), alert = 1)
-		for template_task in project_template_doc.tasks:
-			''' Method to create task against created project from the Project Template '''
-			template_task_doc = frappe.get_doc('Task', template_task.task)
-			user_name = frappe.get_cached_value("User", frappe.session.user, "full_name")
-			task_doc = frappe.new_doc('Task')
-			task_doc.compliance_sub_category = compliance_sub_category
-			task_doc.subject = template_task.subject
-			task_doc.project = project.name
-			task_doc.company = project.company
-			task_doc.project_name = project.project_name
-			task_doc.category_type = project.category_type
-			task_doc.exp_start_date = compliance_date
-			if template_task_doc.expected_time:
-				task_doc.expected_time = template_task_doc.expected_time
-			if template_task.custom_task_duration:
-				task_doc.duration = template_task.custom_task_duration
-				task_doc.exp_end_date = add_days(compliance_date, template_task.custom_task_duration)
-			task_doc.save(ignore_permissions=True)
-			if template_task.type and template_task.employee_or_group:
-				frappe.db.set_value('Task', task_doc.name, 'assigned_to', template_task.employee_or_group)
-				if template_task.type == "Employee":
-					employee = frappe.db.get_value('Employee', template_task.employee_or_group, 'user_id')
-					if employee:
-						create_todo('Task', task_doc.name, employee, employee, 'Task {0} Assigned Successfully'.format(task_doc.name))
-						create_notification_log('{0} Assigned a New Task {1} to You'.format(user_name, task_doc.name),'Mention', employee, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
-				if template_task.type == "Employee Group":
-					employee_group = frappe.get_doc('Employee Group', template_task.employee_or_group)
-					if employee_group.employee_list:
-						for employee in employee_group.employee_list:
-							create_todo('Task', task_doc.name, employee.user_id, employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name))
-							create_notification_log('{0} Assigned a New Task {1} to you'.format(user_name, task_doc.name),'Mention', employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
-
-		frappe.db.commit()
-	else:
-		frappe.throw( title = _('ALERT !!'), msg = _('Project Template does not exist for {0}'.format(compliance_sub_category)))
-
+def create_project_against_sub_category(compliance_agreement, compliance_sub_category, compliance_category_details_id=None, compliance_date=None):
+    '''
+    Method to create Project against selected Sub Category
+    '''
+    naming = ""
+    self = frappe.get_doc('Compliance Agreement', compliance_agreement)
+    project_template = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_template')
+    project_template_doc = frappe.get_doc('Project Template', project_template)
+    sub_category_doc = frappe.get_doc('Compliance Sub Category', compliance_sub_category)
+    head_of_department = frappe.db.get_value('Employee', {'employee': sub_category_doc.head_of_department}, 'user_id')
+    if project_template:
+        # compliance_date = False
+        if compliance_category_details_id:
+            if frappe.db.get_value('Compliance Category Details', compliance_category_details_id, 'compliance_date'):
+                compliance_date = frappe.db.get_value('Compliance Category Details', compliance_category_details_id, 'compliance_date')
+                update_compliance_dates(compliance_category_details_id)
+        if not compliance_date:
+            compliance_date = getdate(frappe.utils.today())
+        naming = naming_project(compliance_sub_category, compliance_date)
+        project = frappe.new_doc('Project')
+        project.company = self.company
+        project.cost_center = frappe.get_cached_value("Company", self.company, "cost_center")
+        project.project_name = self.customer_name + '-' + compliance_sub_category + '-' + str(naming)
+        # project.project_template = project_template
+        project.customer = self.customer
+        project.compliance_agreement = self.name
+        project.compliance_sub_category = compliance_sub_category
+        project.expected_start_date = compliance_date
+        project.custom_project_service = compliance_sub_category + '-' + str(naming)
+        project.notes = compliance_sub_category + '-' + str(naming)
+        project.custom_have_reimbursement = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'have_reimbursement')
+        project.allocated_to = head_of_department  # Corrected indentation here
+        if project.custom_have_reimbursement:
+            project.custom_reimbursement_item = frappe.db.get_single_value("Compliance Settings", 'default_reimbursement_item')
+            project.custom_reimbursement_income_account = frappe.db.get_single_value("Compliance Settings", 'default__reimbursement_income_account')
+        project.category_type = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'category_type')
+        if project_template_doc.custom_project_duration:
+            project.expected_end_date = add_days(compliance_date, project_template_doc.custom_project_duration)
+        project.save(ignore_permissions=True)
+        if project.compliance_sub_category:
+            if sub_category_doc and sub_category_doc.head_of_department:
+                # user = sub_category_doc.head_of_department
+                todo = frappe.new_doc('ToDo')
+                todo.status = 'Open'
+                todo.allocated_to = head_of_department
+                todo.description = "project  Assign to" + head_of_department
+                todo.reference_type = 'Project'
+                todo.reference_name = project.name
+                todo.assigned_by = frappe.session.user
+                todo.save(ignore_permissions=True)
+                if todo:
+                    frappe.msgprint(("Project"))
+        frappe.db.commit()
+        frappe.msgprint('Project Created for {0}.'.format(compliance_sub_category), alert=1)
+        for template_task in project_template_doc.tasks:
+            ''' Method to create task against created project from the Project Template '''
+            template_task_doc = frappe.get_doc('Task', template_task.task)
+            user_name = frappe.get_cached_value("User", frappe.session.user, "full_name")
+            task_doc = frappe.new_doc('Task')
+            task_doc.compliance_sub_category = compliance_sub_category
+            task_doc.subject = template_task.subject
+            task_doc.project = project.name
+            task_doc.company = project.company
+            task_doc.project_name = project.project_name
+            task_doc.category_type = project.category_type
+            task_doc.exp_start_date = compliance_date
+            if template_task_doc.expected_time:
+                task_doc.expected_time = template_task_doc.expected_time
+            if template_task.custom_task_duration:
+                task_doc.duration = template_task.custom_task_duration
+                task_doc.exp_end_date = add_days(compliance_date, template_task.custom_task_duration)
+            task_doc.save(ignore_permissions=True)
+            if template_task.type and template_task.employee_or_group:
+                frappe.db.set_value('Task', task_doc.name, 'assigned_to', template_task.employee_or_group)
+                if template_task.type == "Employee":
+                    employee = frappe.db.get_value('Employee', template_task.employee_or_group, 'user_id')
+                    if employee:
+                        create_todo('Task', task_doc.name, employee, employee, 'Task {0} Assigned Successfully'.format(task_doc.name))
+                        create_notification_log('{0} Assigned a New Task {1} to You'.format(user_name, task_doc.name), 'Mention', employee, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
+                if template_task.type == "Employee Group":
+                    employee_group = frappe.get_doc('Employee Group', template_task.employee_or_group)
+                    if employee_group.employee_list:
+                        for employee in employee_group.employee_list:
+                            create_todo('Task', task_doc.name, employee.user_id, employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name))
+                            create_notification_log('{0} Assigned a New Task {1} to you'.format(user_name, task_doc.name), 'Mention', employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
+        frappe.db.commit()
+    else:
+        frappe.throw(title=_('ALERT !!'), msg=_('Project Template does not exist for {0}'.format(compliance_sub_category)))
 
 @frappe.whitelist()
 def set_compliance_dates(doc):
@@ -476,7 +419,6 @@ def get_rate_from_compliance_agreement(compliance_agreement, compliance_sub_cate
     if rate_result:
         return rate_result[0].rate
 
-
 @frappe.whitelist()
 def reverse_function(docname):
     current_doc = frappe.get_doc('Compliance Agreement', docname)
@@ -535,3 +477,132 @@ def reverse_function(docname):
         frappe.db.set_value('Compliance Agreement', docname, 'workflow_state', 'Reverse')
 
     return new_doc.name
+
+@frappe.whitelist()
+def naming_project(compliance_sub_category, compliance_date):
+    repeat_on = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'repeat_on')
+    year_type = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_name_year_type')
+    project_based_on_prior_phase = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_based_on_prior_phase')
+    previous_month_date = add_months(getdate(compliance_date), -1)
+    naming_year = getdate(previous_month_date).year if project_based_on_prior_phase else getdate(compliance_date).year
+    current_year = naming_year + 1
+    next_year = current_year + 1
+    naming_month = getdate(previous_month_date).strftime("%B") if project_based_on_prior_phase else getdate(compliance_date).strftime("%B")
+    naming = []
+    if year_type == 'Financial Year':
+        fiscal_year = frappe.db.get_value('Fiscal Year', {'year': naming_year})
+        if fiscal_year:
+            from_date = frappe.db.get_value('Fiscal Year', fiscal_year, 'year_start_date')
+            to_date = frappe.db.get_value('Fiscal Year', fiscal_year, 'year_end_date')
+
+            quarter_1_start_date = frappe.utils.get_quarter_start(add_to_date(from_date))
+            quarter_1_end_date = frappe.utils.get_quarter_ending(add_to_date(from_date, months=2))
+
+            quarter_1_start = quarter_1_start_date.strftime("%B")
+            quarter_1_end =  quarter_1_end_date.strftime("%B")
+
+            quarter_2_start_date = frappe.utils.get_quarter_start(add_to_date(quarter_1_end_date, months=1))
+            quarter_2_end_date = frappe.utils.get_quarter_ending(add_to_date(quarter_2_start_date, months=2))
+
+            quarter_2_start = quarter_2_start_date.strftime("%B")
+            quarter_2_end = quarter_2_end_date.strftime("%B")
+
+            quarter_3_start_date = frappe.utils.get_quarter_start(add_to_date(quarter_2_end_date, months=1))
+            quarter_3_end_date = frappe.utils.get_quarter_ending(add_to_date(quarter_3_start_date, months=2))
+
+            quarter_3_start = quarter_3_start_date.strftime("%B")
+            quarter_3_end = quarter_3_end_date.strftime("%B")
+
+            new_date = datetime(to_date.year, to_date.month, to_date.day).strftime('%Y-%m-%d')
+            year = getdate(new_date)
+            quarter_4_start_date = add_months(getdate(year), -2)
+            quarter_4_end_date = year
+
+            quarter_4_start = quarter_4_start_date.strftime("%B")
+            quarter_4_end = quarter_4_end_date.strftime("%B")
+
+            if naming_month in [quarter_1_start, quarter_1_end]:
+                naming_quarter = 'Quarter 1'
+            elif  naming_month in [quarter_2_start, quarter_2_end]:
+                naming_quarter = 'Quarter 2'
+            elif  naming_month in [quarter_3_start, quarter_3_end]:
+                naming_quarter = 'Quarter 3'
+            elif  naming_month in [quarter_4_start, year]:
+                naming_quarter = 'Quarter 4'
+            else:
+                return 0
+
+            if repeat_on == "Yearly":
+                naming = str(naming_year) + '-' + str(current_year)
+            elif repeat_on == "Quarterly":
+                naming = str(naming_year) + '-' + str(current_year) + ' ' + naming_quarter
+            else:
+                naming = str(naming_year) + '-' + str(current_year) + ' ' + naming_month
+
+    elif year_type == 'Assessment Year':
+        assessment_year = frappe.db.get_value('Assessment Year', {'name': current_year})
+        if assessment_year:
+            from_date = frappe.db.get_value('Assessment Year', assessment_year, 'year_start_date')
+            end_date = frappe.db.get_value('Assessment Year', assessment_year, 'year_end_date')
+
+            quarter_1_start_date = frappe.utils.get_quarter_start(add_to_date(from_date))
+            quarter_1_end_date = frappe.utils.get_quarter_ending(add_to_date(from_date, months=2))
+
+            quarter_1_start =  quarter_1_start_date.strftime("%B")
+            quarter_1_end =  quarter_1_end_date.strftime("%B")
+
+            quarter_2_start_date = frappe.utils.get_quarter_start(add_to_date(quarter_1_end_date, months=1))
+            quarter_2_end_date = frappe.utils.get_quarter_ending(add_to_date(quarter_2_start_date, months=2))
+
+            quarter_2_start = quarter_2_start_date.strftime("%B")
+            quarter_2_end =  quarter_2_end_date.strftime("%B")
+
+            quarter_3_start_date = frappe.utils.get_quarter_start(add_to_date(quarter_2_end_date, months=1))
+            quarter_3_end_date = frappe.utils.get_quarter_ending(add_to_date(quarter_3_start_date, months=2))
+
+            quarter_3_start = quarter_3_start_date.strftime("%B")
+            quarter_3_end =  quarter_3_end_date.strftime("%B")
+
+            new_date = datetime(end_date.year, end_date.month, end_date.day).strftime('%Y-%m-%d')
+            year = getdate(new_date)
+
+            quarter_4_start_date = add_months(getdate(year), -2)
+            quarter_4_end_date = year
+
+            quarter_4_start =  quarter_4_start_date.strftime("%B")
+            quarter_4_end =  quarter_4_end_date.strftime("%B")
+
+            if naming_month in [quarter_1_start, quarter_1_end]:
+                naming_quarter = 'Quarter 1'
+            elif naming_month in [quarter_2_start, quarter_2_end]:
+                naming_quarter = 'Quarter 2'
+            elif naming_month in [quarter_3_start, quarter_3_end]:
+                naming_quarter = 'Quarter 3'
+            elif naming_month in [quarter_4_start, quarter_4_end]:  # Corrected this line
+                naming_quarter = 'Quarter 4'
+            else:
+                return 0
+
+            if repeat_on == "Yearly":
+                naming = str(current_year) + '-' + str(next_year)
+            elif repeat_on == "Quarterly":
+                naming = str(current_year) + '-' + str(next_year) + ' ' + naming_quarter
+            else:
+                naming = str(current_year) + '-' + str(next_year) + ' ' + naming_month
+
+    else:
+        if naming_month in ['January', 'February', 'March']:
+            naming_quarter = 'Quarter 1'
+        elif naming_month in ['April', 'May', 'June']:
+            naming_quarter = 'Quarter 2'
+        elif naming_month in ['July', 'August', 'September']:
+            naming_quarter = 'Quarter 3'
+        else:
+            naming_quarter = 'Quarter 4'
+        if repeat_on == "Yearly":
+            naming = naming_year
+        elif repeat_on == "Quarterly":
+            naming = str(naming_year) + ' ' + naming_quarter
+        else:
+            naming = str(naming_year) + ' ' + naming_month
+    return naming
