@@ -191,7 +191,8 @@ scheduler_events = {
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
 override_doctype_dashboards = {
-	"Item": "one_compliance.one_compliance.doc_events.item_dashboard.get_data"
+	"Item": "one_compliance.one_compliance.doc_events.item_dashboard.get_data",
+    "Project": "one_compliance.one_compliance.doc_events.project_dashboard.get_data"
 }
 
 # exempt linked doctypes from being automatically cancelled
