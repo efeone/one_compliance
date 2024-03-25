@@ -190,9 +190,9 @@ scheduler_events = {
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
 # along with any modifications made in other Frappe apps
-# override_doctype_dashboards = {
-#	"Task": "one_compliance.task.get_dashboard_data"
-# }
+override_doctype_dashboards = {
+	"Item": "one_compliance.one_compliance.doc_events.item_dashboard.get_data"
+}
 
 # exempt linked doctypes from being automatically cancelled
 #
