@@ -9,6 +9,11 @@ frappe.pages['task-management-tool'].on_page_load = function(wrapper) {
 
 	make_filters(page);
 
+	var project_id = localStorage.getItem('selected_project_id');
+  if (project_id) {
+      page.fields_dict.project.set_value(project_id);
+  }
+
 	show(page);
 }
 
@@ -24,7 +29,7 @@ function make_filters(page) {
       }
 		}
 	});
-	page.fields_dict.task.$input.on('change', function() {
+	page.fields_dict.task.$input.off('change').on('change', function() {
       refresh_tasks(page);
   });
 	let projectField = page.add_field({
@@ -38,7 +43,7 @@ function make_filters(page) {
       }
 		}
 	});
-	page.fields_dict.project.$input.on('change', function() {
+	page.fields_dict.project.$input.off('change').on('change', function() {
       refresh_tasks(page);
   });
 	let customerField = page.add_field({
@@ -116,23 +121,17 @@ function make_filters(page) {
 	let fromDateField = page.add_field({
 		label: __("From Date"),
 		fieldname: "from_date",
-		fieldtype: "Date",
-		change() {
-			refresh_tasks(page);
-		}
+		fieldtype: "Date"
 	});
-	page.fields_dict.from_date.$input.on('change', function() {
-      refresh_tasks(page);
-  });
+	page.fields_dict.from_date.$input.off('change').on('change', function() {
+        refresh_tasks(page);
+    });
 	let toDateField = page.add_field({
 		label: __("To Date"),
 		fieldname: "to_date",
-		fieldtype: "Date",
-		change() {
-			refresh_tasks(page);
-		}
+		fieldtype: "Date"
 	});
-	page.fields_dict.to_date.$input.on('change', function() {
+	page.fields_dict.to_date.$input.off('change').on('change', function() {
       refresh_tasks(page);
   });
 	let status = page.add_field({
@@ -170,12 +169,19 @@ function show(page){
 }
 
 function refresh_tasks(page){
+	var project_id = localStorage.getItem('selected_project_id');
 	// Clear existing tasks from the page
   page.body.find(".frappe-list").remove();
 
 	const selectedStatus = page.fields_dict.status.get_value();
 	const taskName = page.fields_dict.task.get_value();
-	const projectName = page.fields_dict.project.get_value();
+	if (project_id) {
+		var projectName = project_id;
+		localStorage.removeItem('selected_project_id');
+  }
+	else {
+		var projectName = page.fields_dict.project.get_value();
+	}
 	const customerName = page.fields_dict.customer.get_value();
 	const department = page.fields_dict.department.get_value();
 	const subCategory = page.fields_dict.compliance_sub_category.get_value();

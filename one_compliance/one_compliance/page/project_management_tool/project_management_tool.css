@@ -1,0 +1,59 @@
+.card {
+        margin: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border: None;
+        border-radius: 8px;
+        overflow: hidden;
+        padding: 2px;
+        background-color: aliceblue;
+    }
+
+    .layout-main-section.frappe-card {
+      background-color: #fdf7f9;
+    }
+
+    .page-form {
+      background-color: #fdf7f9;
+    }
+
+    .list-row-head {
+      background-color: transparent;
+    }
+    .card-body {
+        padding: 10px 20px 10px 20px;
+    }
+
+    .card-title {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .card-text {
+        margin-bottom: 15px;
+    }
+
+    .btn{
+        max-width: 100px;
+        max-height: 30px;
+        margin: auto 0px;
+    }
+
+    .rounded-circle {
+      margin-top:5px;
+      padding: 0px 4px;
+      position: absolute;
+      right: 30px;
+    }
+
+    .project-link{
+      display: inline-block;
+      max-width: 100%; /* Adjust as needed */
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .project-link:hover {
+        max-width: none;
+        white-space: normal;
+    }
