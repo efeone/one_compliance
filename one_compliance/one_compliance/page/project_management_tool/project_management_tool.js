@@ -9,7 +9,7 @@ frappe.pages['project-management_tool'].on_page_load = function(wrapper) {
 
 	make_filters(page);
 
-	show(page);
+	refresh_projects(page);
 }
 
 function make_filters(page) {
@@ -24,8 +24,10 @@ function make_filters(page) {
       }
 		}
 	});
-	page.fields_dict.project.$input.off('change').on('change', function() {
-      refresh_projects(page);
+	page.fields_dict.project.$input.on('change', function() {
+		if (!page.fields_dict.project.get_value()) {
+				refresh_projects(page);
+		}
   });
 	let customerField = page.add_field({
 		label: __("Customer"),
@@ -39,7 +41,9 @@ function make_filters(page) {
 		}
 	});
 	page.fields_dict.customer.$input.on('change', function() {
-      refresh_projects(page);
+		if (!page.fields_dict.customer.get_value()) {
+				refresh_projects(page);
+		}
   });
 	let employeeField = page.add_field({
 		label: __("Employee"),
@@ -55,7 +59,9 @@ function make_filters(page) {
 		read_only: frappe.session.user === 'Administrator' ? 0 : 1
 	});
 	page.fields_dict.employee.$input.on('change', function() {
-      refresh_projects(page);
+		if (!page.fields_dict.employee.get_value()) {
+				refresh_projects(page);
+		}
   });
 	let categoryField = page.add_field({
 		label: __("Department"),
@@ -69,7 +75,9 @@ function make_filters(page) {
 		}
 	});
 	page.fields_dict.department.$input.on('change', function() {
-      refresh_projects(page);
+		if (!page.fields_dict.department.get_value()) {
+				refresh_projects(page);
+		}
   });
 	let subcategoryField = page.add_field({
 		label: __("Compliance Sub Category"),
@@ -83,7 +91,9 @@ function make_filters(page) {
 		}
 	});
 	page.fields_dict.compliance_sub_category.$input.on('change', function() {
-      refresh_projects(page);
+		if (!page.fields_dict.compliance_sub_category.get_value()) {
+				refresh_projects(page);
+		}
   });
 	let fromDateField = page.add_field({
 		label: __("From Date"),
@@ -129,11 +139,6 @@ function get_employee_id() {
 		else {
 				return frappe.session.user
 		}
-}
-
-
-function show(page){
-	refresh_projects(page);
 }
 
 function refresh_projects(page){
