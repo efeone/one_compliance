@@ -230,6 +230,7 @@ def create_task_from_opportunity(doc, method):
             for document_required in opportunity.custom_documents_required:
                 task = frappe.new_doc('Task')
                 task.subject = document_required.document_required
+                task.custom_serial_number = document_required.idx
                 task.insert(ignore_permissions = True)
 
                 user_id = frappe.get_value('Employee', document_required.responsibilities, 'user_id')
