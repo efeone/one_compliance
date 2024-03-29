@@ -292,6 +292,7 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 			task_doc.project_name = project.project_name
 			task_doc.category_type = project.category_type
 			task_doc.exp_start_date = compliance_date
+			task_doc.custom_serial_number = template_task.idx
 			if template_task_doc.expected_time:
 				task_doc.expected_time = template_task_doc.expected_time
 			if template_task.custom_task_duration:

@@ -116,6 +116,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
                 task_doc.project_name = project.project_name
                 task_doc.category_type = project.category_type
                 task_doc.exp_start_date = start_date
+                task_doc.custom_serial_number = template_task.idx
                 task_doc.department = compliance_sub_category.department
                 if template_task_doc.expected_time:
                     task_doc.expected_time = template_task_doc.expected_time
