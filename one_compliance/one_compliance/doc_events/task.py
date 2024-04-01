@@ -216,3 +216,11 @@ def get_rate_from_compliance_agreement(compliance_agreement, compliance_sub_cate
 		)
 	if rate_result:
 		return rate_result[0].rate
+
+# Check for uncompleted documents on updation of task to completed
+@frappe.whitelist()
+def subtask_on_update(doc, event):
+    if doc.status == "Completed":
+        items = frappe.get_all("Task Document Item", filters={"parent": doc.name}, fields=["is_completed"])
+        if any(item.get("is_completed") == 0 for item in items):
+            frappe.throw(_("Please complete all documents before marking the task as complete"))
