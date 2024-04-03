@@ -9,15 +9,11 @@ frappe.pages['task-management-tool'].on_page_load = function(wrapper) {
 
 	make_filters(page);
 
-	var project_id = localStorage.getItem('selected_project_id');
-  if (project_id) {
-      page.fields_dict.project.set_value(project_id);
-  }
-
-	refresh_tasks(page);
+  refresh_tasks(page);
 }
 
 function make_filters(page) {
+	var project_id = localStorage.getItem('selected_project_id');
 	let taskField = page.add_field({
 		label: __("Task"),
 		fieldname: "task",
@@ -39,12 +35,14 @@ function make_filters(page) {
 		fieldname: "project",
 		fieldtype: "Link",
 		options: "Project",
+		default:project_id,
 		change() {
 			if (page.fields_dict.project.get_value()) {
           refresh_tasks(page);
       }
 		}
 	});
+	localStorage.removeItem('selected_project_id');
 	page.fields_dict.project.$input.on('change', function() {
 		if (!page.fields_dict.project.get_value()) {
 			refresh_tasks(page);
@@ -179,19 +177,12 @@ function get_employee_id() {
 }
 
 function refresh_tasks(page){
-	var project_id = localStorage.getItem('selected_project_id');
 	// Clear existing tasks from the page
   page.body.find(".frappe-list").remove();
 
 	const selectedStatus = page.fields_dict.status.get_value();
 	const taskName = page.fields_dict.task.get_value();
-	if (project_id) {
-		var projectName = project_id;
-		localStorage.removeItem('selected_project_id');
-  }
-	else {
-		var projectName = page.fields_dict.project.get_value();
-	}
+	const projectName = page.fields_dict.project.get_value();
 	const customerName = page.fields_dict.customer.get_value();
 	const department = page.fields_dict.department.get_value();
 	const subCategory = page.fields_dict.compliance_sub_category.get_value();
