@@ -129,6 +129,13 @@ def create_project_from_digital_signature(digital_signature, exp_end_date):
 					task_doc.append("depends_on", {
                         "task": dependent_task.name,
                     })
+			if template_task.custom_has_document:
+                    for documents in project_template_doc.custom_documents_required:
+                        if documents.task == template_task.task:
+                            for docs in documents.documents.split(', '):
+                                task_doc.append("custom_task_document_items", {
+                                    "document": docs
+                                })
 			task_doc.save(ignore_permissions=True)
 			if template_task.type and template_task.employee_or_group:
 				frappe.db.set_value('Task', task_doc.name, 'assigned_to', template_task.employee_or_group)

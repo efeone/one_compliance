@@ -16,6 +16,9 @@ frappe.ui.form.on('Task',{
         update_status(frm)
       });
     }
+    if(frm.doc.custom_task_document_items){
+      frm.set_df_property('custom_task_document_items', 'read_only', 0);
+    }
   }
 });
 /* applied dialog instance to show customer Credential */
