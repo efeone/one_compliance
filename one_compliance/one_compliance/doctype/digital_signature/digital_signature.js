@@ -14,13 +14,16 @@ frappe.ui.form.on('Digital Signature', {
             frappe.db.get_value('Outward Register', prev_route[2], 'customer').then(r => {
                 frm.set_value('customer', r.message.customer);
             });
-    
+
         }
     },
     refresh: function (frm) {
         if(frm.is_new()){
   			set_notification_templates(frm);
   		}
+      frm.add_custom_button('Create Project', () => {
+        create_project_from_digital_signature(frm)
+      })
     },
     customer: function (frm) {
         if(frm.doc.customer){
@@ -61,4 +64,19 @@ let set_notification_templates = function(frm){
 			}
 		}
 	})
+}
+
+let create_project_from_digital_signature = function(frm){
+  frappe.call({
+    method:'one_compliance.one_compliance.doctype.digital_signature.digital_signature.create_project_from_digital_signature',
+    args:{
+      digital_signature: frm.doc.name,
+      exp_end_date: frm.doc.expiry_date
+    },
+		callback: (r) => {
+			if(r.message){
+
+			}
+		}
+  })
 }

@@ -26,7 +26,11 @@
   "task_complete_notification_for_director",
   "no_action_taken_notification_for_director",
   "project_complete_notification_for_customer",
-  "project_before_due_date_notification"
+  "project_before_due_date_notification",
+  "digital_signature_settings_tab",
+  "digital_signature_category",
+  "column_break_twhe",
+  "digital_signature_sub_category"
  ],
  "fields": [
   {
@@ -139,12 +143,33 @@
    "fieldname": "add_compliance_category_in_project_name",
    "fieldtype": "Check",
    "label": "Add Compliance Category in Project Name"
+  },
+  {
+   "fieldname": "digital_signature_settings_tab",
+   "fieldtype": "Tab Break",
+   "label": "Digital Signature Settings"
+  },
+  {
+   "fieldname": "digital_signature_category",
+   "fieldtype": "Link",
+   "label": "Digital Signature Category",
+   "options": "Compliance Category"
+  },
+  {
+   "fieldname": "column_break_twhe",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "digital_signature_sub_category",
+   "fieldtype": "Link",
+   "label": "Digital Signature Sub Category",
+   "options": "Compliance Sub Category"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-03-20 15:36:55.326441",
+ "modified": "2024-04-03 11:53:59.860334",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
