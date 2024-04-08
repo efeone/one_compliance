@@ -21,24 +21,31 @@ def get_existing_documents(template, task):
     return existing_documents
 
 @frappe.whitelist()
-def update_documents_required(template, documents, task):
-    document = json.loads(documents)
-    documents_string = ', '.join(document)
-
+def update_documents_required(template, task, documents = None):
     project_template = frappe.get_doc("Project Template", template)
-    project_template_task = (row for row in project_template.tasks if row.task == task)
     project_template_task = next((row for row in project_template.tasks if row.task == task), None)
-    if project_template_task:
-        project_template_task.custom_has_document = 1
     existing_row = next((row for row in project_template.custom_documents_required if row.task == task), None)
-    if existing_row:
-        # Update the existing row
-        existing_row.documents = documents_string
-    else:
-        project_template.append("custom_documents_required",{
-            "task": task,
-            "documents": documents_string
-        })
+    if(documents):
+        document = json.loads(documents)
+        documents_string = ', '.join(document)
 
-    project_template.save()
-    return 'success'
+        if project_template_task:
+            project_template_task.custom_has_document = 1
+        if existing_row:
+            # Update the existing row
+            existing_row.documents = documents_string
+        else:
+            project_template.append("custom_documents_required",{
+                "task": task,
+                "documents": documents_string
+            })
+
+        project_template.save()
+        return 'success'
+    else:
+        if project_template_task:
+            project_template_task.custom_has_document = 0
+        if existing_row:
+            project_template.custom_documents_required.remove(existing_row)
+            project_template.save()
+            return 'success'
