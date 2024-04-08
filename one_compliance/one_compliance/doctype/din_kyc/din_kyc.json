@@ -1,0 +1,141 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-04-05 10:54:07.946294",
+ "default_view": "List",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "company_name",
+  "director",
+  "director_name",
+  "director_email",
+  "status",
+  "column_break_xojh",
+  "customer_name",
+  "expiry_date",
+  "pan_number",
+  "din_number",
+  "notify_on_expiration",
+  "notify_before",
+  "notify_before_unit",
+  "din_expiry_notification"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "company_name",
+   "fieldtype": "Data",
+   "label": "Company Name"
+  },
+  {
+   "fieldname": "director",
+   "fieldtype": "Link",
+   "label": "Director",
+   "options": "Legal Authority"
+  },
+  {
+   "fetch_from": "director.person_name",
+   "fieldname": "director_name",
+   "fieldtype": "Data",
+   "in_filter": 1,
+   "in_list_view": 1,
+   "label": "Director Name",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "director.email",
+   "fieldname": "director_email",
+   "fieldtype": "Data",
+   "label": "Director Email"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nAvailable\nNot Available"
+  },
+  {
+   "fieldname": "column_break_xojh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fetch_from": ".",
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "label": "Expiry Date"
+  },
+  {
+   "fetch_from": "director.pan_no",
+   "fieldname": "pan_number",
+   "fieldtype": "Data",
+   "label": "PAN Number"
+  },
+  {
+   "fetch_from": "director.din",
+   "fieldname": "din_number",
+   "fieldtype": "Data",
+   "label": "DIN Number"
+  },
+  {
+   "default": "0",
+   "fieldname": "notify_on_expiration",
+   "fieldtype": "Check",
+   "label": "Notify on Expiration"
+  },
+  {
+   "fieldname": "notify_before",
+   "fieldtype": "Int",
+   "label": "Notify Before"
+  },
+  {
+   "fieldname": "notify_before_unit",
+   "fieldtype": "Select",
+   "label": "Notify Before Unit",
+   "options": "\nDay\nWeek\nMonth"
+  },
+  {
+   "depends_on": "eval:doc.notify_on_expiration == 1",
+   "fieldname": "din_expiry_notification",
+   "fieldtype": "Link",
+   "label": "DIN Expiry Notification",
+   "options": "Notification Template"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-04-05 11:01:19.094056",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "DIN KYC",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
