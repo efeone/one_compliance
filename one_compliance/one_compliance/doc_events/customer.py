@@ -238,12 +238,10 @@ def create_task_from_opportunity(doc, method):
                 add_assignment({"doctype": "Task", "name": task.name, "assign_to": [user_id]})
 
 def create_project_from_customer(doc, method):
-	# self = frappe.get_doc('DIN KYC', din_kyc)
 	sub_category = frappe.db.get_single_value("Compliance Settings", 'din_kyc_sub_category')
 	compliance_sub_category = frappe.get_doc('Compliance Sub Category', sub_category)
 	company_list = frappe.get_all("Company")
 	company = frappe.get_doc("Company", company_list)
-	print(company)
 	project_template  = compliance_sub_category.project_template
 	project_template_doc = frappe.get_doc('Project Template', project_template)
 	head_of_department = frappe.db.get_value('Employee', {'employee':compliance_sub_category.head_of_department}, 'user_id')
@@ -269,7 +267,6 @@ def create_project_from_customer(doc, method):
 			naming = str(naming_year) + ' ' + naming_month
 		project = frappe.new_doc('Project')
 		project.company = company
-		# project.cost_center = frappe.get_cached_value("Company", self.company_name, "cost_center")
 		add_compliance_category_in_project_name = frappe.db.get_single_value('Compliance Settings', 'add_compliance_category_in_project_name')
 		if add_compliance_category_in_project_name:
 			project.project_name = doc.customer_name + '-' + compliance_sub_category.name + '-' + str(naming)
@@ -279,11 +276,8 @@ def create_project_from_customer(doc, method):
 		project.compliance_sub_category = compliance_sub_category.name
 		project.compliance_category = compliance_sub_category.compliance_category
 		project.expected_start_date = doc.custom_annual_general_meeting_date
-		# project.expected_end_date =
 		project.priority = 'Low'
 		project.custom_project_service = compliance_sub_category.name + '-' + str(naming)
-		# project.notes = remark
-		# project.sales_order = sales_order
 		project.category_type = compliance_sub_category.category_type
 		project.department = compliance_sub_category.department
 		project.save(ignore_permissions=True)
@@ -309,7 +303,6 @@ def create_project_from_customer(doc, method):
 			task_doc.compliance_sub_category = compliance_sub_category.name
 			task_doc.subject = template_task.subject
 			task_doc.project = project.name
-			# task_doc.company = project.company
 			task_doc.project_name = project.project_name
 			task_doc.category_type = project.category_type
 			task_doc.exp_start_date = doc.custom_annual_general_meeting_date
