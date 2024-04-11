@@ -136,7 +136,8 @@ doc_events = {
                        ],
     },
     'Customer':{
-        'on_update':['one_compliance.one_compliance.doc_events.customer.customer_on_update',],
+        'on_update':['one_compliance.one_compliance.doc_events.customer.customer_on_update',
+                    'one_compliance.one_compliance.doc_events.customer.create_project_from_customer'],
         'before_save':['one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity']
     },
     'Sales Invoice':{
