@@ -1,18 +1,18 @@
 # Copyright (c) 2024, efeone and contributors
 # For license information, please see license.txt
 
-# import frappe
+import frappe
 from frappe.model.document import Document
-
+from frappe.utils import *
 
 class DINKYC(Document):
 	pass
 
 @frappe.whitelist()
 def create_project_from_din_kyc(din_kyc,expiry_date):
-	print(digital_signature, exp_end_date)
+	print(din_kyc,expiry_date)
 	self = frappe.get_doc('DIN KYC', din_kyc)
-	sub_category = frappe.db.get_single_value("Compliance Settings", 'digital_signature_sub_category')
+	sub_category = frappe.db.get_single_value("Compliance Settings", 'din_kyc_sub_category')
 	compliance_sub_category = frappe.get_doc('Compliance Sub Category', sub_category)
 	print(compliance_sub_category)
 	project_template  = compliance_sub_category.project_template
@@ -39,8 +39,8 @@ def create_project_from_din_kyc(din_kyc,expiry_date):
 		else:
 			naming = str(naming_year) + ' ' + naming_month
 		project = frappe.new_doc('Project')
-		# project.company = self.company_name
-		project.cost_center = frappe.get_cached_value("Company", self.company_name, "cost_center")
+		project.company = self.company_name
+		# project.cost_center = frappe.get_cached_value("Company", self.company_name, "cost_center")
 		add_compliance_category_in_project_name = frappe.db.get_single_value('Compliance Settings', 'add_compliance_category_in_project_name')
 		if add_compliance_category_in_project_name:
 			project.project_name = self.customer_name + '-' + compliance_sub_category.name + '-' + str(naming)
@@ -49,8 +49,8 @@ def create_project_from_din_kyc(din_kyc,expiry_date):
 		project.customer = self.customer
 		project.compliance_sub_category = compliance_sub_category.name
 		project.compliance_category = compliance_sub_category.compliance_category
-		project.expected_start_date = add_days(getdate(expiry_date),1)
-		project.expected_end_date = exp_end_date
+		project.expected_start_date = add_days(getdate(expiry_date), 1)
+		# project.expected_end_date =
 		project.priority = 'Low'
 		project.custom_project_service = compliance_sub_category.name + '-' + str(naming)
 		# project.notes = remark
