@@ -39,7 +39,16 @@ class ComplianceAgreement(Document):
 		self.change_agreement_status()
 
 	def on_trash(self):
-		delete_project_and_task(self.name)
+		delete_project_along_with_compliance_agreement = frappe.db.get_single_value('Compliance Settings', 'delete_project_along_with_compliance_agreement')
+		if delete_project_along_with_compliance_agreement:
+			delete_project_and_task(self.name)
+		else:
+			if frappe.db.exists('Project',{'compliance_agreement': self.name}):
+				project_list = frappe.db.get_all('Project', filters={'compliance_agreement': self.name})
+				for project in project_list:
+					project_doc = frappe.get_doc('Project',project.name)
+					project_doc.set('compliance_agreement', None)
+					project_doc.save()
 
 
 	def validate_agreement_dates(self):

@@ -12,6 +12,7 @@
   "add_compliance_category_in_project_name",
   "column_break_begm",
   "create_project_from_sales_order_automatically",
+  "delete_project_along_with_compliance_agreement",
   "section_break_saeum",
   "role_of_project_creator",
   "compliance_service_item_group",
@@ -178,12 +179,18 @@
    "fieldtype": "Link",
    "label": "DIN KYC Sub Category",
    "options": "Compliance Sub Category"
+  },
+  {
+   "default": "0",
+   "fieldname": "delete_project_along_with_compliance_agreement",
+   "fieldtype": "Check",
+   "label": "Delete Project Along with Compliance Agreement"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-04-09 10:45:33.146827",
+ "modified": "2024-04-16 11:17:12.059667",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
