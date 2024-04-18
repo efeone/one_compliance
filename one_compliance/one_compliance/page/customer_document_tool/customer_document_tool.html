@@ -1,0 +1,71 @@
+<div class="tree with-skeleton">
+  {% for category in categories %}
+  <ul class="tree-children">
+    <li class="tree-node">
+      <span class="tree-link">
+        <span class="node-parent">
+          <svg class="icon  icon-md" style="" aria-hidden="true">
+      			<use class="" href="#icon-folder-normal"></use>
+      		</svg>
+        </span>
+        <a class="tree-label">{{ category.category }}</a>
+      </span>
+      <ul class="tree-children nested">
+        {% for sub_category in category.sub_categories %}
+        <li class="tree-node">
+          <span class="tree-link">
+            <span class="node-parent">
+              <svg class="icon  icon-md" style="" aria-hidden="true">
+          			<use class="" href="#icon-folder-normal"></use>
+          		</svg>
+            </span>
+            <a class="tree-label subCategory">{{ sub_category.sub_category }}</a>
+          </span>
+          <span class="tree-node-toolbar btn-group" style="display:none;">
+            <button class="btn btn-default btn-xs tree-toolbar-button hidden-xs addDocument" sub-category="{{ sub_category.sub_category }}">Add</button>
+          </span>
+          <ul class="tree-children nested">
+            {% for documents in sub_category.documents %}
+            {% if documents.document_attachment %}
+            <li class="tree-node">
+              <span class="tree-link">
+                <span>
+                  <svg class="icon  icon-xs" style="" aria-hidden="true">
+              			<use class="" href="#icon-primitive-dot"></use>
+              		</svg>
+                </span>
+                <a class="tree-label">{{ documents.document_attachment }}</a>
+              </span>
+              <span class="tree-node-toolbar btn-group" style="display:none;">
+                <button class="btn btn-default btn-xs tree-toolbar-button hidden-xs downloadDocument" doc-id="{{ documents.document_attachment }}">Download</button>
+              </span>
+            </li>
+            {% endif %}
+            {% endfor %}
+          </ul>
+        </li>
+        {% endfor %}
+      </ul>
+    </li>
+  </ul>
+  {% endfor %}
+</div>
+<script>
+var toggler = document.getElementsByClassName("tree-link");
+var i;
+
+for (i = 0; i < toggler.length; i++) {
+  toggler[i].addEventListener("click", function() {
+    var nestedList = this.parentElement.querySelector(".nested");
+    nestedList.classList.toggle("active");
+    var icon = this.querySelector("svg use");
+    if (nestedList.classList.contains("active")) {
+      icon.setAttribute("href", "#icon-folder-open");
+      this.classList.add("caret-down");
+    } else {
+      icon.setAttribute("href", "#icon-folder-normal");
+      this.classList.remove("caret-down");
+    }
+  });
+}
+</script>
