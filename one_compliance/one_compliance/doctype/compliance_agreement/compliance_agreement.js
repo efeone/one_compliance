@@ -6,7 +6,8 @@ frappe.ui.form.on('Compliance Agreement', {
       frm.doc.valid_upto = null;
     }
 
-    if (frm.doc.valid_from && frm.doc.compliance_category_details) {
+    if(frm.is_new()){
+      if (frm.doc.valid_from && frm.doc.compliance_category_details) {
         frappe.call({
             method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.validate_date_range',
             args: {
@@ -28,7 +29,8 @@ frappe.ui.form.on('Compliance Agreement', {
             }
         });
       }
-    },
+    }
+  },
 
   refresh: function (frm) {
     frm.set_df_property('compliance_category', 'reqd', 1)
