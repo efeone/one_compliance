@@ -10,11 +10,9 @@ class DINKYC(Document):
 
 @frappe.whitelist()
 def create_project_from_din_kyc(din_kyc,expiry_date):
-	print(din_kyc,expiry_date)
 	self = frappe.get_doc('DIN KYC', din_kyc)
 	sub_category = frappe.db.get_single_value("Compliance Settings", 'din_kyc_sub_category')
 	compliance_sub_category = frappe.get_doc('Compliance Sub Category', sub_category)
-	print(compliance_sub_category)
 	project_template  = compliance_sub_category.project_template
 	project_template_doc = frappe.get_doc('Project Template', project_template)
 	head_of_department = frappe.db.get_value('Employee', {'employee':compliance_sub_category.head_of_department}, 'user_id')
