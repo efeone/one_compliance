@@ -35,7 +35,8 @@ class ComplianceAgreement(Document):
 			frappe.throw('Customer Signature is required for Customer Approval')
 
 	def validate(self):
-		# self.validate_agreement_dates()
+		self.validate_agreement_dates()
+		self.validate_date_range()
 		self.change_agreement_status()
 
 	def on_trash(self):
@@ -69,6 +70,49 @@ class ComplianceAgreement(Document):
 				self.status = "Expired"
 			else:
 				self.status = "Active"
+
+	def validate_date_range(self):
+		print(self.customer, self.status, self.valid_from, self.compliance_category_details,self.valid_upto)
+		existing_agreements = frappe.get_all(
+			"Compliance Agreement",
+			filters={
+				"customer": self.customer,
+				"workflow_state": "Customer Approved",
+			},
+			fields=["name"],
+		)
+		for compliance_agreement in existing_agreements:
+			agreement = frappe.get_doc("Compliance Agreement", compliance_agreement.name)
+			print(agreement)
+			# Get compliance category details of the current agreement
+			agreement_categories = [d.sub_category_name for d in agreement.compliance_category_details]
+			agreement_valid_from = getdate(agreement.valid_from)
+			agreement_valid_upto = getdate(agreement.valid_upto)
+
+			# Get compliance category details of the current instance
+			for d in self.compliance_category_details:
+				instance_categories = d.sub_category_name
+				instance_valid_from = getdate(self.valid_from)
+				instance_valid_upto = getdate(self.valid_upto)
+
+				# Check if all categories in the agreement exist in the instance and vice versa
+				if instance_categories in set(agreement_categories):
+					if self.has_long_term_validity:
+					    if agreement.has_long_term_validity:
+					        if instance_valid_from >= agreement_valid_from:
+					            print(instance_categories)
+					            frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
+					    else:
+					        if instance_valid_from < agreement_valid_upto:
+					            frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
+					else:
+						if agreement.has_long_term_validity:
+							if agreement_valid_from and instance_valid_from >= instance_valid_from:
+								frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
+						elif agreement_valid_upto and instance_valid_upto:
+							if instance_valid_from >= agreement_valid_from and instance_valid_upto <= agreement_valid_upto:
+								print(instance_categories)
+								frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
 
 	def make_sales_invoice(self):
 
@@ -403,38 +447,6 @@ def update_compliance_dates(compliance_category_details_id):
 	else:
 		frappe.db.set_value('Compliance Category Details', compliance_category_details_id, 'compliance_date', getdate(today()))
 		frappe.db.commit()
-
-@frappe.whitelist()
-def validate_date_range(customer, valid_from, compliance_category_details,valid_upto=None):
-    compliance_category_details = json.loads(compliance_category_details)
-
-    for compliance_category_detail in compliance_category_details:
-        sub_category_name = compliance_category_detail.get("sub_category_name")
-
-        existing_agreements = frappe.get_all(
-            "Compliance Agreement",
-            filters={
-                "customer": customer,
-                "valid_from": (">=", valid_from),
-                "valid_upto": ("<=", valid_upto),
-
-            },
-            fields=["name"],
-        )
-
-        for compliance_agreement in existing_agreements:
-
-            if frappe.db.exists(
-                "Compliance Category Details",
-                {
-                    "parent": compliance_agreement["name"],
-                    "sub_category_name": sub_category_name,
-
-                },
-            ):
-                return 0
-
-    return 1
 
 @frappe.whitelist()
 def get_rate_from_compliance_agreement(compliance_agreement, compliance_sub_category):
