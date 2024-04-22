@@ -5,31 +5,6 @@ frappe.ui.form.on('Compliance Agreement', {
     if (frm.doc.has_long_term_validity) {
       frm.doc.valid_upto = null;
     }
-
-    if(frm.is_new()){
-      if (frm.doc.valid_from && frm.doc.compliance_category_details) {
-        frappe.call({
-            method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.validate_date_range',
-            args: {
-                customer: frm.doc.customer,
-                valid_from: frm.doc.valid_from,
-                valid_upto: frm.doc.valid_upto,
-                compliance_category_details: frm.doc.compliance_category_details
-
-            },
-            callback: function (r) {
-              console.log(r);
-              if (!r.message) {
-                  frappe.msgprint(__(
-                      "Another agreement exists within the specified date range. Please choose different dates."
-                  ));
-                  frappe.validated = false; // Do not save the document
-
-              }
-            }
-        });
-      }
-    }
   },
 
   refresh: function (frm) {
