@@ -72,7 +72,6 @@ class ComplianceAgreement(Document):
 				self.status = "Active"
 
 	def validate_date_range(self):
-		print(self.customer, self.status, self.valid_from, self.compliance_category_details,self.valid_upto)
 		existing_agreements = frappe.get_all(
 			"Compliance Agreement",
 			filters={
@@ -83,7 +82,6 @@ class ComplianceAgreement(Document):
 		)
 		for compliance_agreement in existing_agreements:
 			agreement = frappe.get_doc("Compliance Agreement", compliance_agreement.name)
-			print(agreement)
 			# Get compliance category details of the current agreement
 			agreement_categories = [d.sub_category_name for d in agreement.compliance_category_details]
 			agreement_valid_from = getdate(agreement.valid_from)
@@ -100,7 +98,6 @@ class ComplianceAgreement(Document):
 					if self.has_long_term_validity:
 					    if agreement.has_long_term_validity:
 					        if instance_valid_from >= agreement_valid_from:
-					            print(instance_categories)
 					            frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
 					    else:
 					        if instance_valid_from < agreement_valid_upto:
@@ -111,7 +108,6 @@ class ComplianceAgreement(Document):
 								frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
 						elif agreement_valid_upto and instance_valid_upto:
 							if instance_valid_from >= agreement_valid_from and instance_valid_upto <= agreement_valid_upto:
-								print(instance_categories)
 								frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
 
 	def make_sales_invoice(self):
