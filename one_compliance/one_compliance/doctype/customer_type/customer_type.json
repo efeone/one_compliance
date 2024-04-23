@@ -8,7 +8,8 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "customer_type"
+  "customer_type",
+  "regularisation_process"
  ],
  "fields": [
   {
@@ -16,11 +17,17 @@
    "fieldtype": "Data",
    "label": "Customer Type",
    "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "regularisation_process",
+   "fieldtype": "Check",
+   "label": "Regularisation Process"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-03-08 15:23:57.844187",
+ "modified": "2024-04-23 14:26:47.585897",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Customer Type",
