@@ -93,10 +93,12 @@ def create_journal_entry(doc):
             'account': account,
             'party_type': 'Customer',
             'party': doc.customer,
+			'project': doc.project,
             'debit_in_account_currency': doc.custom_payable_amount
         })
 		journal_entry.append('accounts', {
             'account': default_account,
+			'project': doc.project,
             'credit_in_account_currency': doc.custom_payable_amount
         })
 		journal_entry.insert(ignore_permissions = True)
