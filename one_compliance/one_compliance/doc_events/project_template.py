@@ -49,3 +49,8 @@ def update_documents_required(template, task, documents = None):
             project_template.custom_documents_required.remove(existing_row)
             project_template.save()
             return 'success'
+
+def on_trash(doc, method):
+    compliance_sub_category = frappe.get_doc("Compliance Sub Category",doc.compliance_sub_category)
+    compliance_sub_category.set('project_template', None)
+    compliance_sub_category.save()
