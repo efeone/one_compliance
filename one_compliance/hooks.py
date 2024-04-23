@@ -116,7 +116,9 @@ permission_query_conditions = {
 doc_events = {
 	"Project Template": {
 		"after_insert": ["one_compliance.one_compliance.doc_events.project_template.update_project_template",
-                        ]
+                        ],
+        "on_trash": ["one_compliance.one_compliance.doc_events.project_template.on_trash",
+                    ]
 	},
     'Task':{
         'on_update':['one_compliance.one_compliance.doc_events.task.task_on_update',
