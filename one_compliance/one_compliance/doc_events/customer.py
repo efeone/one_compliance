@@ -238,13 +238,13 @@ def create_task_from_opportunity(doc, method):
                 add_assignment({"doctype": "Task", "name": task.name, "assign_to": [user_id]})
 
 def create_project_from_customer(doc, method):
-    sub_category = frappe.db.get_single_value("Compliance Settings", 'din_kyc_sub_category')
-    compliance_sub_category = frappe.get_doc('Compliance Sub Category', sub_category)
     customer_type = doc.compliance_customer_type
-    regularisation_process = frappe.get_value('Customer Type', {'name':customer_type}, ['custom_regularisation_process'])
+    regularisation_process = frappe.get_value('Customer Type', {'name':customer_type}, ['regularisation_process'])
     if regularisation_process:
         company_list = frappe.get_all("Company")
         company = frappe.get_doc("Company", company_list)
+        sub_category = frappe.db.get_single_value("Compliance Settings", 'din_kyc_sub_category')
+        compliance_sub_category = frappe.get_doc('Compliance Sub Category', sub_category)
         project_template  = compliance_sub_category.project_template
         project_template_doc = frappe.get_doc('Project Template', project_template)
         head_of_department = frappe.db.get_value('Employee', {'employee':compliance_sub_category.head_of_department}, 'user_id')
