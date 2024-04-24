@@ -58,7 +58,14 @@ frappe.ui.form.on('Project Template Task', {
                         		});
                             dialog.hide();
                         },
-                        primary_action_label: __("Save")
+                        primary_action_label: __("Save"),
+                        secondary_action_label: __("Create a New Task Document"),
+                        secondary_action: function() {
+                              // Open a new dialog to create a Task Document
+                              frappe.new_doc('Task Document', function(doc) {
+                                
+                            });
+                        }
                     });
                     dialog.show();
                 }
