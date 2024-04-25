@@ -1,17 +1,14 @@
+/* Set a minimum height for elements with the class frappe-card */
 .frappe-card {
   min-height: 300px;
 }
 
-.caret-down::before {
-  -ms-transform: rotate(90deg); /* IE 9 */
-  -webkit-transform: rotate(90deg); /* Safari */'
-  transform: rotate(90deg);
-}
-
+/* Hide elements with the class 'nested' by default */
 .nested {
   display: none;
 }
 
+/* Show elements with the class 'nested' when the 'active' class is applied */
 .active {
   display: block;
 }
