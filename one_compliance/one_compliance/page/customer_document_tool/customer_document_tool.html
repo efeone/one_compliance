@@ -1,4 +1,5 @@
 <div class="tree with-skeleton">
+  <!-- List compliance categories -->
   {% for category in categories %}
   <ul class="tree-children">
     <li class="tree-node">
@@ -11,6 +12,7 @@
         <a class="tree-label">{{ category.category }}</a>
       </span>
       <ul class="tree-children nested">
+        <!-- List the compliance sub categories inside the categories -->
         {% for sub_category in category.sub_categories %}
         <li class="tree-node">
           <span class="tree-link">
@@ -21,10 +23,12 @@
             </span>
             <a class="tree-label subCategory">{{ sub_category.sub_category }}</a>
           </span>
+          <!-- Button for adding new documents -->
           <span class="tree-node-toolbar btn-group" style="display:none;">
             <button class="btn btn-default btn-xs tree-toolbar-button hidden-xs addDocument" sub-category="{{ sub_category.sub_category }}">Add</button>
           </span>
           <ul class="tree-children nested">
+            <!-- List all the documents under the compliance sub category -->
             {% for documents in sub_category.documents %}
             {% if documents.document_attachment %}
             <li class="tree-node">
@@ -36,6 +40,7 @@
                 </span>
                 <a class="tree-label">{{ documents.document_attachment }}</a>
               </span>
+              <!-- Button for download the document -->
               <span class="tree-node-toolbar btn-group" style="display:none;">
                 <button class="btn btn-default btn-xs tree-toolbar-button hidden-xs downloadDocument" doc-id="{{ documents.document_attachment }}">Download</button>
               </span>
@@ -50,6 +55,8 @@
   </ul>
   {% endfor %}
 </div>
+
+<!-- Script for dropdown action -->
 <script>
 var toggler = document.getElementsByClassName("tree-link");
 var i;
