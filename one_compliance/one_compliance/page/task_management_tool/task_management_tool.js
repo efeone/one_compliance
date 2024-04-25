@@ -5,10 +5,15 @@ frappe.pages['task-management-tool'].on_page_load = function(wrapper) {
 		single_column: true
 	});
 
+	// Button to refresh the page
+	let $button = page.set_secondary_action('Refresh',() => location.reload())
+
 	page.main.addClass("frappe-card");
 
+	// Filter options
 	make_filters(page);
 
+	// Refresh task
   refresh_tasks(page);
 }
 
@@ -206,8 +211,10 @@ function refresh_tasks(page){
 							},
 			 callback: (r) => {
 				if (r.message && r.message.length>0) {
+						// Render the list of tasks to html page
 						$(frappe.render_template("task_management_tool", {task_list:r.message})).appendTo(page.body);
 
+						// Button action to add payment details
 						page.body.find(".paymentEntryButton").on("click", function () {
 							var taskId = $(this).attr("task-id");
 							var payableAmount = $(this).attr("payable-amount");
@@ -218,20 +225,23 @@ function refresh_tasks(page){
 							paymentEntryDialog(taskId, payableAmount, modeOfPayment, referenceNumber, referenceDate, userRemark);
             });
 
+						// Button action to add assignees
 						page.body.find(".addAssigneeBtn").on("click", function () {
 							var taskName = $(this).attr("task-id");
               showAssignEntryDialog(taskName);
             });
 
+						// Initially hide the timesheet button
 						page.body.find(".timeEntryButton").hide();
 
+						// Button action to start the time
 						page.body.find(".startButton").on("click", function () {
 	            var taskName = $(this).attr("task-id");
 	            var projectName = $(this).attr("project-id");
 
 							var status = page.fields_dict.status.get_value();
 					    if (status === 'completed' || status === 'hold' || status === 'cancelled') {
-					        return;
+					        return; // If the task status is completed, hold, or cancelled, do not proceed
 					    }
 
 	            var currentTime = frappe.datetime.now_datetime();
@@ -244,40 +254,49 @@ function refresh_tasks(page){
 	            var startTimeParagraph = page.body.find(".start-time[task-id='" + taskName + "'][project-id='" + projectName + "']");
 	            startTimeParagraph.text(formattedTime);
 
+							// Update the status of task to 'Working'
 							updateTaskStatus(page,taskName, projectName, "Working");
 
+							// Hide the button once clicked
 							$(this).hide();
+							// Show the time sheet button
 							page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show();
 		        });
 
+						// Action of start-time field
 						page.body.find(".start-time").each(function () {
 				        var taskName = $(this).attr("task-id");
 				        var projectName = $(this).attr("project-id");
 				        var startTime = localStorage.getItem("start-time-task-" + taskName + "-project-" + projectName);
 
+								// Check if a start time is retrieved from local storage
 								if (startTime) {
 						        var storedDate = new Date(startTime);
 						        var currentDate = new Date();
 
+										// Check if the retrieved start time belongs to the current day
 						        if (storedDate.getDate() !== currentDate.getDate() || storedDate.getMonth() !== currentDate.getMonth() || storedDate.getFullYear() !== currentDate.getFullYear()) {
 						            // If startTime doesn't belong to the current day, reset the values
 						            localStorage.removeItem("start-time-task-" + taskName + "-project-" + projectName);
 						            startTime = null;
 						        }
 						    }
+								// Check if a valid start time exists
 				        if (startTime) {
 				            var formattedTime = frappe.datetime.str_to_user(startTime);
 				            $(this).text(formattedTime);
-										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide();
-        						page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show();
+										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide(); // Hide the start button associated with the task and project
+        						page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show(); // Show the time entry button associated with the task and project
 				        }
 								else {
+										// If no valid start time exists
 										$(this).text("");
-										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show();
-										page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide();
+										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show(); // Show the start button associated with the task and project
+										page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide(); // Hide the time entry button associated with the task and project
 								}
 				    });
 
+						// Button action to enter timesheet
 						page.body.find(".timeEntryButton").on("click", function () {
 							var taskName = $(this).attr("task-id");
 							var projectName = $(this).attr("project-id");
@@ -287,20 +306,25 @@ function refresh_tasks(page){
               showTimeEntryDialog(page, taskName, projectName, assignees, startTime);
             });
 
+						// Button action to view Customer documents
 						page.body.find(".documentButton").on("click", function () {
 							var subCategory = $(this).attr("sub-category");
 							var customer = $(this).attr("customer");
               cusomerDocuments(subCategory, customer);
             });
 
+						// Button action to view Customer credentials
 						page.body.find(".credentialButton").on("click", function () {
 							var subCategory = $(this).attr("sub-category");
 							var customer = $(this).attr("customer");
               cusomerCredentials(subCategory, customer);
             });
 
+						// Function to set colors to the status
 						set_status_colors();
+						// Function to hide assignee button for complated tasks
 						hide_add_assignee_button(page.fields_dict.status.get_value());
+						// Function to show assignee section or completed section based on task status
 						assignee_and_completed_by_section(page.fields_dict.status.get_value());
 				} else {
             // If no tasks are found, append a message to the page body
@@ -315,6 +339,7 @@ function refresh_tasks(page){
 
 function hide_add_assignee_button(taskStatus) {
     if (taskStatus === 'completed' || taskStatus === 'hold' || taskStatus === 'cancelled') {
+				$('.startButton').hide();
         $('.addAssigneeBtn').hide();
     } else {
         $('.addAssigneeBtn').show();
@@ -436,7 +461,7 @@ function showAssignEntryDialog(taskName){
     });
     dialog.show();
 }
-// Function to show the dialog box
+// Function to show the dialog box for timesheet entry
 function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) {
 	var assigneesList = assignees ? assignees.split(',') : [];
 
@@ -519,6 +544,7 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
 								},
 								callback: function (r) {
 										frappe.msgprint("Timesheet created successfully!");
+										// After creating timesheet show start button and hide start-time and time entry button
 										page.body.find(".start-time[task-id='" + taskName + "'][project-id='" + projectName + "']").hide();
 										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show();
 										page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide();
@@ -534,6 +560,7 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
     dialog.show();
 }
 
+// Function to get frappe.session.user in the employee field to filter the task
 function get_employee(assigneesList, callback) {
 	if (frappe.session.user === 'Administrator') {
 			return assigneesList[0]
@@ -584,6 +611,7 @@ function set_status_colors() {
 		        projectElement.style.color = projectColor;
 		    }
     });
+		// Show tic icon for status updation.
 		function showTicIcon(element) {
 			if (!element.querySelector('.fa-check-circle')) {
         const ticIcon = document.createElement('i');
@@ -598,7 +626,7 @@ function set_status_colors() {
         const taskName = element.getAttribute('task-name');
         const taskId = element.getAttribute('task-id');
         const projectId = element.getAttribute('project-id');
-
+				// Status updation to completed action for tic icon
         ticIcon.addEventListener('click', function () {
             update_status(taskName, projectId, taskId);
         });
@@ -759,6 +787,7 @@ function update_status(taskName, projectId, taskId) {
 d.show();
 }
 
+// Function to update status to working when clicking start time
 function updateTaskStatus(page, taskName, projectName, status){
 	frappe.call({
 			method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.update_task_status", // Change this to your method name

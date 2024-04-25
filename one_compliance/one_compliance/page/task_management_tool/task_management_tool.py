@@ -3,9 +3,8 @@ from frappe.utils import get_datetime
 
 @frappe.whitelist()
 def get_task(status = None, task = None, project = None, customer = None, department = None, sub_category = None, employee = None, employee_group = None, from_date = None, to_date = None):
-    print(status)
     user_id = f'"{employee}"' if id else None
-
+    # Construct the SQL query to fetch list of tasks
     query = """
 	SELECT
         t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by, t.color, t.custom_is_payable,
@@ -90,7 +89,6 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
     from_time = get_datetime(from_time)
     to_time = get_datetime(to_time)
     employee_id = frappe.get_value("Employee", {"employee_name": employee}, "name")
-    print(project,task,employee_id,from_time,to_time)
 
     # Check if a timesheet already exists for the employee within the given date range
     existing_timesheets = frappe.get_all("Timesheet", filters={

@@ -4,7 +4,7 @@ from frappe.utils import get_datetime
 @frappe.whitelist()
 def get_project(status = None, project = None, customer = None, department = None, sub_category = None, employee = None, from_date = None, to_date = None):
     user_id = f'"{employee}"' if id else None
-
+    # Construct the SQL query to fetch list of projects
     query = """
 	SELECT
         name, project_name, customer, department, compliance_sub_category, _assign, expected_start_date, expected_end_date, status
@@ -47,6 +47,7 @@ def get_project(status = None, project = None, customer = None, department = Non
         if project['_assign']:
             user_ids = frappe.parse_json(project['_assign'])
             if user_ids:
+                # Query to get the employee name from id
                 user_names_query = """
                     SELECT name, employee_name, user_id FROM `tabEmployee`
                     WHERE user_id IN ({})

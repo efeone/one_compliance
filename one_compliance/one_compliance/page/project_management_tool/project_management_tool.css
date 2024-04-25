@@ -1,3 +1,4 @@
+/* Style to each task card */
 .card {
         margin: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -7,44 +8,33 @@
         padding: 2px;
         background-color: aliceblue;
     }
-
+    /* background color to the main page */
     .layout-main-section.frappe-card {
       background-color: #fdf7f9;
     }
-
+    /* background color to the filter form */
     .page-form {
       background-color: #fdf7f9;
     }
-
+    /* transparent background to the header tag */
     .list-row-head {
       background-color: transparent;
     }
+    /* padding to each card body */
     .card-body {
         padding: 10px 20px 10px 20px;
     }
-
-    .card-title {
-        font-size: 1rem;
-        margin-bottom: 10px;
-    }
-
+    /* Alignment for Assignee section */
     .card-text {
         margin-bottom: 15px;
     }
-
+    /* style to button */
     .btn{
         max-width: 100px;
         max-height: 30px;
         margin: auto 0px;
     }
-
-    .rounded-circle {
-      margin-top:5px;
-      padding: 0px 4px;
-      position: absolute;
-      right: 30px;
-    }
-
+    /* style to the project link */
     .project-link{
       display: inline-block;
       max-width: 100%; /* Adjust as needed */
