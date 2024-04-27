@@ -38,7 +38,8 @@ doctype_js = {
         "Lead":"public/js/lead.js",
         "Opportunity":"public/js/opportunity.js",
         "Sales Invoice":"public/js/sales_invoice.js",
-        "Sales Order":"public/js/sales_order.js"
+        "Sales Order":"public/js/sales_order.js",
+        "Company" : "public/js/company.js"
         }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -139,8 +140,11 @@ doc_events = {
     },
     'Customer':{
         'on_update':['one_compliance.one_compliance.doc_events.customer.customer_on_update',
-                    'one_compliance.one_compliance.doc_events.customer.create_project_from_customer'],
-        'before_save':['one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity']
+                    'one_compliance.one_compliance.doc_events.customer.create_project_from_customer'
+                    # 'one_compliance.one_compliance.doc_events.customer.create_projects_from_audit_list_and_notify_audit_expiry'
+                    ],
+        'before_save':['one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',
+                       'one_compliance.one_compliance.doc_events.customer.set_expiry_dates']
     },
     'Sales Invoice':{
         'on_submit':'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
@@ -167,8 +171,9 @@ scheduler_events = {
         'one_compliance.one_compliance.doc_events.customer.create_project_from_customer_scheduler',
         'one_compliance.one_compliance.utils.notification_for_digital_signature_expiry',
         'one_compliance.one_compliance.utils.project_overdue_notification',
-        'one_compliance.one_compliance.doc_events.project.set_status_to_overdue'
-	],
+        'one_compliance.one_compliance.doc_events.project.set_status_to_overdue',
+        'one_compliance.one_compliance.doc_events.customer.create_projects_from_audit_list_and_notify_audit_expiry'
+        ],
 #	"hourly": [
 #		"one_compliance.tasks.hourly"
 #	],
@@ -254,5 +259,6 @@ fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Founder','Director','Com
             {'dt': 'Role Profile'},
             {'dt': 'Category Type', 'filters': [['name','in',['Audit','Compliance','Tax','Consulting']]]},
             {'dt': 'Translation'}
+
 
 ]
