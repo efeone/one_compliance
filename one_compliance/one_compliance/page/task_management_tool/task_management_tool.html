@@ -52,24 +52,30 @@
                 </div>
                 <div class="col-md-1 text-center" style="padding: inherit;">
                   <p status-span="{{ data.status }}" task-name="{{ data.subject }}" project-id="{{ data.project }}" task-id="{{ data.name }}">{{ data.status }}</p>
+                  <!-- Tag to show the start time -->
                   <p class="start-time" task-id="{{ data.name }}" project-id="{{ data.project }}" ></p>
                 </div>
                 <div class="col-md-1" style="padding: inherit;">
                   <div class="">
+                    <!-- Button for start -->
                     <button class="btn btn-outline-warning btn-icon startButton" task-id="{{ data.name }}" project-id="{{ data.project }}" data-toggle="tooltip" title="Start Timer">
                         <i class="fas fa-play"></i>
                     </button>
+                    <!-- Button for timesheet -->
                     <button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}" project-id="{{ data.project }}" assignees="{{ data.employee_names }}" data-toggle="tooltip" title="Time Sheet">
                         <i class="fas fa-clock"></i>
                     </button>
+                    <!-- Button for view documents -->
                     <button class="btn btn-outline-info btn-icon documentButton" sub-category="{{ data.compliance_sub_category }}" customer="{{ data.customer }}" data-toggle="tooltip" title="Documents">
                         <i class="fas fa-file-alt"></i>
                     </button>
+                    <!-- Button for view credentials -->
                     <button class="btn btn-outline-success btn-icon credentialButton" sub-category="{{ data.compliance_sub_category }}" customer="{{ data.customer }}" data-toggle="tooltip" title="Credentials">
                         <i class="fas fa-key"></i>
                     </button>
                   </div>
                   <div style="padding-left: 5px;">
+                    <!-- Button for payment entry -->
                     <button class="btn btn-outline-success btn-icon paymentEntryButton" task-id="{{ data.name }}" is-payable="{{ data.custom_is_payable }}" payable-amount="{{ data.custom_payable_amount }}" mode-of-payment="{{ data.custom_mode_of_payment }}" ref-num="{{ data.custom_reference_number }}" ref-date="{{ data.custom_reference_date }}" remark="{{ data.custom_user_remark }}" data-toggle="tooltip" title="Payment Entry">
                         <i class="fas fa-wallet"></i>
                     </button>

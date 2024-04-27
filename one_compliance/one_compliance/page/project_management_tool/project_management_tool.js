@@ -5,6 +5,9 @@ frappe.pages['project-management_tool'].on_page_load = function(wrapper) {
 		single_column: true
 	});
 
+	// Button to refresh the page
+	let $button = page.set_secondary_action('Refresh',() => location.reload())
+
 	page.main.addClass("frappe-card");
 
 	make_filters(page);
@@ -169,6 +172,7 @@ function refresh_projects(page){
 				if (r.message && r.message.length>0) {
 						$(frappe.render_template("project_management_tool", {project_list:r.message})).appendTo(page.body);
 
+						// Action to redirect to the task management tool 
 						page.body.find(".showTask").on("click", function () {
 							var project_id = $(this).attr("project");
 							console.log(project_id);

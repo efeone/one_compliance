@@ -84,6 +84,14 @@ frappe.ui.form.on('Compliance Settings', {
         }
       }
     })
+		//filter for din_kyc_sub_category based on digital_signature_category
+    frm.set_query('din_kyc_sub_category', function(){
+      return {
+        filters: {
+          compliance_category : frm.doc.din_kyc_category
+        }
+      }
+    })
 	}
 });
 

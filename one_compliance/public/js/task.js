@@ -19,6 +19,10 @@ frappe.ui.form.on('Task',{
     if(frm.doc.custom_task_document_items){
       frm.set_df_property('custom_task_document_items', 'read_only', 0);
     }
+    if(frm.doc.project){
+      frm.set_df_property('is_group','hidden',1);
+      frm.set_df_property('is_template','hidden',1);
+    }
   }
 });
 /* applied dialog instance to show customer Credential */
