@@ -1,0 +1,92 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{authority_name}",
+ "creation": "2024-04-23 17:34:06.926726",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "authority_name",
+  "address",
+  "appointment_date",
+  "pan",
+  "column_break_nksg",
+  "firm_registration_number",
+  "membership_number",
+  "period_of_appointment",
+  "email_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "authority_name",
+   "fieldtype": "Data",
+   "label": "Authority Name",
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_nksg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Data",
+   "label": "Address"
+  },
+  {
+   "fieldname": "pan",
+   "fieldtype": "Data",
+   "label": "PAN"
+  },
+  {
+   "fieldname": "firm_registration_number",
+   "fieldtype": "Int",
+   "label": "Firm Registration Number "
+  },
+  {
+   "fieldname": "appointment_date",
+   "fieldtype": "Date",
+   "label": "Appointment Date"
+  },
+  {
+   "fieldname": "membership_number",
+   "fieldtype": "Data",
+   "label": "Membership Number "
+  },
+  {
+   "fieldname": "period_of_appointment",
+   "fieldtype": "Int",
+   "label": "Period Of Appointment"
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID",
+   "options": "Email"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-04-24 18:01:44.523841",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Company Auditor",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
