@@ -84,14 +84,35 @@ frappe.ui.form.on('Compliance Settings', {
         }
       }
     })
-		//filter for din_kyc_sub_category based on digital_signature_category
-    frm.set_query('din_kyc_sub_category', function(){
+
+		//filter for din_kyc_sub_category based on din_kyc_category
+		frm.set_query('din_kyc_sub_category', function(){
       return {
         filters: {
           compliance_category : frm.doc.din_kyc_category
         }
       }
     })
+
+
+		//filter for legal_authority_sub_category based on legal_authority_category
+		frm.set_query('legal_authority_sub_category', function(){
+      return {
+        filters: {
+          compliance_category : frm.doc.legal_authority_category
+        }
+      }
+    })
+
+		//filter for auditor_sub_category based on auditor_subcategory
+		frm.set_query('auditor_sub_category', function(){
+      return {
+        filters: {
+          compliance_category : frm.doc.auditor_category
+        }
+      }
+    })
+
 	}
 });
 
