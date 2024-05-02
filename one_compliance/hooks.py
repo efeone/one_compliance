@@ -141,7 +141,6 @@ doc_events = {
     'Customer':{
         'on_update':['one_compliance.one_compliance.doc_events.customer.customer_on_update',
                     'one_compliance.one_compliance.doc_events.customer.create_project_from_customer'
-                    # 'one_compliance.one_compliance.doc_events.customer.create_projects_from_audit_list_and_notify_audit_expiry'
                     ],
         'before_save':['one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',
                        'one_compliance.one_compliance.doc_events.customer.set_expiry_dates']
@@ -244,20 +243,56 @@ override_doctype_dashboards = {
 # auth_hooks = [
 #	"one_compliance.auth.validate"
 # ]
-fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Founder','Director','Compliance Manager','Senior Manager','Manager','Executive','Head Of Department']]]},
-            {'dt': "Document Register Type"},
-            {'dt': 'Customer Type'},
-            {'dt': 'Workflow State', 'filters': [['name', 'in', ['Draft','Approved','Rejected','Pending','Sent to Customer','Customer Approval Waiting','Customer Approved','Customer Rejected','Cancelled','Verified','Tax Invoice','Proforma Invoice']]]},
-			{'dt': 'Workflow', 'filters': [['name', 'in', ['Compliance Agreement Workflow','Sales Invoice Workflow']]]},
-			{'dt': 'Workflow Action Master', 'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval','Customer Reject','Customer Approval waiting','Cancelled','Generate Proforma Invoice','Generate Tax Invoice','Cancel']]]},
-            {'dt' : 'Notification Template'},
-            {'dt': 'Designation', 'filters': [['name', 'in',['Founder','Director','Head Of Department','Senior Manager','Manager','Executive']]]},
-            {'dt': 'Module Profile', 'filters': [['name', 'in', ['Founder','Director','Head Of Department','Super Admin','Senior Manager','Manager','Executive']]]},
-            {'dt': 'Web Page', 'filters': [['name', 'in', ['customer-credentials', 'project-status', 'agreement-approval', 'login-page', 'customer-documents']]]},
-            {'dt': 'Custom DocPerm', 'filters':[['parent', 'in',['Lead','Oppotunity','Customer','Customer Type','Compliance Category','Compliance Sub Category','Project','Project Template','Compliance Agreement','Inward Register','Outward Register','Compliance Settings','Notification Template','Purpose','Customer Credentials','Credential Type','Customer Document','Employee','Employee Group','Digital Signature','Department','Task','Compliance Category Details','Compliance Executive','Register Type Detail','Compliance Task Assignment','Credential Details','Digital Signature Details','Compliance Task Detail','Staff Assignment','Customer Document Record','Customer Contacts','General Register Type','Document Register Type','General Register Type List','Compliance Category List','Contact','Payment Terms Template','Address','Project Type','Category Type']]]},
-            {'dt': 'Role Profile'},
-            {'dt': 'Category Type', 'filters': [['name','in',['Audit','Compliance','Tax','Consulting']]]},
-            {'dt': 'Translation'}
-
-
+fixtures = [
+    {
+        'dt': 'Role',
+        'filters': [['name', 'in', ['Founder','Director','Compliance Manager','Senior Manager','Manager','Executive','Head Of Department']]]
+    },
+    {
+        'dt': "Document Register Type"
+    },
+    {
+        'dt': 'Customer Type'
+    },
+    {
+        'dt': 'Workflow State',
+        'filters': [['name', 'in', ['Draft','Approved','Rejected','Pending','Sent to Customer','Customer Approval Waiting','Customer Approved','Customer Rejected','Cancelled','Verified','Tax Invoice','Proforma Invoice']]]
+    },
+    {
+        'dt': 'Workflow',
+        'filters': [['name', 'in', ['Compliance Agreement Workflow','Sales Invoice Workflow']]]
+    },
+    {
+        'dt': 'Workflow Action Master',
+        'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval','Customer Reject','Customer Approval waiting','Cancelled','Generate Proforma Invoice','Generate Tax Invoice','Cancel']]]
+    },
+    {
+        'dt' : 'Notification Template'
+    },
+    {
+        'dt': 'Designation',
+        'filters': [['name', 'in',['Founder','Director','Head Of Department','Senior Manager','Manager','Executive']]]
+    },
+    {
+        'dt': 'Module Profile',
+        'filters': [['name', 'in', ['Founder','Director','Head Of Department','Super Admin','Senior Manager','Manager','Executive']]]
+    },
+    {
+        'dt': 'Web Page',
+        'filters': [['name', 'in', ['customer-credentials', 'project-status', 'agreement-approval', 'login-page', 'customer-documents']]]
+    },
+    {
+        'dt': 'Custom DocPerm',
+        'filters':[['parent', 'in',['Lead','Oppotunity','Customer','Customer Type','Compliance Category','Compliance Sub Category','Project','Project Template','Compliance Agreement','Inward Register','Outward Register','Compliance Settings','Notification Template','Purpose','Customer Credentials','Credential Type','Customer Document','Employee','Employee Group','Digital Signature','Department','Task','Compliance Category Details','Compliance Executive','Register Type Detail','Compliance Task Assignment','Credential Details','Digital Signature Details','Compliance Task Detail','Staff Assignment','Customer Document Record','Customer Contacts','General Register Type','Document Register Type','General Register Type List','Compliance Category List','Contact','Payment Terms Template','Address','Project Type','Category Type']]]
+    },
+    {
+        'dt': 'Role Profile'
+    },
+    {
+        'dt': 'Category Type',
+        'filters': [['name','in',['Audit','Compliance','Tax','Consulting']]]
+    },
+    {
+        'dt': 'Translation'
+    }
 ]
