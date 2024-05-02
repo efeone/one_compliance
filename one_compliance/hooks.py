@@ -258,6 +258,4 @@ fixtures = [{'dt': 'Role', 'filters': [['name', 'in', ['Founder','Director','Com
             {'dt': 'Role Profile'},
             {'dt': 'Category Type', 'filters': [['name','in',['Audit','Compliance','Tax','Consulting']]]},
             {'dt': 'Translation'}
-
-
 ]
