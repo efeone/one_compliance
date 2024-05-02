@@ -226,3 +226,15 @@ def subtask_on_update(doc, event):
         items = frappe.get_all("Task Document Item", filters={"parent": doc.name}, fields=["is_completed"])
         if any(item.get("is_completed") == 0 for item in items):
             frappe.throw(_("Please complete all documents before marking the task as complete"))
+
+# Set series for task if it's template
+@frappe.whitelist()
+def autoname(doc, event):
+    if doc.is_template:
+        series = frappe.get_single("Compliance Settings").get("task_template_series")
+        if series:
+            doc.name = frappe.model.naming.make_autoname(series + '.#####')
+        else:
+            frappe.throw(_("Please set the Task Template Series in Compliance Settings"))
+    else:
+        pass

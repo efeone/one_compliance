@@ -18,6 +18,7 @@
   "compliance_service_item_group",
   "column_break_gnzz",
   "customer_type",
+  "task_template_series",
   "tab_break_us4n3",
   "task_before_due_date_notification",
   "task_overdue_notification_for_employee",
@@ -191,6 +192,11 @@
    "label": "Delete Project Along with Compliance Agreement"
   },
   {
+   "fieldname": "task_template_series",
+   "fieldtype": "Data",
+   "label": "Task Template Series"
+  },
+  {
    "fieldname": "legal_authority_category",
    "fieldtype": "Link",
    "label": "Legal Authority Category",
@@ -218,7 +224,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-04-29 14:58:54.118940",
+ "modified": "2024-05-02 16:28:50.659212",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
