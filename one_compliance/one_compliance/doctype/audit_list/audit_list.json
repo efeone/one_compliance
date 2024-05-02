@@ -1,0 +1,110 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-04-19 12:22:09.979519",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_oi29",
+  "firm_name",
+  "address",
+  "appoint_date",
+  "expiry_date",
+  "notify_before_expiry_date",
+  "column_break_fayq",
+  "pan",
+  "firm_registration_number",
+  "membership_number",
+  "period_of_appointment",
+  "email_id"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_oi29",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "firm_name",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Firm name",
+   "options": "Company Auditor"
+  },
+  {
+   "fetch_from": "firm_name.address",
+   "fieldname": "address",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Address"
+  },
+  {
+   "fetch_from": "firm_name.pan",
+   "fieldname": "pan",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "PAN"
+  },
+  {
+   "fetch_from": "firm_name.firm_registration_number",
+   "fieldname": "firm_registration_number",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Firm Registration Number "
+  },
+  {
+   "fetch_from": "firm_name.membership_number",
+   "fieldname": "membership_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Membership Number "
+  },
+  {
+   "fetch_from": "firm_name.period_of_appointment",
+   "fieldname": "period_of_appointment",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Period Of Appointment"
+  },
+  {
+   "fetch_from": "firm_name.appointment_date",
+   "fieldname": "appoint_date",
+   "fieldtype": "Date",
+   "label": "Appointment Date"
+  },
+  {
+   "fieldname": "notify_before_expiry_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Expiry Notification Date"
+  },
+  {
+   "fieldname": "column_break_fayq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "expiry_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Expiry Date",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "firm_name.email_id",
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-04-25 17:54:31.102349",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Audit List",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

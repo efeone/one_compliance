@@ -31,9 +31,13 @@
   "digital_signature_settings_tab",
   "digital_signature_category",
   "din_kyc_category",
+  "legal_authority_category",
+  "auditor_category",
   "column_break_twhe",
   "digital_signature_sub_category",
-  "din_kyc_sub_category"
+  "din_kyc_sub_category",
+  "legal_authority_sub_category",
+  "auditor_sub_category"
  ],
  "fields": [
   {
@@ -150,7 +154,7 @@
   {
    "fieldname": "digital_signature_settings_tab",
    "fieldtype": "Tab Break",
-   "label": "Digital Signature and DIN Settings"
+   "label": "Category Settings"
   },
   {
    "fieldname": "digital_signature_category",
@@ -185,12 +189,36 @@
    "fieldname": "delete_project_along_with_compliance_agreement",
    "fieldtype": "Check",
    "label": "Delete Project Along with Compliance Agreement"
+  },
+  {
+   "fieldname": "legal_authority_category",
+   "fieldtype": "Link",
+   "label": "Legal Authority Category",
+   "options": "Compliance Category"
+  },
+  {
+   "fieldname": "auditor_category",
+   "fieldtype": "Link",
+   "label": "Auditor Category",
+   "options": "Compliance Category"
+  },
+  {
+   "fieldname": "legal_authority_sub_category",
+   "fieldtype": "Link",
+   "label": "Legal Authority Sub Category",
+   "options": "Compliance Sub Category"
+  },
+  {
+   "fieldname": "auditor_sub_category",
+   "fieldtype": "Link",
+   "label": "Auditor Sub Category",
+   "options": "Compliance Sub Category"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-04-16 11:17:12.059667",
+ "modified": "2024-04-29 14:58:54.118940",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
