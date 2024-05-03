@@ -1,0 +1,45 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-05-03 14:57:11.884430",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_q8aj",
+  "company",
+  "default_income_account"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_q8aj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "default_income_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Default Income Account",
+   "options": "Account"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-05-03 15:00:11.421102",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Sub Category Account",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
