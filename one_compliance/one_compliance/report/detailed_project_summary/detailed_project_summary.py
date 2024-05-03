@@ -104,17 +104,21 @@ def get_data(filters):
 		if frappe.db.exists('Department', filters.get('department')):
 			departments.append(filters.get('department'))
 	else:
-		departments = frappe.db.get_all('Department', { 'is_group':0 }, pluck='name')
+		departments = frappe.db.get_all('Department', { 'is_group':0, 'is_compliance':1 }, pluck='name')
 	data = prepare_data(departments, filters)
 	return data
 
 def prepare_data(departments, filters):
 	data=[]
 	for department in departments:
-		data.append({
+		department_row = []
+		projects = frappe.db.get_all('Project', { 'department': department, 'expected_start_date':['between', [ getdate(filters.get('from_date')), getdate(filters.get('to_date'))]] }, pluck='name')
+		department_row.append({
+			'department_row': 1,
 			'department': department
 		})
-		projects = frappe.db.get_all('Project', { 'department': department, 'expected_start_date':['between', [ getdate(filters.get('from_date')), getdate(filters.get('to_date'))]] }, pluck='name')
+		total_pending_tasks, total_completed_tasks, total_overdue_tasks = 0, 0, 0
+		total_invoiced_amount, total_payment_recieved, total_outstanding_amount = 0, 0, 0
 		for project in projects:
 			project_doc = frappe.get_doc('Project', project)
 			invoice_details = get_invoiced_and_outstanding_amount_from_project(project)
@@ -133,7 +137,20 @@ def prepare_data(departments, filters):
 				'payment_recieved': invoice_details.get('payment_recieved') or 0,
 				'outstanding_amount': invoice_details.get('outstanding_amount') or 0
 			}
-			data.append(row)
+			total_pending_tasks += get_project_count_based_on_status(project, 'Pending')
+			total_completed_tasks += get_project_count_based_on_status(project, 'Completed')
+			total_overdue_tasks += get_project_count_based_on_status(project, 'Overdue')
+			total_invoiced_amount += row.get('invoiced_amount')
+			total_payment_recieved += row.get('payment_recieved')
+			total_outstanding_amount += row.get('outstanding_amount')
+			department_row.append(row)
+		department_row[0]['pending_task'] = total_pending_tasks
+		department_row[0]['completed_task'] = total_completed_tasks
+		department_row[0]['overdue_task'] = total_overdue_tasks
+		department_row[0]['invoiced_amount'] = total_invoiced_amount
+		department_row[0]['payment_recieved'] = total_payment_recieved
+		department_row[0]['outstanding_amount'] = total_outstanding_amount
+		data.extend(department_row)
 	return data
 
 def get_project_count_based_on_status(project, status):

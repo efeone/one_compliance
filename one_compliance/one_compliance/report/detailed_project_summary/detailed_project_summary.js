@@ -21,7 +21,14 @@ frappe.query_reports["Detailed Project Summary"] = {
             label: __("Department"),
             fieldname: "department",
             fieldtype: "Link",
-            options: "Department"
+            options: "Department",
+			get_query: function(){
+					return {
+						filters: {
+							'is_compliance': 1
+						}
+					}
+				}
         },
 		// {
         //     label: __("Employee"),
@@ -36,5 +43,14 @@ frappe.query_reports["Detailed Project Summary"] = {
 		// 		}
 		// 	}
         // },
-	]
+	],
+	formatter: function (value, row, column, data, default_formatter) {
+		value = default_formatter(value, row, column, data);
+		if (data.department_row) {
+			value = $(`<span>${value}</span>`);
+			var $value = $(value).css("font-weight", "bold");
+			value = $value.wrap("<p></p>").parent().html();
+		}
+		return value;
+	}
 };
