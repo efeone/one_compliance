@@ -159,8 +159,7 @@ def create_sales_invoice(project, payment_terms, rate, sub_category_doc):
 		'rate' : rate,
 		'qty' : 1,
 		'income_account' : income_account,
-		'description' : project.custom_project_service,
-		'cost_center' : project.cost_center
+		'description' : project.custom_project_service
 	})
 	sales_invoice.save(ignore_permissions=True)
 
