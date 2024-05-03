@@ -24,6 +24,8 @@
   "rate",
   "item_code",
   "income_account",
+  "section_break_qmwb",
+  "default_account",
   "department_details_section",
   "department",
   "head_of_department",
@@ -256,11 +258,21 @@
    "fieldname": "project_based_on_prior_phase",
    "fieldtype": "Check",
    "label": "Project based on Prior Phase"
+  },
+  {
+   "fieldname": "section_break_qmwb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "default_account",
+   "fieldtype": "Table",
+   "label": "Default Account",
+   "options": "Sub Category Account"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-02-26 13:17:10.130129",
+ "modified": "2024-05-03 15:02:18.879501",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
