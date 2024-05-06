@@ -148,7 +148,7 @@ def create_sales_invoice(project, payment_terms, rate, sub_category_doc):
 	sales_invoice.posting_date = frappe.utils.today()
 	sales_invoice.project = project.name
 	sales_invoice.company = project.company
-	sub_category_income_account = sub_category_doc.income_account
+	sub_category_income_account = get_company_income_account(project.company,sub_category_doc.name)		
 	income_account = sub_category_income_account if sub_category_income_account else frappe.db.get_value('Company',project.company, 'default_income_account')
 
 	if payment_terms:
@@ -237,3 +237,17 @@ def autoname(doc, event):
             frappe.throw(_("Please set the Task Template Series in Compliance Settings"))
     else:
         pass
+
+# Set Income Account as per the Company Name
+@frappe.whitelist()
+def get_company_income_account(company, compliance_sub_category):
+	income_result = frappe.db.sql(
+		"""
+		select default_income_account
+		from `tabSub Category Account`
+		where parent=%s and company=%s""",
+		(compliance_sub_category, company),
+		as_dict=1,
+		)
+	if income_result:
+		return income_result[0].default_income_account
