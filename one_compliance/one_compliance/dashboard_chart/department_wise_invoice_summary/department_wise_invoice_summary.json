@@ -1,0 +1,41 @@
+{
+ "chart_name": "Department Wise Invoice Summary",
+ "chart_type": "Report",
+ "creation": "2024-05-06 11:45:56.731431",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "dynamic_filters_json": "{}",
+ "filters_json": "{\"from_date\":\"2024-04-06\",\"to_date\":\"2024-05-06\"}",
+ "group_by_type": "Count",
+ "idx": 3,
+ "is_public": 1,
+ "is_standard": 1,
+ "modified": "2024-05-06 15:11:26.424455",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Department Wise Invoice Summary",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "report_name": "Department wise Project and Invoice Summary",
+ "roles": [],
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Line",
+ "use_report_chart": 0,
+ "x_field": "department",
+ "y_axis": [
+  {
+   "color": "#4463F0",
+   "y_field": "invoiced_amount"
+  },
+  {
+   "color": "#29CD42",
+   "y_field": "payment_recieved"
+  },
+  {
+   "color": "#CB2929",
+   "y_field": "outstanding_amount"
+  }
+ ]
+}
