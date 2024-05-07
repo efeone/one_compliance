@@ -133,7 +133,7 @@
   {
    "fieldname": "customer_type",
    "fieldtype": "Link",
-   "label": "Customer Type",
+   "label": "Default Customer Type",
    "options": "Customer Type"
   },
   {
@@ -224,7 +224,7 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-05-02 16:28:50.659212",
+ "modified": "2024-05-07 11:14:56.845029",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
