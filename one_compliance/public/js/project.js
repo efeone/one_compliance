@@ -8,16 +8,21 @@ frappe.ui.form.on('Project',{
       }
 
         let roles = frappe.user_roles;
-    		if(roles.includes('Compliance Manager') || roles.includes('Director')){
-          if(!frm.is_new()){
-            frm.add_custom_button('View Credential', () => {
-      				customer_credentials(frm)
-            });
-            frm.add_custom_button('View Documents', () =>{
-              customer_documents(frm)
-            })
+        if (roles.includes('Compliance Manager') || roles.includes('Director')) {
+          if (!frm.is_new()) {
+              frm.add_custom_button('Customer Credentials', () => {
+                  customer_credentials(frm);
+              }, 
+              __("View")
+            );
+              frm.add_custom_button('Customer Documents', () => {
+                customer_documents(frm);
+            },
+            __("View")
+          );
           }
-    }
+      }
+      
     if(!frm.is_new()){
       frm.add_custom_button('Set Project Status', () => {
         update_project_status(frm)
