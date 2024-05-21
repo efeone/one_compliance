@@ -38,7 +38,10 @@
   "digital_signature_sub_category",
   "din_kyc_sub_category",
   "legal_authority_sub_category",
-  "auditor_sub_category"
+  "auditor_sub_category",
+  "tab_4_tab",
+  "invoice_series_setup_section",
+  "invoice_series"
  ],
  "fields": [
   {
@@ -219,12 +222,27 @@
    "fieldtype": "Link",
    "label": "Auditor Sub Category",
    "options": "Compliance Sub Category"
+  },
+  {
+   "fieldname": "tab_4_tab",
+   "fieldtype": "Tab Break",
+   "label": "Invoice Series Setup"
+  },
+  {
+   "fieldname": "invoice_series_setup_section",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "invoice_series",
+   "fieldtype": "Table",
+   "label": "Invoice Series",
+   "options": "Invoice Series Setup"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-05-07 11:14:56.845029",
+ "modified": "2024-05-21 12:11:56.975968",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
