@@ -1,0 +1,57 @@
+{
+ "actions": [],
+ "creation": "2024-05-21 11:45:57.710855",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "company",
+  "column_break_mdhb",
+  "sales_invoice_series",
+  "column_break_fabq",
+  "invoice_type"
+ ],
+ "fields": [
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "column_break_mdhb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_invoice_series",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Sales Invoice Series"
+  },
+  {
+   "fieldname": "column_break_fabq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "invoice_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Invoice Type",
+   "options": "Invoice\nTax Invoice"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-05-23 13:08:41.301502",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Invoice Series Setup",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
