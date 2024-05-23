@@ -18,4 +18,4 @@ def autoname(doc, method=None):
         if invoice_series_name:
             doc.name = frappe.model.naming.make_autoname(invoice_series_name)
         else:
-            frappe.throw(_("khjg"))
+            frappe.throw(_("Naming Series is not created"))
