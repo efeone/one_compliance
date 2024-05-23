@@ -129,7 +129,7 @@ doc_events = {
         'validate':['one_compliance.one_compliance.doc_events.task.append_users_to_project',
                     'one_compliance.one_compliance.doc_events.task.set_task_status_to_hold',
                    ],
-        'autoname':['one_compliance.one_compliance.doc_events.task.autoname',
+        'autoname':['one_compliance.one_compliance.doc_events.task.autoname'
                     ],
     },
     'Project':{
@@ -148,7 +148,13 @@ doc_events = {
                        'one_compliance.one_compliance.doc_events.customer.set_expiry_dates']
     },
     'Sales Invoice':{
-        'on_submit':'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
+
+        'on_submit':[
+                    'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
+                    ],
+        'autoname':[
+                    'one_compliance.one_compliance.doc_events.sales_invoice.autoname'
+                    ],
     },
     'Opportunity':{
         'after_save':'one_compliance.one_compliance.doc_events.oppotunity.make_engagement_letter'
