@@ -152,9 +152,9 @@ doc_events = {
         'on_submit':[
                     'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
                     ],
-        'autoname':[
-                    'one_compliance.one_compliance.doc_events.sales_invoice.autoname'
-                    ],
+        # 'autoname':[
+        #             'one_compliance.one_compliance.doc_events.sales_invoice.autoname'
+        #             ],
     },
     'Opportunity':{
         'after_save':'one_compliance.one_compliance.doc_events.oppotunity.make_engagement_letter'
