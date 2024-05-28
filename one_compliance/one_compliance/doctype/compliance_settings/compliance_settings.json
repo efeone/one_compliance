@@ -16,6 +16,7 @@
   "section_break_saeum",
   "role_of_project_creator",
   "compliance_service_item_group",
+  "default_invoice_due_day",
   "column_break_gnzz",
   "customer_type",
   "task_template_series",
@@ -237,12 +238,17 @@
    "fieldtype": "Table",
    "label": "Invoice Series",
    "options": "Invoice Series Setup"
+  },
+  {
+   "fieldname": "default_invoice_due_day",
+   "fieldtype": "Int",
+   "label": "Default Invoice Due Day"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-05-21 12:11:56.975968",
+ "modified": "2024-05-28 14:45:11.880629",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
