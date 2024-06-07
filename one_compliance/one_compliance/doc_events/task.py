@@ -90,17 +90,17 @@ def create_journal_entry(doc):
 		journal_entry.user_remark = doc.custom_user_remark
 		journal_entry.posting_date = frappe.utils.today()
 		journal_entry.append('accounts', {
-            'account': account,
-            'party_type': 'Customer',
-            'party': doc.customer,
+			'account': account,
+			'party_type': 'Customer',
+			'party': doc.customer,
 			'project': doc.project,
-            'debit_in_account_currency': doc.custom_payable_amount
-        })
+			'debit_in_account_currency': doc.custom_payable_amount
+		})
 		journal_entry.append('accounts', {
-            'account': default_account,
+			'account': default_account,
 			'project': doc.project,
-            'credit_in_account_currency': doc.custom_payable_amount
-        })
+			'credit_in_account_currency': doc.custom_payable_amount
+		})
 		journal_entry.insert(ignore_permissions = True)
 		frappe.msgprint("Journal Entry is created Successfully", alert=True)
 
@@ -126,20 +126,15 @@ def make_sales_invoice(doc, method):
 				if frappe.db.exists('Compliance Sub Category', project.compliance_sub_category):
 					sub_category_doc = frappe.get_doc('Compliance Sub Category', project.compliance_sub_category)
 					if sub_category_doc.is_billable:
-						if frappe.db.exists('Sales Order', project.sales_order):
-							payment_terms = frappe.db.get_value('Sales Order', project.sales_order,'payment_terms_template')
-							rate = get_rate_from_sales_order(project.sales_order, project.compliance_sub_category)
-							rate = rate if rate else sub_category_doc.rate
-							if not frappe.db.exists('Sales Invoice', {'project':project.name}):
-								create_sales_invoice(project, payment_terms, rate, sub_category_doc)
+						sales_order = frappe.db.exists('Sales Order', project.sales_order)
+						if sales_order:
+							frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
 						elif frappe.db.exists('Compliance Agreement', project.compliance_agreement):
-							invoice_based_on = frappe.db.get_value('Compliance Agreement', project.compliance_agreement, 'invoice_based_on')
 							payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
 							rate = get_rate_from_compliance_agreement(project.compliance_agreement, project.compliance_sub_category)
 							rate = rate if rate else sub_category_doc.rate
-							if invoice_based_on == 'Project' and not frappe.db.exists('Sales Invoice', {'project':project.name}):
-								create_sales_invoice(project, payment_terms, rate, sub_category_doc)
-								frappe.db.set_value('Project', project.name, 'is_invoiced', 1)
+							print("new SO")
+							create_sales_order(project, payment_terms, rate, sub_category_doc)
 
 @frappe.whitelist()
 def create_sales_invoice(project, payment_terms, rate, sub_category_doc):
@@ -162,6 +157,33 @@ def create_sales_invoice(project, payment_terms, rate, sub_category_doc):
 		'description' : project.custom_project_service
 	})
 	sales_invoice.save(ignore_permissions=True)
+
+@frappe.whitelist()
+def create_sales_order(project, payment_terms, rate, sub_category_doc):
+	"""method creates a new sales order
+
+	Args:
+		project (EmployeeProject): Document Object of Project DocType
+		payment_terms (str): Name of the Payment Terms Template
+		rate (float): Rate of the Item
+		sub_category_doc (ComplianceSubCategory): Document Object of Compliance Sub Category
+	"""
+	new_sales_order = frappe.new_doc("Sales Order")
+	new_sales_order.customer = project.customer
+	new_sales_order.posting_date = frappe.utils.today()
+	new_sales_order.delivery_date = frappe.utils.today()
+	new_sales_order.project = project.name
+	new_sales_order.company = project.company
+	if payment_terms:
+		new_sales_order.payment_terms_template = payment_terms
+	new_sales_order.append('items', {
+		'item_code' : sub_category_doc.item_code,
+		'item_name' : sub_category_doc.sub_category,
+		'rate' : rate,
+		'qty' : 1,
+		'description' : project.custom_project_service
+	})
+	new_sales_order.insert(ignore_permissions=True)
 
 @frappe.whitelist()
 def update_task_status(task_id, status, completed_by, completed_on):
@@ -221,22 +243,22 @@ def get_rate_from_compliance_agreement(compliance_agreement, compliance_sub_cate
 # Check for uncompleted documents on updation of task to completed
 @frappe.whitelist()
 def subtask_on_update(doc, event):
-    if doc.status == "Completed":
-        items = frappe.get_all("Task Document Item", filters={"parent": doc.name}, fields=["is_completed"])
-        if any(item.get("is_completed") == 0 for item in items):
-            frappe.throw(_("Please complete all documents before marking the task as complete"))
+	if doc.status == "Completed":
+		items = frappe.get_all("Task Document Item", filters={"parent": doc.name}, fields=["is_completed"])
+		if any(item.get("is_completed") == 0 for item in items):
+			frappe.throw(_("Please complete all documents before marking the task as complete"))
 
 # Set series for task if it's template
 @frappe.whitelist()
 def autoname(doc, event):
-    if doc.is_template:
-        series = frappe.get_single("Compliance Settings").get("task_template_series")
-        if series:
-            doc.name = frappe.model.naming.make_autoname(series + '.#####')
-        else:
-            frappe.throw(_("Please set the Task Template Series in Compliance Settings"))
-    else:
-        pass
+	if doc.is_template:
+		series = frappe.get_single("Compliance Settings").get("task_template_series")
+		if series:
+			doc.name = frappe.model.naming.make_autoname(series + '.#####')
+		else:
+			frappe.throw(_("Please set the Task Template Series in Compliance Settings"))
+	else:
+		pass
 
 # Set Income Account as per the Company Name
 @frappe.whitelist()
