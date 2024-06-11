@@ -137,7 +137,7 @@ doc_events = {
                     'one_compliance.one_compliance.doc_events.project.project_on_update',
                     ],
         'after_insert':[
-                        'one_compliance.one_compliance.doc_events.project.update_expected_end_date_in_project',
+                        'one_compliance.one_compliance.doc_events.project.project_after_insert',
                        ],
     },
     'Customer':{

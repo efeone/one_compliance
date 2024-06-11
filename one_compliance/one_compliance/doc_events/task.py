@@ -118,7 +118,7 @@ def set_task_time_line(doc):
 
 @frappe.whitelist()
 def make_sales_invoice(doc, method):
-	# The sales invoice will be automatic on the on update of the project
+	# The sales order will be automatic on the on update of the project
 	if doc.status == 'Completed':
 		if frappe.db.exists('Project', doc.project):
 			project = frappe.get_doc ('Project',doc.project)
@@ -129,12 +129,14 @@ def make_sales_invoice(doc, method):
 						sales_order = frappe.db.exists('Sales Order', project.sales_order)
 						if sales_order:
 							frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
-						elif frappe.db.exists('Compliance Agreement', project.compliance_agreement):
-							payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
-							rate = get_rate_from_compliance_agreement(project.compliance_agreement, project.compliance_sub_category)
+						else:
+							payment_terms = None
+							rate = None
+							if frappe.db.exists('Compliance Agreement', project.compliance_agreement):
+								payment_terms = frappe.db.get_value('Compliance Agreement', project.compliance_agreement,'default_payment_terms_template')
+								rate = get_rate_from_compliance_agreement(project.compliance_agreement, project.compliance_sub_category)
 							rate = rate if rate else sub_category_doc.rate
-							print("new SO")
-							create_sales_order(project, payment_terms, rate, sub_category_doc)
+							create_sales_order(project, rate, sub_category_doc, payment_terms)
 
 @frappe.whitelist()
 def create_sales_invoice(project, payment_terms, rate, sub_category_doc):
@@ -159,7 +161,7 @@ def create_sales_invoice(project, payment_terms, rate, sub_category_doc):
 	sales_invoice.save(ignore_permissions=True)
 
 @frappe.whitelist()
-def create_sales_order(project, payment_terms, rate, sub_category_doc):
+def create_sales_order(project, rate, sub_category_doc, payment_terms=None):
 	"""method creates a new sales order
 
 	Args:
@@ -184,6 +186,9 @@ def create_sales_order(project, payment_terms, rate, sub_category_doc):
 		'description' : project.custom_project_service
 	})
 	new_sales_order.insert(ignore_permissions=True)
+	project.sales_order = new_sales_order.name
+	project.save()
+	frappe.msgprint("Sales Order {0} Created against {1}".format(new_sales_order.name, project.name), alert=True)
 
 @frappe.whitelist()
 def update_task_status(task_id, status, completed_by, completed_on):

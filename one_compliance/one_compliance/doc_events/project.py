@@ -4,6 +4,9 @@ from one_compliance.one_compliance.utils import send_notification
 from frappe.email.doctype.notification.notification import get_context
 from one_compliance.one_compliance.doc_events.task import update_expected_dates_in_task
 from frappe.utils import *
+from one_compliance.one_compliance.doc_events.task import (
+    create_sales_order, get_rate_from_compliance_agreement,
+    update_expected_dates_in_task)
 
 @frappe.whitelist()
 def project_on_update(doc, method):
@@ -49,7 +52,7 @@ def set_project_status(project, status, comment=None):
 	project.save()
 
 @frappe.whitelist()
-def update_expected_end_date_in_project(doc, method):
+def project_after_insert(doc, method):
 	if not doc.expected_end_date and doc.compliance_sub_category:
 		project_template = frappe.db.get_value('Compliance Sub Category', doc.compliance_sub_category, 'project_template')
 		if doc.expected_start_date and project_template:
@@ -57,6 +60,24 @@ def update_expected_end_date_in_project(doc, method):
 			doc.expected_end_date = add_days(doc.expected_start_date, project_duration)
 			doc.save()
 		frappe.db.commit
+
+	# Creating a Sales Order after a project is created
+	if frappe.db.exists('Compliance Sub Category', doc.compliance_sub_category):
+		sub_category_doc = frappe.get_doc('Compliance Sub Category', doc.compliance_sub_category)
+		if sub_category_doc.is_billable:
+			print("it is billable!")
+			sales_order = frappe.db.exists('Sales Order', doc.sales_order)
+			if sales_order:
+				print("existing SO")
+				frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
+			else:
+				payment_terms = None
+				rate = None
+				if frappe.db.exists('Compliance Agreement', doc.compliance_agreement):
+					payment_terms = frappe.db.get_value('Compliance Agreement', doc.compliance_agreement,'default_payment_terms_template')
+					rate = get_rate_from_compliance_agreement(doc.compliance_agreement, doc.compliance_sub_category)
+
+	create_sales_order(doc, rate, sub_category_doc, payment_terms)
 
 @frappe.whitelist()
 def set_status_to_overdue():
