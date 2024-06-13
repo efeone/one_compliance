@@ -72,12 +72,11 @@ def project_after_insert(doc, method):
 				frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
 			else:
 				payment_terms = None
-				rate = None
+				rate = 0
 				if frappe.db.exists('Compliance Agreement', doc.compliance_agreement):
 					payment_terms = frappe.db.get_value('Compliance Agreement', doc.compliance_agreement,'default_payment_terms_template')
 					rate = get_rate_from_compliance_agreement(doc.compliance_agreement, doc.compliance_sub_category)
-
-	create_sales_order(doc, rate, sub_category_doc, payment_terms)
+				create_sales_order(doc, rate, sub_category_doc, payment_terms)
 
 @frappe.whitelist()
 def set_status_to_overdue():
