@@ -264,15 +264,15 @@ fixtures = [
     },
     {
         'dt': 'Workflow State',
-        'filters': [['name', 'in', ['Draft','Approved','Rejected','Pending','Sent to Customer','Customer Approval Waiting','Customer Approved','Customer Rejected','Cancelled','Verified','Tax Invoice','Proforma Invoice']]]
+        'filters': [['name', 'in', ['Draft','Approved','Rejected','Pending','Sent to Customer','Customer Approval Waiting','Customer Approved','Customer Rejected','Cancelled','Verified','Tax Invoice','Proforma Invoice', 'Closed', 'In Progress']]]
     },
     {
         'dt': 'Workflow',
-        'filters': [['name', 'in', ['Compliance Agreement Workflow','Sales Invoice Workflow']]]
+        'filters': [['name', 'in', ['Compliance Agreement Workflow','Sales Invoice Workflow', 'Sales Order Workflow']]]
     },
     {
         'dt': 'Workflow Action Master',
-        'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval','Customer Reject','Customer Approval waiting','Cancelled','Generate Proforma Invoice','Generate Tax Invoice','Cancel']]]
+        'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval','Customer Reject','Customer Approval waiting','Cancelled','Generate Proforma Invoice','Generate Tax Invoice','Cancel', 'Proceed', 'Close']]]
     },
     {
         'dt' : 'Notification Template'
