@@ -89,5 +89,19 @@
   "modified": "2024-02-16 15:59:04.169976",
   "name": "Cancel",
   "workflow_action_name": "Cancel"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2024-06-13 17:01:15.316090",
+  "name": "Proceed",
+  "workflow_action_name": "Proceed"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2024-06-13 17:06:50.749691",
+  "name": "Close",
+  "workflow_action_name": "Close"
  }
 ]

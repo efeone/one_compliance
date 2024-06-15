@@ -129,6 +129,7 @@ def make_sales_invoice(doc, method):
 						sales_order = frappe.db.exists('Sales Order', project.sales_order)
 						if sales_order:
 							frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
+							frappe.db.set_value("Sales Order", sales_order, "workflow_state", "Proforma Invoice")
 						else:
 							payment_terms = None
 							rate = None
