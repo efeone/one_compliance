@@ -4,9 +4,10 @@
     <header class="level list-row-head text-muted">
       <div class="level-left list-header-subject" style="margin-top:5px;">
           <div class="col-md-4 text-center">Project</div>
+          <div class="col-md-2 text-center">Customer</div>
           <div class="col-md-2 text-center">Status</div>
           <div class="col-md-1 text-center">Expected End Date</div>
-          <div class="col-md-3 text-center assignee-section">Assigned To</div>
+          <div class="col-md-2 text-center assignee-section">Assigned To</div>
       </div>
     </header>
 
@@ -19,12 +20,15 @@
                       <a class="card-subtitle project-link showTask" href="" project="{{ data.name }}">{{ data.project_name }}</a>
                 </div>
                 <div class="col-md-2 text-center" style="padding: inherit;">
+                    {{ data.customer }}
+                </div>
+                <div class="col-md-2 text-center" style="padding: inherit;">
                     {{ data.status }}
                 </div>
                 <div class="col-md-1 text-center" style="padding: inherit;">
                     {{ data.expected_end_date }}
                 </div>
-                <div class="col-md-3 text-center" style="padding: inherit; position:relative;">
+                <div class="col-md-2 text-center" style="padding: inherit; position:relative;">
                     <p class="card-text assignee-section">
                         {% if data._assign %}
                             {% for assignee in data._assign %}
