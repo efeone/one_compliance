@@ -51,6 +51,26 @@ def update_documents_required(template, task, documents = None):
             return 'success'
 
 def on_trash(doc, method):
-    compliance_sub_category = frappe.get_doc("Compliance Sub Category",doc.compliance_sub_category)
-    compliance_sub_category.set('project_template', None)
-    compliance_sub_category.save()
+    if doc.compliance_sub_category:
+        if frappe.db.exists("Compliance Sub Category", doc.compliance_sub_category):
+            compliance_sub_category = frappe.get_doc("Compliance Sub Category", doc.compliance_sub_category)
+            if compliance_sub_category.project_template == doc.name:
+                compliance_sub_category.set('project_template', None)
+                compliance_sub_category.save()
+
+def validate(doc, method):
+    """
+        Method checks if project template exists for given compliance sub category
+        Output
+            Method throws error if a project template with the given compliance sub category is found
+    """
+    if not doc.compliance_sub_category:
+        return
+    existing_template = frappe.db.exists({
+        "doctype": "Project Template",
+        "compliance_sub_category": doc.compliance_sub_category,
+        "name": ["!=", doc.name]
+    })
+    if existing_template:
+        sub_category_name = frappe.get_value("Compliance Sub Category", doc.compliance_sub_category, "name")
+        frappe.throw(_("Project Template already exists for <b>{0}</b>").format(sub_category_name))
