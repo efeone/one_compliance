@@ -162,7 +162,7 @@ def create_sales_invoice(project, payment_terms, rate, sub_category_doc):
 	sales_invoice.save(ignore_permissions=True)
 
 @frappe.whitelist()
-def create_sales_order(project, rate, sub_category_doc, payment_terms=None):
+def create_sales_order(project, rate, sub_category_doc, payment_terms=None, submit=False):
 	"""method creates a new sales order
 
 	Args:
@@ -170,6 +170,7 @@ def create_sales_order(project, rate, sub_category_doc, payment_terms=None):
 		payment_terms (str): Name of the Payment Terms Template
 		rate (float): Rate of the Item
 		sub_category_doc (ComplianceSubCategory): Document Object of Compliance Sub Category
+		submit (bool): True or False, to submit the sales order or not
 	"""
 	new_sales_order = frappe.new_doc("Sales Order")
 	new_sales_order.customer = project.customer
@@ -189,6 +190,8 @@ def create_sales_order(project, rate, sub_category_doc, payment_terms=None):
 	new_sales_order.insert(ignore_permissions=True)
 	project.sales_order = new_sales_order.name
 	project.save()
+	if submit:
+		new_sales_order.submit()
 	frappe.msgprint("Sales Order {0} Created against {1}".format(new_sales_order.name, project.name), alert=True)
 
 @frappe.whitelist()

@@ -303,5 +303,9 @@ fixtures = [
     },
     {
         'dt': 'Translation'
+    },
+    {
+        'dt': 'Property Setter',
+        'filters': [['module', '=', 'One Compliance']]
     }
 ]
