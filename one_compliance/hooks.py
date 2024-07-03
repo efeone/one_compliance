@@ -120,7 +120,9 @@ doc_events = {
 		"after_insert": ["one_compliance.one_compliance.doc_events.project_template.update_project_template",
                         ],
         "on_trash": ["one_compliance.one_compliance.doc_events.project_template.on_trash",
-                    ]
+                    ],
+          "validate": ["one_compliance.one_compliance.doc_events.project_template.validate",
+                      ]
 	},
     'Task':{
         'on_update':['one_compliance.one_compliance.doc_events.task.task_on_update',
