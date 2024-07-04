@@ -16,6 +16,18 @@ frappe.ui.form.on('Sales Order', {
       if(frm.is_new()){
         frm.set_value('delivery_date', frappe.datetime.get_today());
       }
+      setTimeout(() => {
+
+        frm.fields_dict.items.grid.toggle_reqd("delivery_date")
+
+        frm.remove_custom_button('Pick List', 'Create');
+        frm.remove_custom_button('Delivery Note', 'Create');
+        frm.remove_custom_button('Work Order', 'Create');
+        frm.remove_custom_button('Material Request', 'Create');
+        frm.remove_custom_button('Request for Raw Materials', 'Create');
+        frm.remove_custom_button('Purchase Order', 'Create');
+        frm.remove_custom_button('Project', 'Create');
+        }, __('Create'));
     }
 });
 
