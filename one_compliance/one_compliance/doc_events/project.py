@@ -5,12 +5,26 @@ from frappe.email.doctype.notification.notification import get_context
 from one_compliance.one_compliance.doc_events.task import update_expected_dates_in_task
 from frappe.utils import *
 from one_compliance.one_compliance.doc_events.task import (
-    create_sales_order, get_rate_from_compliance_agreement,
-    update_expected_dates_in_task)
+	create_sales_order, get_rate_from_compliance_agreement,
+	update_expected_dates_in_task)
+from frappe.utils.user import get_users_with_role
+from frappe.desk.form.assign_to import add as add_assign
 
 @frappe.whitelist()
 def project_on_update(doc, method):
 	if doc.status == 'Completed':
+		if doc.sales_order:
+			accounts_users = get_users_with_role("Accounts User")
+			print(accounts_users)
+			add_assign(
+				{
+					"assign_to": accounts_users,
+					"doctype": "Sales Order",
+					"name": doc.sales_order,
+					"description": "Project {0} is completed, Please proceed the invoices".format(doc.sales_order),
+				}
+			)
+
 		send_project_completion_mail = frappe.db.get_value('Customer', doc.customer, 'send_project_completion_mail')
 		if send_project_completion_mail:
 			email_id = frappe.db.get_value('Customer', doc.customer, 'email_id')
@@ -89,25 +103,23 @@ def set_status_to_overdue():
 
 @frappe.whitelist()
 def get_permission_query_conditions(user):
-    """
-    Method used to set the permission to get the list of docs (Example: list view query)
-    Called from the permission_query_conditions of hooks for the DocType Issue
-    args:
-        user: name of User object or current user
-    return conditions query
-    """
-    if not user:
-        user = frappe.session.user
+	"""
+	Method used to set the permission to get the list of docs (Example: list view query)
+	Called from the permission_query_conditions of hooks for the DocType Issue
+	args:
+		user: name of User object or current user
+	return conditions query
+	"""
+	if not user:
+		user = frappe.session.user
 
-    user_roles = frappe.get_roles(user)
-    if "Administrator" in user_roles:
-        return None
+	user_roles = frappe.get_roles(user)
+	if "Administrator" in user_roles:
+		return None
 
-    if "Manager" in user_roles or "Executive" in user_roles:
-        conditions = """(tabProject._assign like '%{user}%')""" \
-            .format(user=user)
-        return conditions
-    else:
-        return None
-
-
+	if "Manager" in user_roles or "Executive" in user_roles:
+		conditions = """(tabProject._assign like '%{user}%')""" \
+			.format(user=user)
+		return conditions
+	else:
+		return None
