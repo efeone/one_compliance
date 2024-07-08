@@ -17,7 +17,6 @@ frappe.ui.form.on('Sales Order', {
         frm.set_value('delivery_date', frappe.datetime.get_today());
       }
       setTimeout(() => {
-
         frm.fields_dict.items.grid.toggle_reqd("delivery_date")
 
         frm.remove_custom_button('Pick List', 'Create');
@@ -27,7 +26,7 @@ frappe.ui.form.on('Sales Order', {
         frm.remove_custom_button('Request for Raw Materials', 'Create');
         frm.remove_custom_button('Purchase Order', 'Create');
         frm.remove_custom_button('Project', 'Create');
-        }, __('Create'));
+        }, 500);
     }
 });
 
