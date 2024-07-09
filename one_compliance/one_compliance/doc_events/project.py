@@ -21,7 +21,7 @@ def project_on_update(doc, method):
 					"assign_to": accounts_users,
 					"doctype": "Sales Order",
 					"name": doc.sales_order,
-					"description": "Project {0} is completed, Please proceed the invoices".format(doc.sales_order),
+					"description": "Project {0} is Completed, Please Proceed with the invoice".format(doc.project_name),
 				}
 			)
 
