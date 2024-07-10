@@ -7,6 +7,9 @@ def sales_invoice_on_submit(doc, method):
         frappe.db.set_value('Project', doc.project, 'status', 'Invoiced')
         frappe.db.set_value('Project', doc.project, 'is_invoiced', 1)
         frappe.db.commit()
+        
+    sales_order = frappe.db.get_value("Sales Invoice Item", {"parent":doc.name}, "sales_order")
+    frappe.db.set_value("Sales Order", sales_order, "workflow_state", "Invoiced")
 
 def autoname(doc, method=None):
     if doc.company and doc.custom_invoice_type:

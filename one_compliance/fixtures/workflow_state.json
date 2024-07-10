@@ -151,5 +151,14 @@
   "name": "Closed",
   "style": "Success",
   "workflow_state_name": "Closed"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-10 14:09:19.204496",
+  "name": "Invoiced",
+  "style": "",
+  "workflow_state_name": "Invoiced"
  }
 ]
