@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from one_compliance.one_compliance.utils import send_notification
+from one_compliance.one_compliance.utils import create_project_completion_todos, send_notification
 from one_compliance.one_compliance.utils import send_notification_to_roles
 from frappe.email.doctype.notification.notification import get_context
 from frappe.utils import *
@@ -56,6 +56,8 @@ def task_on_update(doc, method):
 						email_id = frappe.db.get_value('Customer', project.customer, 'email_id')
 						if email_id:
 							project_complete_notification_for_customer(project, email_id)
+					if project.sales_order:
+						create_project_completion_todos(project.sales_order, project.project_name)
 		# Check if this task is a dependency for other tasks
 		dependent_tasks = frappe.get_all('Task Depends On', filters={'task': doc.name}, fields=['parent'])
 		for dependent_task in dependent_tasks:
