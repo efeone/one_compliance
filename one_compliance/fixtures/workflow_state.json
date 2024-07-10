@@ -3,6 +3,33 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": "",
+  "modified": "2024-07-10 07:01:51.857182",
+  "name": "Pre-Invoice",
+  "style": "",
+  "workflow_state_name": "Pre-Invoice"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-10 07:03:11.208519",
+  "name": "Paid",
+  "style": "",
+  "workflow_state_name": "Paid"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2024-07-10 07:03:24.633831",
+  "name": "Partially Paid",
+  "style": "",
+  "workflow_state_name": "Partially Paid"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
   "modified": "2023-03-21 17:48:59.716993",
   "name": "Sent to Customer",
   "style": "Info",
