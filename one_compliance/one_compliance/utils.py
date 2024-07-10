@@ -6,6 +6,7 @@ from frappe.email.doctype.notification.notification import get_context
 from frappe.utils.user import get_users_with_role
 from frappe import _
 from datetime import date
+from frappe.desk.form.assign_to import add as add_assign
 
 @frappe.whitelist()
 def create_notification_log(subject, type, for_user, email_content, document_type, document_name):
@@ -274,3 +275,16 @@ def audit_overdue():
         return project_count[0]['count']
     else:
         return 0
+    
+def create_project_completion_todos(sales_order, project_name):
+    if frappe.db.exists("ToDo", {"reference_type":"Sales Order", "reference_name":sales_order, "description": "Project {0} is Completed, Please Proceed with the invoice".format(project_name)}):
+        return
+    accounts_users = get_users_with_role("Accounts User")
+    add_assign(
+        {
+            "assign_to": accounts_users,
+            "doctype": "Sales Order",
+            "name": sales_order,
+            "description": "Project {0} is Completed, Please Proceed with the invoice".format(project_name),
+        }
+    )    

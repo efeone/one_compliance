@@ -1,6 +1,6 @@
 import frappe
 from frappe.model.mapper import get_mapped_doc
-from one_compliance.one_compliance.utils import send_notification
+from one_compliance.one_compliance.utils import create_project_completion_todos, send_notification
 from frappe.email.doctype.notification.notification import get_context
 from one_compliance.one_compliance.doc_events.task import update_expected_dates_in_task
 from frappe.utils import *
@@ -14,16 +14,7 @@ from frappe.desk.form.assign_to import add as add_assign
 def project_on_update(doc, method):
 	if doc.status == 'Completed':
 		if doc.sales_order:
-			accounts_users = get_users_with_role("Accounts User")
-			print(accounts_users)
-			add_assign(
-				{
-					"assign_to": accounts_users,
-					"doctype": "Sales Order",
-					"name": doc.sales_order,
-					"description": "Project {0} is Completed, Please Proceed with the invoice".format(doc.project_name),
-				}
-			)
+			create_project_completion_todos(doc.sales_order, doc.project_name)
 
 		send_project_completion_mail = frappe.db.get_value('Customer', doc.customer, 'send_project_completion_mail')
 		if send_project_completion_mail:
