@@ -12,6 +12,7 @@
   "column_break_lwccr",
   "category",
   "assigned_to",
+  "status",
   "task_reassigns_section",
   "task_reassigns",
   "column_break_x0pun",
@@ -73,13 +74,20 @@
   {
    "fieldname": "column_break_lwccr",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "Open",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "Open\nWorking\nInvoiced\nPaid\nHold\nOverdue\nCompleted\nCancelled"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-01-08 15:38:23.663416",
+ "modified": "2024-07-17 15:09:28.359223",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Task Bulk Assignment",

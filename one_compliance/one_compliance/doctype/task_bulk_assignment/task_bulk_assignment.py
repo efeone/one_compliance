@@ -30,30 +30,34 @@ class TaskBulkAssignment(Document):
 			task_reassign.subject = task.get("subject")
 			task_reassign.project = task.get("project_name")
 			task_reassign.compliance_sub_category = task.get("compliance_sub_category")
+			task_reassign.status = task.get("status")
 
 	@frappe.whitelist()
-	def get_all_tasks(self, department=None, category=None, subcategory=None, assigned_to=None):
-	    filters = {'status': 'Open'}
+	def get_all_tasks(self,department=None, category=None, subcategory=None, assigned_to=None):
+	    filters = {}
 
-	    # Adding optional filters if provided
+	    # Add status filter based on the selected status in Task Bulk Assignment
+	    if self.status:
+	        filters['status'] = self.status
+		    # Adding optional filters if provided
 	    if self.department:
 	        subcategories = frappe.get_all(
 	            'Compliance Sub Category',
 	            filters={'department': self.department},
 	            fields=['name']
 	        )
-	        # Fetch all tasks linked to those Compliance Subcategories
 	        subcategory_names = [sub['name'] for sub in subcategories]
 	        filters['compliance_sub_category'] = ['in', subcategory_names]
+
 	    if self.category:
 	        subcategories = frappe.get_all(
 	            'Compliance Sub Category',
 	            filters={'compliance_category': self.category},
 	            fields=['name']
 	        )
-	        # Fetch all tasks linked to those Compliance Subcategories
 	        subcategory_names = [sub['name'] for sub in subcategories]
 	        filters['compliance_sub_category'] = ['in', subcategory_names]
+
 	    if self.sub_category:
 	        filters['compliance_sub_category'] = self.sub_category
 
@@ -61,7 +65,7 @@ class TaskBulkAssignment(Document):
 	    all_tasks = frappe.get_all(
 	        'Task',
 	        filters=filters,
-	        fields=['name', 'subject', 'project_name', 'compliance_sub_category']
+	        fields=['name', 'subject', 'project_name', 'compliance_sub_category', 'status']
 	    )
 
 	    if self.assigned_to:
