@@ -25,7 +25,7 @@ frappe.ui.form.on('Task Bulk Assignment', {
 	},
 	setup: function(frm) {
     set_filters(frm);
-  },
+  }
 });
 
 let clear_values = function (frm) {
