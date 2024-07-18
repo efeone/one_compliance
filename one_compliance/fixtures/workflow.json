@@ -368,7 +368,7 @@
   "doctype": "Workflow",
   "document_type": "Sales Order",
   "is_active": 1,
-  "modified": "2024-07-10 14:09:24.177937",
+  "modified": "2024-07-18 11:41:34.249080",
   "name": "Sales Order Workflow",
   "override_status": 0,
   "send_email_alert": 0,
@@ -398,7 +398,7 @@
     "parent": "Sales Order Workflow",
     "parentfield": "states",
     "parenttype": "Workflow",
-    "state": "Pre-Invoice",
+    "state": "In Progress",
     "update_field": null,
     "update_value": null,
     "workflow_builder_id": null
@@ -413,7 +413,7 @@
     "parent": "Sales Order Workflow",
     "parentfield": "states",
     "parenttype": "Workflow",
-    "state": "In Progress",
+    "state": "Pre-Invoice",
     "update_field": null,
     "update_value": null,
     "workflow_builder_id": null
