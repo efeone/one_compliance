@@ -7,5 +7,15 @@ frappe.ui.form.on('Event',{
         },
       );
       frm.remove_custom_button("Add Employees", "Add Participants");
-    }
+    },
+    setup: function(frm) {
+      //filter 
+      frm.set_query('custom_service', () => {
+              return {
+                  filters: {
+                    is_meeting_only : true
+                  }
+              }
+          })
+      },
 });
