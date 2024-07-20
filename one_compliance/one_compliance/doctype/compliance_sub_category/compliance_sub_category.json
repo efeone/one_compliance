@@ -12,6 +12,7 @@
   "compliance_category",
   "sub_category",
   "project_template",
+  "item_code",
   "category_type",
   "allow_repeat",
   "repeat_on",
@@ -20,10 +21,10 @@
   "project_based_on_prior_phase",
   "column_break_06mwn",
   "enabled",
+  "is_meeting_only",
+  "internal",
   "is_billable",
   "rate",
-  "item_code",
-  "income_account",
   "section_break_qmwb",
   "default_account",
   "department_details_section",
@@ -247,13 +248,6 @@
    "read_only": 1
   },
   {
-   "depends_on": "is_billable",
-   "fieldname": "income_account",
-   "fieldtype": "Link",
-   "label": "Income Account",
-   "options": "Account"
-  },
-  {
    "default": "1",
    "fieldname": "project_based_on_prior_phase",
    "fieldtype": "Check",
@@ -268,11 +262,23 @@
    "fieldtype": "Table",
    "label": "Default Account",
    "options": "Sub Category Account"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_meeting_only",
+   "fieldtype": "Check",
+   "label": "Is Meeting Only"
+  },
+  {
+   "default": "0",
+   "fieldname": "internal",
+   "fieldtype": "Check",
+   "label": "Internal"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-03 15:02:18.879501",
+ "modified": "2024-07-20 16:03:57.569132",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
