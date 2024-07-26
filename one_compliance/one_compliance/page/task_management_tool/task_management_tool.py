@@ -1,5 +1,6 @@
 import frappe
 from frappe.utils import get_datetime
+from erpnext.accounts.party import get_party_account
 
 @frappe.whitelist()
 def get_task(status = None, task = None, project = None, customer = None, department = None, sub_category = None, employee = None, employee_group = None, from_date = None, to_date = None):
@@ -131,15 +132,58 @@ def update_task_status(task, project, status):
     task_doc.save()
     return "success"
 
-@frappe.whitelist()
-def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number = None, reference_date = None, user_remark = None):
-    task_doc = frappe.get_doc("Task", task_id)
 
+@frappe.whitelist()
+def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=None, reference_date=None, user_remark=None):
+    task_doc = frappe.get_doc("Task", task_id)
+    payment_info = {
+        "payable_amount": payable_amount,
+        "mode_of_payment": mode_of_payment,
+        "reference_number": reference_number,
+        "reference_date": reference_date,
+        "user_remark": user_remark
+    }
+    journal_entry = create_journal_entry_pay_info(task_doc, payment_info)
+    payment_info['journal_entry'] = journal_entry
+    task_doc.append("custom_task_payment_informations", payment_info)
     task_doc.custom_is_payable = 1
     task_doc.custom_payable_amount = payable_amount
     task_doc.custom_mode_of_payment = mode_of_payment
     task_doc.custom_reference_number = reference_number
     task_doc.custom_reference_date = reference_date
     task_doc.custom_user_remark = user_remark
-
     task_doc.save()
+    task_doc.reload()
+    frappe.db.commit()
+
+def create_journal_entry_pay_info(task, payment_info):
+    if payment_info['payable_amount'] and payment_info['mode_of_payment']:
+        account = get_party_account('Customer', task.customer, task.company)
+        default_account = get_default_account_for_mode_of_payment(payment_info['mode_of_payment'], task.company)
+        journal_entry = frappe.new_doc('Journal Entry')
+        journal_entry.voucher_type = 'Bank Entry'
+        journal_entry.cheque_no = payment_info['reference_number']
+        journal_entry.cheque_date = payment_info['reference_date']
+        journal_entry.user_remark = payment_info['user_remark']
+        journal_entry.posting_date = frappe.utils.today()
+        journal_entry.append('accounts', {
+            'account': account,
+            'party_type': 'Customer',
+            'party': task.customer,
+            'project': task.project,
+            'debit_in_account_currency': payment_info['payable_amount']
+        })
+        journal_entry.append('accounts', {
+            'account': default_account,
+            'project': task.project,
+            'credit_in_account_currency': payment_info['payable_amount']
+        })
+        journal_entry.insert(ignore_permissions=True)
+        return journal_entry.name
+
+def get_default_account_for_mode_of_payment(mode_of_payment, company):
+    mode_of_payment_doc = frappe.get_doc("Mode of Payment", mode_of_payment)
+    for account in mode_of_payment_doc.accounts:
+        if account.company == company:
+            return account.default_account
+    frappe.throw(_("Default account not found for mode of payment {0} and company {1}").format(mode_of_payment, company))
