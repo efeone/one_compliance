@@ -417,6 +417,7 @@ function paymentEntryDialog(taskId, payableAmount, modeOfPayment, referenceNumbe
                 },
                 callback: function (r) {
                     frappe.msgprint("Payment info added successfully!");
+										frm.reload_doc(); 
                 }
 						});
             dialog.hide();
