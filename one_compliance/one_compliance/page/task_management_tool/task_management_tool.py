@@ -8,8 +8,7 @@ def get_task(status = None, task = None, project = None, customer = None, depart
     # Construct the SQL query to fetch list of tasks
     query = """
 	SELECT
-        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by, t.color, t.custom_is_payable,
-        t.custom_payable_amount, t.custom_mode_of_payment,t.custom_reference_date,t.custom_reference_number,t.custom_user_remark
+        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by, t.color, t.custom_is_payable
     FROM
         tabTask t LEFT JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
     """
@@ -147,13 +146,21 @@ def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=
     payment_info['journal_entry'] = journal_entry
     task_doc.append("custom_task_payment_informations", payment_info)
     task_doc.custom_is_payable = 1
-    task_doc.custom_payable_amount = payable_amount
-    task_doc.custom_mode_of_payment = mode_of_payment
-    task_doc.custom_reference_number = reference_number
-    task_doc.custom_reference_date = reference_date
-    task_doc.custom_user_remark = user_remark
+    # task_doc.custom_payable_amount = payable_amount
+    # task_doc.custom_mode_of_payment = mode_of_payment
+    # task_doc.custom_reference_number = reference_number
+    # task_doc.custom_reference_date = reference_date
+    # task_doc.custom_user_remark = user_remark
     task_doc.save()
     task_doc.reload()
+    sales_order = frappe.db.get_value("Project", task_doc.project, 'sales_order')
+    so_reimburse = frappe.new_doc('Reimbursement Detail')
+    so_reimburse.parent = sales_order
+    so_reimburse.parentfield = 'custom_reimbursement_details'
+    so_reimburse.parenttype = 'Sales Order'
+    so_reimburse.journal_entry = journal_entry
+    so_reimburse.save()
+    sales_order = frappe.db.get_value("Project", task_doc.project, 'sales_order')
     frappe.db.commit()
 
 def create_journal_entry_pay_info(task, payment_info):
