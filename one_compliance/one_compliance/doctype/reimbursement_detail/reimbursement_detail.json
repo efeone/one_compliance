@@ -8,6 +8,7 @@
  "field_order": [
   "journal_entry",
   "date",
+  "column_break_zzqx",
   "amount",
   "user_remark"
  ],
@@ -20,28 +21,38 @@
    "options": "Journal Entry"
   },
   {
+   "fetch_from": "journal_entry.posting_date",
    "fieldname": "date",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "label": "Date"
   },
   {
+   "fetch_from": "journal_entry.total_credit",
    "fieldname": "amount",
    "fieldtype": "Currency",
+   "in_list_view": 1,
    "label": "Amount"
   },
   {
+   "fetch_from": "journal_entry.remark",
    "fieldname": "user_remark",
    "fieldtype": "Small Text",
+   "in_list_view": 1,
    "label": "User Remark"
+  },
+  {
+   "fieldname": "column_break_zzqx",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-07-24 15:14:10.226010",
+ "modified": "2024-07-28 00:37:10.047169",
  "modified_by": "Administrator",
  "module": "One Compliance",
- "name": "Reimbursement Details",
+ "name": "Reimbursement Detail",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",
