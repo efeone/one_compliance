@@ -307,7 +307,7 @@ def make_time_sheet_enrty(event):
 def create_timesheet(employee, activity_type, from_time, to_time):
 	from_time = get_datetime(from_time)
 	to_time = get_datetime(to_time)
-	employee_id = frappe.get_value("Employee", {"employee_name": employee}, "name")
+	employee_id = frappe.get_value("Employee", {"name": employee}, "name")
 
 	# Check if a timesheet already exists for the employee within the given date range
 	existing_timesheets = frappe.get_all("Timesheet", filters={
