@@ -154,7 +154,7 @@ def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=
     task_doc.save()
     task_doc.reload()
     sales_order = frappe.db.get_value("Project", task_doc.project, 'sales_order')
-    so_reimburse = frappe.new_doc('Reimbursement Detail')
+    so_reimburse = frappe.new_doc('Reimbursement Details')
     so_reimburse.parent = sales_order
     so_reimburse.parentfield = 'custom_reimbursement_details'
     so_reimburse.parenttype = 'Sales Order'

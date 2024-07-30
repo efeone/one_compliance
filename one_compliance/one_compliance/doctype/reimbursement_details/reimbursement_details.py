@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class ReimbursementDetail(Document):
+class ReimbursementDetails(Document):
 	pass
