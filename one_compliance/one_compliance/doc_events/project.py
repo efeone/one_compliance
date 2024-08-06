@@ -58,28 +58,33 @@ def set_project_status(project, status, comment=None):
 
 @frappe.whitelist()
 def project_after_insert(doc, method):
-	if not doc.expected_end_date and doc.compliance_sub_category:
-		project_template = frappe.db.get_value('Compliance Sub Category', doc.compliance_sub_category, 'project_template')
-		if doc.expected_start_date and project_template:
-			project_duration = frappe.db.get_value('Project Template', project_template, 'custom_project_duration')
-			doc.expected_end_date = add_days(doc.expected_start_date, project_duration)
-			doc.save()
-		frappe.db.commit
+    if not doc.expected_end_date and doc.compliance_sub_category:
+        project_template = frappe.db.get_value('Compliance Sub Category', doc.compliance_sub_category, 'project_template')
+        if doc.expected_start_date and project_template:
+            project_duration = frappe.db.get_value('Project Template', project_template, 'custom_project_duration')
+            doc.expected_end_date = add_days(doc.expected_start_date, project_duration)
+            doc.save()
+        frappe.db.commit()
 
-	# Creating a Sales Order after a project is created
-	if frappe.db.exists('Compliance Sub Category', doc.compliance_sub_category):
-		sub_category_doc = frappe.get_doc('Compliance Sub Category', doc.compliance_sub_category)
-		if sub_category_doc.is_billable:
-			sales_order = frappe.db.exists('Sales Order', doc.sales_order)
-			if sales_order:
-				frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
-			else:
-				payment_terms = None
-				rate = 0
-				if frappe.db.exists('Compliance Agreement', doc.compliance_agreement):
-					payment_terms = frappe.db.get_value('Compliance Agreement', doc.compliance_agreement,'default_payment_terms_template')
-					rate = get_rate_from_compliance_agreement(doc.compliance_agreement, doc.compliance_sub_category)
-				create_sales_order(doc, rate, sub_category_doc, payment_terms, submit=True)
+    # Creating a Sales Order after a project is created
+    if frappe.db.exists('Compliance Sub Category', doc.compliance_sub_category):
+        sub_category_doc = frappe.get_doc('Compliance Sub Category', doc.compliance_sub_category)
+        if sub_category_doc.is_billable:
+            sales_order = frappe.db.exists('Sales Order', doc.sales_order)
+            if sales_order:
+                frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
+            else:
+                payment_terms = None
+                rate = 0
+                if frappe.db.exists('Compliance Agreement', doc.compliance_agreement):
+                    payment_terms = frappe.db.get_value('Compliance Agreement', doc.compliance_agreement, 'default_payment_terms_template')
+                    rate = get_rate_from_compliance_agreement(doc.compliance_agreement, doc.compliance_sub_category)
+
+            # Ensure project_type is defined
+            project_type = doc.get('project_type', None)  # Assuming project_type is a field in doc
+            if project_type == "External":
+                create_sales_order(doc, rate, sub_category_doc, payment_terms, submit=True)
+
 
 @frappe.whitelist()
 def set_status_to_overdue():
