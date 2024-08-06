@@ -281,12 +281,13 @@ def create_project_completion_todos(sales_order, project_name):
 		return
 	accounts_users = get_users_with_role("Accounts User")
 	add_assign(
-		{
+		args={
 			"assign_to": accounts_users,
 			"doctype": "Sales Order",
 			"name": sales_order,
 			"description": "Project {0} is Completed, Please Proceed with the invoice".format(project_name),
-		}
+		},
+		ignore_permissions=True
 	)
 
 @frappe.whitelist()
