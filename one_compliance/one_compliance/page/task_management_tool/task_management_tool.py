@@ -160,7 +160,7 @@ def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=
         so_reimburse.parentfield = 'custom_reimbursement_details'
         so_reimburse.parenttype = 'Sales Order'
         so_reimburse.journal_entry = journal_entry
-        so_reimburse.save()
+        so_reimburse.save(ignore_permissions= True)
     frappe.db.commit()
 
 def create_journal_entry_pay_info(task, payment_info):
