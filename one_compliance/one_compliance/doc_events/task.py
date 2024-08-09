@@ -51,13 +51,13 @@ def task_on_update(doc, method):
 			if frappe.db.exists('Project', doc.project):
 				project = frappe.get_doc ('Project', doc.project)
 				if project.status == 'Completed':
-					send_project_completion_mail = frappe.db.get_value('Customer', project.customer, 'send_project_completion_mail')
-					if send_project_completion_mail:
-						email_id = frappe.db.get_value('Customer', project.customer, 'email_id')
-						if email_id:
-							project_complete_notification_for_customer(project, email_id)
 					if project.sales_order:
 						create_project_completion_todos(project.sales_order, project.project_name)
+					# send_project_completion_mail = frappe.db.get_value('Customer', project.customer, 'send_project_completion_mail')
+					# if send_project_completion_mail:
+					# 	email_id = frappe.db.get_value('Customer', project.customer, 'email_id')
+					# 	if email_id:
+					# 		project_complete_notification_for_customer(project, email_id)
 		# Check if this task is a dependency for other tasks
 		dependent_tasks = frappe.get_all('Task Depends On', filters={'task': doc.name}, fields=['parent'])
 		for dependent_task in dependent_tasks:
