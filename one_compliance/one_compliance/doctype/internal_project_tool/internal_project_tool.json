@@ -1,0 +1,98 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-08-06 17:04:29.280320",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project_name",
+  "start_date",
+  "column_break_jpkf",
+  "department",
+  "end_date",
+  "section_break_qpzy",
+  "sub_category",
+  "tasks",
+  "assign_to"
+ ],
+ "fields": [
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Project Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department"
+  },
+  {
+   "fieldname": "assign_to",
+   "fieldtype": "Table MultiSelect",
+   "label": "Assign To",
+   "options": "Project User Details",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sub_category",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Sub Category",
+   "options": "Compliance Sub Category",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_jpkf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_qpzy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval:doc.sub_category;",
+   "fieldname": "tasks",
+   "fieldtype": "Table",
+   "label": "Tasks",
+   "options": "Project Template Task"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-08-09 16:34:56.194132",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Internal Project Tool",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

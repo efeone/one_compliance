@@ -79,6 +79,9 @@ def project_after_insert(doc, method):
 				if frappe.db.exists('Compliance Agreement', doc.compliance_agreement):
 					payment_terms = frappe.db.get_value('Compliance Agreement', doc.compliance_agreement,'default_payment_terms_template')
 					rate = get_rate_from_compliance_agreement(doc.compliance_agreement, doc.compliance_sub_category)
+				 # Ensure project_type is defined
+			project_type = doc.get('project_type', None)  # Assuming project_type is a field in doc
+			if project_type == "External":
 				create_sales_order(doc, rate, sub_category_doc, payment_terms, submit=True)
 
 @frappe.whitelist()
