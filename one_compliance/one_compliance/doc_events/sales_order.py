@@ -171,33 +171,58 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 	else:
 		frappe.throw( title = _('ALERT !!'), msg = _('Project Template does not exist for {0}'.format(compliance_sub_category)))
 @frappe.whitelist()
-def create_sales_order_from_event(event,customer, sub_category, rate, description):
-	sub_category_doc = frappe.get_doc("Compliance Sub Category", sub_category)
-	new_sales_order = frappe.new_doc("Sales Order")
-	new_sales_order.customer = customer
-	new_sales_order.posting_date = frappe.utils.today()
-	new_sales_order.delivery_date = frappe.utils.today()
-	new_sales_order.append('items', {
-		'item_code' : sub_category_doc.item_code,
-		'item_name' : sub_category_doc.sub_category,
-		'custom_compliance_category' : sub_category_doc.compliance_category,
-		'custom_compliance_subcategory' : sub_category_doc.name,
-		'rate' : rate,
-		'qty' : 1,
-		'description' : description
-	})
-	new_sales_order.insert(ignore_permissions=True)
-	new_sales_order.submit()
-	if new_sales_order:
-		frappe.db.set_value("Sales Order", new_sales_order.name, "status", "Proforma Invoice")
-		frappe.db.set_value("Sales Order", new_sales_order.name, "workflow_state", "Proforma Invoice")
-	frappe.msgprint("Proforma Invoice  {0} Created against {1}".format(new_sales_order.name, event), alert=True)
-	accounts_users = get_users_with_role("Accounts User")
-	add_assign(
-		{
-			"assign_to": accounts_users,
-			"doctype": "Sales Order",
-			"name": new_sales_order.name,
-			"description": "Meeting {0} is Completed, Please Proceed with the invoice".format(event),
-		}
-	)
+def create_sales_order_from_event(event, customer=None, sub_category=None, rate=None, description=None):
+    missing_fields = []
+    if not customer:
+        missing_fields.append("Customer")
+    if not sub_category:
+        missing_fields.append("Service")
+    if not description:
+        missing_fields.append("Service Description")
+    if missing_fields:
+        if len(missing_fields) > 1:
+            missing_fields_str = ', '.join(missing_fields[:-1]) + ' and ' + missing_fields[-1]
+        else:
+            missing_fields_str = missing_fields[0]
+
+        frappe.throw(f"Required Field: {missing_fields_str}.")
+
+    sales_orders = frappe.get_all(
+        "Sales Order",
+        filters={"customer": customer, "docstatus": 1},
+        fields=["name"]
+    )
+    for sales_order in sales_orders:
+        items = frappe.get_all(
+            "Sales Order Item",
+            filters={"parent": sales_order.name, "description": description},
+            fields=["name"]
+        )
+        if items:
+            frappe.throw(f"Proforma Invoice is already created for this Event.")
+    sub_category_doc = frappe.get_doc("Compliance Sub Category", sub_category)
+    new_sales_order = frappe.new_doc("Sales Order")
+    new_sales_order.customer = customer
+    new_sales_order.posting_date = frappe.utils.today()
+    new_sales_order.delivery_date = frappe.utils.today()
+    new_sales_order.append('items', {
+        'item_code': sub_category_doc.item_code,
+        'item_name': sub_category_doc.sub_category,
+        'custom_compliance_category': sub_category_doc.compliance_category,
+        'custom_compliance_subcategory': sub_category_doc.name,
+        'rate': rate,
+        'qty': 1,
+        'description': description
+    })
+    new_sales_order.insert(ignore_permissions=True)
+    new_sales_order.submit()
+    frappe.db.set_value("Sales Order", new_sales_order.name, "status", "Proforma Invoice")
+    frappe.db.set_value("Sales Order", new_sales_order.name, "workflow_state", "Proforma Invoice")
+    frappe.msgprint(f"Proforma Invoice {new_sales_order.name} Created against {event}", alert=True)
+    accounts_users = get_users_with_role("Accounts User")
+    add_assign({
+        "assign_to": accounts_users,
+        "doctype": "Sales Order",
+        "name": new_sales_order.name,
+        "description": f"Meeting {event} is Completed, Please Proceed with the invoice"
+    })

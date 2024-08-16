@@ -13,7 +13,7 @@ frappe.ui.form.on('Event',{
             create_sales_order(frm)
           }
           else{
-            frappe.msgprint('Not Billable');
+            frappe.msgprint('Please Mark this Event as Billable');
           }
         },
       );
@@ -32,7 +32,7 @@ frappe.ui.form.on('Event',{
       frm.remove_custom_button("Add Employees", "Add Participants");
     },
     setup: function(frm) {
-      //filter 
+      //filter
       frm.set_query('custom_service', () => {
               return {
                   filters: {
