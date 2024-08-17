@@ -195,11 +195,11 @@ def send_notification_for_digital_signature(doc, for_user, context, notification
 def gst_overdue():
 	'''Method to view GST overdue in number card'''
 	query = """
-	SELECT 
+	SELECT
 		COUNT(*) as count
-	FROM 
+	FROM
 		`tabProject`
-	WHERE 
+	WHERE
 		status = 'Overdue' AND category_type = 'GST'
 	"""
 	project_count = frappe.db.sql(query, as_dict=True)
@@ -212,11 +212,11 @@ def gst_overdue():
 def income_tax_overdue():
 	'''Method to view Income Tax overdue in number card'''
 	query = """
-	SELECT 
+	SELECT
 		COUNT(*) as count
-	FROM 
+	FROM
 		`tabProject`
-	WHERE 
+	WHERE
 		status = 'Overdue' AND category_type = 'Income Tax'
 	"""
 	project_count = frappe.db.sql(query, as_dict=True)
@@ -224,16 +224,16 @@ def income_tax_overdue():
 		return project_count[0]['count']
 	else:
 		return 0
-	
+
 @frappe.whitelist()
 def consulting_overdue():
 	'''Method to view Income Tax overdue in number card'''
 	query = """
-	SELECT 
+	SELECT
 		COUNT(*) as count
-	FROM 
+	FROM
 		`tabProject`
-	WHERE 
+	WHERE
 		status = 'Overdue' AND category_type = 'Income Tax'
 	"""
 	project_count = frappe.db.sql(query, as_dict=True)
@@ -246,11 +246,11 @@ def consulting_overdue():
 def compliance_overdue():
 	'''Method to view  Compliance overdue in number card'''
 	query = """
-	SELECT 
+	SELECT
 		COUNT(*) as count
-	FROM 
+	FROM
 		`tabProject`
-	WHERE 
+	WHERE
 		status = 'Overdue' AND category_type = 'Compliance'
 	"""
 	project_count = frappe.db.sql(query, as_dict=True)
@@ -263,11 +263,11 @@ def compliance_overdue():
 def audit_overdue():
 	'''Method to view  Audit overdue in number card'''
 	query = """
-	SELECT 
+	SELECT
 		COUNT(*) as count
-	FROM 
+	FROM
 		`tabProject`
-	WHERE 
+	WHERE
 		status = 'Overdue' AND category_type = 'Audit'
 	"""
 	project_count = frappe.db.sql(query, as_dict=True)
@@ -275,7 +275,7 @@ def audit_overdue():
 		return project_count[0]['count']
 	else:
 		return 0
-	
+
 def create_project_completion_todos(sales_order, project_name):
 	if frappe.db.exists("ToDo", {"reference_type":"Sales Order", "reference_name":sales_order, "description": "Project {0} is Completed, Please Proceed with the invoice".format(project_name)}):
 		return
@@ -291,49 +291,41 @@ def create_project_completion_todos(sales_order, project_name):
 	)
 
 @frappe.whitelist()
-def make_time_sheet_enrty(event):
-	event_doc = frappe.get_doc("Event", event)
-	from_time = get_datetime(event_doc.starts_on)
-	to_time = get_datetime(event_doc.ends_on)
-	activity_type = 'Communication'
-	if event_doc.event_participants:
-		for participant in event_doc.event_participants:
-			if participant.reference_doctype == "Employee":
-				employee_id = participant.reference_docname
-				if employee_id:
-					create_timesheet(employee_id, activity_type, from_time, to_time)
-
+def make_time_sheet_entry(event):
+    event_doc = frappe.get_doc("Event", event)
+    from_time = get_datetime(event_doc.starts_on)
+    to_time = get_datetime(event_doc.ends_on)
+    activity_type = 'Communication'
+    if event_doc.event_participants:
+        for participant in event_doc.event_participants:
+            if participant.reference_doctype == "Employee":
+                employee_id = participant.reference_docname
+                if employee_id:
+                    create_timesheet(employee_id, activity_type, from_time, to_time)
 
 @frappe.whitelist()
 def create_timesheet(employee, activity_type, from_time, to_time):
-	from_time = get_datetime(from_time)
-	to_time = get_datetime(to_time)
-	employee_id = frappe.get_value("Employee", {"name": employee}, "name")
+    from_time = get_datetime(from_time)
+    to_time = get_datetime(to_time)
+    employee_id = frappe.get_value("Employee", {"name": employee}, "name")
 
-	# Check if a timesheet already exists for the employee within the given date range
-	existing_timesheets = frappe.get_all("Timesheet", filters={
-		"employee": employee_id,
-		"start_date": from_time.date(),
-		"end_date": to_time.date(),
-	})
+    # Check if a timesheet already exists for the employee within the given date range
+    existing_timesheets = frappe.get_all("Timesheet", filters={
+        "employee": employee_id,
+        "start_date": ("<=", to_time.date()),
+        "end_date": (">=", from_time.date()),
+    })
 
-	if existing_timesheets:
-		existing_timesheet = frappe.get_doc("Timesheet", existing_timesheets)
-		existing_timesheet.append("time_logs",{
-			"activity_type": activity_type,
-			"from_time": from_time,
-			"to_time": to_time
-		})
-		existing_timesheet.save()
-		frappe.db.commit()
-	else:
-		timesheet = frappe.new_doc("Timesheet")
-		timesheet.employee = employee_id
-		timesheet.append("time_logs",{
-			"activity_type": activity_type,
-			"from_time": from_time,
-			"to_time": to_time
-		})
-
-		timesheet.insert(ignore_permissions=True)
-		frappe.db.commit()
+    if existing_timesheets:
+        frappe.throw(f"A timesheet already exists for the employee within the specified range .")
+    else:
+        timesheet = frappe.new_doc("Timesheet")
+        timesheet.employee = employee_id
+        timesheet.append("time_logs", {
+            "activity_type": activity_type,
+            "from_time": from_time,
+            "to_time": to_time
+        })
+        timesheet.insert(ignore_permissions=True)
+        frappe.db.commit()
+        frappe.msgprint(f"Timesheet created for employee {employee_id}.")
