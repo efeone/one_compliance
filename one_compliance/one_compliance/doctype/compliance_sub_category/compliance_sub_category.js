@@ -53,6 +53,22 @@ frappe.ui.form.on('Compliance Sub Category', {
         }
     }
 	},
+	internal: function(frm) {
+			if (frm.doc.internal) {
+					frm.set_value('is_billable', 0);
+					frm.set_df_property('is_billable', 'read_only', 1);
+			} else {
+					frm.set_df_property('is_billable', 'read_only', 0);
+			}
+	},
+	is_billable: function(frm) {
+			if (frm.doc.is_billable) {
+					frm.set_value('internal', 0);
+					frm.set_df_property('internal', 'read_only', 1);
+			} else {
+					frm.set_df_property('internal', 'read_only', 0);
+			}
+	},
 	validate: function(frm) {
 		if (frm.doc.day) {
 			set_validation_for_day(frm)
