@@ -80,3 +80,21 @@ let make_time_sheet_enrty = function (frm) {
     }
   })
 }
+frappe.ui.form.on('Event Participants', {
+    reference_docname: function(frm, cdt, cdn) {
+        let row = locals[cdt][cdn];
+        if (row.reference_doctype === 'Employee') {
+            frappe.db.get_value('Employee', row.reference_docname, 'employee_name', (r) => {
+                if (r && r.employee_name) {
+                    frappe.model.set_value(cdt, cdn, 'custom_participant_name', r.employee_name);
+                }
+            });
+        } else if (row.reference_doctype === 'Lead') {
+            frappe.db.get_value('Lead', row.reference_docname, 'title', (r) => {
+                if (r && r.title) {
+                    frappe.model.set_value(cdt, cdn, 'custom_participant_name', r.title);
+                }
+            });
+        }
+    }
+});
