@@ -195,11 +195,11 @@ def send_notification_for_digital_signature(doc, for_user, context, notification
 def gst_overdue():
 	'''Method to view GST overdue in number card'''
 	query = """
-	SELECT 
+	SELECT
 		COUNT(*) as count
-	FROM 
+	FROM
 		`tabProject`
-	WHERE 
+	WHERE
 		status = 'Overdue' AND category_type = 'GST'
 	"""
 	project_count = frappe.db.sql(query, as_dict=True)
@@ -212,11 +212,11 @@ def gst_overdue():
 def income_tax_overdue():
 	'''Method to view Income Tax overdue in number card'''
 	query = """
-	SELECT 
+	SELECT
 		COUNT(*) as count
-	FROM 
+	FROM
 		`tabProject`
-	WHERE 
+	WHERE
 		status = 'Overdue' AND category_type = 'Income Tax'
 	"""
 	project_count = frappe.db.sql(query, as_dict=True)
@@ -224,16 +224,16 @@ def income_tax_overdue():
 		return project_count[0]['count']
 	else:
 		return 0
-	
+
 @frappe.whitelist()
 def consulting_overdue():
 	'''Method to view Income Tax overdue in number card'''
 	query = """
-	SELECT 
+	SELECT
 		COUNT(*) as count
-	FROM 
+	FROM
 		`tabProject`
-	WHERE 
+	WHERE
 		status = 'Overdue' AND category_type = 'Income Tax'
 	"""
 	project_count = frappe.db.sql(query, as_dict=True)
@@ -246,11 +246,11 @@ def consulting_overdue():
 def compliance_overdue():
 	'''Method to view  Compliance overdue in number card'''
 	query = """
-	SELECT 
+	SELECT
 		COUNT(*) as count
-	FROM 
+	FROM
 		`tabProject`
-	WHERE 
+	WHERE
 		status = 'Overdue' AND category_type = 'Compliance'
 	"""
 	project_count = frappe.db.sql(query, as_dict=True)
@@ -263,11 +263,11 @@ def compliance_overdue():
 def audit_overdue():
 	'''Method to view  Audit overdue in number card'''
 	query = """
-	SELECT 
+	SELECT
 		COUNT(*) as count
-	FROM 
+	FROM
 		`tabProject`
-	WHERE 
+	WHERE
 		status = 'Overdue' AND category_type = 'Audit'
 	"""
 	project_count = frappe.db.sql(query, as_dict=True)
@@ -275,7 +275,7 @@ def audit_overdue():
 		return project_count[0]['count']
 	else:
 		return 0
-	
+
 def create_project_completion_todos(sales_order, project_name):
 	if frappe.db.exists("ToDo", {"reference_type":"Sales Order", "reference_name":sales_order, "description": "Project {0} is Completed, Please Proceed with the invoice".format(project_name)}):
 		return
@@ -292,6 +292,7 @@ def create_project_completion_todos(sales_order, project_name):
 
 @frappe.whitelist()
 def make_time_sheet_enrty(event):
+	print("dfghjgfgh")
 	event_doc = frappe.get_doc("Event", event)
 	from_time = get_datetime(event_doc.starts_on)
 	to_time = get_datetime(event_doc.ends_on)
