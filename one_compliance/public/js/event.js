@@ -16,7 +16,7 @@ frappe.ui.form.on('Event',{
                         frappe.msgprint('Please Mark this Event as Billable');
                     }
                 } else {
-                    frappe.msgprint('Please ensure the Event is marked as Completed before continuing.');
+                    frappe.msgprint('Please mark the event as Completed to proceed.');
                 }
             }
         );
