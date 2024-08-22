@@ -41,7 +41,7 @@
   {
    "default": "Today",
    "fieldname": "posting_date",
-   "fieldtype": "Data",
+   "fieldtype": "Date",
    "label": "Posting Date"
   },
   {
@@ -104,14 +104,13 @@
    "fieldname": "department",
    "fieldtype": "Link",
    "label": "Department",
-   "options": "Department",
-   "reqd": 1
+   "options": "Department"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-08-14 12:42:01.692888",
+ "modified": "2024-08-22 10:10:28.635977",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Internal Project Management",
