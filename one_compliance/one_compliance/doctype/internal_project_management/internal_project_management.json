@@ -1,0 +1,134 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-08-14 12:01:50.472398",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "project_details_section",
+  "project_name",
+  "column_break_equk",
+  "posting_date",
+  "work_details_section",
+  "department",
+  "compliance_sub_category",
+  "priority",
+  "column_break_kfwn",
+  "expected_start_date",
+  "expected_end_date",
+  "user_details_section",
+  "assign_to",
+  "project_task_details_section",
+  "task_details"
+ ],
+ "fields": [
+  {
+   "fieldname": "project_details_section",
+   "fieldtype": "Section Break",
+   "label": "Project Details "
+  },
+  {
+   "fieldname": "project_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Project Name ",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_equk",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Today",
+   "fieldname": "posting_date",
+   "fieldtype": "Data",
+   "label": "Posting Date"
+  },
+  {
+   "fieldname": "work_details_section",
+   "fieldtype": "Section Break",
+   "label": "Work Details "
+  },
+  {
+   "fieldname": "compliance_sub_category",
+   "fieldtype": "Link",
+   "label": "Compliance Sub Category",
+   "options": "Compliance Sub Category",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_kfwn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "expected_start_date",
+   "fieldtype": "Date",
+   "label": "Expected Start Date "
+  },
+  {
+   "fieldname": "expected_end_date",
+   "fieldtype": "Date",
+   "label": "Expected End Date"
+  },
+  {
+   "fieldname": "user_details_section",
+   "fieldtype": "Section Break",
+   "label": "User Details "
+  },
+  {
+   "fieldname": "assign_to",
+   "fieldtype": "Table MultiSelect",
+   "label": "Assign To",
+   "options": "Employee Details",
+   "reqd": 1
+  },
+  {
+   "fieldname": "project_task_details_section",
+   "fieldtype": "Section Break",
+   "label": "Project Task Details "
+  },
+  {
+   "fieldname": "task_details",
+   "fieldtype": "Table",
+   "label": "Task Details ",
+   "options": "Project Template Task"
+  },
+  {
+   "default": "Low",
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "label": "Priority ",
+   "options": "Medium\nLow\nHigh"
+  },
+  {
+   "fieldname": "department",
+   "fieldtype": "Link",
+   "label": "Department",
+   "options": "Department",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-08-14 12:42:01.692888",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Internal Project Management",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
