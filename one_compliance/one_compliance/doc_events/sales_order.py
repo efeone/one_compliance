@@ -12,7 +12,7 @@ def create_project_on_submit(doc, method):
 			assign_to.append(employee_name.name)
 			assign_to_str = json.dumps(assign_to)
 		for item in doc.items:
-			create_project_from_sales_order(doc.name, doc.custom_expected_start_date, item.item_code, doc.custom_priority, assign_to_str, doc.custom_expected_end_date)
+			create_project_from_sales_order(doc.name, doc.custom_expected_start_date, item.item_code, doc.custom_priority, assign_to_str, doc.custom_expected_end_date, custom_instructions=item.custom_instructions)
 
 @frappe.whitelist()
 def get_compliance_subcategory(item_code):
@@ -25,7 +25,7 @@ def get_compliance_subcategory(item_code):
 	}
 
 @frappe.whitelist()
-def create_project_from_sales_order(sales_order, start_date, item_code, priority, assign_to=None, expected_end_date=None, remark=None):
+def create_project_from_sales_order(sales_order, start_date, item_code, priority, assign_to=None, expected_end_date=None, remark=None, custom_instructions=None):
 	if(assign_to):
 		employees = json.loads(assign_to)
 	self = frappe.get_doc('Sales Order', sales_order)
@@ -82,6 +82,8 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 					project.expected_end_date = add_days(start_date, project_template_doc.custom_project_duration)
 			project.priority = priority
 			project.custom_project_service = compliance_sub_category.name + '-' + str(naming)
+			if custom_instructions:
+				project.custom_instructions = custom_instructions
 			project.notes = remark
 			project.sales_order = sales_order
 			project.category_type = compliance_sub_category.category_type
