@@ -14,7 +14,7 @@ class InternalProjectManagement(Document):
 		"""method created a project based on the data selected in Internal Project Management Tool
 
 		Returns:
-				str: name of the project
+						str: name of the project
 		"""
 		if not self.project_name:
 			frappe.throw(_("Project Name is Mandatory"))
@@ -64,6 +64,13 @@ class InternalProjectManagement(Document):
 						"assign_to": assign_to_users,
 					}
 				)
+			add_assign(
+				{
+					"doctype": "Project",
+					"name": new_project.name,
+					"assign_to": assign_to_users,
+				}
+			)
 		frappe.msgprint(_("Tasks created and assigned to users."), alert=True)
 		return new_project.name
 
@@ -73,10 +80,10 @@ def task_assign(compliance_sub_category):
 	"""method fetches and returns the list of tasks from project template of a compliance sub category
 
 	Args:
-		compliance_sub_category (str): name of the compliance sub category
+			compliance_sub_category (str): name of the compliance sub category
 
 	Returns:
-		list: list of tasks in project template of the given compliance sub category
+			list: list of tasks in project template of the given compliance sub category
 	"""
 	sub_category = compliance_sub_category
 	if sub_category:
