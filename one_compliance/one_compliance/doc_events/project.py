@@ -21,6 +21,19 @@ def project_on_update(doc, method):
 			email_id = frappe.db.get_value('Customer', doc.customer, 'email_id')
 			if email_id:
 				project_complete_notification_for_customer(doc, email_id)
+	if doc.sales_order:
+		update_sales_order_billing_instruction(doc.sales_order, doc.custom_billing_instruction)
+		
+def update_sales_order_billing_instruction(sales_order, custom_billing_instruction):
+    """
+    Updates the 'Billing Instruction' field in the Sales Order.
+    """
+    if frappe.db.exists('Sales Order', sales_order):
+        sales_order_doc = frappe.get_doc('Sales Order', sales_order)
+        sales_order_doc.custom_billing_instruction = custom_billing_instruction
+        sales_order_doc.save()
+    else:
+        frappe.throw(_("Sales Order does not exist"))
 
 
 @frappe.whitelist()
