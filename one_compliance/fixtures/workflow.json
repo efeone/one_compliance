@@ -368,7 +368,7 @@
   "doctype": "Workflow",
   "document_type": "Sales Order",
   "is_active": 1,
-  "modified": "2024-08-28 13:54:07.043716",
+  "modified": "2024-08-28 15:38:01.800189",
   "name": "Sales Order Workflow",
   "override_status": 0,
   "send_email_alert": 0,
@@ -517,6 +517,42 @@
     "parentfield": "transitions",
     "parenttype": "Workflow",
     "state": "Pending",
+    "workflow_builder_id": null
+   },
+   {
+    "action": "Generate Proforma Invoice",
+    "allow_self_approval": 1,
+    "allowed": "All",
+    "condition": "",
+    "next_state": "Proforma Invoice",
+    "parent": "Sales Order Workflow",
+    "parentfield": "transitions",
+    "parenttype": "Workflow",
+    "state": "In Progress",
+    "workflow_builder_id": null
+   },
+   {
+    "action": "Create Pre-Invoice",
+    "allow_self_approval": 1,
+    "allowed": "All",
+    "condition": null,
+    "next_state": "Pre-Invoice",
+    "parent": "Sales Order Workflow",
+    "parentfield": "transitions",
+    "parenttype": "Workflow",
+    "state": "In Progress",
+    "workflow_builder_id": null
+   },
+   {
+    "action": "Proceed",
+    "allow_self_approval": 1,
+    "allowed": "All",
+    "condition": null,
+    "next_state": "Invoiced",
+    "parent": "Sales Order Workflow",
+    "parentfield": "transitions",
+    "parenttype": "Workflow",
+    "state": "Pre-Invoice",
     "workflow_builder_id": null
    }
   ],
