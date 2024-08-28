@@ -231,3 +231,7 @@ def create_sales_order_from_event(event, customer=None, sub_category=None, rate=
         "name": new_sales_order.name,
         "description": f"Meeting {event} is Completed, Please Proceed with the invoice"
     })
+    
+def so_on_cancel_custom(doc, method=None):
+    """Set workflow state to Cancelled when cancelling sales order"""
+    doc.db_set("workflow_state", "Cancelled")

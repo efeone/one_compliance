@@ -25,15 +25,15 @@ def project_on_update(doc, method):
 		update_sales_order_billing_instruction(doc.sales_order, doc.custom_billing_instruction)
 		
 def update_sales_order_billing_instruction(sales_order, custom_billing_instruction):
-    """
-    Updates the 'Billing Instruction' field in the Sales Order.
-    """
-    if frappe.db.exists('Sales Order', sales_order):
-        sales_order_doc = frappe.get_doc('Sales Order', sales_order)
-        sales_order_doc.custom_billing_instruction = custom_billing_instruction
-        sales_order_doc.save()
-    else:
-        frappe.throw(_("Sales Order does not exist"))
+	"""
+	Updates the 'Billing Instruction' field in the Sales Order.
+	"""
+	if frappe.db.exists('Sales Order', sales_order):
+		sales_order_doc = frappe.get_doc('Sales Order', sales_order)
+		sales_order_doc.custom_billing_instruction = custom_billing_instruction
+		sales_order_doc.save()
+	else:
+		frappe.throw(_("Sales Order does not exist"))
 
 
 @frappe.whitelist()
@@ -85,7 +85,11 @@ def project_after_insert(doc, method):
 		if sub_category_doc.is_billable:
 			sales_order = frappe.db.exists('Sales Order', doc.sales_order)
 			if sales_order:
-				frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
+				sales_order_status = frappe.db.get_value("Sales Order", sales_order, "workflow_state")
+				if sales_order_status == "In Progress":
+					frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
+				elif sales_order_status == "Pre-Invoice":
+					frappe.db.set_value("Sales Order", sales_order, "status", "Invoiced")
 			else:
 				payment_terms = None
 				rate = 0
