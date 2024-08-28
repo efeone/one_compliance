@@ -14,11 +14,12 @@ class InternalProjectManagement(Document):
 		"""method created a project based on the data selected in Internal Project Management Tool
 
 		Returns:
-						str: name of the project
+			str: name of the project
 		"""
 		if not self.project_name:
 			frappe.throw(_("Project Name is Mandatory"))
 		new_project = frappe.new_doc("Project")
+		new_project.custom_is_internal = 1
 		new_project.project_name = f"{self.get('project_name', '')} {self.get('compliance_sub_category', '')} {self.get('posting_date')}"
 		new_project.department = self.get("department", "")
 		new_project.compliance_sub_category = self.get("compliance_sub_category", "")
@@ -80,10 +81,10 @@ def task_assign(compliance_sub_category):
 	"""method fetches and returns the list of tasks from project template of a compliance sub category
 
 	Args:
-			compliance_sub_category (str): name of the compliance sub category
+		compliance_sub_category (str): name of the compliance sub category
 
 	Returns:
-			list: list of tasks in project template of the given compliance sub category
+		list: list of tasks in project template of the given compliance sub category
 	"""
 	sub_category = compliance_sub_category
 	if sub_category:

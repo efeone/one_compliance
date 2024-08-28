@@ -163,7 +163,8 @@ doc_events = {
         'after_save':'one_compliance.one_compliance.doc_events.oppotunity.make_engagement_letter'
     },
     'Sales Order':{
-        'on_submit':'one_compliance.one_compliance.doc_events.sales_order.create_project_on_submit'
+        'on_submit':'one_compliance.one_compliance.doc_events.sales_order.create_project_on_submit',
+        'on_cancel': 'one_compliance.one_compliance.doc_events.sales_order.so_on_cancel_custom'
     },
     'Payment Entry':{
         'on_submit':[
