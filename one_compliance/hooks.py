@@ -278,7 +278,7 @@ fixtures = [
     },
     {
         'dt': 'Workflow',
-        'filters': [['name', 'in', ['Compliance Agreement Workflow','Sales Invoice Workflow', 'Sales Order Workflow']]]
+        'filters': [['name', 'in', ['Compliance Agreement Workflow', 'Sales Order Workflow']]]
     },
     {
         'dt': 'Workflow Action Master',
