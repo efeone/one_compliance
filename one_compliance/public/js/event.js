@@ -11,11 +11,20 @@ frappe.ui.form.on('Event',{
             function () {
                 if (frm.doc.status === 'Completed') {
                     if (frm.doc.custom_is_billable == 1) {
-                        create_sales_order(frm);
-                    } else {
+                      if(frm.doc.custom_service_description){
+                        if(frm.doc.custom_customer){
+                          create_sales_order(frm);
+                          frappe.msgprint('Proforma Invoice Created Successfully');
+                        }else{
+                          frappe.msgprint('Please Select the Client');
+                        }
+                      }else{
+                        frappe.msgprint('Pleas Add the Service Description');
+                      }
+                    }else {
                         frappe.msgprint('Please Mark this Event as Billable');
                     }
-                } else {
+                }else {
                     frappe.msgprint('Please mark the event as Completed to proceed.');
                 }
             }
@@ -25,8 +34,9 @@ frappe.ui.form.on('Event',{
             function () {
                 if (frm.doc.status == 'Completed' && frm.doc.starts_on && frm.doc.ends_on) {
                     make_time_sheet_entry(frm);
+                    frappe.msgprint('Timesheet Created Successfully');
                 } else {
-                    frappe.msgprint('Not valid');
+                    frappe.msgprint('Please Ensure the Event is Marked as Completed and the End Date is Added');
                 }
             }
         );
@@ -42,13 +52,6 @@ frappe.ui.form.on('Event',{
             };
         });
     },
-
-    status: function(frm) {
-        if (frm.doc.status == 'Completed' && frm.doc.starts_on && frm.doc.ends_on) {
-            make_time_sheet_entry(frm);
-        }
-    },
-
     custom_service: function(frm) {
         if (frm.doc.custom_service) {
             frappe.db.get_value('Compliance Sub Category', frm.doc.custom_service, 'rate')
@@ -58,7 +61,7 @@ frappe.ui.form.on('Event',{
                 }
             });
         }
-    }
+    },
 });
 
 let create_sales_order = function(frm) {

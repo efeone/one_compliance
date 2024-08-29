@@ -9,10 +9,10 @@ from frappe.model.document import Document
 
 
 class InternalProjectManagement(Document):
+	
 	@frappe.whitelist()
 	def create_project(self):
 		"""method created a project based on the data selected in Internal Project Management Tool
-
 		Returns:
 			str: name of the project
 		"""
@@ -40,7 +40,6 @@ class InternalProjectManagement(Document):
 				frappe.throw(_(f"User ID not found for {employee}"))
 			assign_to_users.append(employee_user_id)
 		task_details = self.get("task_details", [])
-
 		if not assign_to_users or not task_details:
 			frappe.throw("No users or tasks provided for assignment.")
 
@@ -74,6 +73,7 @@ class InternalProjectManagement(Document):
 			)
 		frappe.msgprint(_("Tasks created and assigned to users."), alert=True)
 		return new_project.name
+
 
 
 @frappe.whitelist()

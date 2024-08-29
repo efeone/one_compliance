@@ -291,8 +291,7 @@ def create_project_completion_todos(sales_order, project_name):
 	)
 
 @frappe.whitelist()
-def make_time_sheet_enrty(event):
-	print("dfghjgfgh")
+def make_time_sheet_entry(event):
 	event_doc = frappe.get_doc("Event", event)
 	from_time = get_datetime(event_doc.starts_on)
 	to_time = get_datetime(event_doc.ends_on)
@@ -312,21 +311,9 @@ def create_timesheet(employee, activity_type, from_time, to_time):
 	employee_id = frappe.get_value("Employee", {"name": employee}, "name")
 
 	# Check if a timesheet already exists for the employee within the given date range
-	existing_timesheets = frappe.get_all("Timesheet", filters={
-		"employee": employee_id,
-		"start_date": from_time.date(),
-		"end_date": to_time.date(),
-	})
+	if frappe.db.exists("Timesheet", {"employee": employee_id, "start_date": from_time.date(), "end_date": to_time.date()}):
+	    frappe.throw(_("Timesheet already Created"))
 
-	if existing_timesheets:
-		existing_timesheet = frappe.get_doc("Timesheet", existing_timesheets)
-		existing_timesheet.append("time_logs",{
-			"activity_type": activity_type,
-			"from_time": from_time,
-			"to_time": to_time
-		})
-		existing_timesheet.save()
-		frappe.db.commit()
 	else:
 		timesheet = frappe.new_doc("Timesheet")
 		timesheet.employee = employee_id
