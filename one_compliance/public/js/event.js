@@ -1,11 +1,85 @@
 frappe.ui.form.on('Event',{
     refresh: function(frm) {
-        frm.add_custom_button(
-            __("Add Employees"),
-            function () {
-                new frappe.desk.eventParticipants(frm, "Employee");
-            }
-        );
+        frm.add_custom_button(__('Add Employees'), function() {
+            frappe.call({
+                method: 'one_compliance.one_compliance.utils.get_employee_list_for_hod',
+                callback: function(r) {
+                    if (r.message) {
+                        let employees = r.message;
+        
+                        if (!employees.length) {
+                            frappe.msgprint(__('No employees available to select.'));
+                            return;
+                        }
+        
+                        let d = new frappe.ui.Dialog({
+                            title: __('Select Employee'),
+                            fields: [
+                                {
+                                    fieldtype: 'HTML',
+                                    fieldname: 'employee_list',
+                                    options: `
+                                        <div style="max-height: 300px; overflow-y: auto;">
+                                            <input type="text" id="employee_search" placeholder="Search Employees..." style="width: 100%; padding: 5px; margin-bottom: 10px;">
+                                            <ul id="employee_list" style="list-style-type: none; padding-left: 0;">
+                                                ${employees.map(emp => `
+                                                    <li style="padding: 5px 0; border-bottom: 1px solid #ddd;" data-employee-id="${emp.employee_id}" data-employee-name="${emp.employee_name}">
+                                                        <strong>${emp.employee_id}</strong> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ${emp.employee_name}
+                                                    </li>
+                                                `).join('')}
+                                            </ul>
+                                        </div>
+                                    `
+                                }
+                            ],
+                            primary_action_label: 'Close',
+                            primary_action() {
+                                d.hide();
+                            }
+                        });
+        
+                        // Handle Search Input
+                        d.$wrapper.find('#employee_search').on('input', frappe.utils.debounce(function() {
+                            let searchValue = $(this).val().toLowerCase();
+                            d.$wrapper.find('#employee_list li').each(function() {
+                                let employeeText = $(this).text().toLowerCase();
+                                $(this).toggle(employeeText.indexOf(searchValue) > -1);
+                            });
+                        }, 300));  // Added debounce for better performance
+        
+                        // Handle Employee Selection
+                        d.$wrapper.find('li').on('click', function() {
+                            let $li = $(this);
+                            let employee_id = $li.data('employee-id');
+                            let employee_name = $li.data('employee-name');
+                            
+                            if ($li.hasClass('selected')) {
+                                frappe.msgprint(__('Employee {0} is already added.', [employee_id]));
+                                return;
+                            }
+        
+                            frm.add_child('event_participants', {
+                                reference_doctype: 'Employee',
+                                reference_docname: employee_id,
+                                custom_participant_name: employee_name
+                            });
+                            frm.refresh_field('event_participants');
+                            frappe.show_alert({
+                                message: __('Employee {0} added', [employee_id]),
+                                indicator: 'blue'
+                            });
+        
+                            $li.addClass('selected').off('click').css('background-color', '#e6f7ff'); // Visual cue
+                        });
+        
+                        d.show();
+                    } else {
+                        frappe.msgprint(__('You do not have permission to view employees.'));
+                    }
+                }
+            });
+        });        
+
         frm.add_custom_button(
             __("Create Proforma Invoice"),
             function () {
