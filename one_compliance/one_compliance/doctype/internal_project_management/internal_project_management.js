@@ -5,18 +5,8 @@ frappe.ui.form.on("Internal Project Management", {
     refresh: function(frm) {
         frm.disable_save();
         frm.add_custom_button(__('Create Project'), function() {
-            frappe.call({
-                method: 'one_compliance.one_compliance.doctype.internal_project_management.internal_project_management.create_project',
-                args: {
-                    'doc_data': JSON.stringify(frm.doc)
-                },
-                callback: function(r) {
-                    if (r.message) {
-                        // frm.doc.created_project = r.message;
-                    }
-                }
-            });
-        }).addClass("btn-primary");
+            frm.call("create_project")
+        })
 
         frm.set_query('compliance_sub_category', function() {
             return {
