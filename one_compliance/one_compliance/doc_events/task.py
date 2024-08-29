@@ -130,8 +130,11 @@ def make_sales_invoice(doc, method):
 					if sub_category_doc.is_billable:
 						sales_order = frappe.db.exists('Sales Order', project.sales_order)
 						if sales_order:
-							frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
-							frappe.db.set_value("Sales Order", sales_order, "workflow_state", "Proforma Invoice")
+							sales_order_status = frappe.db.get_value("Sales Order", sales_order, "workflow_state")
+							if sales_order_status == "In Progress":
+								frappe.db.set_value("Sales Order", sales_order, "workflow_state", "Proforma Invoice")
+							elif sales_order_status == "Pre-Invoice":
+								frappe.db.set_value("Sales Order", sales_order, "workflow_state", "Invoiced")
 						else:
 							payment_terms = None
 							rate = None
