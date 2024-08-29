@@ -321,6 +321,162 @@ function refresh_tasks(page){
             });
 
 						// Function to set colors to the status
+						set_status_colors(page);
+						// Function to hide assignee button for complated tasks
+						hide_add_assignee_button(page.fields_dict.status.get_value());
+						// Function to show assignee section or completed section based on task status
+						assignee_and_completed_by_section(page.fields_dict.status.get_value());
+				} else {
+            // If no tasks are found, append a message to the page body
+            $('<div class="frappe-list"></div>').appendTo(page.body).append('<div class="no-result text-muted flex justify-center align-center" style="text-align: center;"><p>No Task found with matching filters.</p></div>');
+        }
+			},
+			freeze: true,
+			freeze_message: 'Loading Task List'
+		});
+
+}
+
+function refresh_tasks_manually(page, selectedStatus, taskName, projectName, customerName, department, subCategory, employee, employeeGroup, from_date, to_date){
+	// Clear existing tasks from the page
+  page.body.find(".frappe-list").remove();
+
+	// const selectedStatus = page.fields_dict.status.get_value();
+	// const taskName = page.fields_dict.task.get_value();
+	// const projectName = page.fields_dict.project.get_value();
+	// const customerName = page.fields_dict.customer.get_value();
+	// const department = page.fields_dict.department.get_value();
+	// const subCategory = page.fields_dict.compliance_sub_category.get_value();
+	// const employee = page.fields_dict.employee.get_value();
+	// const employeeGroup = page.fields_dict.employee_group.get_value();
+	// const from_date = page.fields_dict.from_date.get_value();
+	// const to_date = page.fields_dict.to_date.get_value();
+
+	frappe.call({
+			method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.get_task",
+			 args: { status: selectedStatus,
+				 			 task: taskName,
+							 project: projectName,
+							 customer: customerName,
+							 department: department,
+							 sub_category: subCategory,
+							 employee: employee,
+							 employee_group: employeeGroup,
+							 from_date: from_date,
+							 to_date: to_date
+							},
+			 callback: (r) => {
+				if (r.message && r.message.length>0) {
+						// Render the list of tasks to html page
+						$(frappe.render_template("task_management_tool", {task_list:r.message})).appendTo(page.body);
+
+						// Button action to add payment details
+						page.body.find(".paymentEntryButton").on("click", function () {
+							var taskId = $(this).attr("task-id");
+							var payableAmount = $(this).attr("payable-amount");
+							var modeOfPayment = $(this).attr("mode-of-payment");
+							var referenceNumber = $(this).attr("ref-num");
+							var referenceDate = $(this).attr("ref-date");
+							var userRemark = $(this).attr("remark");
+							paymentEntryDialog(taskId, payableAmount, modeOfPayment, referenceNumber, referenceDate, userRemark);
+            });
+
+						// Button action to add assignees
+						page.body.find(".addAssigneeBtn").on("click", function () {
+							var taskName = $(this).attr("task-id");
+              showAssignEntryDialog(taskName);
+            });
+
+						// Initially hide the timesheet button
+						page.body.find(".timeEntryButton").hide();
+
+						// Button action to start the time
+						page.body.find(".startButton").on("click", function () {
+	            var taskName = $(this).attr("task-id");
+	            var projectName = $(this).attr("project-id");
+
+							var status = page.fields_dict.status.get_value();
+					    if (status === 'completed' || status === 'hold' || status === 'cancelled') {
+					        return; // If the task status is completed, hold, or cancelled, do not proceed
+					    }
+
+	            var currentTime = frappe.datetime.now_datetime();
+	            var formattedTime = frappe.datetime.str_to_user(currentTime);
+
+							// Save start time in local storage
+    					localStorage.setItem("start-time-task-" + taskName + "-project-" + projectName, currentTime);
+
+	            // Find the specific "start-time" paragraph associated with the task and project
+	            var startTimeParagraph = page.body.find(".start-time[task-id='" + taskName + "'][project-id='" + projectName + "']");
+	            startTimeParagraph.text(formattedTime);
+
+							// Update the status of task to 'Working'
+							updateTaskStatus(page,taskName, projectName, "Working");
+
+							// Hide the button once clicked
+							$(this).hide();
+							// Show the time sheet button
+							page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show();
+		        });
+
+						// Action of start-time field
+						page.body.find(".start-time").each(function () {
+				        var taskName = $(this).attr("task-id");
+				        var projectName = $(this).attr("project-id");
+				        var startTime = localStorage.getItem("start-time-task-" + taskName + "-project-" + projectName);
+
+								// Check if a start time is retrieved from local storage
+								if (startTime) {
+						        var storedDate = new Date(startTime);
+						        var currentDate = new Date();
+
+										// Check if the retrieved start time belongs to the current day
+						        if (storedDate.getDate() !== currentDate.getDate() || storedDate.getMonth() !== currentDate.getMonth() || storedDate.getFullYear() !== currentDate.getFullYear()) {
+						            // If startTime doesn't belong to the current day, reset the values
+						            localStorage.removeItem("start-time-task-" + taskName + "-project-" + projectName);
+						            startTime = null;
+						        }
+						    }
+								// Check if a valid start time exists
+				        if (startTime) {
+				            var formattedTime = frappe.datetime.str_to_user(startTime);
+				            $(this).text(formattedTime);
+										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide(); // Hide the start button associated with the task and project
+        						page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show(); // Show the time entry button associated with the task and project
+				        }
+								else {
+										// If no valid start time exists
+										$(this).text("");
+										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show(); // Show the start button associated with the task and project
+										page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide(); // Hide the time entry button associated with the task and project
+								}
+				    });
+
+						// Button action to enter timesheet
+						page.body.find(".timeEntryButton").on("click", function () {
+							var taskName = $(this).attr("task-id");
+							var projectName = $(this).attr("project-id");
+							var assignees = $(this).attr("assignees");
+							// Retrieve start time from local storage
+    					var startTime = localStorage.getItem("start-time-task-" + taskName + "-project-" + projectName);
+              showTimeEntryDialog(page, taskName, projectName, assignees, startTime);
+            });
+
+						// Button action to view Customer documents
+						page.body.find(".documentButton").on("click", function () {
+							var subCategory = $(this).attr("sub-category");
+							var customer = $(this).attr("customer");
+              cusomerDocuments(subCategory, customer);
+            });
+
+						// Button action to view Customer credentials
+						page.body.find(".credentialButton").on("click", function () {
+							var subCategory = $(this).attr("sub-category");
+							var customer = $(this).attr("customer");
+              cusomerCredentials(subCategory, customer);
+            });
+
+						// Function to set colors to the status
 						set_status_colors();
 						// Function to hide assignee button for complated tasks
 						hide_add_assignee_button(page.fields_dict.status.get_value());
@@ -417,7 +573,7 @@ function paymentEntryDialog(taskId, payableAmount, modeOfPayment, referenceNumbe
                 },
                 callback: function (r) {
                     frappe.msgprint("Payment info added successfully!");
-										frm.reload_doc(); 
+										frm.reload_doc();
                 }
 						});
             dialog.hide();
@@ -582,7 +738,7 @@ function get_employee(assigneesList, callback) {
 	}
 }
 
-function set_status_colors() {
+function set_status_colors(page) {
 		const taskElements = document.querySelectorAll('.card.task-entry');
 
 		taskElements.forEach(taskElement => {
@@ -629,7 +785,7 @@ function set_status_colors() {
         const projectId = element.getAttribute('project-id');
 				// Status updation to completed action for tic icon
         ticIcon.addEventListener('click', function () {
-            update_status(taskName, projectId, taskId);
+            update_status(page, taskName, projectId, taskId);
         });
 			}
     }
@@ -739,7 +895,7 @@ function cusomerCredentials(subCategory, customer){
 		 d.show();
 }
 
-function update_status(taskName, projectId, taskId) {
+function update_status(page, taskName, projectId, taskId) {
 	let fields = [
 	    {
 	        label: 'Status',
@@ -778,7 +934,18 @@ function update_status(taskName, projectId, taskId) {
 		    callback: function(r){
 		      if (r.message){
 		        d.hide();
-						location.reload();
+						const selectedStatus = page.fields_dict.status.get_value();
+						const taskName = page.fields_dict.task.get_value();
+						const projectName = page.fields_dict.project.get_value();
+						const customerName = page.fields_dict.customer.get_value();
+						const department = page.fields_dict.department.get_value();
+						const subCategory = page.fields_dict.compliance_sub_category.get_value();
+						const employee = page.fields_dict.employee.get_value();
+						const employeeGroup = page.fields_dict.employee_group.get_value();
+						const from_date = page.fields_dict.from_date.get_value();
+						const to_date = page.fields_dict.to_date.get_value();
+						refresh_tasks_manually(page, selectedStatus, taskName, projectName, customerName, department, subCategory, employee, employeeGroup, from_date, to_date)
+						// location.reload();
 		      }
 		    }
 		  });
