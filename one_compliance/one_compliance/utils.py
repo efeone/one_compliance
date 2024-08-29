@@ -325,3 +325,24 @@ def create_timesheet(employee, activity_type, from_time, to_time):
 
 		timesheet.insert(ignore_permissions=True)
 		frappe.db.commit()
+
+@frappe.whitelist()
+def get_employee_list_for_hod():
+    user_roles = frappe.get_roles(frappe.session.user)
+    if "Head Of Department" in user_roles or "System Manager" in user_roles:
+        employees = frappe.db.sql("""
+            SELECT
+                employee as employee_id, employee_name
+            FROM
+                `tabEmployee`
+        """, as_dict=True)
+    else:
+        employees = frappe.db.sql("""
+            SELECT
+                employee as employee_id, employee_name
+            FROM
+                `tabEmployee`
+            WHERE
+                user_id = %s
+        """, frappe.session.user, as_dict=True)
+    return employees
