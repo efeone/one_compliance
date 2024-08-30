@@ -137,9 +137,6 @@ frappe.ui.form.on('Event',{
                 }
             });
         }
-    },
-    set_time_out : function(frm){
-      frm.set_df_property("custom_rate", "read_only",frm.doc.__islocal ? 0 : 1);
     }
 });
 
