@@ -15,6 +15,7 @@
   {
    "fieldname": "employee",
    "fieldtype": "Link",
+   "ignore_user_permissions": 1,
    "in_filter": 1,
    "in_list_view": 1,
    "in_standard_filter": 1,
@@ -51,7 +52,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-01-02 11:09:43.756625",
+ "modified": "2024-08-30 09:26:36.266744",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Employee Details",
