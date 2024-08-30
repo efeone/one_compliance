@@ -265,7 +265,7 @@
    "columns": 0,
    "creation": "2024-08-28 15:05:08.041570",
    "default": null,
-   "depends_on": null,
+   "depends_on": "eval:doc.custom_is_internal == 0",
    "description": null,
    "docstatus": 0,
    "dt": "Project",
@@ -328,7 +328,7 @@
    "columns": 0,
    "creation": "2024-08-26 13:06:29.918798",
    "default": null,
-   "depends_on": null,
+   "eval:doc.custom_is_internal == 0"
    "description": null,
    "docstatus": 0,
    "dt": "Project",
