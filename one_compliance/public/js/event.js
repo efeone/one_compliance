@@ -6,12 +6,12 @@ frappe.ui.form.on('Event',{
                 callback: function(r) {
                     if (r.message) {
                         let employees = r.message;
-        
+
                         if (!employees.length) {
                             frappe.msgprint(__('No employees available to select.'));
                             return;
                         }
-        
+
                         let d = new frappe.ui.Dialog({
                             title: __('Select Employee'),
                             fields: [
@@ -37,7 +37,7 @@ frappe.ui.form.on('Event',{
                                 d.hide();
                             }
                         });
-        
+
                         // Handle Search Input
                         d.$wrapper.find('#employee_search').on('input', frappe.utils.debounce(function() {
                             let searchValue = $(this).val().toLowerCase();
@@ -46,18 +46,18 @@ frappe.ui.form.on('Event',{
                                 $(this).toggle(employeeText.indexOf(searchValue) > -1);
                             });
                         }, 300));  // Added debounce for better performance
-        
+
                         // Handle Employee Selection
                         d.$wrapper.find('li').on('click', function() {
                             let $li = $(this);
                             let employee_id = $li.data('employee-id');
                             let employee_name = $li.data('employee-name');
-                            
+
                             if ($li.hasClass('selected')) {
                                 frappe.msgprint(__('Employee {0} is already added.', [employee_id]));
                                 return;
                             }
-        
+
                             frm.add_child('event_participants', {
                                 reference_doctype: 'Employee',
                                 reference_docname: employee_id,
@@ -68,17 +68,17 @@ frappe.ui.form.on('Event',{
                                 message: __('Employee {0} added', [employee_id]),
                                 indicator: 'blue'
                             });
-        
+
                             $li.addClass('selected').off('click').css('background-color', '#e6f7ff'); // Visual cue
                         });
-        
+
                         d.show();
                     } else {
                         frappe.msgprint(__('You do not have permission to view employees.'));
                     }
                 }
             });
-        });        
+        });
 
         frm.add_custom_button(
             __("Create Proforma Invoice"),
@@ -132,10 +132,12 @@ frappe.ui.form.on('Event',{
             .then(r => {
                 if (r.message && r.message.rate) {
                     frm.set_value('custom_rate', r.message.rate);
+                    frm.set_df_property('custom_rate', 'read_only', 0);
+                    frm.refresh_field('custom_rate');
                 }
             });
         }
-    },
+    }
 });
 
 let create_sales_order = function(frm) {
