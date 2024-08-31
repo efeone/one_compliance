@@ -30,18 +30,18 @@ app_license = "MIT"
 
 # include js in doctype views
 doctype_js = {
-        "Project Template" : "public/js/project_template.js",
-        "Customer" : "public/js/customer.js",
-        "Project": "public/js/project.js",
-        "Task": "public/js/task.js",
-        "Department": "public/js/department.js",
-        "Lead":"public/js/lead.js",
-        "Opportunity":"public/js/opportunity.js",
-        "Sales Invoice":"public/js/sales_invoice.js",
-        "Sales Order":"public/js/sales_order.js",
-        "Company" : "public/js/company.js",
-        "Event":"public/js/event.js"
-        }
+    "Project Template" : "public/js/project_template.js",
+    "Customer" : "public/js/customer.js",
+    "Project": "public/js/project.js",
+    "Task": "public/js/task.js",
+    "Department": "public/js/department.js",
+    "Lead":"public/js/lead.js",
+    "Opportunity":"public/js/opportunity.js",
+    "Sales Invoice":"public/js/sales_invoice.js",
+    "Sales Order":"public/js/sales_order.js",
+    "Company" : "public/js/company.js",
+    "Event":"public/js/event.js"
+}
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -116,60 +116,50 @@ permission_query_conditions = {
 # Hook on document methods and events
 
 doc_events = {
-	"Project Template": {
-		"after_insert": ["one_compliance.one_compliance.doc_events.project_template.update_project_template",
-                        ],
-        "on_trash": ["one_compliance.one_compliance.doc_events.project_template.on_trash",
-                    ],
-          "validate": ["one_compliance.one_compliance.doc_events.project_template.validate",
-                      ]
-	},
+    'Project Template':{
+        'after_insert': 'one_compliance.one_compliance.doc_events.project_template.update_project_template',
+        'on_trash': 'one_compliance.one_compliance.doc_events.project_template.on_trash',
+        'validate': 'one_compliance.one_compliance.doc_events.project_template.validate',
+    },
     'Task':{
-        'on_update':['one_compliance.one_compliance.doc_events.task.task_on_update',
-                    'one_compliance.one_compliance.doc_events.task.make_sales_invoice',
-                    'one_compliance.one_compliance.doc_events.task.subtask_on_update',
-                    ],
-        'validate':['one_compliance.one_compliance.doc_events.task.append_users_to_project',
-                    'one_compliance.one_compliance.doc_events.task.set_task_status_to_hold',
-                   ],
-        'autoname':['one_compliance.one_compliance.doc_events.task.autoname'
-                    ],
+        'on_update':[
+            'one_compliance.one_compliance.doc_events.task.task_on_update',
+            'one_compliance.one_compliance.doc_events.task.make_sales_invoice',
+            'one_compliance.one_compliance.doc_events.task.subtask_on_update',
+        ],
+        'validate':[
+            'one_compliance.one_compliance.doc_events.task.append_users_to_project',
+            'one_compliance.one_compliance.doc_events.task.set_task_status_to_hold',
+        ],
+        'autoname': 'one_compliance.one_compliance.doc_events.task.autoname'
     },
     'Project':{
-        'on_update':[
-                    'one_compliance.one_compliance.doc_events.project.project_on_update',
-                    ],
-        'after_insert':[
-                        'one_compliance.one_compliance.doc_events.project.project_after_insert',
-                       ],
+        'on_update': 'one_compliance.one_compliance.doc_events.project.project_on_update',
+        'after_insert': 'one_compliance.one_compliance.doc_events.project.project_after_insert',
     },
     'Customer':{
-        'on_update':['one_compliance.one_compliance.doc_events.customer.customer_on_update',
-                    'one_compliance.one_compliance.doc_events.customer.create_project_from_customer'
-                    ],
-        'before_save':['one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',
-                       'one_compliance.one_compliance.doc_events.customer.set_expiry_dates']
+        'on_update':[
+            'one_compliance.one_compliance.doc_events.customer.customer_on_update',
+            'one_compliance.one_compliance.doc_events.customer.create_project_from_customer'
+        ],
+        'before_save':[
+            'one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',
+            'one_compliance.one_compliance.doc_events.customer.set_expiry_dates'
+        ]
     },
     'Sales Invoice':{
-
-        'on_submit':[
-                    'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
-                    ],
-        # 'autoname':[
-        #             'one_compliance.one_compliance.doc_events.sales_invoice.autoname'
-        #             ],
+        'on_submit': 'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
     },
     'Opportunity':{
         'after_save':'one_compliance.one_compliance.doc_events.oppotunity.make_engagement_letter'
     },
     'Sales Order':{
         'on_submit':'one_compliance.one_compliance.doc_events.sales_order.create_project_on_submit',
-        'on_cancel': 'one_compliance.one_compliance.doc_events.sales_order.so_on_cancel_custom'
+        'on_cancel': 'one_compliance.one_compliance.doc_events.sales_order.so_on_cancel_custom',
+        'on_update_after_submit': 'one_compliance.one_compliance.doc_events.sales_order.so_on_update_after_submit',
     },
     'Payment Entry':{
-        'on_submit':[
-                        'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_submit',
-                       ],
+        'on_submit': 'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_submit'
     }
 }
 
@@ -188,7 +178,7 @@ scheduler_events = {
         'one_compliance.one_compliance.utils.notification_for_digital_signature_expiry',
         'one_compliance.one_compliance.utils.project_overdue_notification',
         'one_compliance.one_compliance.doc_events.project.set_status_to_overdue'
-        ],
+    ],
 #	"hourly": [
 #		"one_compliance.tasks.hourly"
 #	],
