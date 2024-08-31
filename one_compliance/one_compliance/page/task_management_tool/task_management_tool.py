@@ -161,6 +161,8 @@ def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=
         so_reimburse.parenttype = 'Sales Order'
         so_reimburse.journal_entry = journal_entry
         so_reimburse.save(ignore_permissions= True)
+        total_reimbursement_amount = get_total_reimbursement_amount(sales_order)
+        frappe.db.set_value('Sales Order', sales_order, 'custom_total_reimbursement_amount', total_reimbursement_amount)
     frappe.db.commit()
 
 def create_journal_entry_pay_info(task, payment_info):
@@ -194,3 +196,10 @@ def get_default_account_for_mode_of_payment(mode_of_payment, company):
         if account.company == company:
             return account.default_account
     frappe.throw(_("Default account not found for mode of payment {0} and company {1}").format(mode_of_payment, company))
+
+def get_total_reimbursement_amount(sales_order):
+    total_reimbursement_amount = 0
+    amounts = frappe.db.get_all('Reimbursement Details', { 'parent':sales_order, 'parentfield':'custom_reimbursement_details', 'parenttype':'Sales Order'}, pluck='amount')
+    for amount in amounts:
+        total_reimbursement_amount += amount
+    return total_reimbursement_amount

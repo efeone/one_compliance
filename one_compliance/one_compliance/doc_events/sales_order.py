@@ -231,7 +231,23 @@ def create_sales_order_from_event(event, customer=None, sub_category=None, rate=
         "name": new_sales_order.name,
         "description": f"Meeting {event} is Completed, Please Proceed with the invoice"
     })
-    
+
 def so_on_cancel_custom(doc, method=None):
     """Set workflow state to Cancelled when cancelling sales order"""
     doc.db_set("workflow_state", "Cancelled")
+
+def so_on_update_after_submit(doc, method):
+	'''
+        Method trigger on so_on_update_after_submit of Sales Order
+	'''
+	set_total_reimbursement_amount(doc)
+
+def set_total_reimbursement_amount(doc):
+	'''
+        Method to set total_reimbursement_amount
+	'''
+	total_reimbursement_amount = 0
+	for row in doc.custom_reimbursement_details:
+		total_reimbursement_amount += row.amount
+	doc.custom_total_reimbursement_amount = total_reimbursement_amount
+	frappe.db.set_value('Sales Order', doc.name, 'custom_total_reimbursement_amount', total_reimbursement_amount)
