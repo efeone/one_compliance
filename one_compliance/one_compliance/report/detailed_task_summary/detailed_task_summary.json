@@ -1,0 +1,32 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2024-08-31 11:30:28.144614",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letterhead": null,
+ "modified": "2024-08-31 11:30:28.144614",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Detailed Task Summary",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Department",
+ "report_name": "Detailed Task Summary",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Director"
+  },
+  {
+   "role": "Founder"
+  },
+  {
+   "role": "Head Of Department"
+  }
+ ]
+}
