@@ -151,7 +151,7 @@ def create_sales_invoice(project, payment_terms, rate, sub_category_doc):
 	sales_invoice.posting_date = frappe.utils.today()
 	sales_invoice.project = project.name
 	sales_invoice.company = project.company
-	sub_category_income_account = get_company_income_account(project.company,sub_category_doc.name)		
+	sub_category_income_account = get_company_income_account(project.company,sub_category_doc.name)
 	income_account = sub_category_income_account if sub_category_income_account else frappe.db.get_value('Company',project.company, 'default_income_account')
 
 	if payment_terms:
@@ -192,11 +192,9 @@ def create_sales_order(project, rate, sub_category_doc, payment_terms=None, subm
 		'qty' : 1,
 		'description' : project.custom_project_service
 	})
-	new_sales_order.insert(ignore_permissions=True)
+	new_sales_order.insert(ignore_permissions=True, ignore_mandatory=True)
 	project.sales_order = new_sales_order.name
-	project.save()
-	if submit:
-		new_sales_order.submit()
+	new_sales_order.submit()
 	frappe.msgprint("Sales Order {0} Created against {1}".format(new_sales_order.name, project.name), alert=True)
 
 @frappe.whitelist()
