@@ -179,3 +179,21 @@ frappe.ui.form.on('Sales Order Item', {
     }
 	}
 });
+
+frappe.ui.form.on('Reimbursement Details', {
+  approve: function(frm, cdt, cdn) {
+    let child = locals[cdt][cdn];
+    frappe.call({
+        method: 'one_compliance.one_compliance.doc_events.sales_order.submit_journal_entry',
+        args: {
+            'journal_entry':  child.journal_entry
+        },
+        callback: function(r) {
+            if (r.message) {
+                frappe.msgprint(__('Journal Entry Submitted Successfully'));
+                frm.refresh_fields();
+            }
+        }
+    });
+  }
+});
