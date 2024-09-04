@@ -3,20 +3,7 @@
 
 frappe.ui.form.on('Compliance Sub Category', {
 	refresh: function(frm) {
-		let compliance_category = frm.doc.compliance_category
-		// Applied filter in child table for active employee
-		frm.set_query('employee', 'compliance_executive' ,(frm, cdt, cdn) => {
-            // To set filter for employee in Compliance Executive child table
-            var d = locals[cdt][cdn];
-		if (frm.compliance_category){
-			return {
-				query: 'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.set_filter_for_employee',
-				filters: {
-					'compliance_category': compliance_category
-				}
-			};
-		}
-        });
+		set_filters(frm);
 		if(!frm.is_new() && !frm.doc.project_template){
 			//custom button to create project template and route to  project template doctype
 			frm.add_custom_button('Create Project Template', () =>{
@@ -188,4 +175,32 @@ let set_validation_for_day = function(frm) {
 		frappe.throw('The number of days should be between 1 and 31.')
 		frm.set_value('day', '');
 	}
+}
+
+function set_filters(frm) {
+	console.log("test");
+	let compliance_category = frm.doc.compliance_category
+	// Applied filter in child table for active employee
+	frm.set_query('employee', 'compliance_executive' ,(frm, cdt, cdn) => {
+					// To set filter for employee in Compliance Executive child table
+					var d = locals[cdt][cdn];
+	if (frm.compliance_category){
+		return {
+			query: 'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.set_filter_for_employee',
+			filters: {
+				'compliance_category': compliance_category
+			}
+		};
+	}
+	});
+
+	frm.set_query('default_income_account', 'default_account', (doc, cdt, cdn) => {
+    let d = locals[cdt][cdn];
+    return {
+      filters: {
+        is_group:0,
+        company: d.company
+      }
+    }
+  });
 }

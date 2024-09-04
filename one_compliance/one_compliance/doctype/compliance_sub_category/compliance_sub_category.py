@@ -10,13 +10,13 @@ class ComplianceSubCategory(Document):
 	def validate(self):
 		self.validate_rate()
 		if self.is_billable and not self.item_code:
-			sub_cat_item = create_compliance_item_from_sub_category(self.sub_category, self.rate)
+			sub_cat_item = create_compliance_item_from_sub_category(self, self.sub_category, self.rate)
 			self.item_code = sub_cat_item
 
 		# Check if the subcategory name is changed
 		if self.get_doc_before_save() and self.get_doc_before_save().sub_category != self.sub_category:
 			self.item_code = self.sub_category
-			update_related_item_name(self.get_doc_before_save().sub_category, self.sub_category, self.compliance_category)
+			update_related_item_name(self,self.get_doc_before_save().sub_category, self.sub_category, self.compliance_category)
 
 	def validate_rate(self):
 		""" Method to validate rate """
@@ -93,7 +93,7 @@ def set_filter_for_employee(doctype, txt, searchfield, start, page_len, filters)
 		)
 
 @frappe.whitelist()
-def create_compliance_item_from_sub_category(sub_category, rate):
+def create_compliance_item_from_sub_category(doc, sub_category, rate):
 	if not frappe.db.exists('Item', {'item_code':sub_category}):
 		# Fetch the 'Services' Item Group
 		item_group = frappe.db.get_single_value("Compliance Settings", 'compliance_service_item_group')
@@ -106,10 +106,17 @@ def create_compliance_item_from_sub_category(sub_category, rate):
 			"item_group": item_group,
 			"is_service_item":True,
 			"is_stock_item": False,
-			"include_item_in_manufacturing": False
+			"include_item_in_manufacturing": False,
+			"item_defaults": []
 		})
-		# Save the Compliance Item document
-		compliance_item.insert()
+		for account in doc.default_account:
+			compliance_item.append("item_defaults", {
+				"company":account.company,
+                "income_account": account.default_income_account,
+				"default_warehouse": ''
+            })
+		compliance_item.flags.ignore_mandatory = True
+		compliance_item.save(ignore_permissions=True)
 		make_item_price(sub_category,rate)
 		frappe.msgprint("Compliance Item Created: {}".format(compliance_item.name), indicator="green", alert=1)
 		return compliance_item.name
@@ -150,19 +157,20 @@ def delete_related_items(item_name):
 	frappe.msgprint("Compliance Item Deleted: {}".format(item_name), indicator="green", alert=1)
 
 @frappe.whitelist()
-def update_related_item_name(old_sub_category, new_sub_category, compliance_category):
+def update_related_item_name(doc, old_sub_category, new_sub_category, compliance_category):
 	# Update Compliance Item name and code based on the new subcategory
 	item = frappe.get_doc("Item", {"item_name": old_sub_category})
-
 	if item:
 		item.item_name = new_sub_category
 		item.item_code = new_sub_category
-		item.save()
+		for default_acc in doc.default_account:
+			frappe.db.set_value("Item Default", {"parent":item.name, "idx":1}, "company", default_acc.company)
+			frappe.db.set_value("Item Default", {"parent":item.name, "idx":1}, "income_account", default_acc.default_income_account)
+			# Rename the doctype in the Item
+			frappe.rename_doc('Item', old_sub_category, new_sub_category, force=True)
 
-		# Rename the doctype in the Item
-		frappe.rename_doc('Item', old_sub_category, new_sub_category, force=True)
+			rename_compliance_subcategory(old_sub_category, new_sub_category, compliance_category)
 
-		rename_compliance_subcategory(old_sub_category, new_sub_category, compliance_category)
 
 	frappe.msgprint("Compliance Item Name Updated: {} -> {}".format(old_sub_category, new_sub_category), indicator="blue", alert=1)
 
