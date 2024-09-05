@@ -62,11 +62,11 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 			add_compliance_category_in_project_name = frappe.db.get_single_value('Compliance Settings', 'add_compliance_category_in_project_name')
 			if self.custom_project_name_automatically:
 				if add_compliance_category_in_project_name:
-					project.project_name = self.customer_name + '-' + compliance_sub_category.name + '-' + str(naming)
+					project.project_name = (self.customer_name or ' ') + '-' + compliance_sub_category.name + '-' + str(naming)
 				else:
-					project.project_name = self.customer_name + '-' + compliance_sub_category.sub_category + '-' + str(naming)
+					project.project_name = (self.customer_name  or ' ') + '-' + compliance_sub_category.sub_category + '-' + str(naming)
 			else:
-				project.project_name = self.custom_project_name + '-'+ self.customer_name + '-' + compliance_sub_category.name + '-' + str(naming)
+				project.project_name = (self.custom_project_name or ' ') + '-'+ self.customer_name + '-' + compliance_sub_category.name + '-' + str(naming)
 			project.customer = self.customer
 			project.compliance_sub_category = compliance_sub_category.name
 			project.compliance_category = compliance_sub_category.compliance_category
