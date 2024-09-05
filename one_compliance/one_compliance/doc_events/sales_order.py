@@ -2,6 +2,34 @@ import frappe
 from frappe.utils import *
 from one_compliance.one_compliance.utils import *
 from datetime import datetime, timedelta
+from frappe import _
+
+@frappe.whitelist()
+def update_journal_entry(doc):
+    if doc.custom_reimbursement_details:
+        for reimbursement_detail in doc.custom_reimbursement_details:
+            if frappe.db.exists('Journal Entry', reimbursement_detail.journal_entry):
+                entry_doc = frappe.get_doc('Journal Entry', reimbursement_detail.journal_entry)
+                if entry_doc and entry_doc.docstatus == 0:
+                	entry_doc.posting_date = reimbursement_detail.date
+                	entry_doc.user_remark = reimbursement_detail.user_remark
+                	for account in entry_doc.accounts:
+                		if account.debit_in_account_currency:
+                			account.debit_in_account_currency = reimbursement_detail.amount
+                		else:
+                			account.credit_in_account_currency = reimbursement_detail.amount
+                	entry_doc.save()
+                	frappe.msgprint("Journal Entry Updated", indicator="blue", alert=1)
+
+@frappe.whitelist()
+def submit_journal_entry(journal_entry):
+	if frappe.db.exists('Journal Entry', journal_entry):
+		journal_entry_doc = frappe.get_doc('Journal Entry', journal_entry)
+		if journal_entry_doc.docstatus == 0:
+			journal_entry_doc.submit()
+			return True
+		else:
+			frappe.throw(_("Journal Entry is already submitted."))
 
 @frappe.whitelist()
 def create_project_on_submit(doc, method):
@@ -175,6 +203,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 			frappe.db.commit()
 	else:
 		frappe.throw( title = _('ALERT !!'), msg = _('Project Template does not exist for {0}'.format(compliance_sub_category)))
+
 @frappe.whitelist()
 def create_sales_order_from_event(event, customer=None, sub_category=None, rate=None, description=None):
     missing_fields = []
@@ -240,7 +269,9 @@ def so_on_update_after_submit(doc, method):
 	'''
         Method trigger on so_on_update_after_submit of Sales Order
 	'''
+	update_journal_entry(doc)
 	set_total_reimbursement_amount(doc)
+	doc.reload()
 
 def set_total_reimbursement_amount(doc):
 	'''

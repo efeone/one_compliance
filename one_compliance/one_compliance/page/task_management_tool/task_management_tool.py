@@ -160,6 +160,9 @@ def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=
         so_reimburse.parentfield = 'custom_reimbursement_details'
         so_reimburse.parenttype = 'Sales Order'
         so_reimburse.journal_entry = journal_entry
+        so_reimburse.date = reference_date
+        so_reimburse.amount = payable_amount
+        so_reimburse.user_remark = user_remark
         so_reimburse.save(ignore_permissions= True)
         total_reimbursement_amount = get_total_reimbursement_amount(sales_order)
         frappe.db.set_value('Sales Order', sales_order, 'custom_total_reimbursement_amount', total_reimbursement_amount)
