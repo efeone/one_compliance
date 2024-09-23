@@ -13,7 +13,7 @@
    "columns": 0,
    "creation": "2024-07-28 01:13:22.765506",
    "default": null,
-   "depends_on": null,
+   "depends_on": "custom_is_billable",
    "description": null,
    "docstatus": 0,
    "dt": "Event",
