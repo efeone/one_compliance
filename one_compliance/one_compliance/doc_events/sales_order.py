@@ -282,3 +282,50 @@ def set_total_reimbursement_amount(doc):
 		total_reimbursement_amount += row.amount
 	doc.custom_total_reimbursement_amount = total_reimbursement_amount
 	frappe.db.set_value('Sales Order', doc.name, 'custom_total_reimbursement_amount', total_reimbursement_amount)
+
+@frappe.whitelist()
+def delete_linked_records(sales_order):
+	"""
+	Deletes all records linked with the specified sales order.
+
+	Args:
+	project (str): The name of the project to delete linked records for.
+	"""
+	try:
+		sales_invoice = frappe.db.get_value(
+			"Sales Invoice Item", {"sales_order": sales_order}, "parent"
+		)
+		if frappe.db.exists("Sales Invoice", sales_invoice):
+			si_doc = frappe.get_doc("Sales Invoice", sales_invoice)
+			si_doc.cancel()
+			frappe.delete_doc("Sales Invoice", sales_invoice)
+
+		project = frappe.db.get_value("Sales Order", sales_order, "project")
+
+		if frappe.db.exists("Project", project):
+			linked_tasks = frappe.get_all("Task", filters={"project": project})
+			for task in linked_tasks:
+				frappe.delete_doc("Task", task["name"])
+
+			project_doc = frappe.get_doc("Project", project)
+			project_doc.sales_order = ""
+			project_doc.save()
+			frappe.delete_doc("Project", project)
+
+		doc = frappe.get_doc("Sales Order", sales_order)
+		doc.cancel()
+		frappe.delete_doc("Sales Order", sales_order)
+
+		return "success"
+
+	except Exception as e:
+		frappe.log_error(
+			f"Error deleting linked records for project {project}: {str(e)}"
+		)
+		return "failure"
+
+	except Exception as e:
+		frappe.log_error(
+			f"Error deleting linked records for project {project}: {str(e)}"
+		)
+		return "failure"

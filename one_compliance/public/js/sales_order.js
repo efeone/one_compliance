@@ -27,6 +27,8 @@ frappe.ui.form.on('Sales Order', {
         frm.remove_custom_button('Purchase Order', 'Create');
         frm.remove_custom_button('Project', 'Create');
         }, 500);
+
+        handle_unlinking(frm);
     }
 });
 
@@ -197,3 +199,36 @@ frappe.ui.form.on('Reimbursement Details', {
     });
   }
 });
+
+function handle_unlinking(frm) {
+  if (!frm.is_new()) {
+    frm.add_custom_button("Unlink and Delete", () => {
+      frappe.confirm(
+        __(
+          `Are you sure you want to unlink and delete all linked records of <b>${frm.doc.name}</b>?`
+        ),
+        function () {
+          frappe.call({
+            method:
+              "one_compliance.one_compliance.doc_events.sales_order.delete_linked_records",
+            args: {
+              sales_order: frm.doc.name,
+            },
+            callback: function (r) {
+              if (r.message === "success") {
+                frappe.msgprint(
+                  __("All linked records have been successfully deleted.")
+                );
+                frappe.set_route("List", "Sales Order");
+              } else {
+                frappe.throw(
+                  __("An error occurred while deleting linked records.")
+                );
+              }
+            },
+          });
+        }
+      );
+    });
+  }
+}
