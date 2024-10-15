@@ -17,9 +17,15 @@ frappe.query_reports["Detailed Task Summary"] = {
     },
     {
       fieldname: "client",
-      label: __("Client"),
+      label: __("Customer"),
       fieldtype: "Link",
       options: "Customer",
+    },
+    {
+      fieldname: "project",
+      label: __("Project"),
+      fieldtype: "Link",
+      options: "Project",
     },
     {
       fieldname: "employee",

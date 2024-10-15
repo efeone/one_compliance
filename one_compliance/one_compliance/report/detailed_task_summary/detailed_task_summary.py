@@ -50,11 +50,18 @@ def get_columns():
         },
         {"label": _("Date"), "fieldname": "date", "fieldtype": "Date", "width": 150},
         {
-            "label": _("Client"),
+            "label": _("Customer"),
             "fieldname": "client",
             "fieldtype": "Link",
             "options": "Customer",
             "width": 225,
+        },
+        {
+            "label": _("Project"),
+            "fieldname": "project",
+            "fieldtype": "Link",
+            "options": "Project",
+            "width": 150,
         },
         {
             "label": _("Department"),
@@ -95,15 +102,21 @@ def get_columns():
             "width": 150,
         },
         {
+            "label": _("Invoiced Amount"),
+            "fieldname": "invoice_amount",
+            "fieldtype": "Data",
+            "width": 150,
+        },
+        {
             "label": _("Payment Received"),
             "fieldname": "payment_received",
-            "fieldtype": "Currency",
+            "fieldtype": "Data",
             "width": 150,
         },
         {
             "label": _("Outstanding Amount"),
             "fieldname": "outstanding_amount",
-            "fieldtype": "Currency",
+            "fieldtype": "Data",
             "width": 150,
         },
     ]
@@ -121,7 +134,7 @@ def get_data(filters):
     list: List of combined tasks and events.
     """
     try:
-        if filters.get("reference_type") == "Task":
+        if filters.get("reference_type") == "Task" or filters.get("project"):
             task_filters = build_task_filters(filters)
             tasks = fetch_tasks(task_filters, filters)
             return tasks
@@ -163,6 +176,9 @@ def build_task_filters(filters):
 
     if filters.get("sub_category"):
         task_filters["compliance_sub_category"] = filters.get("sub_category")
+
+    if filters.get("project"):
+        task_filters["project"] = filters.get("project")
 
     return task_filters
 
@@ -363,7 +379,7 @@ def fetch_billing_details(record, record_type):
     None: Updates the record in place with billing details.
     """
     try:
-        record["invoiced"] = "No"
+        record["invoiced"] = ""
 
         if record_type == "task":
             handle_task_billing(record)
@@ -387,23 +403,34 @@ def handle_task_billing(record):
     Returns:
     None: Updates the record in place with billing details.
     """
+    record["invoiced"] = "No"
     so = frappe.db.exists(
         "Sales Order", {"customer": record["client"], "project": record.get("project")}
     )
     if so:
+        record["invoice_amount"] = frappe.utils.fmt_money(
+            frappe.db.get_value("Sales Order", so, "grand_total"), currency="INR"
+        )
         item_code = frappe.db.get_value(
             "Compliance Sub Category", record.get("sub_category"), "item_code"
         )
         record["invoiced"] = "Yes"
 
         # Fetch related Sales Invoice and payment details
-        si = frappe.db.get_value("Sales Invoice Item", {"sales_order": so, "item_code":item_code}, "parent")
+        si = frappe.db.get_value(
+            "Sales Invoice Item", {"sales_order": so, "item_code": item_code}, "parent"
+        )
         if si:
             record["payment_received"] = (
                 frappe.db.get_value("Sales Invoice", si, "grand_total") or 0
             )
             grand_total = frappe.db.get_value("Sales Order", so, "grand_total") or 0
-            record["outstanding_amount"] = grand_total - record["payment_received"]
+            record["outstanding_amount"] = frappe.utils.fmt_money(
+                grand_total - record["payment_received"], currency="INR"
+            )
+            record["payment_received"] = frappe.utils.fmt_money(
+                record["payment_received"], currency="INR"
+            )
 
 
 def handle_event_billing(record):
@@ -416,15 +443,16 @@ def handle_event_billing(record):
     Returns:
     None: Updates the record in place with billing details.
     """
+    record["invoiced"] = "Not Billlable"
     item_code = frappe.db.get_value(
         "Compliance Sub Category", record.get("sub_category"), "item_code"
     )
     if item_code:
         sales_order = frappe.db.sql(
             f"""
-            SELECT so.name 
+            SELECT DISTINCT so.name 
             FROM `tabSales Order` as so, `tabSales Order Item` as soi 
-            WHERE soi.parent = so.name AND soi.item_code = '{item_code}'
+            WHERE soi.parent = so.name AND soi.item_code = '{item_code}' AND so.customer = '{record['client']}'
             """,
             as_dict=True,
         )
@@ -433,6 +461,10 @@ def handle_event_billing(record):
             record["invoiced"] = "Yes"
             si = frappe.db.get_value(
                 "Sales Invoice Item", {"sales_order": sales_order[0]["name"]}, "parent"
+            )
+            record["invoice_amount"] = frappe.utils.fmt_money(
+                frappe.db.get_value("Sales Order", sales_order, "grand_total"),
+                currency="INR",
             )
 
             if si:
@@ -445,7 +477,12 @@ def handle_event_billing(record):
                     )
                     or 0
                 )
-                record["outstanding_amount"] = grand_total - record["payment_received"]
+                record["outstanding_amount"] = frappe.utils.fmt_money(
+                    grand_total - record["payment_received"], currency="INR"
+                )
+                record["payment_received"] = frappe.utils.fmt_money(
+                    record["payment_received"], currency="INR"
+                )
 
 
 def get_employee_user(record, record_type):
