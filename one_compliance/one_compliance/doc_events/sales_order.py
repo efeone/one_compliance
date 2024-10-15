@@ -291,41 +291,35 @@ def delete_linked_records(sales_order):
 	Args:
 	project (str): The name of the project to delete linked records for.
 	"""
-	try:
-		sales_invoice = frappe.db.get_value(
-			"Sales Invoice Item", {"sales_order": sales_order}, "parent"
-		)
-		if frappe.db.exists("Sales Invoice", sales_invoice):
-			si_doc = frappe.get_doc("Sales Invoice", sales_invoice)
-			si_doc.cancel()
-			frappe.delete_doc("Sales Invoice", sales_invoice)
+	sales_invoice = frappe.db.get_value(
+		"Sales Invoice Item", {"sales_order": sales_order}, "parent"
+	)
+	if frappe.db.exists("Sales Invoice", sales_invoice):
+		si_doc = frappe.get_doc("Sales Invoice", sales_invoice)
+		if frappe.db.exists("Payment Entry Reference", {"reference_doctype":"Sales Invoice", "reference_name":sales_invoice}):
+			payments = frappe.db.get_all("Payment Entry Reference", {"reference_doctype":"Sales Invoice", "reference_name":sales_invoice}, pluck="parent")
+			for payment in payments:
+				payment_doc = frappe.get_doc("Payment Entry", payment)
+				payment_doc.cancel()
+				frappe.delete_doc("Payment Entry", payment)
 
-		project = frappe.db.get_value("Sales Order", sales_order, "project")
+		si_doc.cancel()
+		frappe.delete_doc("Sales Invoice", sales_invoice)
 
-		if frappe.db.exists("Project", project):
-			linked_tasks = frappe.get_all("Task", filters={"project": project})
-			for task in linked_tasks:
-				frappe.delete_doc("Task", task["name"])
+	project = frappe.db.get_value("Sales Order", sales_order, "project")
 
-			project_doc = frappe.get_doc("Project", project)
-			project_doc.sales_order = ""
-			project_doc.save()
-			frappe.delete_doc("Project", project)
+	if frappe.db.exists("Project", project):
+		linked_tasks = frappe.get_all("Task", filters={"project": project})
+		for task in linked_tasks:
+			frappe.delete_doc("Task", task["name"])
 
-		doc = frappe.get_doc("Sales Order", sales_order)
-		doc.cancel()
-		frappe.delete_doc("Sales Order", sales_order)
+		project_doc = frappe.get_doc("Project", project)
+		project_doc.sales_order = ""
+		project_doc.save()
+		frappe.delete_doc("Project", project)
 
-		return "success"
+	doc = frappe.get_doc("Sales Order", sales_order)
+	doc.cancel()
+	frappe.delete_doc("Sales Order", sales_order)
 
-	except Exception as e:
-		frappe.log_error(
-			f"Error deleting linked records for project {project}: {str(e)}"
-		)
-		return "failure"
-
-	except Exception as e:
-		frappe.log_error(
-			f"Error deleting linked records for project {project}: {str(e)}"
-		)
-		return "failure"
+	return "success"
