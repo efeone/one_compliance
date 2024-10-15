@@ -13,6 +13,10 @@ def sales_invoice_on_submit(doc, method):
 					"Sales Order", item.sales_order, "workflow_state", "Pre-Invoice"
 				)
 				break
+			else:
+				frappe.db.set_value(
+					"Sales Order", item.sales_order, "workflow_state", "Invoiced"
+				)
 
 def autoname(doc, method=None):
 	if doc.company and doc.custom_invoice_type:
