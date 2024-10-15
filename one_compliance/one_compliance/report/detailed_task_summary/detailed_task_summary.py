@@ -147,7 +147,8 @@ def get_data(filters):
         event_filters = build_event_filters(filters)
         tasks = fetch_tasks(task_filters, filters)
         events = fetch_events(event_filters, filters)
-        return tasks + events
+        data = tasks + events
+        return sorted(data, key=lambda x: x["date"], reverse=True)
     except Exception as e:
         frappe.log_error(f"Error in get_data function: {e}")
         return []
@@ -408,6 +409,9 @@ def handle_task_billing(record):
         "Sales Order", {"customer": record["client"], "project": record.get("project")}
     )
     if so:
+        record["billing_date"] = frappe.db.get_value(
+            "Sales Order", so, "custom_billing_date"
+        )
         record["invoice_amount"] = frappe.utils.fmt_money(
             frappe.db.get_value("Sales Order", so, "grand_total"), currency="INR"
         )
@@ -458,6 +462,9 @@ def handle_event_billing(record):
         )
 
         if sales_order:
+            record["billing_date"] = frappe.db.get_value(
+                "Sales Order", sales_order, "custom_billing_date"
+            )
             record["invoiced"] = "Yes"
             si = frappe.db.get_value(
                 "Sales Invoice Item", {"sales_order": sales_order[0]["name"]}, "parent"
