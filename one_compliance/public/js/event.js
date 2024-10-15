@@ -82,19 +82,24 @@ frappe.ui.form.on('Event', {
 
         frm.add_custom_button(__("Create Proforma Invoice"), function () {
             if (frm.doc.status === 'Completed') {
-                if (frm.doc.custom_is_billable == 1) {
-                    if (frm.doc.custom_service_description) {
-                        if (frm.doc.custom_customer) {
-                            create_sales_order(frm);
-                            frappe.msgprint('Proforma Invoice Created Successfully');
+                if (frm.doc.ends_on) {
+                    if (frm.doc.custom_is_billable == 1) {
+                        if (frm.doc.custom_service_description) {
+                            if (frm.doc.custom_customer) {
+                                create_sales_order(frm);
+                                frappe.msgprint('Proforma Invoice Created Successfully');
+                            } else {
+                                frappe.msgprint('Please Select the Client');
+                            }
                         } else {
-                            frappe.msgprint('Please Select the Client');
+                            frappe.msgprint('Pleas Add the Service Description');
                         }
                     } else {
-                        frappe.msgprint('Pleas Add the Service Description');
+                        frappe.msgprint('Please Mark this Event as Billable');
                     }
-                } else {
-                    frappe.msgprint('Please Mark this Event as Billable');
+                }
+                else {
+                    frappe.msgprint(__("Please enter the Ends on time before proceeding."))
                 }
             } else {
                 frappe.msgprint('Please mark the event as Completed to proceed.');
