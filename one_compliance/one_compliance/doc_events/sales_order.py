@@ -282,3 +282,36 @@ def set_total_reimbursement_amount(doc):
 		total_reimbursement_amount += row.amount
 	doc.custom_total_reimbursement_amount = total_reimbursement_amount
 	frappe.db.set_value('Sales Order', doc.name, 'custom_total_reimbursement_amount', total_reimbursement_amount)
+
+@frappe.whitelist()
+def delete_linked_records(sales_order):
+	"""
+	Deletes all records linked with the specified sales order.
+
+	Args:
+	project (str): The name of the project to delete linked records for.
+	"""
+	sales_invoice = frappe.db.get_value(
+		"Sales Invoice Item", {"sales_order": sales_order}, "parent"
+	)
+	if frappe.db.exists("Sales Invoice", sales_invoice):
+		frappe.throw("Cannot proceed with this operation as it is invoiced")
+
+	project = frappe.db.get_value("Sales Order", sales_order, "project")
+
+	if frappe.db.exists("Project", project):
+		linked_tasks = frappe.get_all("Task", filters={"project": project})
+		for task in linked_tasks:
+			frappe.delete_doc("Task", task["name"], ignore_permissions=True)
+
+		project_doc = frappe.get_doc("Project", project)
+		project_doc.sales_order = ""
+		project_doc.save(ignore_permissions=True)
+		frappe.delete_doc("Project", project, ignore_permissions=True)
+
+	doc = frappe.get_doc("Sales Order", sales_order)
+	doc.flags.ignore_permissions = True
+	doc.cancel()
+	frappe.delete_doc("Sales Order", sales_order, ignore_permissions=True)
+
+	return "success"
