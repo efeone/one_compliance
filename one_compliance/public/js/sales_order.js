@@ -26,6 +26,9 @@ frappe.ui.form.on('Sales Order', {
         frm.remove_custom_button('Request for Raw Materials', 'Create');
         frm.remove_custom_button('Purchase Order', 'Create');
         frm.remove_custom_button('Project', 'Create');
+        if (frappe.user_roles.incudes("Accounts User") || frappe.user_roles.incudes("Accounts Manager")) {
+          frm.remove_custom_button('Payment', 'Create');
+        }
         }, 500);
     }
 });
