@@ -302,15 +302,16 @@ def delete_linked_records(sales_order):
 	if frappe.db.exists("Project", project):
 		linked_tasks = frappe.get_all("Task", filters={"project": project})
 		for task in linked_tasks:
-			frappe.delete_doc("Task", task["name"])
+			frappe.delete_doc("Task", task["name"], ignore_permissions=True)
 
 		project_doc = frappe.get_doc("Project", project)
 		project_doc.sales_order = ""
-		project_doc.save()
-		frappe.delete_doc("Project", project)
+		project_doc.save(ignore_permissions=True)
+		frappe.delete_doc("Project", project, ignore_permissions=True)
 
 	doc = frappe.get_doc("Sales Order", sales_order)
+	doc.flags.ignore_permissions = True
 	doc.cancel()
-	frappe.delete_doc("Sales Order", sales_order)
+	frappe.delete_doc("Sales Order", sales_order, ignore_permissions=True)
 
 	return "success"
