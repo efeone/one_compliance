@@ -15,6 +15,7 @@
   "delete_project_along_with_compliance_agreement",
   "section_break_saeum",
   "role_of_project_creator",
+  "role_allowed_to_unlink_and_delete_sales_orders",
   "compliance_service_item_group",
   "default_invoice_due_day",
   "column_break_gnzz",
@@ -250,12 +251,18 @@
    "fieldtype": "Link",
    "label": "Default Tds Account",
    "options": "Account"
+  },
+  {
+   "fieldname": "role_allowed_to_unlink_and_delete_sales_orders",
+   "fieldtype": "Link",
+   "label": "Role Allowed to Unlink and Delete Sales Orders",
+   "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-07-26 15:51:25.595909",
+ "modified": "2024-10-16 12:17:17.395229",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",

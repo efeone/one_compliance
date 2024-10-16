@@ -295,16 +295,7 @@ def delete_linked_records(sales_order):
 		"Sales Invoice Item", {"sales_order": sales_order}, "parent"
 	)
 	if frappe.db.exists("Sales Invoice", sales_invoice):
-		si_doc = frappe.get_doc("Sales Invoice", sales_invoice)
-		if frappe.db.exists("Payment Entry Reference", {"reference_doctype":"Sales Invoice", "reference_name":sales_invoice}):
-			payments = frappe.db.get_all("Payment Entry Reference", {"reference_doctype":"Sales Invoice", "reference_name":sales_invoice}, pluck="parent")
-			for payment in payments:
-				payment_doc = frappe.get_doc("Payment Entry", payment)
-				payment_doc.cancel()
-				frappe.delete_doc("Payment Entry", payment)
-
-		si_doc.cancel()
-		frappe.delete_doc("Sales Invoice", sales_invoice)
+		frappe.throw("Cannot proceed with this operation as it is invoiced")
 
 	project = frappe.db.get_value("Sales Order", sales_order, "project")
 
