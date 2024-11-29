@@ -1,15 +1,20 @@
+import json
+
 import frappe
 from erpnext.accounts.doctype.sales_invoice.sales_invoice import (
 	get_mode_of_payment_info,
 )
 from erpnext.accounts.party import get_party_account
+from erpnext.projects.doctype.task.task import (
+	CircularReferenceError,
+	check_if_child_exists,
+)
 from frappe import _, throw
 from frappe.desk.form.assign_to import clear, close_all_assignments
 from frappe.email.doctype.notification.notification import get_context
 from frappe.utils import add_days, cstr, date_diff, flt, getdate
 from frappe.utils.data import format_date
 from frappe.utils.nestedset import NestedSet
-from erpnext.projects.doctype.task.task import check_if_child_exists, CircularReferenceError
 
 from one_compliance.one_compliance.utils import (
 	create_project_completion_todos,
@@ -580,3 +585,17 @@ def get_company_income_account(company, compliance_sub_category):
 		)
 	if income_result:
 		return income_result[0].default_income_account
+
+@frappe.whitelist()
+def custom_set_multiple_status(names, status):
+    # Checks role allowed to bulk complete tasks in compliance settings
+	if status == "Completed":
+		role_allowed_to_bulk_complete_tasks = frappe.db.get_single_value("Compliance Settings", "role_allowed_to_bulk_complete_tasks")
+		if role_allowed_to_bulk_complete_tasks not in frappe.get_roles(frappe.session.user):
+			frappe.throw("{0} does not have permission to bulk complete Tasks".format(frappe.session.user), title="Message")
+
+	names = json.loads(names)
+	for name in names:
+		task = frappe.get_doc("Task", name)
+		task.status = status
+		task.save()
