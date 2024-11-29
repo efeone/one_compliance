@@ -42,7 +42,7 @@ doctype_js = {
     "Company" : "public/js/company.js",
     "Event":"public/js/event.js"
 }
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
+doctype_list_js = {"Task" : "public/js/task_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
