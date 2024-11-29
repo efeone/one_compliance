@@ -142,6 +142,7 @@ doc_events = {
     'Project':{
         'on_update': 'one_compliance.one_compliance.doc_events.project.project_on_update',
         'after_insert': 'one_compliance.one_compliance.doc_events.project.project_after_insert',
+        'before_save': 'one_compliance.one_compliance.doc_events.project.before_save'
     },
     'Customer':{
         'on_update':[
@@ -204,9 +205,9 @@ scheduler_events = {
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-#	"frappe.desk.doctype.event.event.get_events": "one_compliance.event.get_events"
-# }
+override_whitelisted_methods = {
+	"erpnext.projects.doctype.task.task.set_multiple_status": "one_compliance.one_compliance.doc_events.task.custom_set_multiple_status"
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

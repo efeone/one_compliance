@@ -28,6 +28,8 @@ frappe.ui.form.on('Project',{
         update_project_status(frm)
       });
     }
+
+    field_perms(frm)
   }
 });
 
@@ -196,3 +198,18 @@ let customer_documents = function (frm) {
       });
       d.show();
     }
+
+/**
+ *function sets the edit expected end date field as read only according to the permissions set
+ *
+ */
+function field_perms(frm) {
+  frappe.db.get_single_value('Compliance Settings', 'role_allowed_to_edit_expected_end_date_in_project')
+  .then(role => {
+    if (role && frappe.user_roles.includes(role)) {
+      frm.set_df_property('edit_expected_end_date', 'read_only', 0)
+    } else {
+      frm.set_df_property('edit_expected_end_date', 'read_only', 1)
+    }
+  })
+}
