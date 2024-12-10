@@ -80,7 +80,7 @@ function make_filters(page) {
           refresh_tasks(page);
       }
 		},
-		read_only: frappe.session.user === 'Administrator' ? 0 : 1
+		// read_only: frappe.session.user === 'Administrator' ? 0 : 1
 	});
 	page.fields_dict.employee.$input.on('change', function() {
 		if (!page.fields_dict.employee.get_value()) {

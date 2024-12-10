@@ -59,7 +59,7 @@ function make_filters(page) {
           refresh_projects(page);
       }
 		},
-		read_only: frappe.session.user === 'Administrator' ? 0 : 1
+		// read_only: frappe.session.user === 'Administrator' ? 0 : 1
 	});
 	page.fields_dict.employee.$input.on('change', function() {
 		if (!page.fields_dict.employee.get_value()) {
@@ -172,7 +172,7 @@ function refresh_projects(page){
 				if (r.message && r.message.length>0) {
 						$(frappe.render_template("project_management_tool", {project_list:r.message})).appendTo(page.body);
 
-						// Action to redirect to the task management tool 
+						// Action to redirect to the task management tool
 						page.body.find(".showTask").on("click", function () {
 							var project_id = $(this).attr("project");
 							console.log(project_id);

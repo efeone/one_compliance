@@ -6,7 +6,7 @@ def get_project(status = None, project = None, customer = None, department = Non
     user_id = f'"{employee}"' if id else None
     # Construct the SQL query to fetch list of projects
     query = """
-	SELECT
+    SELECT
         name, project_name, customer, department, compliance_sub_category, _assign, expected_start_date, expected_end_date, status
     FROM
         tabProject
@@ -49,7 +49,7 @@ def get_project(status = None, project = None, customer = None, department = Non
             if user_ids:
                 # Query to get the employee name from id
                 user_names_query = """
-                    SELECT name, employee_name, user_id FROM `tabEmployee`
+                    SELECT name, employee_name, user_id FROM tabEmployee
                     WHERE user_id IN ({})
                 """.format(', '.join(['%s' for _ in user_ids]))
 
