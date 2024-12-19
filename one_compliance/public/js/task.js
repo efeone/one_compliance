@@ -23,6 +23,8 @@ frappe.ui.form.on('Task',{
       frm.set_df_property('is_group','hidden',1);
       frm.set_df_property('is_template','hidden',1);
     }
+    
+    handle_project_extension_req(frm)
   }
 });
 /* applied dialog instance to show customer Credential */
@@ -205,3 +207,22 @@ let update_status = function(frm){
   d.set_value('completed_by', frappe.session.user);
 d.show();
 };
+
+/**
+ * function adds a button in form to request for changing the end date of the project
+ *
+ */
+function handle_project_extension_req(frm) {
+  frappe.db
+    .get_single_value(
+      "Compliance Settings",
+      "role_allowed_to_edit_expected_end_date_in_project"
+    )
+    .then((role) => {
+      if (frappe.user_roles.includes(role) && frm.doc.status == "Overdue") {
+        frm.add_custom_button("Request Project Extension", () => {
+          frm.call("request_for_project_extension", { role: role });
+        });
+      }
+    });
+}
