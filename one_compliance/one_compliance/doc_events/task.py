@@ -317,6 +317,7 @@ class CustomTask(NestedSet):
 			"name": self.project,
 			"description": f"{frappe.session.user} has requested to extend the date of Project {self.project}. Please do the necessary for the same."
 		})
+		frappe.msgprint('Request to sent to {role} user(s)', title='Message')
 
 
 @frappe.whitelist()
