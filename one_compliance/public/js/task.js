@@ -219,7 +219,7 @@ function handle_project_extension_req(frm) {
       "role_allowed_to_edit_expected_end_date_in_project"
     )
     .then((role) => {
-      if (frappe.user_roles.includes(role) && frm.doc.status == "Overdue") {
+      if (frm.doc.status == "Overdue") {
         frm.add_custom_button("Request Project Extension", () => {
           frm.call("request_for_project_extension", { role: role });
         });
