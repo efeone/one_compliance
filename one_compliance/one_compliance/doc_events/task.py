@@ -10,11 +10,12 @@ from erpnext.projects.doctype.task.task import (
 	check_if_child_exists,
 )
 from frappe import _, throw
-from frappe.desk.form.assign_to import clear, close_all_assignments
+from frappe.desk.form.assign_to import clear, close_all_assignments, add as add_assign
 from frappe.email.doctype.notification.notification import get_context
 from frappe.utils import add_days, cstr, date_diff, flt, getdate
 from frappe.utils.data import format_date
 from frappe.utils.nestedset import NestedSet
+from frappe.utils.user import get_users_with_role
 
 from one_compliance.one_compliance.utils import (
 	create_project_completion_todos,
@@ -302,6 +303,20 @@ class CustomTask(NestedSet):
 			if self.exp_end_date < datetime.now().date():
 				self.db_set("status", "Overdue", update_modified=False)
 				self.update_project()
+	
+	@frappe.whitelist()
+	def request_for_project_extension(self, role):
+		"""method adds a todo for the required role to extend project end date
+
+		Args:
+			role (str): Role of the users that should be notified
+		"""
+		add_assign({
+			"assign_to": get_users_with_role(role),
+			"doctype": "Project",
+			"name": self.project,
+			"description": f"{frappe.session.user} has requested to extend the date of Project {self.project}. Please do the necessary for the same."
+		})
 
 
 @frappe.whitelist()
