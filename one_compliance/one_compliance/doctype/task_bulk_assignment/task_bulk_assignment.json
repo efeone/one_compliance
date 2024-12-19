@@ -12,10 +12,10 @@
   "sub_category",
   "column_break_lwccr",
   "assignment_based_on",
-  "project",
   "assigned_to",
   "status",
   "task_reassigns_section",
+  "project_reassigns",
   "task_reassigns",
   "column_break_x0pun",
   "assign_to"
@@ -35,6 +35,7 @@
    "label": "Task Reassigning Entries"
   },
   {
+   "depends_on": "eval: doc.assignment_based_on == \"Task\"",
    "fieldname": "task_reassigns",
    "fieldtype": "Table",
    "label": "Task Reassigns",
@@ -92,18 +93,18 @@
    "options": "Task\nProject"
   },
   {
-   "depends_on": "eval: doc.assignment_based_on == \"Project\";",
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "options": "Project"
+   "depends_on": "eval: doc.assignment_based_on == \"Project\"",
+   "fieldname": "project_reassigns",
+   "fieldtype": "Table",
+   "label": "Project Reassigns",
+   "options": "Project Reassign"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2024-11-26 14:23:44.159595",
+ "modified": "2024-12-19 13:09:22.957889",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Task Bulk Assignment",

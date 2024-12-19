@@ -98,12 +98,6 @@ let set_filters = function (frm) {
 };
 
 function get_allocation_entries(frm) {
-  if (frm.doc.assignment_based_on == 'Project' && !frm.doc.project) {
-    frappe.throw({
-      title: __('Message'),
-      message: __('Please select a project before proceeding'),
-    });
-  }
   frappe.call({
     doc: frm.doc,
     method: 'get_allocation_entries',
@@ -118,55 +112,68 @@ function get_allocation_entries(frm) {
 }
 
 function allocate_tasks_to_employee(frm) {
-  let selectedTasks =
-    frm.fields_dict.task_reassigns.grid.get_selected_children();
+  const assignment_handlers = {
+    task: {
+      selector: 'task_reassigns',
+      method: 'allocate_tasks_to_employee',
+      success_message: 'Tasks allocated successfully.',
+      error_message: 'Error: Unable to allocate tasks.',
+    },
+    project: {
+      selector: 'project_reassigns',
+      method: 'allocate_projects_to_employee',
+      success_message: 'Projects allocated successfully.',
+      error_message: 'Error: Unable to allocate Projects.',
+    },
+  };
 
-  if (selectedTasks.length === 0) {
-    frappe.msgprint('Please select tasks to allocate.');
+  const handler =
+    assignment_handlers[frm.doc.assignment_based_on.toLowerCase()];
+
+  if (!handler) {
+    frappe.msgprint('Invalid assignment type.');
     return;
   }
 
-  // Get the selected employees to whom tasks will be allocated
-  var selectedEmployees =
+  const selected_items =
+    frm.fields_dict[handler.selector].grid.get_selected_children();
+
+  if (selected_items.length === 0) {
+    frappe.msgprint(
+      `Please select ${frm.doc.assignment_based_on}s to allocate.`
+    );
+    return;
+  }
+
+  const selected_employees =
     frm.fields_dict.assign_to.grid.get_selected_children();
 
-  if (selectedEmployees.length === 0) {
+  if (selected_employees.length === 0) {
     frappe.msgprint('Please select employees to whom tasks will be allocated.');
     return;
   }
 
-  // Extract task IDs and employee IDs for allocation
-  var selectedTaskIds = selectedTasks.map(function (task) {
-    return task.task_id;
-  });
-
-  var selectedEmployeeIds = selectedEmployees.map(function (employee) {
-    return employee.employee; // Replace 'employee_id' with the actual field name containing the employee ID
-  });
-
-  let project = '';
-  if (frm.doc.assignment_based_on == 'Project') {
-    project = frm.doc.project;
-  }
+  const selected_ids = selected_items.map(
+    (item) => item[frm.doc.assignment_based_on.toLowerCase()]
+  );
+  const selected_employee_ids = selected_employees.map(
+    (employee) => employee.employee
+  );
 
   frappe.call({
-    method:
-      'one_compliance.one_compliance.doctype.task_bulk_assignment.task_bulk_assignment.allocate_tasks_to_employee',
+    method: `one_compliance.one_compliance.doctype.task_bulk_assignment.task_bulk_assignment.${handler.method}`,
     args: {
-      selected_task_ids: selectedTaskIds,
-      selected_employee_ids: selectedEmployeeIds,
-      project: project,
+      selected_ids: selected_ids,
+      selected_employee_ids: selected_employee_ids,
     },
     freeze: true,
-    freeze_message: 'Allocating tasks...',
+    freeze_message: `Allocating ${frm.doc.assignment_based_on}s...`,
     callback: function (r) {
-      if (r.message === 'Tasks allocated successfully') {
-        frappe.msgprint('Tasks allocated successfully.');
-        // Refresh the form or perform necessary updates
-        // For example, if you want to reload the form:
+      if (r.message === handler.success_message) {
+        frappe.msgprint(handler.success_message);
         frm.reload_doc();
       } else {
-        frappe.msgprint('Error: Unable to allocate tasks.');
+        frappe.msgprint(handler.error_message);
       }
     },
   });

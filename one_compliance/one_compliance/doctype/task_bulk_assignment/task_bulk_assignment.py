@@ -11,7 +11,12 @@ from frappe.model.document import Document
 class TaskBulkAssignment(Document):
 	@frappe.whitelist()
 	def get_allocation_entries(self):
-		self.prepare_task_reassign()
+		self.set('project_reassigns', [])
+		self.set('task_reassigns', [])
+		if self.assignment_based_on == 'Task':
+			self.prepare_task_reassign()
+		elif self.assignment_based_on == 'Project':
+			self.get_all_projects()
 		self.get_employee_list()
 		return 'success'
 
@@ -64,9 +69,6 @@ class TaskBulkAssignment(Document):
 		if self.sub_category:
 			filters['compliance_sub_category'] = self.sub_category
 
-		if self.project:
-			filters['project'] = self.project
-
 		# Fetch tasks based on filters
 		all_tasks = frappe.get_all(
 			'Task',
@@ -92,6 +94,28 @@ class TaskBulkAssignment(Document):
 			return filtered_tasks
 
 		return all_tasks
+
+	def get_all_projects(self):
+		filters = {}
+		if self.department:
+			filters['department'] = self.department
+		if self.category:
+			filters['compliance_category'] = self.category
+		if self.sub_category:
+			filters['compliance_sub_category'] = self.sub_category
+		if self.status:
+			filters['status'] = self.status
+		if self.assigned_to:
+			filters['_assign'] = ['like', f'%{self.assigned_to}%']
+
+		projects = frappe.db.get_all('Project', filters=filters, fields=['name as project', 'project_name', 'compliance_sub_category', 'status'])
+		for project in projects:
+			self.append('project_reassigns', {
+				'project': project.project,
+				'project_name': project.project_name,
+				'compliance_sub_category': project.compliance_sub_category,
+				'status': project.status
+			})
 
 	@frappe.whitelist()
 	def fetch_tasks_by_assign_from(self, assign_from):
@@ -289,19 +313,28 @@ def get_categories_by_department(doctype, txt, searchfield, start, page_len, fil
 
 
 @frappe.whitelist()
-def allocate_tasks_to_employee(selected_task_ids, selected_employee_ids, project=None):
+def allocate_tasks_to_employee(selected_task_ids, selected_employee_ids):
 	for task_id in json.loads(selected_task_ids):
 		for employee_id in json.loads(selected_employee_ids):
-			# Get the user_id from Employee doctype based on the employee_id
 			user_id = frappe.get_value('Employee', employee_id, 'user_id')
 
 			if user_id:
 				add_assignment(
 					{'doctype': 'Task', 'name': task_id, 'assign_to': [user_id]}
 				)
-				if project:
-					add_assignment(
-						{'doctype': 'Project', 'name': project, 'assign_to': [user_id]}
-					)
 
 	return 'Tasks allocated successfully'
+
+@frappe.whitelist()
+def allocate_projects_to_employee(selected_project_ids, selected_employee_ids):
+	for project_id in json.loads(selected_project_ids):
+		for employee_id in json.loads(selected_employee_ids):
+			user_id = frappe.get_value('Employee', employee_id, 'user_id')
+
+			if user_id:
+
+				add_assignment(
+					{'doctype': 'Project', 'name': project_id, 'assign_to': [user_id]}
+				)
+
+	return 'Projects allocated successfully'
