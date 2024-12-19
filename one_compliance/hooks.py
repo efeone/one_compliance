@@ -167,6 +167,9 @@ doc_events = {
     },
     'Payment Entry':{
         'on_submit': 'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_submit'
+    },
+    'ToDo':{
+        'after_insert': 'one_compliance.one_compliance.doc_events.todo.assign_project_tasks'
     }
 }
 
