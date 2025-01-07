@@ -421,6 +421,11 @@ def make_sales_invoice(doc, method):
 					sub_category_doc = frappe.get_doc('Compliance Sub Category', project.compliance_sub_category)
 					if sub_category_doc.is_billable:
 						sales_order = frappe.db.exists('Sales Order', project.sales_order)
+						if not sales_order:
+							sales_order = frappe.db.exists("Sales Order", {"project":project.name})
+							if sales_order:
+								project.sales_order = sales_order
+								project.save(ignore_permissions=True)
 						if sales_order:
 							sales_order_status = frappe.db.get_value("Sales Order", sales_order, "workflow_state")
 							if sales_order_status == "In Progress":

@@ -87,6 +87,11 @@ def project_after_insert(doc, method):
 		sub_category_doc = frappe.get_doc('Compliance Sub Category', doc.compliance_sub_category)
 		if sub_category_doc.is_billable:
 			sales_order = frappe.db.exists('Sales Order', doc.sales_order)
+			if not sales_order:
+				sales_order = frappe.db.exists("Sales Order", {"project":doc.name})
+				if sales_order:
+					doc.sales_order = sales_order
+					doc.save(ignore_permissions=True)
 			if sales_order:
 				frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
 			else:
