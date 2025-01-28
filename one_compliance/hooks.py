@@ -165,7 +165,8 @@ doc_events = {
         'on_update_after_submit': 'one_compliance.one_compliance.doc_events.sales_order.so_on_update_after_submit',
     },
     'Payment Entry':{
-        'on_submit': 'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_submit'
+        'on_submit': 'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_submit',
+        'on_cancel': 'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_cancel'
     }
 }
 
