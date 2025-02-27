@@ -131,19 +131,33 @@ def insert_doc(doc_list, doctype=None):
 
 
 def get_payment_entry_custom_fields():
-    return {
-        "Payment Entry": [
-            {
+    project_meta = frappe.get_meta("Project")
 
-                "fieldname": "sales_order",
-                "fieldtype": "Data",
-                "label": "Sales Order",
-                "insert_after": "project",
-                "fetch_from":"project.sales_order",
-                "read_only": 1
-            }
-         
-        ]
+    fields = []
+    
+    if project_meta.has_field("sales_order"):
+        fields.append({
+            "fieldname": "sales_order",
+            "fieldtype": "Data",
+            "label": "Sales Order",
+            "insert_after": "project",
+            "fetch_from": "project.sales_order",
+            "read_only": 1
+
+        })
+
+    if project_meta.has_field("customer"):
+        fields.append({
+            "fieldname": "customer",
+            "fieldtype": "Data",
+            "label": "Client",
+            "insert_after": "cost_center",
+            "fetch_from": "project.customer",
+            "read_only": 1
+        })
+
+    return {
+        "Payment Entry": fields
     }
 
 
