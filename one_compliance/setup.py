@@ -28,6 +28,8 @@ def create_custom_fields_for_app():
     create_custom_fields(get_task_custom_fields())
     create_custom_fields(get_terms_and_conditions_custom_fields())
     create_custom_fields(get_timesheet_custom_fields())
+    create_custom_fields(get_payment_entry_custom_fields())
+
 
 
 def delete_custom_fields_for_app():
@@ -46,6 +48,8 @@ def delete_custom_fields_for_app():
     delete_custom_fields(get_task_custom_fields())
     delete_custom_fields(get_terms_and_conditions_custom_fields())
     delete_custom_fields(get_timesheet_custom_fields())
+    delete_custom_fields(get_payment_entry_custom_fields())
+
 
 
 def create_fixtures():
@@ -123,6 +127,24 @@ def insert_doc(doc_list, doctype=None):
                     )
     except Exception as e:
         frappe.log_error("Error during migration", e)
+
+
+
+def get_payment_entry_custom_fields():
+    return {
+        "Payment Entry": [
+            {
+
+                "fieldname": "sales_order",
+                "fieldtype": "Data",
+                "label": "Sales Order",
+                "insert_after": "project",
+                "fetch_from":"project.sales_order",
+                "read_only": 1
+            }
+         
+        ]
+    }
 
 
 def get_timesheet_custom_fields():
