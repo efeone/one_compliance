@@ -33,14 +33,28 @@ def submit_journal_entry(journal_entry):
 
 @frappe.whitelist()
 def create_project_on_submit(doc, method):
-	assign_to = []
-	if(doc.custom_create_project_automatically):
-		for employee_list in doc.custom_assign_to:
-			employee_name = frappe.get_doc('Employee', employee_list.employee)
-			assign_to.append(employee_name.name)
-			assign_to_str = json.dumps(assign_to)
-		for item in doc.items:
-			create_project_from_sales_order(doc.name, doc.custom_expected_start_date, item.item_code, doc.custom_priority, assign_to_str, doc.custom_expected_end_date, custom_instructions=item.custom_instructions)
+    assign_to = []
+
+    if doc.custom_create_project_automatically:
+        if doc.custom_assign_to:  # Check if field has values
+            for employee_list in doc.custom_assign_to:
+                employee_name = frappe.get_doc('Employee', employee_list.employee)
+                assign_to.append(employee_name.name)
+
+            assign_to_str = json.dumps(assign_to)  # Convert to JSON after collecting names
+        else:
+            assign_to_str = None  # Explicitly set to None if no values
+
+        for item in doc.items:
+            create_project_from_sales_order(
+                doc.name,
+                doc.custom_expected_start_date,
+                item.item_code,
+                doc.custom_priority,
+                assign_to_str,  # Pass None if no assign_to values
+                doc.custom_expected_end_date,
+                custom_instructions=item.custom_instructions
+            )
 
 @frappe.whitelist()
 def get_compliance_subcategory(item_code):
@@ -118,7 +132,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 			project.department = compliance_sub_category.department
 			project.save(ignore_permissions=True)
 			if project.compliance_sub_category:
-				if compliance_sub_category and compliance_sub_category.head_of_department:
+				if compliance_sub_category and compliance_sub_category.head_of_department and head_of_department:
 					todo = frappe.new_doc('ToDo')
 					todo.status = 'Open'
 					todo.allocated_to = head_of_department
@@ -186,7 +200,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 						if user and user != head_of_department:
 							create_todo('Task', task_doc.name, user, user, 'Task {0} Assigned Successfully'.format(task_doc.name))
 							create_notification_log('{0} Assigned a New Task {1} to You'.format(user_name, task_doc.name),'Mention', user, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
-				elif not assign_to and template_task.type and template_task.employee_or_group:
+				if template_task.type and template_task.employee_or_group:
 					frappe.db.set_value('Task', task_doc.name, 'assigned_to', template_task.employee_or_group)
 					if template_task.type == "Employee":
 						employee = frappe.db.get_value('Employee', template_task.employee_or_group, 'user_id')

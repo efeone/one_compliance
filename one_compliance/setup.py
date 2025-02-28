@@ -1671,7 +1671,6 @@ def get_sales_order_custom_fields():
                 "label": "Assign To",
                 "length": 0,
                 "link_filters": None,
-                "mandatory_depends_on": "eval: doc.custom_create_project_automatically",
                 "modified": "2024-03-20 10:30:25.297875",
                 "modified_by": "Administrator",
                 "module": None,
