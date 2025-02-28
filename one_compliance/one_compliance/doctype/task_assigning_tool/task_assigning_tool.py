@@ -70,7 +70,7 @@ def get_tasks_for_user(assign_from):
             task_details.extend(project_task_details)
 
     return task_details
-
+	
 @frappe.whitelist()
 def reassign_tasks(assign_from, assign_to, selected_tasks_json):
     # Load the JSON data from selected_tasks_json
@@ -81,6 +81,9 @@ def reassign_tasks(assign_from, assign_to, selected_tasks_json):
     for task_id in selected_tasks:
         print(type(task_id), task_id)  # This will print each task_id in the selected_tasks array
 
+        # Update the 'assigned_to' field in the 'Task' document
+        frappe.db.set_value('Task', task_id, 'assigned_to', assign_to)
+
         # Get the reference name of the 'ToDo' document associated with the selected task
         todo_reference_name = frappe.get_value('ToDo', {'reference_name': task_id, 'reference_type': 'Task'}, 'name')
 
@@ -88,11 +91,12 @@ def reassign_tasks(assign_from, assign_to, selected_tasks_json):
             # Update the 'allocated_to' field in the 'ToDo' document
             frappe.db.set_value('ToDo', todo_reference_name, 'allocated_to', assign_to)
 
-    # Save changes
+    # Commit changes to the database
     frappe.db.commit()
 
     # Return a success message
     return "Tasks reassigned successfully"
+
 
 @frappe.whitelist()
 def get_compliance_categories_for_user(doctype, txt, searchfield, start, page_len, filters):
