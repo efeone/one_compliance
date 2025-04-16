@@ -1,6 +1,7 @@
 import frappe
 from frappe.utils import get_datetime
 from erpnext.accounts.party import get_party_account
+from frappe import _
 
 @frappe.whitelist()
 def get_task(status = None, task = None, project = None, customer = None, department = None, sub_category = None, employee = None, employee_group = None, from_date = None, to_date = None):
@@ -178,6 +179,7 @@ def create_journal_entry_pay_info(task, payment_info):
         journal_entry.cheque_date = payment_info['reference_date']
         journal_entry.user_remark = payment_info['user_remark']
         journal_entry.posting_date = frappe.utils.today()
+        journal_entry.task_reference = task.name
         journal_entry.append('accounts', {
             'account': account,
             'party_type': 'Customer',
@@ -206,3 +208,23 @@ def get_total_reimbursement_amount(sales_order):
     for amount in amounts:
         total_reimbursement_amount += amount
     return total_reimbursement_amount
+
+
+def validate(doc, method=None):
+    # Only check when task is being completed
+    if doc.status == "Completed":
+        if not doc.compliance_sub_category:
+            return  # No sub-category linked, skip
+        # Get the linked Project Template from Compliance Sub Category
+        project_template = frappe.db.get_value("Compliance Sub Category", doc.compliance_sub_category, "project_template")
+        if not project_template:
+            return  # No project template linked, skip
+        # Check if reimbursement is enabled in the Project Template
+        is_reimbursement = frappe.db.get_value("Project Template", project_template, "is_reimbursement")
+        if is_reimbursement:
+            # Check for submitted Journal Entry referencing this task
+            journal_entry_exists = frappe.db.exists("Journal Entry", {
+                "task_reference": doc.name,
+            })
+            if not journal_entry_exists:
+                frappe.throw(_("You cannot complete this task because reimbursement is required and no Journal Entry has been submitted."))

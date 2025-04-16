@@ -136,6 +136,7 @@ doc_events = {
         'validate':[
             'one_compliance.one_compliance.doc_events.task.append_users_to_project',
             'one_compliance.one_compliance.doc_events.task.set_task_status_to_hold',
+            'one_compliance.one_compliance.page.task_management_tool.task_management_tool.validate',
         ],
         'autoname': 'one_compliance.one_compliance.doc_events.task.autoname'
     },

@@ -28,6 +28,7 @@ def create_custom_fields_for_app():
     create_custom_fields(get_task_custom_fields())
     create_custom_fields(get_terms_and_conditions_custom_fields())
     create_custom_fields(get_timesheet_custom_fields())
+    create_custom_fields(get_journal_entry_custom_fields())
 
 
 def delete_custom_fields_for_app():
@@ -46,6 +47,8 @@ def delete_custom_fields_for_app():
     delete_custom_fields(get_task_custom_fields())
     delete_custom_fields(get_terms_and_conditions_custom_fields())
     delete_custom_fields(get_timesheet_custom_fields())
+    delete_custom_fields(get_journal_entry_custom_fields())
+
 
 
 def create_fixtures():
@@ -124,7 +127,18 @@ def insert_doc(doc_list, doctype=None):
     except Exception as e:
         frappe.log_error("Error during migration", e)
 
-
+def get_journal_entry_custom_fields():
+    return{
+        "Journal Entry":[
+            {
+                "fieldname":"task_reference",
+                "fieldtype":"Data",
+                "label":"Task Reference",
+                "read_only":1,
+                "insert_after":"mode_of_payment"
+            }
+        ]
+    }
 def get_timesheet_custom_fields():
     return {
         "Timesheet": [
@@ -4134,6 +4148,14 @@ def get_project_template_custom_fields():
                 "translatable": 1,
                 "unique": 0,
                 "width": None,
+            },
+            {
+                "fieldname":"is_reimbursement",
+                "fieldtype":"Check",
+                "label":"Is Reimbursement",
+                "insert_after":"category_type",
+                "in_list_view":1
+
             },
             {
                 "_assign": None,
