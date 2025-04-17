@@ -132,12 +132,14 @@ doc_events = {
             'one_compliance.one_compliance.doc_events.task.task_on_update',
             'one_compliance.one_compliance.doc_events.task.make_sales_invoice',
             'one_compliance.one_compliance.doc_events.task.subtask_on_update',
+            'one_compliance.one_compliance.doc_events.task.on_task_update',
         ],
         'validate':[
             'one_compliance.one_compliance.doc_events.task.append_users_to_project',
             'one_compliance.one_compliance.doc_events.task.set_task_status_to_hold',
         ],
-        'autoname': 'one_compliance.one_compliance.doc_events.task.autoname'
+        'autoname': 'one_compliance.one_compliance.doc_events.task.autoname',
+        'after_insert':'one_compliance.one_compliance.doc_events.task.set_task_readiness_flow_on_creation',
     },
     'Project':{
         'on_update': 'one_compliance.one_compliance.doc_events.project.project_on_update',

@@ -512,6 +512,14 @@ def get_task_custom_fields():
                 "width": None,
             },
             {
+                "fieldname":"readiness_status",
+                "fieldtype":"Select",
+                "label":"Readiness Status",
+                "options":"Not Ready\nReady",
+                "in_list_view":1,
+                "insert_after":"status"
+            },
+            {
                 "_assign": None,
                 "_comments": None,
                 "_liked_by": None,
@@ -3958,6 +3966,12 @@ def get_project_template_custom_fields():
                 "translatable": 0,
                 "unique": 0,
                 "width": None,
+            },
+            {
+                "fieldname":"enable_task_readiness_flow",
+                "fieldtype":"Check",
+                "label":"Enable Task Readiness Flow",
+                "insert_after":"custom_project_duration"
             },
             {
                 "_assign": None,

@@ -586,3 +586,50 @@ def get_company_income_account(company, compliance_sub_category):
 		)
 	if income_result:
 		return income_result[0].default_income_account
+
+
+
+def set_task_readiness_flow_on_creation(doc, method=None):
+    # Step 1: Fetch compliance_subcategory's linked project template
+    if not doc.compliance_sub_category:
+        return
+
+    compliance_subcategory = frappe.get_doc("Compliance Sub Category", doc.compliance_sub_category)
+    if not compliance_subcategory.project_template:
+        return
+
+    project_template = frappe.get_doc("Project Template", compliance_subcategory.project_template)
+    if not project_template.enable_task_readiness_flow:
+        return
+
+    # Step 2: Get tasks of the project (created from template)
+    tasks = frappe.get_all("Task", filters={"project": doc.project}, fields=["name"], order_by="idx")
+    if not tasks:
+        return
+
+    # Step 3: Mark first task as Ready
+    if doc.name == tasks[0]["name"]:
+        frappe.db.set_value("Task", doc.name, "readiness_status", "Ready")
+
+
+def on_task_update(doc, method=None):
+    if doc.status == "Completed" and doc.readiness_status == "Ready":
+        tasks = frappe.get_all(
+            "Task",
+            filters={"project": doc.project},
+            fields=["name", "readiness_status"],
+            order_by="idx"
+        )
+
+        task_names = [t["name"] for t in tasks]
+
+        try:
+            current_index = task_names.index(doc.name)
+            if current_index + 1 < len(task_names):
+                next_task_name = task_names[current_index + 1]
+                next_task = frappe.get_doc("Task", next_task_name)
+
+                if next_task.readiness_status != "Ready":
+                    frappe.db.set_value("Task", next_task_name, "readiness_status", "Ready")
+        except (IndexError, ValueError):
+            pass
