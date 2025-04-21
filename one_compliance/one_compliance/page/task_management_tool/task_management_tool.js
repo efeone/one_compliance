@@ -36,23 +36,33 @@ function make_filters(page) {
 		}
   });
 	let projectField = page.add_field({
-		label: __("Project"),
-		fieldname: "project",
-		fieldtype: "Link",
-		options: "Project",
-		default:project_id,
-		change() {
-			if (page.fields_dict.project.get_value()) {
-          refresh_tasks(page);
-      }
-		}
-	});
-	localStorage.removeItem('selected_project_id');
-	page.fields_dict.project.$input.on('change', function() {
-		if (!page.fields_dict.project.get_value()) {
+	label: __("Project"),
+	fieldname: "project",
+	fieldtype: "Link",
+	options: "Project",
+	default: project_id,
+	change() {
+		let project = page.fields_dict.project.get_value();
+		if (project) {
 			refresh_tasks(page);
+			// Keep the selected project id after refresh
+			localStorage.setItem('selected_project_id', project);
 		}
-  });
+	}
+});
+
+let stored_project = localStorage.getItem('selected_project_id');
+if (stored_project && !page.fields_dict.project.get_value()) {
+	page.fields_dict.project.set_value(stored_project);
+}
+
+page.fields_dict.project.$input.on('change', function() {
+	if (!page.fields_dict.project.get_value()) {
+		refresh_tasks(page);
+		// You may remove selected_project_id here
+		localStorage.removeItem('selected_project_id');
+	}
+});
 	let customerField = page.add_field({
 		label: __("Customer"),
 		fieldname: "customer",
