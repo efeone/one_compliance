@@ -590,7 +590,6 @@ def get_company_income_account(company, compliance_sub_category):
 
 
 def set_task_readiness_flow_on_creation(doc, method=None):
-    # Step 1: Fetch compliance_subcategory's linked project template
     if not doc.compliance_sub_category:
         return
 
@@ -602,34 +601,53 @@ def set_task_readiness_flow_on_creation(doc, method=None):
     if not project_template.enable_task_readiness_flow:
         return
 
-    # Step 2: Get tasks of the project (created from template)
-    tasks = frappe.get_all("Task", filters={"project": doc.project}, fields=["name"], order_by="idx")
-    if not tasks:
+    # Fetch ordered task subjects from project template
+    template_task_subjects = [task.subject for task in project_template.tasks]
+
+    if not template_task_subjects:
         return
 
-    # Step 3: Mark first task as Ready
-    if doc.name == tasks[0]["name"]:
+    # If this task's subject matches the first in the template, set it as Ready
+    if doc.subject == template_task_subjects[0]:
         frappe.db.set_value("Task", doc.name, "readiness_status", "Ready")
 
 
+
 def on_task_update(doc, method=None):
-    if doc.status == "Completed" and doc.readiness_status == "Ready":
-        tasks = frappe.get_all(
-            "Task",
-            filters={"project": doc.project},
-            fields=["name", "readiness_status"],
-            order_by="idx"
-        )
+    if doc.status != "Completed" or doc.readiness_status != "Ready":
+        return
 
-        task_names = [t["name"] for t in tasks]
+    # Fetch project and project template
+    project = frappe.get_doc("Project", doc.project)
+    if not project.compliance_sub_category:
+        return
 
-        try:
-            current_index = task_names.index(doc.name)
-            if current_index + 1 < len(task_names):
-                next_task_name = task_names[current_index + 1]
-                next_task = frappe.get_doc("Task", next_task_name)
+    compliance_subcategory = frappe.get_doc("Compliance Sub Category", project.compliance_sub_category)
+    if not compliance_subcategory.project_template:
+        return
 
-                if next_task.readiness_status != "Ready":
-                    frappe.db.set_value("Task", next_task_name, "readiness_status", "Ready")
-        except (IndexError, ValueError):
-            pass
+    project_template = frappe.get_doc("Project Template", compliance_subcategory.project_template)
+
+    # Get ordered task subjects from template
+    template_task_subjects = [task.subject for task in project_template.tasks]
+
+    try:
+        current_index = template_task_subjects.index(doc.subject)
+        if current_index + 1 < len(template_task_subjects):
+            next_subject = template_task_subjects[current_index + 1]
+
+            # Find matching task by subject in actual created tasks
+            next_task = frappe.get_all(
+                "Task",
+                filters={
+                    "project": doc.project,
+                    "subject": next_subject
+                },
+                fields=["name", "readiness_status"]
+            )
+
+            if next_task and next_task[0].get("readiness_status") != "Ready":
+                frappe.db.set_value("Task", next_task[0].name, "readiness_status", "Ready")
+
+    except ValueError:
+        pass  # Current subject not found in template — do nothing

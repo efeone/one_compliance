@@ -4,11 +4,14 @@ from erpnext.accounts.party import get_party_account
 
 @frappe.whitelist()
 def get_task(status = None, task = None, project = None, customer = None, department = None, sub_category = None, employee = None, employee_group = None, from_date = None, to_date = None):
+    current_user = frappe.session.user
+    roles = frappe.get_roles(current_user)
     user_id = f'"{employee}"' if id else None
+
     # Construct the SQL query to fetch list of tasks
     query = """
 	SELECT
-        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by, t.color, t.custom_is_payable
+        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by, t.color, t.custom_is_payable, t.readiness_status
     FROM
         tabTask t LEFT JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
     """
@@ -44,6 +47,11 @@ def get_task(status = None, task = None, project = None, customer = None, depart
 
     if to_date:
             query += f" AND t.exp_end_date < '{to_date}'"
+
+
+    # Only show tasks with readiness_status = "Ready" for Executive (excluding Administrator)
+    if current_user != "Administrator" and "Executive" in roles:
+        query += " AND t.readiness_status = 'Ready'"
 
     query += """ ORDER BY
             t.modified DESC;"""
