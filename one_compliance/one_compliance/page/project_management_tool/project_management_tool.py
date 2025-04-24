@@ -15,7 +15,7 @@ def get_project(status=None, project=None, customer=None, department=None, sub_c
     INNER JOIN
         tabTask t ON t.project = p.name
     WHERE
-        t.status = 'Open'
+        t.status != 'Completed'
     """
 
     if status:
