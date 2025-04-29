@@ -1,0 +1,117 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:WS-{YYYY}-{MM}-{#####}",
+ "creation": "2025-04-28 16:15:07.012678",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_05al",
+  "employee",
+  "column_break_zhfy",
+  "week_start_date",
+  "week_end_date",
+  "section_break_fimt",
+  "work_log_details",
+  "section_break_zhmh",
+  "total_actuall_hours",
+  "column_break_sxok",
+  "total_task_allowed_hours",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_05al",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "employee",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Employee",
+   "options": "Employee",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_zhfy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_fimt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "work_log_details",
+   "fieldtype": "Table",
+   "label": "Work Log Details",
+   "options": "Work Log Table"
+  },
+  {
+   "fieldname": "total_task_allowed_hours",
+   "fieldtype": "Float",
+   "label": "Total Task Allowed Hours"
+  },
+  {
+   "fieldname": "section_break_zhmh",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_sxok",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "total_actuall_hours",
+   "fieldtype": "Float",
+   "label": "Total Actuall Hours"
+  },
+  {
+   "fieldname": "week_start_date",
+   "fieldtype": "Date",
+   "label": "Week Start Date"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Weekly Work Sheet",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "week_end_date",
+   "fieldtype": "Date",
+   "label": "Week End Date"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-04-29 09:33:37.217204",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Weekly Work Sheet",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

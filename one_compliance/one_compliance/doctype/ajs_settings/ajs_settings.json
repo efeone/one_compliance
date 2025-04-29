@@ -1,0 +1,49 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-28 16:11:24.313176",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "weekly_working_days",
+  "week_start_day"
+ ],
+ "fields": [
+  {
+   "fieldname": "weekly_working_days",
+   "fieldtype": "Int",
+   "label": "Weekly working Days"
+  },
+  {
+   "fieldname": "week_start_day",
+   "fieldtype": "Select",
+   "label": "Week Start Day",
+   "options": "Monday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-04-28 16:13:37.733002",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "AJS Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

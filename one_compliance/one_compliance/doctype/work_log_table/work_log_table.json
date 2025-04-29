@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-04-28 16:17:37.545628",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "task",
+  "task_description",
+  "actuall_hours",
+  "task_allowed_hours",
+  "status"
+ ],
+ "fields": [
+  {
+   "fieldname": "task",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Task ",
+   "options": "Task"
+  },
+  {
+   "fieldname": "task_description",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Task Description"
+  },
+  {
+   "fieldname": "actuall_hours",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Actuall Hours"
+  },
+  {
+   "fieldname": "task_allowed_hours",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Task Allowed Hours"
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nDraft\nSubmitted\nCompleted\nCancelled"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-04-29 09:41:25.650352",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Work Log Table",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
