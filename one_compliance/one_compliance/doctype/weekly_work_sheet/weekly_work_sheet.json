@@ -8,6 +8,7 @@
  "field_order": [
   "section_break_05al",
   "employee",
+  "employee_name",
   "column_break_zhfy",
   "week_start_date",
   "week_end_date",
@@ -83,13 +84,20 @@
    "fieldname": "week_end_date",
    "fieldtype": "Date",
    "label": "Week End Date"
+  },
+  {
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
+   "label": "Employee Name",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-04-29 09:33:37.217204",
+ "modified": "2025-05-02 11:23:29.749690",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Weekly Work Sheet",
