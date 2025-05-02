@@ -42,14 +42,14 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "\nDraft\nSubmitted\nCompleted\nCancelled"
+   "options": "Open\nWorking\nPending Review\nOverdue\nTemplate\nCompleted\nCancelled"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-04-29 09:41:25.650352",
+ "modified": "2025-05-02 13:28:32.292701",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Work Log Table",
