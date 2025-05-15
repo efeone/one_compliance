@@ -237,6 +237,7 @@ def create_sales_order_from_event(event, customer=None, sub_category=None, rate=
     sub_category_doc = frappe.get_doc("Compliance Sub Category", sub_category)
     new_sales_order = frappe.new_doc("Sales Order")
     new_sales_order.customer = customer
+    new_sales_order.event = event
     new_sales_order.posting_date = frappe.utils.today()
     new_sales_order.delivery_date = frappe.utils.today()
     new_sales_order.append('items', {

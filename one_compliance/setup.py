@@ -2721,6 +2721,14 @@ def get_sales_order_custom_fields():
                 "unique": 0,
                 "width": None,
             },
+            {
+                "fieldname": "event",
+                "fieldtype": "Link",
+                "label": "Event",
+                "insert_after": "custom_total_reimbursement_amount",
+                "options": "Event",
+                "read_only": 1
+            },
         ]
     }
 
