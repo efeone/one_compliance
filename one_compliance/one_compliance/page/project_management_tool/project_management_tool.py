@@ -3,6 +3,7 @@ from frappe.utils import get_datetime
 
 @frappe.whitelist()
 def get_project(status=None, project=None, customer=None, department=None, sub_category=None, employee=None, from_date=None, to_date=None):
+    current_user = frappe.session.user
     user_id = f'"{employee}"' if employee else None
 
     # Construct SQL query to fetch list of projects that have at least one task with 'Open' status
@@ -15,8 +16,12 @@ def get_project(status=None, project=None, customer=None, department=None, sub_c
     INNER JOIN
         tabTask t ON t.project = p.name
     WHERE
-        t.status != 'Completed'
+        1 = 1
     """
+    if current_user != "Administrator":
+        query += " AND t.status != 'Completed' AND t.readiness_status = 'Ready'"
+        if employee:
+            query += f" AND t._assign LIKE '%{user_id}%'"
 
     if status:
         query += f" AND p.status = '{status}'"
