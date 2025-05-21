@@ -12,29 +12,36 @@ class TaskAssigningTool(Document):
 @frappe.whitelist()
 def get_users_by_department(doctype, txt, searchfield, start, page_len, filters):
     # Query the Employee doctype to filter users by department
-    employees = frappe.get_all("Employee",
-        filters={"department": filters.get("department")},
-        fields=["user_id"]
-    )
-
+    employees = frappe.get_all("Employee",filters={"department": filters.get("department")},fields=["user_id"])
     # Get a list of user IDs from the filtered employees
-    user_ids = [employee.user_id for employee in employees]
+    user_ids = [employee.user_id for employee in employees if employee.user_id]
 
-    # Query the User doctype to fetch users based on user_id
+    if not user_ids:
+        return []
+
+    #  Add search filter using 'txt'
     users = frappe.get_all("User",
-        filters={"email": ["in", user_ids], "enabled": 1},
-        fields=["name", "full_name"]
+        filters={
+            "name": ["in", user_ids],
+            "enabled": 1
+        },
+        or_filters=[
+            ["name", "like", f"%{txt}%"],
+            ["full_name", "like", f"%{txt}%"]
+        ],
+        fields=["name", "full_name"],
+        start=start,
+        page_length=page_len
     )
 
-    user_info_list = []  # Initialize an empty list to store user information
-
+    # Build result list
+    user_info_list = []
     for user in users:
-        email = user['name']  # Use 'user' instead of 'users'
-        full_name = user['full_name']  # Use 'user' instead of 'users'
+        email = user['name']
+        full_name = user['full_name']
+        user_info_list.append((email, full_name))
 
-        user_info_list.append((email, full_name))  # Add email and full name as a tuple to the list
-
-    return user_info_list  # Return the list of email IDs and full names as tuples
+    return user_info_list
 
 @frappe.whitelist()
 def get_tasks_for_user(assign_from):
