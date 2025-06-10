@@ -10,7 +10,7 @@ from frappe.utils import add_days, cstr, date_diff, flt, getdate
 from frappe.utils.data import format_date
 from frappe.utils.nestedset import NestedSet
 from erpnext.projects.doctype.task.task import check_if_child_exists, CircularReferenceError
-
+from india_compliance.gst_india.overrides.subcontracting_transaction import set_taxes
 from one_compliance.one_compliance.utils import (
 	create_project_completion_todos,
 	send_notification,
@@ -493,6 +493,7 @@ def create_sales_order(project, rate, sub_category_doc, payment_terms=None, subm
 		'description' : project.custom_project_service
 	})
 	new_sales_order.insert(ignore_permissions=True, ignore_mandatory=True)
+	set_sales_order_taxes(new_sales_order)
 	new_sales_order.submit()
 	frappe.db.set_value("Project", project.name, "sales_order", new_sales_order.name)
 	frappe.msgprint("Sales Order {0} Created against {1}".format(new_sales_order.name, project.name), alert=True)
@@ -585,3 +586,9 @@ def get_company_income_account(company, compliance_sub_category):
 		)
 	if income_result:
 		return income_result[0].default_income_account
+
+def set_sales_order_taxes(sales_order):
+    customer_tax_category = frappe.db.get_value("Customer", sales_order.customer, "tax_category")
+    if customer_tax_category:
+        sales_order.tax_category = customer_tax_category
+        set_taxes(sales_order)

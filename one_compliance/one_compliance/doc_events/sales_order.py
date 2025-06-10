@@ -3,23 +3,24 @@ from frappe.utils import *
 from one_compliance.one_compliance.utils import *
 from datetime import datetime, timedelta
 from frappe import _
+from india_compliance.gst_india.overrides.subcontracting_transaction import set_taxes
 
 @frappe.whitelist()
 def update_journal_entry(doc):
-    if doc.custom_reimbursement_details:
-        for reimbursement_detail in doc.custom_reimbursement_details:
-            if frappe.db.exists('Journal Entry', reimbursement_detail.journal_entry):
-                entry_doc = frappe.get_doc('Journal Entry', reimbursement_detail.journal_entry)
-                if entry_doc and entry_doc.docstatus == 0:
-                	entry_doc.posting_date = reimbursement_detail.date
-                	entry_doc.user_remark = reimbursement_detail.user_remark
-                	for account in entry_doc.accounts:
-                		if account.debit_in_account_currency:
-                			account.debit_in_account_currency = reimbursement_detail.amount
-                		else:
-                			account.credit_in_account_currency = reimbursement_detail.amount
-                	entry_doc.save()
-                	frappe.msgprint("Journal Entry Updated", indicator="blue", alert=1)
+	if doc.custom_reimbursement_details:
+		for reimbursement_detail in doc.custom_reimbursement_details:
+			if frappe.db.exists('Journal Entry', reimbursement_detail.journal_entry):
+				entry_doc = frappe.get_doc('Journal Entry', reimbursement_detail.journal_entry)
+				if entry_doc and entry_doc.docstatus == 0:
+					entry_doc.posting_date = reimbursement_detail.date
+					entry_doc.user_remark = reimbursement_detail.user_remark
+					for account in entry_doc.accounts:
+						if account.debit_in_account_currency:
+							account.debit_in_account_currency = reimbursement_detail.amount
+						else:
+							account.credit_in_account_currency = reimbursement_detail.amount
+					entry_doc.save()
+					frappe.msgprint("Journal Entry Updated", indicator="blue", alert=1)
 
 @frappe.whitelist()
 def submit_journal_entry(journal_entry):
@@ -206,69 +207,70 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 
 @frappe.whitelist()
 def create_sales_order_from_event(event, customer=None, sub_category=None, rate=None, description=None):
-    missing_fields = []
-    if not customer:
-        missing_fields.append("Customer")
-    if not sub_category:
-        missing_fields.append("Service")
-    if not description:
-        missing_fields.append("Service Description")
-    if missing_fields:
-        if len(missing_fields) > 1:
-            missing_fields_str = ', '.join(missing_fields[:-1]) + ' and ' + missing_fields[-1]
-        else:
-            missing_fields_str = missing_fields[0]
+	missing_fields = []
+	if not customer:
+		missing_fields.append("Customer")
+	if not sub_category:
+		missing_fields.append("Service")
+	if not description:
+		missing_fields.append("Service Description")
+	if missing_fields:
+		if len(missing_fields) > 1:
+			missing_fields_str = ', '.join(missing_fields[:-1]) + ' and ' + missing_fields[-1]
+		else:
+			missing_fields_str = missing_fields[0]
 
-        frappe.throw(f"Required Field: {missing_fields_str}.")
+		frappe.throw(f"Required Field: {missing_fields_str}.")
 
-    sales_orders = frappe.get_all(
-        "Sales Order",
-        filters={"customer": customer, "docstatus": 1},
-        fields=["name"]
-    )
-    for sales_order in sales_orders:
-        items = frappe.get_all(
-            "Sales Order Item",
-            filters={"parent": sales_order.name, "description": description},
-            fields=["name"]
-        )
-        if items:
-            frappe.throw(f"Proforma Invoice is already created for this Event.")
-    sub_category_doc = frappe.get_doc("Compliance Sub Category", sub_category)
-    new_sales_order = frappe.new_doc("Sales Order")
-    new_sales_order.customer = customer
-    new_sales_order.event = event
-    new_sales_order.posting_date = frappe.utils.today()
-    new_sales_order.delivery_date = frappe.utils.today()
-    new_sales_order.append('items', {
-        'item_code': sub_category_doc.item_code,
-        'item_name': sub_category_doc.sub_category,
-        'custom_compliance_category': sub_category_doc.compliance_category,
-        'custom_compliance_subcategory': sub_category_doc.name,
-        'rate': rate,
-        'qty': 1,
-        'description': description
-    })
-    new_sales_order.insert(ignore_permissions=True)
-    new_sales_order.submit()
-    frappe.db.set_value("Sales Order", new_sales_order.name, "status", "Proforma Invoice")
-    frappe.db.set_value("Sales Order", new_sales_order.name, "workflow_state", "Proforma Invoice")
-    frappe.msgprint(f"Proforma Invoice {new_sales_order.name} Created against {event}", alert=True)
-    accounts_users = get_users_with_role("Accounts User")
-    add_assign({
-        "assign_to": accounts_users,
-        "doctype": "Sales Order",
-        "name": new_sales_order.name,
-        "description": f"Meeting {event} is Completed, Please Proceed with the invoice"
-    })
+	sales_orders = frappe.get_all(
+		"Sales Order",
+		filters={"customer": customer, "docstatus": 1},
+		fields=["name"]
+	)
+	for sales_order in sales_orders:
+		items = frappe.get_all(
+			"Sales Order Item",
+			filters={"parent": sales_order.name, "description": description},
+			fields=["name"]
+		)
+		if items:
+			frappe.throw(f"Proforma Invoice is already created for this Event.")
+	sub_category_doc = frappe.get_doc("Compliance Sub Category", sub_category)
+	new_sales_order = frappe.new_doc("Sales Order")
+	new_sales_order.customer = customer
+	new_sales_order.event = event
+	new_sales_order.posting_date = frappe.utils.today()
+	new_sales_order.delivery_date = frappe.utils.today()
+	new_sales_order.append('items', {
+		'item_code': sub_category_doc.item_code,
+		'item_name': sub_category_doc.sub_category,
+		'custom_compliance_category': sub_category_doc.compliance_category,
+		'custom_compliance_subcategory': sub_category_doc.name,
+		'rate': rate,
+		'qty': 1,
+		'description': description
+	})
+	new_sales_order.insert(ignore_permissions=True)
+	set_sales_order_taxes(new_sales_order)
+	new_sales_order.submit()
+	frappe.db.set_value("Sales Order", new_sales_order.name, "status", "Proforma Invoice")
+	frappe.db.set_value("Sales Order", new_sales_order.name, "workflow_state", "Proforma Invoice")
+	frappe.msgprint(f"Proforma Invoice {new_sales_order.name} Created against {event}", alert=True)
+	accounts_users = get_users_with_role("Accounts User")
+	add_assign({
+		"assign_to": accounts_users,
+		"doctype": "Sales Order",
+		"name": new_sales_order.name,
+		"description": f"Meeting {event} is Completed, Please Proceed with the invoice"
+	})
 
 def so_on_cancel_custom(doc, method=None):
-    """Set workflow state to Cancelled when cancelling sales order"""
-    doc.db_set("workflow_state", "Cancelled")
+	"""Set workflow state to Cancelled when cancelling sales order"""
+	doc.db_set("workflow_state", "Cancelled")
 
 def so_on_update_after_submit(doc, method):
 	'''
-        Method trigger on so_on_update_after_submit of Sales Order
+		Method trigger on so_on_update_after_submit of Sales Order
 	'''
 	update_journal_entry(doc)
 	set_total_reimbursement_amount(doc)
@@ -276,7 +278,7 @@ def so_on_update_after_submit(doc, method):
 
 def set_total_reimbursement_amount(doc):
 	'''
-        Method to set total_reimbursement_amount
+		Method to set total_reimbursement_amount
 	'''
 	total_reimbursement_amount = 0
 	for row in doc.custom_reimbursement_details:
@@ -316,3 +318,10 @@ def delete_linked_records(sales_order):
 	frappe.delete_doc("Sales Order", sales_order, ignore_permissions=True)
 
 	return "success"
+
+def set_sales_order_taxes(sales_order):
+    customer_tax_category = frappe.db.get_value("Customer", sales_order.customer, "tax_category")
+    if customer_tax_category:
+        sales_order.tax_category = customer_tax_category
+        set_taxes(sales_order)
+
