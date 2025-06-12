@@ -1,8 +1,10 @@
 import frappe
-from frappe.utils import *
-from one_compliance.one_compliance.utils import *
-from datetime import datetime, timedelta
+import json
+
+from frappe.utils import add_days, getdate, date_diff, add_months
+from one_compliance.one_compliance.utils import create_todo, create_notification_log, get_users_with_role
 from frappe import _
+from one_compliance.one_compliance.utils import add as add_assign
 
 @frappe.whitelist()
 def update_journal_entry(doc):
@@ -119,15 +121,16 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 			project.save(ignore_permissions=True)
 			if project.compliance_sub_category:
 				if compliance_sub_category and compliance_sub_category.head_of_department:
-					todo = frappe.new_doc('ToDo')
-					todo.status = 'Open'
-					todo.allocated_to = head_of_department
-					todo.description = "project  Assign to " + head_of_department
-					todo.reference_type = 'Project'
-					todo.reference_name = project.name
-					todo.assigned_by = frappe.session.user
-					todo.save(ignore_permissions=True)
-					if todo:
+					add_assign(
+						{
+							"assign_to": [head_of_department],
+							"doctype": "Project",
+							"name": project.name,
+							"description": "Project assigned to " + head_of_department,
+							"email": True if frappe.db.get_single_value("Compliance Settings", "email_for_project_assignment") else False
+						}
+					)
+					if frappe.db.exists('ToDo', {'reference_type': 'Project', 'reference_name': project.name, 'allocated_to': head_of_department}):
 						frappe.msgprint(("Project is assigned to {0}".format(head_of_department)),alert = 1)
 			if assign_to:
 				user_name = frappe.get_cached_value("User", frappe.session.user, "full_name")
@@ -172,14 +175,15 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 				task_doc.save(ignore_permissions=True)
 				if project.compliance_sub_category:
 					if compliance_sub_category and compliance_sub_category.head_of_department:
-						todo = frappe.new_doc('ToDo')
-						todo.status = 'Open'
-						todo.allocated_to = head_of_department
-						todo.description = "Task Assign to " + head_of_department
-						todo.reference_type = 'Task'
-						todo.reference_name = task_doc.name
-						todo.assigned_by = frappe.session.user
-						todo.save(ignore_permissions=True)
+						add_assign(
+							{
+								"assign_to": [head_of_department],
+								"doctype": "Task",
+								"name": task_doc.name,
+								"description": "Task assigned to " + head_of_department,
+								"email": True if frappe.db.get_single_value("Compliance Settings", "email_for_task_assignment") else False
+							}
+						)
 				if assign_to:
 					for employee in employees:
 						user = frappe.db.get_value('Employee', employee, 'user_id')
@@ -233,7 +237,7 @@ def create_sales_order_from_event(event, customer=None, sub_category=None, rate=
 			fields=["name"]
 		)
 		if items:
-			frappe.throw(f"Proforma Invoice is already created for this Event.")
+			frappe.throw("Proforma Invoice is already created for this Event.")
 	sub_category_doc = frappe.get_doc("Compliance Sub Category", sub_category)
 	new_sales_order = frappe.new_doc("Sales Order")
 	new_sales_order.customer = customer

@@ -4,7 +4,7 @@
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import add as add_assign
+from one_compliance.one_compliance.utils import add as add_assign
 from frappe.model.document import Document
 
 
@@ -62,6 +62,7 @@ class InternalProjectManagement(Document):
 						"doctype": "Task",
 						"name": task_doc.name,
 						"assign_to": assign_to_users,
+						"email": True if frappe.db.get_single_value("Compliance Settings", "email_for_task_assignment") else False
 					}
 				)
 			add_assign(
@@ -69,6 +70,7 @@ class InternalProjectManagement(Document):
 					"doctype": "Project",
 					"name": new_project.name,
 					"assign_to": assign_to_users,
+					"email": True if frappe.db.get_single_value("Compliance Settings", "email_for_project_assignment") else False
 				}
 			)
 		frappe.msgprint(_("Tasks created and assigned to users."), alert=True)
