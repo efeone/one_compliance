@@ -26,6 +26,7 @@
   "column_break_kqmy",
   "ignore_dependent_task_validation",
   "tab_break_us4n3",
+  "notifications_from_subcategory_section",
   "enable_task_before_due_date_notification",
   "task_before_due_date_notification",
   "enable_task_overdue_notification_for_employee",
@@ -45,6 +46,8 @@
   "project_complete_notification_for_customer",
   "enable_project_before_due_date_notification",
   "project_before_due_date_notification",
+  "notifications_on_project_creation_section",
+  "doctypes_to_be_ignored",
   "digital_signature_settings_tab",
   "digital_signature_category",
   "din_kyc_category",
@@ -354,12 +357,28 @@
    "fieldname": "enable_project_complete_notification_for_customer",
    "fieldtype": "Check",
    "label": "Project Complete Notification For Customer"
+  },
+  {
+   "fieldname": "notifications_from_subcategory_section",
+   "fieldtype": "Section Break",
+   "label": "Notifications from Subcategory"
+  },
+  {
+   "fieldname": "notifications_on_project_creation_section",
+   "fieldtype": "Section Break",
+   "label": "ToDo Notifications"
+  },
+  {
+   "fieldname": "doctypes_to_be_ignored",
+   "fieldtype": "Table",
+   "label": "DocTypes to be Ignored",
+   "options": "Ignore ToDo Notifications Detail"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-10 11:22:55.251813",
+ "modified": "2025-06-16 14:26:17.580625",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
