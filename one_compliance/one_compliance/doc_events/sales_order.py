@@ -135,7 +135,6 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 					user = frappe.db.get_value('Employee', employee, 'user_id')
 					if user and user != head_of_department:
 						create_todo('Project', project.name, user, user, 'Project {0} Assigned Successfully'.format(project.name))
-						create_notification_log('{0} Assigned a New Project {1} to You'.format(user_name, project.name),'Mention', user, 'Project {0} Assigned Successfully'.format(project.name), project.doctype, project.name)
 			frappe.msgprint('Project Created for {0}.'.format(compliance_sub_category.name), alert = 1)
 			for template_task in reversed(project_template_doc.tasks):
 				''' Method to create task against created project from the Project Template '''
@@ -185,20 +184,17 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 						user = frappe.db.get_value('Employee', employee, 'user_id')
 						if user and user != head_of_department:
 							create_todo('Task', task_doc.name, user, user, 'Task {0} Assigned Successfully'.format(task_doc.name))
-							create_notification_log('{0} Assigned a New Task {1} to You'.format(user_name, task_doc.name),'Mention', user, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
 				elif not assign_to and template_task.type and template_task.employee_or_group:
 					frappe.db.set_value('Task', task_doc.name, 'assigned_to', template_task.employee_or_group)
 					if template_task.type == "Employee":
 						employee = frappe.db.get_value('Employee', template_task.employee_or_group, 'user_id')
 						if employee and employee != head_of_department:
 							create_todo('Task', task_doc.name, employee, employee, 'Task {0} Assigned Successfully'.format(task_doc.name))
-							create_notification_log('{0} Assigned a New Task {1} to You'.format(user_name, task_doc.name),'Mention', employee, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
 					if template_task.type == "Employee Group":
 						employee_group = frappe.get_doc('Employee Group', template_task.employee_or_group)
 						if employee_group.employee_list:
 							for employee in employee_group.employee_list:
 								create_todo('Task', task_doc.name, employee.user_id, employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name))
-								create_notification_log('{0} Assigned a New Task {1} to you'.format(user_name, task_doc.name),'Mention', employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
 
 			frappe.db.commit()
 	else:

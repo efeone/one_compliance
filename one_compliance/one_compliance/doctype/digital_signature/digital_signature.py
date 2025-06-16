@@ -143,13 +143,11 @@ def create_project_from_digital_signature(digital_signature, exp_end_date):
 					employee = frappe.db.get_value('Employee', template_task.employee_or_group, 'user_id')
 					if employee and employee != head_of_department:
 						create_todo('Task', task_doc.name, employee, employee, 'Task {0} Assigned Successfully'.format(task_doc.name))
-						create_notification_log('{0} Assigned a New Task {1} to You'.format(user_name, task_doc.name),'Mention', employee, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
 				if template_task.type == "Employee Group":
 					employee_group = frappe.get_doc('Employee Group', template_task.employee_or_group)
 					if employee_group.employee_list:
 						for employee in employee_group.employee_list:
 							create_todo('Task', task_doc.name, employee.user_id, employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name))
-							create_notification_log('{0} Assigned a New Task {1} to you'.format(user_name, task_doc.name),'Mention', employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
 
 			frappe.db.commit()
 	else:

@@ -2,7 +2,7 @@ import json
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import add as add_assign, format_message_for_assign_to, get
+from frappe.desk.form.assign_to import format_message_for_assign_to, get
 from frappe.email.doctype.notification.notification import get_context
 from frappe.utils import date_diff, get_datetime, getdate
 from frappe.utils.user import get_users_with_role
@@ -31,19 +31,20 @@ def create_notification_log(subject, type, for_user, email_content, document_typ
 @frappe.whitelist()
 def create_todo(doctype, name, assign_to, owner, description):
 	''' Method used for create ToDo '''
-	todo = frappe.new_doc('ToDo')
-	todo.status = 'Open'
-	todo.owner = owner
-	todo.reference_type = doctype
-	todo.reference_name = name
-	todo.description = description
-	todo.allocated_to = assign_to
 	due_date = frappe.utils.today()
 	if doctype =='Task':
 		if frappe.db.get_value(doctype, name, 'exp_end_date'):
 			due_date = frappe.db.get_value(doctype, name, 'exp_end_date')
-	todo.date = due_date
-	todo.save(ignore_permissions = True)
+	add_custom(
+		{
+	        "assign_to": [assign_to],
+	        "doctype": doctype,
+	        "name": name,
+	        "description": description,
+			"assigned_by": owner,
+			"date": due_date,
+		}
+	)
 
 @frappe.whitelist()
 def task_daily_sheduler():
@@ -311,7 +312,7 @@ def create_project_completion_todos(sales_order, project_name):
     accounts_users = get_users_with_role("Accounts User")
 
     # Assign the task
-    todos = add_assign(
+    todos = add_custom(
         args={
             "assign_to": accounts_users,
             "doctype": "Sales Order",
