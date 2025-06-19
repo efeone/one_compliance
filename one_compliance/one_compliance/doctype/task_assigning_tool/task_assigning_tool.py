@@ -1,16 +1,20 @@
 # Copyright (c) 2023, efeone and contributors
 # For license information, please see license.txt
 
-import frappe
-from frappe.model.document import Document
 import json
+
+import frappe
 from frappe import _
+from frappe.model.document import Document
+
 
 class TaskAssigningTool(Document):
 	pass
 
 @frappe.whitelist()
 def get_users_by_department(doctype, txt, searchfield, start, page_len, filters):
+    
+    exclude_email = filters.get("exclude_email")
     # Query the Employee doctype to filter users by department
     employees = frappe.get_all("Employee",filters={"department": filters.get("department")},fields=["user_id"])
     # Get a list of user IDs from the filtered employees
@@ -18,6 +22,9 @@ def get_users_by_department(doctype, txt, searchfield, start, page_len, filters)
 
     if not user_ids:
         return []
+    
+    if exclude_email in user_ids:
+        user_ids.remove(exclude_email)
 
     #  Add search filter using 'txt'
     users = frappe.get_all("User",
@@ -42,42 +49,9 @@ def get_users_by_department(doctype, txt, searchfield, start, page_len, filters)
         user_info_list.append((email, full_name))
 
     return user_info_list
-
-@frappe.whitelist()
-def get_tasks_for_user(assign_from):
-    # Query tasks from the ToDo doctype
-    tasks = frappe.get_all('ToDo', filters={'allocated_to': assign_from, 'status': 'Open'}, fields=['reference_type', 'reference_name', 'description'])
-
-    task_details = []
-
-    for task in tasks:
-        reference_type = task.reference_type
-        reference_id = task.reference_name
-        task_description = task.description
-
-        if reference_type == 'Task':
-            # Fetch details from the Task doctype based on the task_id
-            task_details_query = frappe.get_all('Task', filters={'name': reference_id}, fields=['subject', 'project'])
-            if task_details_query:
-                task_details.append({
-                    'task_id': reference_id,
-                    'subject': task_details_query[0]['subject'],
-                    'project': task_details_query[0]['project']
-                })
-        elif reference_type == 'Project':
-            # Fetch task details from the Task doctype based on the project_name
-            tasks_for_project = frappe.get_all('Task', filters={'project': reference_id}, fields=['name', 'project', 'subject'])
-            project_task_details = []
-            for task in tasks_for_project:
-                project_task_details.append({
-                    'task_id': task.name,
-                    'subject': task.subject,
-                    'project': task.project
-                })
-            task_details.extend(project_task_details)
-
-    return task_details
 	
+ 
+ 
 @frappe.whitelist()
 def reassign_tasks(assign_from, assign_to, selected_tasks_json):
     # Load the JSON data from selected_tasks_json
@@ -131,7 +105,7 @@ def get_compliance_categories_for_user(doctype, txt, searchfield, start, page_le
         return category_names  # Return the list of email IDs and full names as tuples
     return []
 
-import frappe
+
 
 @frappe.whitelist()
 def get_compliance_executives(compliance_category):
@@ -177,7 +151,7 @@ def add_employee_to_compliance_executive(employee, compliance_category):
                 return False  # Employee is already in the table
         else:
             return False  # Employee or Compliance Category does not exist
-    except Exception as e:
+    except Exception:
         frappe.log_error(frappe.get_traceback(), _("Error in adding employee to Compliance Executive"))
         return False
 
@@ -244,6 +218,35 @@ def add_to_subcategories(employee, compliance_category, selected_subcategories):
             return True
         else:
             return False
-    except Exception as e:
+    except Exception:
         frappe.log_error(frappe.get_traceback(), _("Error in adding employee to Compliance Sub Categories"))
         return False
+
+
+@frappe.whitelist()
+def get_tasks_for_user(assign_from):
+    """
+    fetch tasks for this user
+    """
+
+    tasks = frappe.db.get_all(
+        'Task',
+        filters={
+            '_assign': ['like', f"%{assign_from}%"],
+            'status': ['not in', ['Completed', 'Cancelled', 'Template']]
+        },
+        fields=['name', 'subject', 'project']
+    )
+
+    task_details = []
+    for task in tasks:
+        task_details.append({
+            'task_id': task.name,
+            'subject': task.subject,
+            'project': task.project
+        })
+
+    return task_details
+
+    
+
