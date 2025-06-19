@@ -147,7 +147,8 @@ let set_filters = function(frm){
 			return {
 					query: 'one_compliance.one_compliance.doctype.task_assigning_tool.task_assigning_tool.get_users_by_department',
 					filters: {
-							department: frm.doc.department
+							department: frm.doc.department,
+                            exclude_email: frm.doc.assign_from
 					}
 			};
 	});
@@ -155,7 +156,9 @@ let set_filters = function(frm){
 			return {
 					query: 'one_compliance.one_compliance.doctype.task_assigning_tool.task_assigning_tool.get_users_by_department',
 					filters: {
-							department: frm.doc.department
+							department: frm.doc.department,
+                            exclude_email: frm.doc.assign_from
+
 					}
 			};
 	});
