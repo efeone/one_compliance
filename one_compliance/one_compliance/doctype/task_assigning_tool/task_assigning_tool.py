@@ -6,6 +6,7 @@ import json
 import frappe
 from frappe import _
 from frappe.model.document import Document
+from frappe.utils import now
 
 
 class TaskAssigningTool(Document):
@@ -66,16 +67,31 @@ def reassign_tasks(assign_from, assign_to, selected_tasks_json):
         frappe.db.set_value('Task', task_id, 'assigned_to', assign_to)
 
         # Get the reference name of the 'ToDo' document associated with the selected task
-        todo_reference_name = frappe.get_value('ToDo', {'reference_name': task_id, 'reference_type': 'Task'}, 'name')
+        old_todo_reference = frappe.get_value('ToDo', {'reference_name': task_id, 'reference_type': 'Task'}, 'name')
 
-        if todo_reference_name:
-            # Update the 'allocated_to' field in the 'ToDo' document
-            frappe.db.set_value('ToDo', todo_reference_name, 'allocated_to', assign_to)
+        if old_todo_reference:
 
-    # Commit changes to the database
+            frappe.get_doc(
+                {
+                    'doctype': 'ToDo',
+                    'owner': assign_to,
+                    'allocated_to': assign_to,
+                    'assigned_by': assign_from,
+                    'reference_type': 'Task',
+                    'reference_name': task_id,
+                    'description': f"Task reassigned from {assign_from}",
+                    'status': 'Open',
+                    'date': now()
+                        }
+            ).insert(ignore_permissions=True)
+
+            # frappe.db.set_value('ToDo', old_todo_reference, 'status', 'Closed')
+            old_todo = frappe.get_doc('ToDo', old_todo_reference)
+            old_todo.status = 'Closed'
+            old_todo.save(ignore_permissions=True)
+
     frappe.db.commit()
 
-    # Return a success message
     return "Tasks reassigned successfully"
 
 
