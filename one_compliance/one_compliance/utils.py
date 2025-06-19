@@ -41,7 +41,7 @@ def create_todo(doctype, name, assign_to, owner, description):
 	        "doctype": doctype,
 	        "name": name,
 	        "description": description,
-			"assigned_by": owner,
+			"assigned_by": frappe.session.user,
 			"date": due_date,
 		}
 	)
@@ -395,7 +395,6 @@ def add_custom(args=None, *, ignore_permissions=False):
 	}
 
 	"""
-	print("called")
 	if not args:
 		args = frappe.local.form_dict
 
