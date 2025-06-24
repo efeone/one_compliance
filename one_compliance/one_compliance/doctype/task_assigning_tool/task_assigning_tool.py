@@ -1,98 +1,175 @@
 # Copyright (c) 2023, efeone and contributors
 # For license information, please see license.txt
 
-import frappe
-from frappe.model.document import Document
 import json
+
+import frappe
 from frappe import _
+from frappe.model.document import Document
+from frappe.utils import now
+
 
 class TaskAssigningTool(Document):
 	pass
 
 @frappe.whitelist()
 def get_users_by_department(doctype, txt, searchfield, start, page_len, filters):
+    
+    exclude_email = filters.get("exclude_email")
     # Query the Employee doctype to filter users by department
-    employees = frappe.get_all("Employee",
-        filters={"department": filters.get("department")},
-        fields=["user_id"]
-    )
-
+    employees = frappe.get_all("Employee",filters={"department": filters.get("department")},fields=["user_id"])
     # Get a list of user IDs from the filtered employees
-    user_ids = [employee.user_id for employee in employees]
+    user_ids = [employee.user_id for employee in employees if employee.user_id]
 
-    # Query the User doctype to fetch users based on user_id
+    if not user_ids:
+        return []
+    
+    if exclude_email in user_ids:
+        user_ids.remove(exclude_email)
+
+    #  Add search filter using 'txt'
     users = frappe.get_all("User",
-        filters={"email": ["in", user_ids], "enabled": 1},
-        fields=["name", "full_name"]
+        filters={
+            "name": ["in", user_ids],
+            "enabled": 1
+        },
+        or_filters=[
+            ["name", "like", f"%{txt}%"],
+            ["full_name", "like", f"%{txt}%"]
+        ],
+        fields=["name", "full_name"],
+        start=start,
+        page_length=page_len
     )
 
-    user_info_list = []  # Initialize an empty list to store user information
-
+    # Build result list
+    user_info_list = []
     for user in users:
-        email = user['name']  # Use 'user' instead of 'users'
-        full_name = user['full_name']  # Use 'user' instead of 'users'
+        email = user['name']
+        full_name = user['full_name']
+        user_info_list.append((email, full_name))
 
-        user_info_list.append((email, full_name))  # Add email and full name as a tuple to the list
-
-    return user_info_list  # Return the list of email IDs and full names as tuples
-
-@frappe.whitelist()
-def get_tasks_for_user(assign_from):
-    # Query tasks from the ToDo doctype
-    tasks = frappe.get_all('ToDo', filters={'allocated_to': assign_from, 'status': 'Open'}, fields=['reference_type', 'reference_name', 'description'])
-
-    task_details = []
-
-    for task in tasks:
-        reference_type = task.reference_type
-        reference_id = task.reference_name
-        task_description = task.description
-
-        if reference_type == 'Task':
-            # Fetch details from the Task doctype based on the task_id
-            task_details_query = frappe.get_all('Task', filters={'name': reference_id}, fields=['subject', 'project'])
-            if task_details_query:
-                task_details.append({
-                    'task_id': reference_id,
-                    'subject': task_details_query[0]['subject'],
-                    'project': task_details_query[0]['project']
-                })
-        elif reference_type == 'Project':
-            # Fetch task details from the Task doctype based on the project_name
-            tasks_for_project = frappe.get_all('Task', filters={'project': reference_id}, fields=['name', 'project', 'subject'])
-            project_task_details = []
-            for task in tasks_for_project:
-                project_task_details.append({
-                    'task_id': task.name,
-                    'subject': task.subject,
-                    'project': task.project
-                })
-            task_details.extend(project_task_details)
-
-    return task_details
-
+    return user_info_list
+	
+ 
+ 
 @frappe.whitelist()
 def reassign_tasks(assign_from, assign_to, selected_tasks_json):
-    # Load the JSON data from selected_tasks_json
-    selected_tasks = json.loads(selected_tasks_json)
+    """
+    reassign task and there project
+    """
 
-    print(selected_tasks)  # This will print the selected_tasks array
+    selected_tasks = frappe.parse_json(selected_tasks_json)
+    print(selected_tasks)
+
+    assigned_projects = set()
+    projects_to_check = set()
 
     for task_id in selected_tasks:
-        print(type(task_id), task_id)  # This will print each task_id in the selected_tasks array
+        print(type(task_id), task_id)
+
+        task_doc = frappe.get_doc('Task', task_id)
+
+        frappe.db.set_value('Task', task_id, 'assigned_to', assign_to)
+
+        # If task has a project, track it for checking later
+        if task_doc.project:
+            projects_to_check.add(task_doc.project)
+
+            # Assign project to new user if not already assigned
+            if task_doc.project not in assigned_projects:
+                try:
+                    existing_assignment = frappe.db.exists('ToDo', {
+                        'reference_type': 'Project',
+                        'reference_name': task_doc.project,
+                        'allocated_to': assign_to,
+                        'status': 'Open'
+                    })
+
+                    if not existing_assignment:
+                        frappe.desk.form.assign_to.add(args={
+                            'assign_to': json.dumps([assign_to]),
+                            'doctype': 'Project',
+                            'name': task_doc.project,
+                            'description': f'Project assigned due to task reassignment from {assign_from}'
+                        })
+                        print(f"Project {task_doc.project} assigned to {assign_to}")
+                    else:
+                        print(f"Project {task_doc.project} already assigned to {assign_to}")
+
+                    assigned_projects.add(task_doc.project)
+
+                except Exception as e:
+                    frappe.log_error(f"Error assigning project {task_doc.project} to user {assign_to}: {str(e)}")
+                    print(f"Error assigning project: {str(e)}")
 
         # Get the reference name of the 'ToDo' document associated with the selected task
-        todo_reference_name = frappe.get_value('ToDo', {'reference_name': task_id, 'reference_type': 'Task'}, 'name')
+        old_todo_reference = frappe.get_value('ToDo', {
+            'reference_name': task_id,
+            'reference_type': 'Task',
+            'status': ['!=', 'Closed'],
+            'allocated_to': assign_from
+        }, 'name')
 
-        if todo_reference_name:
-            # Update the 'allocated_to' field in the 'ToDo' document
-            frappe.db.set_value('ToDo', todo_reference_name, 'allocated_to', assign_to)
+        if old_todo_reference:
+            frappe.get_doc({
+                'doctype': 'ToDo',
+                'owner': assign_to,
+                'allocated_to': assign_to,
+                'assigned_by': assign_from,
+                'reference_type': 'Task',
+                'reference_name': task_id,
+                'description': f"Task reassigned from {assign_from}",
+                'status': 'Open',
+                'date': now()
+            }).insert(ignore_permissions=True)
 
-    # Save changes
+            old_todo = frappe.get_doc('ToDo', old_todo_reference)
+            old_todo.status = 'Closed'
+            old_todo.save(ignore_permissions=True)
+
+    # Check if assign_from user should be removed from projects
+    for project_name in projects_to_check:
+        remove_user_from_project_if_no_tasks(project_name, assign_from)
+
     frappe.db.commit()
-
-    # Return a success message
     return "Tasks reassigned successfully"
+
+def remove_user_from_project_if_no_tasks(project_name, user):
+    """
+    Remove user from project assignment if they have no remaining open tasks in the project
+    """
+    try:
+        # Check if user has any remaining open tasks in this project
+        remaining_tasks = frappe.db.count('Task', {
+            'project': project_name,
+            'assigned_to': user,
+            'status': ['not in', ['Completed', 'Cancelled']]
+        })
+
+        if remaining_tasks == 0:
+            # Check if user has project assignment
+            project_todo = frappe.db.get_value('ToDo', {
+                'reference_type': 'Project',
+                'reference_name': project_name,
+                'allocated_to': user,
+                'status': 'Open'
+            }, 'name')
+
+            if project_todo:
+                todo_doc = frappe.get_doc('ToDo', project_todo)
+                todo_doc.status = 'Closed'
+                todo_doc.save(ignore_permissions=True)
+
+                frappe.log_error(f"Removed project {project_name} assignment from user {user} (no remaining tasks)")
+            else:
+                frappe.log_error(f"User {user} was not assigned to project {project_name}")
+        else:
+            frappe.log_error(f"User {user} still has {remaining_tasks} tasks in project {project_name}")
+
+    except Exception as e:
+        frappe.log_error(f"Error removing project {project_name} from user {user}: {str(e)}")
+
 
 @frappe.whitelist()
 def get_compliance_categories_for_user(doctype, txt, searchfield, start, page_len, filters):
@@ -120,7 +197,7 @@ def get_compliance_categories_for_user(doctype, txt, searchfield, start, page_le
         return category_names  # Return the list of email IDs and full names as tuples
     return []
 
-import frappe
+
 
 @frappe.whitelist()
 def get_compliance_executives(compliance_category):
@@ -166,7 +243,7 @@ def add_employee_to_compliance_executive(employee, compliance_category):
                 return False  # Employee is already in the table
         else:
             return False  # Employee or Compliance Category does not exist
-    except Exception as e:
+    except Exception:
         frappe.log_error(frappe.get_traceback(), _("Error in adding employee to Compliance Executive"))
         return False
 
@@ -233,6 +310,33 @@ def add_to_subcategories(employee, compliance_category, selected_subcategories):
             return True
         else:
             return False
-    except Exception as e:
+    except Exception:
         frappe.log_error(frappe.get_traceback(), _("Error in adding employee to Compliance Sub Categories"))
         return False
+
+
+@frappe.whitelist()
+def get_tasks_for_user(assign_from):
+    """
+    fetch tasks for this user
+    """
+
+    tasks = frappe.db.get_all(
+        'Task',
+        filters={
+            '_assign': ['like', f"%{assign_from}%"],
+            'status': ['not in', ['Completed', 'Cancelled', 'Template']]
+        },
+        fields=['name', 'subject', 'project']
+    )
+
+    task_details = []
+    for task in tasks:
+        task_details.append({
+            'task_id': task.name,
+            'subject': task.subject,
+            'project': task.project
+        })
+
+    return task_details
+

@@ -28,23 +28,24 @@ frappe.ui.form.on('Task Assigning Tool', {
         }
 
         // Get the selected tasks from the 'task_reassigns' table
-        var selectedTasks = frm.doc.task_reassigns || [];
+        var selectedRows = frm.get_selected().task_reassigns || [];
 
-        if (selectedTasks.length === 0) {
-            frappe.msgprint('Please select tasks to reassign.');
-            return;
-        }
+        if (selectedRows.length === 0) {
+        frappe.msgprint('Please select tasks to reassign.');
+        return;
+    }
 
-        var selectedTaskIds = selectedTasks.map(function(task) {
-            return task.task_id;
-        });
+        var selectedTaskIds = selectedRows.map(function(rowName) {
+            var row = frm.doc.task_reassigns.find(r => r.name === rowName);
+            return row && row.task_id;
+        }).filter(Boolean);    
 
         frappe.call({
             method: 'one_compliance.one_compliance.doctype.task_assigning_tool.task_assigning_tool.reassign_tasks',
             args: {
                 assign_from: assignFrom,
                 assign_to: assignTo,
-                selected_tasks_json: selectedTaskIds
+                selected_tasks_json: JSON.stringify(selectedTaskIds)
             },
             freeze: true,
             freeze_message: 'Reassigning tasks...',
@@ -59,6 +60,7 @@ frappe.ui.form.on('Task Assigning Tool', {
             }
         });
     },
+    
 		compliance_categories: function(frm) {
 			 // Get the selected Compliance Category
 			 var selectedCategory = frm.doc.compliance_categories;
@@ -145,7 +147,8 @@ let set_filters = function(frm){
 			return {
 					query: 'one_compliance.one_compliance.doctype.task_assigning_tool.task_assigning_tool.get_users_by_department',
 					filters: {
-							department: frm.doc.department
+							department: frm.doc.department,
+                            exclude_email: frm.doc.assign_from
 					}
 			};
 	});
@@ -153,7 +156,9 @@ let set_filters = function(frm){
 			return {
 					query: 'one_compliance.one_compliance.doctype.task_assigning_tool.task_assigning_tool.get_users_by_department',
 					filters: {
-							department: frm.doc.department
+							department: frm.doc.department,
+                            exclude_email: frm.doc.assign_from
+
 					}
 			};
 	});
@@ -165,6 +170,13 @@ let set_filters = function(frm){
         }
     };
 });
+frm.fields_dict.task_reassigns.grid.get_field("task_id").get_query = function () {
+    return {
+        filters: {
+            status: ["not in", ["Completed", "Cancelled", "Template"]]
+        }
+    };
+};
 
 }
 
