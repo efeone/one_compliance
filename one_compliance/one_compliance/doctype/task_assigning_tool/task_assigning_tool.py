@@ -55,44 +55,120 @@ def get_users_by_department(doctype, txt, searchfield, start, page_len, filters)
  
 @frappe.whitelist()
 def reassign_tasks(assign_from, assign_to, selected_tasks_json):
-    # Load the JSON data from selected_tasks_json
-    selected_tasks = json.loads(selected_tasks_json)
+    """
+    reassign task and there project
+    """
 
-    print(selected_tasks)  # This will print the selected_tasks array
+    selected_tasks = frappe.parse_json(selected_tasks_json)
+    print(selected_tasks)
+
+    assigned_projects = set()
+    projects_to_check = set()
 
     for task_id in selected_tasks:
-        print(type(task_id), task_id)  # This will print each task_id in the selected_tasks array
+        print(type(task_id), task_id)
 
-        # Update the 'assigned_to' field in the 'Task' document
+        task_doc = frappe.get_doc('Task', task_id)
+
         frappe.db.set_value('Task', task_id, 'assigned_to', assign_to)
 
+        # If task has a project, track it for checking later
+        if task_doc.project:
+            projects_to_check.add(task_doc.project)
+
+            # Assign project to new user if not already assigned
+            if task_doc.project not in assigned_projects:
+                try:
+                    existing_assignment = frappe.db.exists('ToDo', {
+                        'reference_type': 'Project',
+                        'reference_name': task_doc.project,
+                        'allocated_to': assign_to,
+                        'status': 'Open'
+                    })
+
+                    if not existing_assignment:
+                        frappe.desk.form.assign_to.add(args={
+                            'assign_to': json.dumps([assign_to]),
+                            'doctype': 'Project',
+                            'name': task_doc.project,
+                            'description': f'Project assigned due to task reassignment from {assign_from}'
+                        })
+                        print(f"Project {task_doc.project} assigned to {assign_to}")
+                    else:
+                        print(f"Project {task_doc.project} already assigned to {assign_to}")
+
+                    assigned_projects.add(task_doc.project)
+
+                except Exception as e:
+                    frappe.log_error(f"Error assigning project {task_doc.project} to user {assign_to}: {str(e)}")
+                    print(f"Error assigning project: {str(e)}")
+
         # Get the reference name of the 'ToDo' document associated with the selected task
-        old_todo_reference = frappe.get_value('ToDo', {'reference_name': task_id, 'reference_type': 'Task'}, 'name')
+        old_todo_reference = frappe.get_value('ToDo', {
+            'reference_name': task_id,
+            'reference_type': 'Task',
+            'status': ['!=', 'Closed'],
+            'allocated_to': assign_from
+        }, 'name')
 
         if old_todo_reference:
+            frappe.get_doc({
+                'doctype': 'ToDo',
+                'owner': assign_to,
+                'allocated_to': assign_to,
+                'assigned_by': assign_from,
+                'reference_type': 'Task',
+                'reference_name': task_id,
+                'description': f"Task reassigned from {assign_from}",
+                'status': 'Open',
+                'date': now()
+            }).insert(ignore_permissions=True)
 
-            frappe.get_doc(
-                {
-                    'doctype': 'ToDo',
-                    'owner': assign_to,
-                    'allocated_to': assign_to,
-                    'assigned_by': assign_from,
-                    'reference_type': 'Task',
-                    'reference_name': task_id,
-                    'description': f"Task reassigned from {assign_from}",
-                    'status': 'Open',
-                    'date': now()
-                        }
-            ).insert(ignore_permissions=True)
-
-            # frappe.db.set_value('ToDo', old_todo_reference, 'status', 'Closed')
             old_todo = frappe.get_doc('ToDo', old_todo_reference)
             old_todo.status = 'Closed'
             old_todo.save(ignore_permissions=True)
 
-    frappe.db.commit()
+    # Check if assign_from user should be removed from projects
+    for project_name in projects_to_check:
+        remove_user_from_project_if_no_tasks(project_name, assign_from)
 
+    frappe.db.commit()
     return "Tasks reassigned successfully"
+
+def remove_user_from_project_if_no_tasks(project_name, user):
+    """
+    Remove user from project assignment if they have no remaining open tasks in the project
+    """
+    try:
+        # Check if user has any remaining open tasks in this project
+        remaining_tasks = frappe.db.count('Task', {
+            'project': project_name,
+            'assigned_to': user,
+            'status': ['not in', ['Completed', 'Cancelled']]
+        })
+
+        if remaining_tasks == 0:
+            # Check if user has project assignment
+            project_todo = frappe.db.get_value('ToDo', {
+                'reference_type': 'Project',
+                'reference_name': project_name,
+                'allocated_to': user,
+                'status': 'Open'
+            }, 'name')
+
+            if project_todo:
+                todo_doc = frappe.get_doc('ToDo', project_todo)
+                todo_doc.status = 'Closed'
+                todo_doc.save(ignore_permissions=True)
+
+                frappe.log_error(f"Removed project {project_name} assignment from user {user} (no remaining tasks)")
+            else:
+                frappe.log_error(f"User {user} was not assigned to project {project_name}")
+        else:
+            frappe.log_error(f"User {user} still has {remaining_tasks} tasks in project {project_name}")
+
+    except Exception as e:
+        frappe.log_error(f"Error removing project {project_name} from user {user}: {str(e)}")
 
 
 @frappe.whitelist()
@@ -264,5 +340,4 @@ def get_tasks_for_user(assign_from):
 
     return task_details
 
-    
 
