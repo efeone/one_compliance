@@ -75,6 +75,18 @@ frappe.query_reports["Sales Order Receivable Summary"] = {
       label: "Customer Group",
       fieldtype: "Link",
       options: "Customer Group"
+    },
+    {
+      fieldname: "include_invoiced",
+      label: "Include Invoiced",
+      fieldtype: "Check",
+      default: 0
+    },
+    {
+      fieldname: "include_paid",
+      label: "Include Paid",
+      fieldtype: "Check",
+      default: 0
     }
   ]
 };

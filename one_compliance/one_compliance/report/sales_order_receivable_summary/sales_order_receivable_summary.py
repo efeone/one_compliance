@@ -106,7 +106,16 @@ def get_data_grouped_by_customer(filters: dict) -> list[dict]:
         date_vals.extend([fd, td])
 
     extra_cond, extra_vals = get_conditions(filters)
-    bind_vals = [today] + date_vals + extra_vals
+
+    # Workflow State filtering
+    workflow_states = ["Proforma Invoice"]  # default state
+    if filters.get("include_invoiced"):
+        workflow_states.append("Invoiced")
+    if filters.get("include_paid"):
+        workflow_states.append("Paid")
+
+    wf_cond = "AND so.workflow_state IN ({})".format(", ".join(["%s"] * len(workflow_states)))
+    bind_vals = [today] + workflow_states + date_vals + extra_vals
 
     raw_results = frappe.db.sql(f"""
         SELECT
@@ -132,6 +141,7 @@ def get_data_grouped_by_customer(filters: dict) -> list[dict]:
         WHERE so.docstatus = 1
           AND so.customer IS NOT NULL
           AND so.customer != ''
+          {wf_cond}
           {date_cond}
           {"AND " + extra_cond if extra_cond else ""}
         GROUP BY so.name
