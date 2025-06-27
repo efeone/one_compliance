@@ -23,6 +23,18 @@ frappe.query_reports["Sales Order Receivable Summary"] = {
 
   filters: [
     {
+      fieldname: "company",
+      label: "Company",
+      fieldtype: "Link",
+      options: "Company"
+    },
+    {
+      fieldname: "customer",
+      label: "Customer",
+      fieldtype: "Link",
+      options: "Customer"
+    },
+    {
       fieldname: "report_date",
       label: "Report Date",
       fieldtype: "Date",
@@ -53,18 +65,6 @@ frappe.query_reports["Sales Order Receivable Summary"] = {
       description: "Comma-separated e.g. 30,60,90"
     },
     {
-      fieldname: "customer",
-      label: "Customer",
-      fieldtype: "Link",
-      options: "Customer"
-    },
-    {
-      fieldname: "company",
-      label: "Company",
-      fieldtype: "Link",
-      options: "Company"
-    },
-    {
       fieldname: "territory",
       label: "Territory",
       fieldtype: "Link",
@@ -75,6 +75,18 @@ frappe.query_reports["Sales Order Receivable Summary"] = {
       label: "Customer Group",
       fieldtype: "Link",
       options: "Customer Group"
+    },
+    {
+      fieldname: "include_invoiced",
+      label: "Include Invoiced",
+      fieldtype: "Check",
+      default: 0
+    },
+    {
+      fieldname: "include_paid",
+      label: "Include Paid",
+      fieldtype: "Check",
+      default: 0
     }
   ]
 };
