@@ -3,7 +3,7 @@ import json
 from frappe.model.mapper import *
 from frappe import _
 from frappe.utils.user import get_users_with_role
-from frappe.desk.form.assign_to import add as add_assignment
+from one_compliance.one_compliance.utils import add_custom as add_assignment
 from one_compliance.one_compliance.utils import *
 from frappe.email.doctype.notification.notification import get_context
 
@@ -339,13 +339,11 @@ def create_project_from_customer(doc, method=None):
                                         employee = frappe.db.get_value('Employee', template_task.employee_or_group, 'user_id')
                                         if employee and employee != head_of_department:
                                             create_todo('Task', task_doc.name, employee, employee, 'Task {0} Assigned Successfully'.format(task_doc.name))
-                                            create_notification_log('{0} Assigned a New Task {1} to You'.format(user_name, task_doc.name),'Mention', employee, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
                                     if template_task.type == "Employee Group":
                                         employee_group = frappe.get_doc('Employee Group', template_task.employee_or_group)
                                         if employee_group.employee_list:
                                             for employee in employee_group.employee_list:
                                                 create_todo('Task', task_doc.name, employee.user_id, employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name))
-                                                create_notification_log('{0} Assigned a New Task {1} to you'.format(user_name, task_doc.name),'Mention', employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
 
                                 frappe.db.commit()
                         else:
@@ -481,13 +479,11 @@ def send_expiry_notif_and_create_proj(doc, method=None):
                                     employee = frappe.db.get_value('Employee', template_task.employee_or_group, 'user_id')
                                     if employee and employee != head_of_department:
                                         create_todo('Task', task_doc.name, employee, employee, 'Task {0} Assigned Successfully'.format(task_doc.name))
-                                        create_notification_log('{0} Assigned a New Task {1} to You'.format(user_name, task_doc.name),'Mention', employee, 'Task {0} Assigned Successfully'.format(task_doc.name), task_doc.doctype, task_doc.name)
                                 if template_task.type == "Employee Group":
                                     employee_group = frappe.get_doc('Employee Group', template_task.employee_or_group)
                                     if employee_group.employee_list:
                                         for employee in employee_group.employee_list:
                                             create_todo('Task', task_doc.name, employee.user_id, employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name))
-                                            sendmail(entry, email_campaign)
                                             frappe.db.commit()
                 else:
                     frappe.throw( title = _('ALERT !!'), msg = _('Project Template does not exist for {0}'.format(compliance_sub_category)))

@@ -8,7 +8,7 @@ from one_compliance.one_compliance.doc_events.task import (
 	create_sales_order, get_rate_from_compliance_agreement,
 	update_expected_dates_in_task)
 from frappe.utils.user import get_users_with_role
-from frappe.desk.form.assign_to import add as add_assign
+from one_compliance.one_compliance.utils import add_custom as add_assign
 
 @frappe.whitelist()
 def project_on_update(doc, method):

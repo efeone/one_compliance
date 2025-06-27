@@ -4,7 +4,7 @@
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import add as add_assign
+from one_compliance.one_compliance.utils import add_custom as add_assign
 from frappe.model.document import Document
 
 

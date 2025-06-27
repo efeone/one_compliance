@@ -2,10 +2,17 @@ import json
 
 import frappe
 from frappe import _
-from frappe.desk.form.assign_to import add as add_assign
+from frappe.desk.form.assign_to import format_message_for_assign_to, get
 from frappe.email.doctype.notification.notification import get_context
 from frappe.utils import date_diff, get_datetime, getdate
 from frappe.utils.user import get_users_with_role
+from frappe.desk.doctype.notification_log.notification_log import (
+	enqueue_create_notification,
+	get_title,
+	get_title_html,
+)
+from frappe.desk.form.document_follow import follow_document
+from frappe.utils.data import strip_html
 
 
 @frappe.whitelist()
@@ -24,19 +31,20 @@ def create_notification_log(subject, type, for_user, email_content, document_typ
 @frappe.whitelist()
 def create_todo(doctype, name, assign_to, owner, description):
 	''' Method used for create ToDo '''
-	todo = frappe.new_doc('ToDo')
-	todo.status = 'Open'
-	todo.owner = owner
-	todo.reference_type = doctype
-	todo.reference_name = name
-	todo.description = description
-	todo.allocated_to = assign_to
 	due_date = frappe.utils.today()
 	if doctype =='Task':
 		if frappe.db.get_value(doctype, name, 'exp_end_date'):
 			due_date = frappe.db.get_value(doctype, name, 'exp_end_date')
-	todo.date = due_date
-	todo.save(ignore_permissions = True)
+	add_custom(
+		{
+	        "assign_to": [assign_to],
+	        "doctype": doctype,
+	        "name": name,
+	        "description": description,
+			"assigned_by": frappe.session.user,
+			"date": due_date,
+		}
+	)
 
 @frappe.whitelist()
 def task_daily_sheduler():
@@ -309,7 +317,7 @@ def create_project_completion_todos(sales_order, project_name):
     accounts_users = get_users_with_role("Accounts User")
 
     # Assign the task
-    todos = add_assign(
+    todos = add_custom(
         args={
             "assign_to": accounts_users,
             "doctype": "Sales Order",
@@ -379,3 +387,160 @@ def get_employee_list_for_hod():
                 user_id = %s
         """, frappe.session.user, as_dict=True)
     return employees
+
+@frappe.whitelist()
+def add_custom(args=None, *, ignore_permissions=False):
+	"""add in someone's to do list
+	args = {
+	        "assign_to": [],
+	        "doctype": ,
+	        "name": ,
+	        "description": ,
+	        "assignment_rule":
+	}
+
+	"""
+	if not args:
+		args = frappe.local.form_dict
+
+	users_with_duplicate_todo = []
+	shared_with_users = []
+
+	for assign_to in frappe.parse_json(args.get("assign_to")):
+		filters = {
+			"reference_type": args["doctype"],
+			"reference_name": args["name"],
+			"status": "Open",
+			"allocated_to": assign_to,
+		}
+		if not ignore_permissions:
+			frappe.get_doc(args["doctype"], args["name"]).check_permission()
+
+		if frappe.get_all("ToDo", filters=filters):
+			users_with_duplicate_todo.append(assign_to)
+		else:
+			from frappe.utils import nowdate
+
+			description = str(args.get("description", ""))
+			has_content = strip_html(description) or "<img" in description
+			if not has_content:
+				args["description"] = _("Assignment for {0} {1}").format(args["doctype"], args["name"])
+
+			d = frappe.get_doc(
+				{
+					"doctype": "ToDo",
+					"allocated_to": assign_to,
+					"reference_type": args["doctype"],
+					"reference_name": str(args["name"]),
+					"description": args.get("description"),
+					"priority": args.get("priority", "Medium"),
+					"status": "Open",
+					"date": args.get("date", nowdate()),
+					"assigned_by": args.get("assigned_by", frappe.session.user),
+					"assignment_rule": args.get("assignment_rule"),
+				}
+			).insert(ignore_permissions=True)
+
+			# set assigned_to if field exists
+			if frappe.get_meta(args["doctype"]).get_field("assigned_to"):
+				frappe.db.set_value(args["doctype"], args["name"], "assigned_to", assign_to)
+
+			doc = frappe.get_doc(args["doctype"], args["name"])
+
+			# if assignee does not have permissions, share or inform
+			if not frappe.has_permission(doc=doc, user=assign_to):
+				if frappe.get_system_settings("disable_document_sharing"):
+					msg = _("User {0} is not permitted to access this document.").format(
+						frappe.bold(assign_to)
+					)
+					msg += "<br>" + _(
+						"As document sharing is disabled, please give them the required permissions before assigning."
+					)
+					frappe.throw(msg, title=_("Missing Permission"))
+				else:
+					frappe.share.add(doc.doctype, doc.name, assign_to)
+					shared_with_users.append(assign_to)
+
+			# make this document followed by assigned user
+			if frappe.get_cached_value("User", assign_to, "follow_assigned_documents"):
+				follow_document(args["doctype"], args["name"], assign_to)
+
+			# notify
+			ignore_email = frappe.db.get_value("Ignore ToDo Notifications Detail", {
+       			"parent": "Compliance Settings",
+          		"doctype_to_ignore":d.reference_type
+            }, "email")
+			ignore_system_notification = frappe.db.get_value("Ignore ToDo Notifications Detail", {
+	   			"parent": "Compliance Settings",
+		  		"doctype_to_ignore":d.reference_type
+			}, "system_notification")
+			print("ignore_email", ignore_email)
+			print("ignore_system_notification", ignore_system_notification)
+			notify_assignment(
+				d.assigned_by,
+				d.allocated_to,
+				d.reference_type,
+				d.reference_name,
+				action="ASSIGN",
+				description=args.get("description"),
+				ignore_email=ignore_email,
+				ignore_system_notification=ignore_system_notification
+			)
+
+	if shared_with_users:
+		user_list = format_message_for_assign_to(shared_with_users)
+		frappe.msgprint(
+			_("Shared with the following Users with Read access:{0}").format(user_list, alert=True)
+		)
+
+	if users_with_duplicate_todo:
+		user_list = format_message_for_assign_to(users_with_duplicate_todo)
+		frappe.msgprint(_("Already in the following Users ToDo list:{0}").format(user_list, alert=True))
+
+	return get(args)
+
+def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLOSE", description=None, ignore_email=False, ignore_system_notification=False):
+	"""
+	Notify assignee that there is a change in assignment
+	"""
+	if not (assigned_by and allocated_to and doc_type and doc_name):
+		return
+
+	assigned_user = frappe.db.get_value("User", allocated_to, ["language", "enabled"], as_dict=True)
+
+	# return if self assigned or user disabled
+	if assigned_by == allocated_to or not assigned_user.enabled:
+		return
+
+	# Search for email address in description -- i.e. assignee
+	user_name = frappe.get_cached_value("User", frappe.session.user, "full_name")
+	title = get_title(doc_type, doc_name)
+	description_html = f"<div>{description}</div>" if description else None
+
+	if action == "CLOSE":
+		subject = _("Your assignment on {0} {1} has been removed by {2}", lang=assigned_user.language).format(
+			frappe.bold(_(doc_type)), get_title_html(title), frappe.bold(user_name)
+		)
+	else:
+		user_name = frappe.bold(user_name)
+		document_type = frappe.bold(_(doc_type, lang=assigned_user.language))
+		title = get_title_html(title)
+		subject = _("{0} assigned a new task {1} {2} to you", lang=assigned_user.language).format(
+			user_name, document_type, title
+		)
+
+	if not ignore_email or not ignore_system_notification:
+		type = "Assignment"
+		if ignore_email:
+			type = "Alert"
+		notification_doc = {
+			"type": type,
+			"document_type": doc_type,
+			"subject": subject,
+			"document_name": doc_name,
+			"from_user": frappe.session.user,
+			"email_content": description_html,
+		}
+
+		enqueue_create_notification(allocated_to, notification_doc)
+

@@ -3,7 +3,7 @@
 
 import json
 import frappe
-from frappe.desk.form.assign_to import add as add_assignment
+from one_compliance.one_compliance.utils import add_custom as add_assignment
 from frappe.model.document import Document
 
 
