@@ -315,3 +315,47 @@ def send_notification_email(projects_to_notify, sub_category_doc):
 				frappe.db.set_value("Project", project, "renew_email_sent_on", today())
 		except Exception as e:
 			frappe.log_error(message=str(e), title="Email Sending Error")
+
+@frappe.whitelist()
+def create_renewal_opportunities():
+    today_date = getdate(today())
+    sub_categories = frappe.get_all(
+        "Compliance Sub Category",
+        filters={"enabled": 1, "allow_repeat": 1},
+        fields=["name", "renew_notif_days_before", "sub_category"]
+    )
+    for sub_cat in sub_categories:
+        if not sub_cat.renew_notif_days_before:
+            continue
+        sales_orders = frappe.get_all(
+            "Sales Order",
+            filters={"custom_compliance_subcategory": sub_cat.name},
+            fields=["name", "custom_expected_end_date", "customer"]
+        )
+        for order in sales_orders:
+            if not order.custom_expected_end_date:
+                continue
+            renewal_date = getdate(order.custom_expected_end_date)
+            notif_date = add_days(renewal_date, -int(sub_cat.renew_notif_days_before))
+            if notif_date == today_date:
+                existing = frappe.get_all("Opportunity", filters={
+                    "opportunity_type": "Sales",
+                    "party_name": order.customer
+                })
+                if not existing:
+                    sales_order_doc = frappe.get_doc("Sales Order", order.name)
+                    opportunity = frappe.new_doc("Opportunity")
+                    opportunity.opportunity_from = "Customer"
+                    opportunity.party_name = order.customer
+                    opportunity.opportunity_type = "Sales"
+                    opportunity.enquiry_date = today_date
+                    opportunity.status = "Open"
+                    for item in sales_order_doc.items:
+                        opportunity.append("items", {
+                            "item_code": item.item_code,
+                            "qty": item.qty,
+                            "rate": item.rate,
+                            "amount": item.amount
+                        })
+                    opportunity.save(ignore_permissions=True)
+                    frappe.db.commit()

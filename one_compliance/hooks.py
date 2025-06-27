@@ -202,6 +202,9 @@ scheduler_events = {
 	# "monthly": [
     #
 	# ],
+    "cron": {
+        "0 6 * * *": ["one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.create_renewal_opportunities"]
+    }
 }
 
 # Testing
