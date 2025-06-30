@@ -46,8 +46,8 @@ frappe.query_reports["Task Summary"] = {
       options: "\nTask\nEvent",
     },
     {
-      fieldname: "sub_category",
-      label: __("Sub Category"),
+      fieldname: "compliance_sub_category",
+      label: __("Compliance Sub Category"),
       fieldtype: "Link",
       options: "Compliance Sub Category",
     },

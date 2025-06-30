@@ -64,8 +64,8 @@ def get_columns():
             "width": 200,
         },
         {
-            "label": _("Sub Category"),
-            "fieldname": "sub_category",
+            "label": _("Compliance Sub Category"),
+            "fieldname": "compliance_sub_category",
             "fieldtype": "Link",
             "options": "Compliance Sub Category",
             "width": 250,
@@ -148,11 +148,11 @@ def get_task_data(filters):
         SELECT
             t.name as id,
             t.subject as description,
-            COALESCE(t.exp_start_date, t.act_start_date, t.completed_on) as date,
+            CAST(t.creation AS DATE) as date,
             t.customer as client,
             t.project,
             t.department,
-            t.compliance_sub_category as sub_category,
+            t.compliance_sub_category,
             CASE
                 WHEN t.status = 'Completed' THEN t.completed_by
                 ELSE t.assigned_to
@@ -211,7 +211,7 @@ def get_task_data(filters):
             "client": task.get("client"),
             "project": task.get("project"),
             "department": task.get("department"),
-            "sub_category": task.get("sub_category"),
+            "compliance_sub_category": task.get("compliance_sub_category"),
             "employee": employee_names.get(task.get("employee_id"), task.get("employee_id") or ""),
             "status": task.get("status"),
             "invoiced": invoiced,
@@ -236,11 +236,13 @@ def get_event_data(filters):
             e.name as id,
             e.subject as description,
             DATE(e.starts_on) as date,
+            DATE(e.ends_on) as end_date,
             e.custom_customer as client,
             e.company,
-            e.custom_service,
+            e.custom_service as compliance_sub_category,
             e.custom_rate,
             e.status,
+            csc.department,
             so.custom_billing_date,
             si.grand_total,
             si.outstanding_amount as outstanding_amount
@@ -248,6 +250,7 @@ def get_event_data(filters):
         LEFT JOIN `tabSales Order` so ON so.event = e.name
         LEFT JOIN `tabSales Invoice Item` sii ON so.name = sii.sales_order
         LEFT JOIN `tabSales Invoice` si ON si.name = sii.parent AND si.docstatus = 1
+        LEFT JOIN `tabCompliance Sub Category` csc ON e.custom_service = csc.name
         WHERE {conditions}
         ORDER BY e.starts_on DESC
         """.format(conditions=conditions)
@@ -273,8 +276,8 @@ def get_event_data(filters):
             "date": event.get("date"),
             "client": event.get("client"),
             "project": None,  
-            "department": None,  
-            "sub_category": None, 
+            "department": event.get("department"),  
+            "compliance_sub_category": event.get("compliance_sub_category"), 
             "employee": employee_names,
             "status": event.get("status"),
             "invoiced": "Yes" if outstanding_amount > 0 else "No",
@@ -295,10 +298,10 @@ def get_task_conditions(filters):
     conditions = ["t.docstatus < 2"]  
   
     if filters.get("from_date"):
-        conditions.append("(t.exp_start_date >= %(from_date)s OR t.act_start_date >= %(from_date)s OR t.completed_on >= %(from_date)s)")
+        conditions.append("(t.creation >= %(from_date)s)")
   
     if filters.get("to_date"):
-        conditions.append("(t.exp_start_date <= %(to_date)s OR t.act_start_date <= %(to_date)s OR t.completed_on <= %(to_date)s)")
+        conditions.append("(t.creation <= %(to_date)s)")
   
     if filters.get("client"):
         conditions.append("t.customer = %(client)s")
@@ -309,8 +312,8 @@ def get_task_conditions(filters):
     if filters.get("status"):
         conditions.append("t.status = %(status)s")
   
-    if filters.get("sub_category"):
-        conditions.append("t.compliance_sub_category = %(sub_category)s")
+    if filters.get("compliance_sub_category"):
+        conditions.append("t.compliance_sub_category = %(compliance_sub_category)s")
   
     if filters.get("department"):
         conditions.append("t.department = %(department)s")
@@ -342,14 +345,19 @@ def get_event_conditions(filters):
   
     if filters.get("client"):
         conditions.append("e.custom_customer = %(client)s")
+        
+    if filters.get("compliance_sub_category"):
+        conditions.append("e.custom_service = %(compliance_sub_category)s")    
+    
+    if filters.get("department"):
+        conditions.append("csc.department = %(department)s")    
   
     if filters.get("status"):
-        # Map task status to event status if needed
         event_status = filters.get("status")
         if event_status in ["Open", "Working"]:
             conditions.append("e.status IN ('Open', 'Confirmed')")
         elif event_status == "Completed":
-            conditions.append("e.status = 'Closed'")
+            conditions.append("e.status = 'Completed'")
         else:
             conditions.append("e.status = %(status)s")
   
