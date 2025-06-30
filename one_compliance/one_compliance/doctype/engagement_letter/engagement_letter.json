@@ -9,80 +9,39 @@
  "engine": "InnoDB",
  "field_order": [
   "engagement_letter_types",
-  "contracting_parties_section",
+  "section_break_dkkd",
   "opportunity",
-  "opportunity_type",
-  "assignment_starting_date",
-  "customer_type",
-  "territory",
-  "column_break_ibous",
-  "full_name",
-  "oganisation_name",
-  "posting_date",
-  "customer_group",
-  "section_break_vrchz",
-  "city",
-  "state",
-  "country",
-  "column_break_qumqu",
-  "email",
-  "mobile",
-  "section_break_uzgxh",
-  "scope_of_assignment",
-  "objectives",
-  "column_break_usml6",
-  "description_of_work",
-  "company_details_section",
-  "company",
-  "default_currency",
-  "section_break_p8wiq",
-  "parent_company",
-  "date_of_establishment",
-  "payment_tab",
-  "payment_type",
-  "payment_terms_template",
-  "payment_schedule",
-  "section_break_xfou9",
-  "terms",
-  "description",
-  "deliverables_tab",
-  "deliverables",
-  "period_of_engagement_letter_section",
-  "engagement_starting_date",
-  "column_break_trccb",
-  "engagement_ending_date",
-  "section_break_6we71",
-  "use_of_subcontractors",
-  "expertise",
-  "column_break_ioiaz",
-  "expense_reimbursement",
-  "work_output",
-  "section_break_s479a",
-  "termination_clause_section",
-  "termination_clause",
-  "termination_clause_description",
-  "revision_clause_template_section",
-  "revision_clause",
-  "revision_clause_description",
-  "column_break_hwvxo",
-  "dispute_clause",
-  "dispute_clause_description",
-  "signature_clause_templates_section",
-  "signature_clause",
-  "section_break_jf62y",
-  "project_template",
-  "working_team_section",
-  "working_team",
-  "employees",
-  "project"
+  "opportunity_from",
+  "customer",
+  "column_break_mdoo",
+  "proposal_code",
+  "proposal_date",
+  "section_break_1d6a",
+  "engagement_phase",
+  "engagement_fee_items",
+  "scope_of_work",
+  "section_break_nsok",
+  "client_contact",
+  "firm_contact",
+  "column_break_xxfu",
+  "status",
+  "tab_break_5ajn",
+  "about_us_from_company",
+  "backgroundunderstanding",
+  "past_exposure",
+  "team_details_tab",
+  "project_team"
  ],
  "fields": [
   {
-   "depends_on": "eval: doc.engagement_letter_types == \"Consulting Engagement Letter\"",
-   "fetch_from": "opportunity.contact_person",
-   "fieldname": "full_name",
-   "fieldtype": "Data",
-   "label": "Full Name"
+   "fieldname": "engagement_letter_types",
+   "fieldtype": "Select",
+   "label": "Engagement Letter types",
+   "options": "Preliminary analysis & report\nConsulting Engagement Letter"
+  },
+  {
+   "fieldname": "section_break_dkkd",
+   "fieldtype": "Section Break"
   },
   {
    "fieldname": "opportunity",
@@ -91,362 +50,110 @@
    "options": "Opportunity"
   },
   {
-   "depends_on": "eval: doc.engagement_letter_types == \"Consulting Engagement Letter\"",
-   "fieldname": "section_break_vrchz",
-   "fieldtype": "Section Break",
-   "label": "Address & Contacts"
-  },
-  {
-   "fetch_from": "opportunity.city",
-   "fieldname": "city",
+   "fieldname": "opportunity_from",
    "fieldtype": "Data",
-   "label": "City"
+   "label": "Opportunity from"
   },
   {
-   "fetch_from": "opportunity.state",
-   "fieldname": "state",
+   "fieldname": "customer",
    "fieldtype": "Data",
-   "label": "State"
+   "label": "Customer"
   },
   {
-   "fetch_from": "opportunity.country",
-   "fieldname": "country",
+   "fieldname": "proposal_code",
    "fieldtype": "Data",
-   "label": "Country"
+   "label": "Proposal Code"
   },
   {
-   "fieldname": "column_break_qumqu",
+   "default": "Today",
+   "fieldname": "proposal_date",
+   "fieldtype": "Date",
+   "label": "Proposal Date"
+  },
+  {
+   "fieldname": "column_break_mdoo",
    "fieldtype": "Column Break"
   },
   {
-   "fetch_from": "opportunity.contact_email",
-   "fieldname": "email",
-   "fieldtype": "Data",
-   "label": "Email"
+   "fieldname": "section_break_1d6a",
+   "fieldtype": "Section Break"
   },
   {
-   "fetch_from": "opportunity.contact_mobile",
-   "fieldname": "mobile",
-   "fieldtype": "Data",
-   "label": "Mobile"
-  },
-  {
-   "fieldname": "payment_tab",
-   "fieldtype": "Tab Break",
-   "label": "Payment"
-  },
-  {
-   "fieldname": "payment_type",
-   "fieldtype": "Link",
-   "label": "Payment Type",
-   "options": "Payment Method"
-  },
-  {
-   "fieldname": "payment_terms_template",
-   "fieldtype": "Link",
-   "label": "Payment Terms Template",
-   "options": "Payment Terms Template"
-  },
-  {
-   "fieldname": "payment_schedule",
+   "fieldname": "engagement_phase",
    "fieldtype": "Table",
-   "label": "Payment Schedule",
-   "options": "Payment Schedule"
+   "label": "Engagement Phase ",
+   "options": "Engagement Letter Phase"
   },
   {
-   "fieldname": "section_break_xfou9",
-   "fieldtype": "Section Break",
-   "label": "Terms & Conditions"
+   "fieldname": "engagement_fee_items",
+   "fieldtype": "Table",
+   "label": "Engagement Fee Items",
+   "options": "Engagement Letter Fees"
   },
   {
-   "fieldname": "terms",
-   "fieldtype": "Link",
-   "label": "Terms",
-   "options": "Terms and Conditions"
+   "fieldname": "client_contact",
+   "fieldtype": "Data",
+   "label": "Client Contact"
   },
   {
-   "fieldname": "description",
-   "fieldtype": "Text Editor",
-   "label": "Description"
+   "fieldname": "firm_contact",
+   "fieldtype": "Data",
+   "label": "Firm Contact"
   },
   {
-   "fieldname": "posting_date",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "Date"
+   "fieldname": "section_break_nsok",
+   "fieldtype": "Section Break"
   },
   {
-   "fieldname": "engagement_letter_types",
+   "fieldname": "status",
    "fieldtype": "Select",
-   "label": "Engagement Letter types",
-   "options": "Preliminary analysis & report\nConsulting Engagement Letter"
+   "label": "Status",
+   "options": "Draft\nSubmitted\nAccepted"
   },
   {
-   "depends_on": "eval: doc.engagement_letter_types == \"Consulting Engagement Letter\"",
-   "fieldname": "contracting_parties_section",
-   "fieldtype": "Section Break",
-   "label": "\u00a0Contracting Parties"
-  },
-  {
-   "fieldname": "column_break_ibous",
+   "fieldname": "column_break_xxfu",
    "fieldtype": "Column Break"
   },
   {
-   "depends_on": "eval: doc.engagement_letter_types == \"Consulting Engagement Letter\"",
-   "fieldname": "section_break_uzgxh",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "assignment_starting_date",
-   "fieldtype": "Date",
-   "label": "Assignment Starting Date"
-  },
-  {
-   "fieldname": "scope_of_assignment",
-   "fieldtype": "Small Text",
-   "label": "Scope of Assignment"
-  },
-  {
-   "fetch_from": "opportunity.opportunity_type",
-   "fieldname": "opportunity_type",
-   "fieldtype": "Data",
-   "label": "Opportunity Type"
-  },
-  {
-   "fieldname": "column_break_usml6",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "description_of_work",
-   "fieldtype": "Small Text",
-   "label": "Description of work"
-  },
-  {
-   "fieldname": "objectives",
-   "fieldtype": "Link",
-   "label": "Objectives",
-   "options": "Consulting Objective"
-  },
-  {
-   "fieldname": "deliverables_tab",
+   "fieldname": "tab_break_5ajn",
    "fieldtype": "Tab Break",
-   "label": "Deliverables"
+   "label": "Description Details"
   },
   {
-   "fieldname": "deliverables",
-   "fieldtype": "Table",
-   "label": "Deliverables",
-   "options": "Deliverables"
+   "fieldname": "about_us_from_company",
+   "fieldtype": "Text Editor",
+   "label": "About Us from company"
   },
   {
-   "fieldname": "work_output",
-   "fieldtype": "Small Text",
-   "label": "Work Output"
+   "fieldname": "backgroundunderstanding",
+   "fieldtype": "Text Editor",
+   "label": "Background/Understanding"
   },
   {
-   "fieldname": "period_of_engagement_letter_section",
-   "fieldtype": "Section Break",
-   "label": "Period of Engagement Letter"
+   "fieldname": "past_exposure",
+   "fieldtype": "Text Editor",
+   "label": "Past Exposure"
   },
   {
-   "fieldname": "engagement_starting_date",
-   "fieldtype": "Date",
-   "label": "Engagement Starting Date"
-  },
-  {
-   "fieldname": "column_break_trccb",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "engagement_ending_date",
-   "fieldtype": "Date",
-   "label": "Engagement Ending Date"
-  },
-  {
-   "fieldname": "section_break_s479a",
+   "fieldname": "team_details_tab",
    "fieldtype": "Tab Break",
-   "label": "Clause"
+   "label": "Team Details"
   },
   {
-   "fieldname": "use_of_subcontractors",
-   "fieldtype": "Small Text",
-   "label": "Use of Subcontractors"
-  },
-  {
-   "fieldname": "expertise",
-   "fieldtype": "Small Text",
-   "label": "Expertise"
-  },
-  {
-   "fieldname": "expense_reimbursement",
-   "fieldtype": "Small Text",
-   "label": "Expense Reimbursement"
-  },
-  {
-   "fieldname": "termination_clause",
-   "fieldtype": "Link",
-   "label": "Termination Clause",
-   "options": "Termination Clause Template"
-  },
-  {
-   "fieldname": "revision_clause",
-   "fieldtype": "Link",
-   "label": "Revision Clause",
-   "options": "Revision Clause Template"
-  },
-  {
-   "fieldname": "dispute_clause",
-   "fieldtype": "Link",
-   "label": "Dispute Clause",
-   "options": "Dispute Clause Template"
-  },
-  {
-   "fieldname": "signature_clause",
-   "fieldtype": "Signature",
-   "label": "Signature Clause"
-  },
-  {
-   "fieldname": "column_break_hwvxo",
-   "fieldtype": "Section Break",
-   "label": "Dispute Clause Template"
-  },
-  {
-   "fieldname": "project_template",
-   "fieldtype": "Link",
-   "label": "Project Template",
-   "options": "Project Template"
-  },
-  {
-   "fieldname": "working_team",
-   "fieldtype": "Link",
-   "label": "Working Team",
-   "options": "Employee Group"
-  },
-  {
-   "fieldname": "section_break_6we71",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fieldname": "termination_clause_section",
-   "fieldtype": "Section Break",
-   "label": "Termination Clause Template"
-  },
-  {
-   "fetch_from": "termination_clause.description",
-   "fieldname": "termination_clause_description",
-   "fieldtype": "Text Editor",
-   "label": " Termination Clause Description"
-  },
-  {
-   "fetch_from": "revision_clause.description",
-   "fieldname": "revision_clause_description",
-   "fieldtype": "Text Editor",
-   "label": "Revision Clause Description"
-  },
-  {
-   "fetch_from": "dispute_clause.description",
-   "fieldname": "dispute_clause_description",
-   "fieldtype": "Text Editor",
-   "label": "Dispute Clause Description"
-  },
-  {
-   "fieldname": "signature_clause_templates_section",
-   "fieldtype": "Section Break",
-   "label": "Signature Clause Templates"
-  },
-  {
-   "fieldname": "section_break_jf62y",
-   "fieldtype": "Section Break"
-  },
-  {
-   "fetch_from": "opportunity.company",
-   "fieldname": "oganisation_name",
-   "fieldtype": "Data",
-   "label": "Oganisation Name"
-  },
-  {
-   "fieldname": "column_break_ioiaz",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fieldname": "company_details_section",
-   "fieldtype": "Section Break",
-   "label": "Company Details"
-  },
-  {
-   "fieldname": "company",
-   "fieldtype": "Link",
-   "label": "Company",
-   "options": "Company"
-  },
-  {
-   "fetch_from": "company.default_currency",
-   "fieldname": "default_currency",
-   "fieldtype": "Data",
-   "label": "Default Currency"
-  },
-  {
-   "fetch_from": "company.parent_company",
-   "fieldname": "parent_company",
-   "fieldtype": "Data",
-   "label": "Parent Company"
-  },
-  {
-   "fieldname": "section_break_p8wiq",
-   "fieldtype": "Column Break"
-  },
-  {
-   "fetch_from": "company.date_of_establishment",
-   "fieldname": "date_of_establishment",
-   "fieldtype": "Date",
-   "label": "Date of Establishment"
-  },
-  {
-   "fieldname": "working_team_section",
-   "fieldtype": "Section Break",
-   "label": "Working Team"
-  },
-  {
-   "fieldname": "employees",
+   "fieldname": "project_team",
    "fieldtype": "Table",
-   "label": "Employees",
-   "options": "Employee Group Table"
+   "label": "Project Team",
+   "options": "Project Team"
   },
   {
-   "fieldname": "revision_clause_template_section",
-   "fieldtype": "Section Break",
-   "label": "Revision Clause Template"
-  },
-  {
-   "fetch_from": "opportunity.territory",
-   "fieldname": "territory",
-   "fieldtype": "Data",
-   "label": "Territory"
-  },
-  {
-   "fieldname": "customer_group",
-   "fieldtype": "Link",
-   "label": "Customer Group",
-   "options": "Customer Group"
-  },
-  {
-   "default": "Company",
-   "fieldname": "customer_type",
-   "fieldtype": "Link",
-   "label": "Customer Type",
-   "options": "Customer Type",
-   "reqd": 1
-  },
-  {
-   "fieldname": "project",
-   "fieldtype": "Link",
-   "label": "Project",
-   "options": "Project"
+   "fieldname": "scope_of_work",
+   "fieldtype": "Small Text",
+   "label": "Scope of Work"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-01-11 15:32:06.238417",
+ "modified": "2025-06-30 17:09:52.020294",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter",
@@ -466,6 +173,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
