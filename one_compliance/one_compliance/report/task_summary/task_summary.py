@@ -1,6 +1,7 @@
 # Copyright (c) 2024, efeone and contributors
 # For license information, please see license.txt
 
+import json
 import frappe
 from frappe import _
 from frappe.utils import flt, getdate
@@ -32,7 +33,8 @@ def get_columns():
         {
             "label": _("Reference Name"),
             "fieldname": "id",
-            "fieldtype": "Data",
+            "fieldtype": "Dynamic Link",
+            "options": "reference_type",
             "width": 175,
         },
         {
@@ -155,7 +157,7 @@ def get_task_data(filters):
             t.compliance_sub_category,
             CASE
                 WHEN t.status = 'Completed' THEN t.completed_by
-                ELSE t.assigned_to
+                ELSE t._assign
             END as employee_id,
             t.status,
             t.custom_payable_amount,
@@ -185,10 +187,10 @@ def get_task_data(filters):
   
     task_records = frappe.db.sql(query, filters, as_dict=True)
     
-    
-  
     # Get employee names
     employee_names = get_employee_names([t.get("employee_id") for t in task_records if t.get("employee_id")])
+    
+    print(employee_names, "AJMAL")
   
     # Format task data
     formatted_data = []
@@ -196,6 +198,10 @@ def get_task_data(filters):
         # Use invoice amount if available, otherwise use custom_payable_amount
         invoice_amount = flt(task.get("invoiced_amount")) or 0
         outstanding_amount = flt(task.get("outstanding_amount")) or 0
+        
+        employee_id = task.get("employee_id")
+        employee_name = get_employee_name_for_task(employee_id, employee_names)
+        
         
         # Determine invoiced status
         if task.get("sales_invoice_name"):
@@ -212,7 +218,7 @@ def get_task_data(filters):
             "project": task.get("project"),
             "department": task.get("department"),
             "compliance_sub_category": task.get("compliance_sub_category"),
-            "employee": employee_names.get(task.get("employee_id"), task.get("employee_id") or ""),
+            "employee": employee_name,
             "status": task.get("status"),
             "invoiced": invoiced,
             "billing_date": task.get("billing_date"),
@@ -376,25 +382,75 @@ def get_event_conditions(filters):
     return " AND ".join(conditions)
 
 
+
 def get_employee_names(employee_ids):
     """
-    Fetches employee names for given employee IDs.
+    Fetches employee names for given employee IDs (which can be emails or arrays of emails).
     """
     if not employee_ids:
         return {}
-  
-    valid_ids = [emp_id for emp_id in employee_ids if emp_id]
-  
-    if not valid_ids:
+    
+    all_emails = set()
+    for emp_id in employee_ids:
+        if emp_id:
+            # Handle both string emails and JSON arrays
+            if isinstance(emp_id, str):
+                if emp_id.startswith('[') and emp_id.endswith(']'):
+                    # It's a JSON array string
+                    try:
+                        emails = json.loads(emp_id)
+                        all_emails.update(emails)
+                    except:
+                        # If JSON parsing fails, treat as single email
+                        all_emails.add(emp_id)
+                else:
+                    # Single email
+                    all_emails.add(emp_id)
+            elif isinstance(emp_id, list):
+                # Already a list
+                all_emails.update(emp_id)
+    
+    if not all_emails:
         return {}
-  
-    employees = frappe.db.sql("""
-        SELECT name, employee_name
+    
+    # Query employees by user_id (email)
+    placeholders = ",".join(["%s"] * len(all_emails))
+    employees = frappe.db.sql(f"""
+        SELECT user_id, employee_name
         FROM `tabEmployee`
-        WHERE name IN ({})
-    """.format(",".join(["%s"] * len(valid_ids))), valid_ids, as_dict=True)
-  
-    return {emp.name: emp.employee_name for emp in employees}
+        WHERE user_id IN ({placeholders})
+    """, list(all_emails), as_dict=True)
+    
+    return {emp.user_id: emp.employee_name for emp in employees}
+
+
+def get_employee_name_for_task(employee_id, employee_names):
+    """
+    Get employee name(s) for a task, handling both single and multiple assignments.
+    """
+    if not employee_id:
+        return None
+    
+    if isinstance(employee_id, str):
+        if employee_id.startswith('[') and employee_id.endswith(']'):
+            # It's a JSON array string
+            try:
+                import json
+                emails = json.loads(employee_id)
+                names = [employee_names.get(email, email) for email in emails]
+                return ", ".join(names)
+            except:
+                # If JSON parsing fails, treat as single email
+                return employee_names.get(employee_id, employee_id)
+        else:
+            # Single email
+            return employee_names.get(employee_id, employee_id)
+    elif isinstance(employee_id, list):
+        # Already a list
+        names = [employee_names.get(email, email) for email in employee_id]
+        return ", ".join(names)
+    
+    return employee_names.get(employee_id, employee_id)
 
 
 def get_event_employees(event_ids):
