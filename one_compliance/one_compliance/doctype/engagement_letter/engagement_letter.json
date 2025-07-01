@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:{full_name}-{engagement_letter_types}",
+ "autoname": "format:{customer}-{engagement_letter_types}",
  "creation": "2023-10-31 16:45:45.648733",
  "default_view": "List",
  "doctype": "DocType",
@@ -55,6 +55,7 @@
    "label": "Opportunity from"
   },
   {
+   "fetch_from": "opportunity.customer_name",
    "fieldname": "customer",
    "fieldtype": "Data",
    "label": "Customer"
@@ -154,7 +155,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-01 11:53:55.825361",
+ "modified": "2025-07-01 14:46:25.938178",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter",
