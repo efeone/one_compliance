@@ -17,9 +17,9 @@
   "proposal_code",
   "proposal_date",
   "section_break_1d6a",
+  "scope_of_work",
   "engagement_phase",
   "engagement_fee_items",
-  "scope_of_work",
   "section_break_nsok",
   "client_contact",
   "firm_contact",
@@ -147,13 +147,14 @@
   },
   {
    "fieldname": "scope_of_work",
-   "fieldtype": "Small Text",
-   "label": "Scope of Work"
+   "fieldtype": "Table MultiSelect",
+   "label": "Scope of Work",
+   "options": "Scope"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-30 17:09:52.020294",
+ "modified": "2025-07-01 11:53:55.825361",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter",
