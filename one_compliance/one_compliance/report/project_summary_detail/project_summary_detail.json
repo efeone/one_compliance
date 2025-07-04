@@ -1,0 +1,66 @@
+{
+ "add_total_row": 0,
+ "add_translate_data": 0,
+ "columns": [],
+ "creation": "2025-07-01 23:38:34.882833",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "json": "{}",
+ "letter_head": "Ashique",
+ "letterhead": null,
+ "modified": "2025-07-03 23:12:35.127400",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Project Summary Detail",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Project",
+ "report_name": "Project Summary Detail",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "Projects User"
+  },
+  {
+   "role": "Projects Manager"
+  },
+  {
+   "role": "Director"
+  },
+  {
+   "role": "Head Of Department"
+  },
+  {
+   "role": "Employee Self Service"
+  },
+  {
+   "role": "Executive"
+  },
+  {
+   "role": "Manager"
+  },
+  {
+   "role": "Senior Manager"
+  },
+  {
+   "role": "Projects Manager"
+  },
+  {
+   "role": "Projects User"
+  },
+  {
+   "role": "Employee Self Service"
+  },
+  {
+   "role": "Founder"
+  },
+  {
+   "role": "HR Manager"
+  }
+ ],
+ "timeout": 0
+}
