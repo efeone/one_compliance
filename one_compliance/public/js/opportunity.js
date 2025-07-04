@@ -123,40 +123,6 @@ function create_event(frm) {
 }
 
 
-// function make_buttons(frm){
-//     if(!frm.is_new() && frm.doc.status != 'Converted'){
-//         let confirmation_msg = 'System will create a Customer and Sales Order. Are you sure you want to proceed?';
-//         if (frm.doc.opportunity_from == 'Customer'){
-//             confirmation_msg = 'System will create a Sales Order. Are you sure you want to proceed?'
-//         }
-//         frm.add_custom_button('Sales Order', () => {
-//             if(!frm.doc.items.length){
-//                 frm.scroll_to_field('items');
-//                 frappe.dom.unfreeze();
-//                 frappe.throw({message:__("Please fill the `Services` before creating Sales Order."), title: __("Missing fields")});
-//             }
-//             else {
-//                 frappe.confirm(confirmation_msg,
-//                     () => {
-//                         // action to perform if Yes is selected
-//                         frappe.call('one_compliance.one_compliance.doc_events.oppotunity.create_sales_order', {
-//                             opportunity: frm.doc.name
-//                         }).then(r => {
-//                             frm.reload_doc()
-//                         })
-//                     }, () => {
-//                         // action to perform if No is selected
-//                         frappe.show_alert({
-//                             message: __('Action reverted'),
-//                             indicator: 'orange'
-//                         }, 5);
-//                 })
-//             }
-//         }, 'Create'); 
-//     }
-// }
-
-
 
 
 function make_buttons(frm){

@@ -51,8 +51,6 @@ def set_opportunity_converted(doc, method):
 	if opportunity_name:
 		frappe.db.set_value('Opportunity', opportunity_name, 'status', 'Converted')
 
-
-
 @frappe.whitelist()
 def create_sales_order(opportunity):
     if not frappe.db.exists('Opportunity', opportunity):
