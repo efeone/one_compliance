@@ -166,6 +166,7 @@ doc_events = {
         'on_submit':'one_compliance.one_compliance.doc_events.sales_order.create_project_on_submit',
         'on_cancel': 'one_compliance.one_compliance.doc_events.sales_order.so_on_cancel_custom',
         'on_update_after_submit': 'one_compliance.one_compliance.doc_events.sales_order.so_on_update_after_submit',
+        'validate': 'one_compliance.one_compliance.doc_events.sales_order.set_compliance_fields'
     },
     'Payment Entry':{
         'on_submit': 'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_submit'
@@ -194,7 +195,8 @@ scheduler_events = {
         'one_compliance.one_compliance.utils.notification_for_digital_signature_expiry',
         'one_compliance.one_compliance.utils.project_overdue_notification',
         'one_compliance.one_compliance.doc_events.project.set_status_to_overdue',
-        'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.send_repeat_notif'
+        'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.send_repeat_notif',
+        'one_compliance.one_compliance.doc_events.sales_order.create_opportunity"'
     ],
 #	"hourly": [
 #		"one_compliance.tasks.hourly"

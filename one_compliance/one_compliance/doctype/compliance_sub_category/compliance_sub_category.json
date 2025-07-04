@@ -27,6 +27,7 @@
   "internal",
   "is_billable",
   "rate",
+  "follow_up_required",
   "section_break_qmwb",
   "default_account",
   "department_details_section",
@@ -289,11 +290,17 @@
    "fieldtype": "Link",
    "label": "Renew Notification for Customer",
    "options": "Email Template"
+  },
+  {
+   "default": "0",
+   "fieldname": "follow_up_required",
+   "fieldtype": "Check",
+   "label": "Follow up Required"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-10 11:25:17.649914",
+ "modified": "2025-07-04 09:32:24.946131",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",

@@ -2747,6 +2747,12 @@ def get_sales_order_custom_fields():
                 "options": "Event",
                 "read_only": 1
             },
+            {
+                "fieldname": "follow_up_for_next_project",
+                "fieldtype": "Check",
+                "label": "Follow up for next Project",
+                "insert_after": "custom_create_project_automatically"
+            }
         ]
     }
 
@@ -5013,6 +5019,13 @@ def get_opportunity_custom_fields():
                 "unique": 0,
                 "width": None,
             },
+            {
+                "fieldname": "sales_order",
+                "fieldtype": "Link",
+                "label": "Sales Order",
+                "insert_after": "annual_revenue",
+                "options": "Sales Order"
+            }
         ]
     }
 
