@@ -3898,6 +3898,13 @@ def get_project_custom_fields():
                 "label": "Renew Email Sent On",
                 "hidden":1,
                 "insert_after": "is_invoiced"
+            },
+            {
+                "fieldname": "is_premium",
+                "fieldtype": "Check",
+                "label": "Is Premium",
+                "read_only" : 1,
+                "insert_after": "custom_is_internal"
             }
         ]
     }
@@ -4470,6 +4477,19 @@ def get_project_template_custom_fields():
                 "unique": 0,
                 "width": None,
             },
+            {
+                "fieldname": "premium_tasks",
+                "fieldtype": "Table",
+                "label": "Premium Tasks",
+                "options" : "Premium Tasks",
+                "insert_after": "custom_add_tasks"
+            },
+            {
+                "fieldname": "custom_add_tasks2",
+                "fieldtype": "Button",
+                "label": "Add Tasks",
+                "insert_after": "premium_tasks"
+            }
         ]
     }
 

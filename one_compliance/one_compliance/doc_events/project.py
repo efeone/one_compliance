@@ -9,6 +9,7 @@ from one_compliance.one_compliance.doc_events.task import (
 	update_expected_dates_in_task)
 from frappe.utils.user import get_users_with_role
 from one_compliance.one_compliance.utils import add_custom as add_assign
+from frappe import _
 
 @frappe.whitelist()
 def project_on_update(doc, method):
@@ -136,3 +137,38 @@ def get_permission_query_conditions(user):
 		return conditions
 	else:
 		return None
+
+
+@frappe.whitelist()
+def convert_project_to_premium(project):
+    """
+    Convert Project to Premium by adding its associated Premium Tasks.
+    """
+    try:
+        project_doc = frappe.get_doc("Project", project)
+
+        if not project_doc.compliance_sub_category:
+            return "no_sub_category"
+
+        sub_category_doc = frappe.get_doc("Compliance Sub Category", project_doc.compliance_sub_category)
+
+        if not sub_category_doc.project_template:
+            return "no_template"
+
+        template_doc = frappe.get_doc("Project Template", sub_category_doc.project_template)
+
+        for premium_task in template_doc.premium_tasks:
+            task = frappe.new_doc("Task")
+            task.subject = premium_task.subject
+            task.project = project_doc.name
+            task.expected_time = premium_task.task_duration or 0
+            task.save()
+
+        project_doc.is_premium = 1
+        project_doc.save()
+
+        return "success"
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Convert Project to Premium Error")
+        return "failed"

@@ -5,9 +5,13 @@ frappe.ui.form.on('Project Template', {
     setup: function(frm) {
         set_filters(frm)
         restrict_task_field(frm);
+        restrict_premium_task_field(frm);
     },
     custom_add_tasks(frm) {
         new_task_popup(frm);
+    },
+    custom_add_tasks2: function(frm) {
+        new_premium_task_popup(frm);
     }
 });
 
@@ -214,4 +218,111 @@ function add_task_row(frm, task, subject){
 
 function set_primary_action_label(dialog, primary_action_label) {
     dialog.get_primary_btn().removeClass("hide").html(primary_action_label);
+}
+
+/**
+ * The functions below are used to show a popup that will add a task into the Premium Task table and disable adding rows the native way
+ *
+ */
+function restrict_premium_task_field(frm) {
+    frm.fields_dict.premium_tasks.grid.update_docfield_property('task', 'only_select', 1);
+    frm.fields_dict.premium_tasks.grid.cannot_add_rows = true;
+    frm.fields_dict.premium_tasks.grid.refresh();
+    frm.fields_dict.premium_tasks.grid.wrapper.find('.grid-add-row').hide();
+}
+
+function new_premium_task_popup(frm) {
+    let primary_action_label = 'Create & Add';
+
+    let dialog = new frappe.ui.Dialog({
+        title: 'Task details',
+        fields: [
+            {
+                label: 'Is Existing Task',
+                fieldname: 'is_existing_task',
+                fieldtype: 'Check',
+                change: () => {
+                    let is_existing = dialog.get_value('is_existing_task');
+                    if (is_existing) {
+                        primary_action_label = 'Add';
+                    } else {
+                        primary_action_label = 'Create & Add';
+                    }
+                    set_primary_action_label(dialog, primary_action_label);
+                }
+            },
+            {
+                label: 'Task',
+                fieldname: 'task',
+                fieldtype: 'Link',
+                options: 'Task',
+                only_select: 1,
+                get_query: function() {
+                    return {
+                        filters: {
+                            is_template: 1
+                        }
+                    };
+                },
+                depends_on: 'eval: doc.is_existing_task',
+                mandatory_depends_on: 'eval: doc.is_existing_task',
+                change: () => {
+                    let task = dialog.get_value('task');
+                    if (task) {
+                        frappe.db.get_value('Task', task, 'subject').then(r => {
+                            if (r.message.subject) {
+                                dialog.set_value('subject', r.message.subject);
+                            } else {
+                                dialog.set_value('subject', '');
+                            }
+                        });
+                    }
+                }
+            },
+            {
+                label: 'Subject',
+                fieldname: 'subject',
+                fieldtype: 'Data',
+                depends_on: 'eval: !doc.is_existing_task',
+                mandatory_depends_on: 'eval: !doc.is_existing_task'
+            }
+        ],
+        primary_action_label: primary_action_label,
+        primary_action(values) {
+            if (values.is_existing_task) {
+                add_premium_task_row(frm, values.task, values.subject);
+            } else {
+                create_premium_task(frm, values.subject);
+            }
+            dialog.hide();
+        }
+    });
+
+    dialog.show();
+}
+
+function set_primary_action_label(dialog, label) {
+    dialog.set_primary_action_label(label);
+}
+
+function create_premium_task(frm, subject) {
+    frappe.db.insert({
+        doctype: 'Task',
+        subject: subject,
+        is_template: 1,
+        status: 'Template'
+    }).then(doc => {
+        if (doc.name) {
+            add_premium_task_row(frm, doc.name, subject);
+        }
+    });
+}
+
+function add_premium_task_row(frm, task, subject) {
+    frm.add_child('premium_tasks', {
+        'task': task,
+        'subject': subject
+    });
+    frm.refresh_field('premium_tasks');
+    restrict_premium_task_field(frm);
 }
