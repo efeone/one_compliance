@@ -27,7 +27,7 @@
   "internal",
   "is_billable",
   "rate",
-  "follow_up_required",
+  "follow_up_person",
   "section_break_qmwb",
   "default_account",
   "department_details_section",
@@ -292,15 +292,15 @@
    "options": "Email Template"
   },
   {
-   "default": "0",
-   "fieldname": "follow_up_required",
-   "fieldtype": "Check",
-   "label": "Follow up Required"
+   "fieldname": "follow_up_person",
+   "fieldtype": "Link",
+   "label": "Follow up Person",
+   "options": "Employee"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-04 09:32:24.946131",
+ "modified": "2025-07-04 14:22:32.826835",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",

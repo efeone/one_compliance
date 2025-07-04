@@ -5,6 +5,7 @@ from frappe import _
 from frappe.utils import add_days, add_months, date_diff, getdate, json, today
 from one_compliance.one_compliance.utils import add_custom as add_assign
 from one_compliance.one_compliance.utils import create_todo, get_users_with_role
+from frappe.desk.form.assign_to import add
 
 
 
@@ -430,12 +431,18 @@ def create_opportunity():
                         task.insert(ignore_permissions=True)
                         frappe.db.commit()
 
-                        add_assign({
-							"assign_to": follow_up_user,
-                            "doctype": "Task",
-                            "name": task.name,
-                            "description": f"Follow up for compliance sub category: {subcat_name}"
-						})
+                        todo = frappe.new_doc("ToDo")
+                        todo.owner = follow_up_user
+                        todo.assigned_by = frappe.session.user
+                        todo.allocated_to = follow_up_user
+                        todo.reference_type = "Task"
+                        todo.reference_name = task.name
+                        todo.description = f"Follow up for compliance sub category: {subcat_name}"
+                        todo.status = "Open"
+                        todo.priority = "Medium"
+                        todo.date = today()
+                        todo.insert(ignore_permissions=True)
+                        frappe.db.commit()
 
                         print(f"[SUCCESS] Created and assigned Task {task.name} to {follow_up_user}")
 
