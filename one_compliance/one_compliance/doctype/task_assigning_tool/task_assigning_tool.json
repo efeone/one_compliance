@@ -33,18 +33,31 @@
    "options": "Department"
   },
   {
-   "depends_on": "eval: doc.assignment_type == 'Assign'",
+   "depends_on": "eval: doc.assignment_type == 'Assign'|| doc.assignment_type == 'Remove'",
    "fieldname": "employee",
    "fieldtype": "Link",
    "label": "Employee",
    "options": "User"
   },
   {
+    "depends_on": "eval: doc.assignment_type == 'Remove' && doc.employee",
+    "fieldname": "assigned_tasks",
+    "fieldtype": "Table",
+    "label": "Assigned Tasks",
+    "options": "Task Reassign"
+  },
+  {
    "fieldname": "assignment_type",
    "fieldtype": "Select",
    "label": "Assignment Type",
-   "options": "\nTransfer\nAssign",
+   "options": "\nTransfer\nAssign\nRemove",
    "reqd": 1
+  },
+  {
+    "fieldname": "remove_assignment_btn",
+    "fieldtype": "Button",
+    "label": "Remove Assignment",
+    "depends_on": "eval: doc.assignment_type == 'Remove' && doc.employee"
   },
   {
    "fieldname": "column_break_w0gtb",
@@ -91,7 +104,7 @@
    "label": "Assign"
   },
   {
-   "depends_on": "eval: doc.employee",
+   "depends_on": "eval: doc.employee && doc.assignment_type == 'Assign'",
    "fieldname": "compliance_categories",
    "fieldtype": "Link",
    "label": "Compliance Categories",

@@ -37,7 +37,7 @@ def get_users_by_department(doctype, txt, searchfield, start, page_len, filters)
     return user_info_list  # Return the list of email IDs and full names as tuples
 
 @frappe.whitelist()
-def get_tasks_for_user(assign_from):
+def get_tasks_for_user(assign_from, assignment_type=None):
     # Query tasks from the ToDo doctype
     tasks = frappe.get_all('ToDo', filters={'allocated_to': assign_from, 'status': 'Open'}, fields=['reference_type', 'reference_name', 'description'])
 
@@ -57,7 +57,8 @@ def get_tasks_for_user(assign_from):
                     'subject': task_details_query[0]['subject'],
                     'project': task_details_query[0]['project']
                 })
-        elif reference_type == 'Project':
+        elif reference_type == 'Project' and assignment_type != 'Remove':
+
             # Fetch task details from the Task doctype based on the project_name
             tasks_for_project = frappe.get_all('Task', filters={'project': reference_id}, fields=['name', 'project', 'subject'])
             project_task_details = []
@@ -236,3 +237,30 @@ def add_to_subcategories(employee, compliance_category, selected_subcategories):
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), _("Error in adding employee to Compliance Sub Categories"))
         return False
+
+@frappe.whitelist()
+def remove_task_assignments(employee, selected_tasks_json):
+    import json
+    selected_tasks = json.loads(selected_tasks_json)
+
+    try:
+        for task_id in selected_tasks:
+            # Get ToDos for the given employee and task
+            todos = frappe.get_all("ToDo", filters={
+                "reference_type": "Task",
+                "reference_name": task_id,
+                "allocated_to": employee,
+                "status": "Open"
+            }, fields=["name"])
+
+            # Cancel each ToDo (no need to touch Task.assigned_to)
+            for todo in todos:
+                todo_doc = frappe.get_doc("ToDo", todo.name)
+                todo_doc.status = "Cancelled"
+                todo_doc.save(ignore_permissions=True)
+
+        frappe.db.commit()
+        return "Assignments removed successfully"
+
+    except Exception:
+        return "Error occurred while removing assignments"

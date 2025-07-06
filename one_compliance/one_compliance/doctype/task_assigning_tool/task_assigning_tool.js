@@ -2,6 +2,77 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Task Assigning Tool', {
+
+	assignment_type: function(frm) {
+    if (frm.doc.assignment_type === "Remove") {
+      frm.toggle_display('employee', true);
+      frm.toggle_display('assign_from', false);
+      frm.toggle_display('assign_to', false);
+      frm.toggle_display('assign', false);
+    } else if (frm.doc.assignment_type === "Transfer") {
+      frm.toggle_display('employee', false);
+      frm.toggle_display('assign_from', true);
+      frm.toggle_display('assign_to', true);
+      frm.toggle_display('assign', true);
+    }
+    clear_values(frm);
+  },
+
+  employee: function(frm) {
+    if (frm.doc.assignment_type === "Remove" && frm.doc.employee) {
+      frappe.call({
+        method: 'one_compliance.one_compliance.doctype.task_assigning_tool.task_assigning_tool.get_tasks_for_user',
+        args: {
+          assign_from: frm.doc.employee,
+					assignment_type: frm.doc.assignment_type
+        },
+        callback: function(r) {
+          if (r.message) {
+						frm.clear_table('assigned_tasks');
+						r.message.forEach(task => {
+						  let assigned_task = frm.add_child('assigned_tasks');
+						  assigned_task.task_id = task.task_id;
+						  assigned_task.subject = task.subject;
+						  assigned_task.project = task.project;
+						});
+						frm.refresh_field('assigned_tasks');
+          }
+        }
+      });
+    }
+  },
+
+	remove_assignment_btn: function(frm) {
+	  if (!frm.doc.employee) {
+	    frappe.msgprint("Please select an employee.");
+	    return;
+	  }
+
+	  let selectedTaskIds = frm.doc.assigned_tasks.map(row => row.task_id);
+
+	  if (selectedTaskIds.length === 0) {
+	    frappe.msgprint("No tasks found to remove.");
+	    return;
+	  }
+
+	  frappe.call({
+	    method: "one_compliance.one_compliance.doctype.task_assigning_tool.task_assigning_tool.remove_task_assignments",
+	    args: {
+	      employee: frm.doc.employee,
+	      selected_tasks_json: JSON.stringify(selectedTaskIds)
+	    },
+	    freeze: true,
+	    freeze_message: "Removing task assignments...",
+	    callback: function(r) {
+	      if (r.message === "Assignments removed successfully") {
+	        frappe.msgprint("Assignments removed successfully.");
+	        frm.trigger("employee"); // re-fetch tasks for selected employee
+	      } else {
+	        frappe.msgprint("Some error occurred while removing tasks.");
+	      }
+	    }
+	  });
+	},
 	refresh: function(frm) {
     frm.disable_save();
 		frm.toggle_display('add_to_subcategories', false);
