@@ -51,7 +51,7 @@ def get_task(status = None, task = None, project = None, customer = None, depart
 
     # Only show tasks with readiness_status = "Ready" for Executive (excluding Administrator)
     if current_user != "Administrator" and "Executive" in roles:
-        query += " AND t.readiness_status = 'Ready'"
+        query += " AND (t.readiness_status = 'Ready' OR t.readiness_status = '')"
 
     query += """ ORDER BY
             t.modified DESC;"""

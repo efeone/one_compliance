@@ -605,7 +605,7 @@ def set_task_readiness_flow_on_creation(doc, method=None):
     if not template_task_subjects:
         return
 
-    # If this task's subject matches the first in the template
+    # Check if subject matches the first one
     if doc.subject == template_task_subjects[0]:
         # Find the earliest task with this subject in this project
         earliest_task = frappe.get_all(
@@ -619,9 +619,15 @@ def set_task_readiness_flow_on_creation(doc, method=None):
             limit=1
         )
 
-        # If this task is the earliest one, set readiness_status = Ready
         if earliest_task and earliest_task[0].name == doc.name:
             frappe.db.set_value("Task", doc.name, "readiness_status", "Ready")
+        else:
+            frappe.db.set_value("Task", doc.name, "readiness_status", "Not Ready")
+    else:
+        # For all tasks not matching the first subject
+        frappe.db.set_value("Task", doc.name, "readiness_status", "Not Ready")
+
+
 
 def on_task_update(doc, method=None):
     if doc.status != "Completed" or doc.readiness_status != "Ready":
@@ -661,3 +667,10 @@ def on_task_update(doc, method=None):
 
     except ValueError:
         pass
+
+@frappe.whitelist()
+def check_readiness_edit_permission(user):
+    # Get employee linked to this user
+    employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
+    settings_employee = frappe.db.get_single_value("Compliance Settings", "update_readiness_status")
+    return employee == settings_employee

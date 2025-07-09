@@ -515,7 +515,7 @@ def get_task_custom_fields():
                 "fieldname":"readiness_status",
                 "fieldtype":"Select",
                 "label":"Readiness Status",
-                "options":"Not Ready\nReady",
+                "options":"\nNot Ready\nReady",
                 "in_list_view":1,
                 "insert_after":"status"
             },

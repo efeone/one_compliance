@@ -1,12 +1,23 @@
 frappe.ui.form.on('Task',{
   refresh(frm){
-    let roles = frappe.user_roles;    
-    // Make the field 'readiness_status' read-only if the user has the 'Executive' role
-    if (roles.includes('Executive')) {
-      frm.set_df_property('readiness_status', 'read_only', 1);
-    } else {
-      frm.set_df_property('readiness_status', 'read_only', 0);
-    }
+    let roles = frappe.user_roles;
+    let current_user = frappe.session.user;
+
+     // Call a custom method to check permission
+     frappe.call({
+         method: 'one_compliance.one_compliance.doc_events.task.check_readiness_edit_permission',
+         args: {
+             user: current_user
+         },
+         callback: function(r) {
+             if (r.message === true) {
+                 frm.set_df_property('readiness_status', 'read_only', 0);
+             } else {
+                 frm.set_df_property('readiness_status', 'read_only', 1);
+             }
+         }
+     });
+
     if(roles.includes('Compliance Manager') || roles.includes('Director')){
       if(!frm.is_new() && frm.doc.is_template == 0){
         frm.add_custom_button('View Credential', () => {
