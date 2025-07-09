@@ -30,7 +30,7 @@ def create_project_if_not_exists(self, starting_date):
 			for compliance_category in self.compliance_category_details:
 				if not check_project_exists_or_not(compliance_category.compliance_sub_category, self.name):
 					if compliance_category.compliance_date and getdate(compliance_category.compliance_date) == getdate(starting_date):
-						create_project_against_sub_category(self.name, compliance_category.compliance_sub_category, compliance_category.name)
+						create_project_against_sub_category(self.name, compliance_category.compliance_sub_category, compliance_category.name, compliance_category.compliance_date)
 
 @frappe.whitelist()
 def compliance_date_update(compliance_date, compliance_agreement = None):
