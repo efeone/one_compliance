@@ -16,6 +16,7 @@
   "section_break_saeum",
   "role_of_project_creator",
   "role_allowed_to_unlink_and_delete_sales_orders",
+  "role_allowed_to_change_readiness_status",
   "compliance_service_item_group",
   "default_invoice_due_day",
   "column_break_gnzz",
@@ -373,12 +374,18 @@
    "fieldtype": "Table",
    "label": "DocTypes to be Ignored",
    "options": "Ignore ToDo Notifications Detail"
+  },
+  {
+   "fieldname": "role_allowed_to_change_readiness_status",
+   "fieldtype": "Link",
+   "label": "Role Allowed to Change Readiness Status",
+   "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-06-16 14:26:17.580625",
+ "modified": "2025-07-10 09:59:56.364596",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
