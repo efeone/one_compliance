@@ -19,7 +19,7 @@ def get_project(status=None, project=None, customer=None, department=None, sub_c
         1 = 1
     """
     if current_user != "Administrator":
-        query += " AND t.status != 'Completed' AND (t.readiness_status = 'Ready' OR t.readiness_status = '')"
+        query += "AND (t.readiness_status = 'Ready' OR t.readiness_status IS NULL OR t.readiness_status = '')"
         if employee:
             query += f" AND t._assign LIKE '%{user_id}%'"
 
