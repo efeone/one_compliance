@@ -670,7 +670,10 @@ def on_task_update(doc, method=None):
 
 @frappe.whitelist()
 def check_readiness_edit_permission(user):
-    # Get employee linked to this user
-    employee = frappe.db.get_value("Employee", {"user_id": user}, "name")
-    settings_employee = frappe.db.get_single_value("Compliance Settings", "update_readiness_status")
-    return employee == settings_employee
+    # Get the role allowed to change readiness status from Compliance Settings
+    allowed_role = frappe.db.get_single_value("Compliance Settings", "role_allowed_to_change_readiness_status")
+
+    # Check if the given user has this role
+    has_role = frappe.db.exists("Has Role", {"parent": user, "role": allowed_role})
+
+    return True if has_role else False
