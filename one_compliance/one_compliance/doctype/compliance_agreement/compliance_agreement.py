@@ -415,8 +415,11 @@ def compliance_agreement_daily_scheduler():
 	agreements = frappe.db.get_all('Compliance Agreement', filters = {'status': 'Active'})
 	if agreements:
 		for agreement in agreements:
-			self = frappe.get_doc('Compliance Agreement', agreement.name)
-			self.create_project_if_not_exists()
+			try:
+				self = frappe.get_doc('Compliance Agreement', agreement.name)
+				self.create_project_if_not_exists()
+			except Exception as e:
+				frappe.log_error(str(e), 'Error in Compliance Agreement Creating Project')
 			try:
 				if self.invoice_based_on == 'Consolidated' and self.next_invoice_date == getdate(today()):
 					self.make_sales_invoice()
