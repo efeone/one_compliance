@@ -517,7 +517,8 @@ def get_task_custom_fields():
                 "label":"Readiness Status",
                 "options":"\nNot Ready\nReady",
                 "in_list_view":1,
-                "insert_after":"status"
+                "insert_after":"status",
+                "hidden":0
             },
             {
                 "_assign": None,

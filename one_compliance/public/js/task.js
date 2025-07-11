@@ -2,8 +2,6 @@ frappe.ui.form.on('Task',{
   refresh(frm){
     let roles = frappe.user_roles;
     let current_user = frappe.session.user;
-    frm.set_df_property('readiness_status', 'hidden', 0);
-
 
      // Call a custom method to check permission
      frappe.call({
