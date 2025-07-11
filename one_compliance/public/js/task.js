@@ -40,30 +40,8 @@ frappe.ui.form.on('Task',{
       frm.set_df_property('is_group','hidden',1);
       frm.set_df_property('is_template','hidden',1);
     }
-    update_readiness_status_field(frm);
   }
 });
-/* applied dialog instance to show customer Credential */
-
-// Function to update readiness_status visibility based on project_template's enable_task_readiness_flow
-function update_readiness_status_field(frm) {
-  if (frm.doc.compliance_sub_category) {
-    frappe.db.get_value('Compliance Sub Category', frm.doc.compliance_sub_category, 'project_template', (r) => {
-      if (r && r.project_template) {
-        // Fetch the enable_task_readiness_flow field from the linked project_template
-        frappe.db.get_value('Project Template', r.project_template, 'enable_task_readiness_flow', (result) => {
-          if (result && result.enable_task_readiness_flow) {
-            // If enable_task_readiness_flow is checked, show the readiness_status field
-            frm.fields_dict.readiness_status.$wrapper.show();
-          } else {
-            // If enable_task_readiness_flow is not checked, hide the readiness_status field
-            frm.fields_dict.readiness_status.$wrapper.hide();
-          }
-        });
-      }
-    });
-  }
-}
 
 let customer_credentials = function (frm) {
   frappe.db.get_value('Project', frm.doc.project, 'customer')
