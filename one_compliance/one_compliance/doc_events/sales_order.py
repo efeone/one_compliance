@@ -5,8 +5,6 @@ from frappe import _
 from frappe.utils import add_days, add_months, date_diff, getdate, json, today
 from one_compliance.one_compliance.utils import add_custom as add_assign
 from one_compliance.one_compliance.utils import create_todo, get_users_with_role
-from frappe.desk.form.assign_to import add
-
 
 
 @frappe.whitelist()
@@ -425,7 +423,7 @@ def create_opportunity():
 						task.subject = f"Follow up on Opportunity {opportunity.name}"
 						task.reference_type = "Opportunity"
 						task.reference_name = opportunity.name
-						task.status = "Open"so
+						task.status = "Open",
 						task.description = f"Follow up for compliance sub category: {subcat_name}"
 						task.assigned_by = frappe.session.user
 						task.company = opportunity.company
