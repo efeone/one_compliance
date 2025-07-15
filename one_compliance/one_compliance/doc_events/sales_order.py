@@ -320,154 +320,157 @@ def delete_linked_records(sales_order):
 
 @frappe.whitelist()
 def create_opportunity():
-    """
-    Creates Opportunities for Sales Orders flagged for follow_up_for_next_project
-    and assigns a Task to follow_up_person from Compliance Sub Category
-    """
-    today_date = getdate(today())
-    this_year = today_date.year
-    this_month = today_date.month
+	"""
+	Creates Opportunities for Sales Orders flagged for follow_up_for_next_project
+	and assigns a Task to follow_up_person from Compliance Sub Category
+	"""
+	today_date = getdate(today())
+	this_year = today_date.year
+	this_month = today_date.month
 
-    print(f"[INFO] Today's Date: {today_date}")
+	print(f"[INFO] Today's Date: {today_date}")
 
-    sales_orders = frappe.db.get_all(
-        "Sales Order",
-        filters={"follow_up_for_next_project": 1},
-        fields=["name", "customer"]
-    )
+	sales_orders = frappe.db.get_all(
+		"Sales Order",
+		filters={"follow_up_for_next_project": 1},
+		fields=["name", "customer", "status", "workflow_state"]
+	)
 
-    for so in sales_orders:
-        sales_order_items = frappe.get_all(
-            "Sales Order Item",
-            filters={"parent": so.name},
-            fields=["custom_compliance_subcategory"]
-        )
+	for so in sales_orders:
+		sales_order_items = frappe.db.get_all(
+			"Sales Order Item",
+			filters={"parent": so.name},
+			fields=["custom_compliance_subcategory"]
+		)
 
-        for item in sales_order_items:
-            subcat_name = item.custom_compliance_subcategory
-            if not subcat_name:
-                continue
+		for item in sales_order_items:
+			subcat_name = item.custom_compliance_subcategory
+			if not subcat_name:
+				continue
 
-            compliance = frappe.get_doc("Compliance Sub Category", subcat_name)
+			compliance = frappe.get_doc("Compliance Sub Category", subcat_name)
 
-            if not (compliance.allow_repeat and compliance.renew_notif):
-                continue
+			if not (compliance.allow_repeat and compliance.renew_notif):
+				continue
 
-            day = int(compliance.day or 1)
-            notif_days = int(float(compliance.renew_notif_days_before or 0))
-            repeat_on = compliance.repeat_on
-            scheduled_date = None
+			day = int(compliance.day or 1)
+			notif_days = int(float(compliance.renew_notif_days_before or 0))
+			repeat_on = compliance.repeat_on
+			scheduled_date = None
 
-            try:
-                if repeat_on == "Monthly":
-                    scheduled_date = datetime(this_year, this_month, day).date()
+			try:
+				if repeat_on == "Monthly":
+					scheduled_date = datetime(this_year, this_month, day).date()
 
-                elif repeat_on == "Quarterly":
-                    for m in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
-                        d = datetime(this_year, m, day).date()
-                        if d >= today_date:
-                            scheduled_date = d
-                            break
+				elif repeat_on == "Quarterly":
+					for m in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
+						d = datetime(this_year, m, day).date()
+						if d >= today_date:
+							scheduled_date = d
+							break
 
-                elif repeat_on == "Half Yearly":
-                    for m in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
-                        d = datetime(this_year, m, day).date()
-                        if d >= today_date:
-                            scheduled_date = d
-                            break
+				elif repeat_on == "Half Yearly":
+					for m in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
+						d = datetime(this_year, m, day).date()
+						if d >= today_date:
+							scheduled_date = d
+							break
 
-                elif repeat_on == "Yearly":
-                    if compliance.month:
-                        m = datetime.strptime(compliance.month, "%B").month
-                        scheduled_date = datetime(this_year, m, day).date()
+				elif repeat_on == "Yearly":
+					if compliance.month:
+						m = datetime.strptime(compliance.month, "%B").month
+						scheduled_date = datetime(this_year, m, day).date()
 
-            except Exception as e:
-                print(f"[WARN] Skipping {subcat_name}: Invalid date - {e}")
-                continue
+			except Exception as e:
+				print(f"[WARN] Skipping {subcat_name}: Invalid date - {e}")
+				continue
 
-            if not scheduled_date:
-                continue
+			if not scheduled_date:
+				continue
 
-            notif_trigger_date = add_days(scheduled_date, -notif_days)
-            print(f"[DEBUG] For {subcat_name}: Scheduled on {scheduled_date}, Notify on {notif_trigger_date}")
+			notif_trigger_date = add_days(scheduled_date, -notif_days)
+			print(f"[DEBUG] For {subcat_name}: Scheduled on {scheduled_date}, Notify on {notif_trigger_date}")
 
-            if notif_trigger_date != today_date:
-                continue
+			if notif_trigger_date != today_date:
+				continue
 
-            existing_opportunity = frappe.db.exists("Opportunity", {"sales_order": so.name})
-            if existing_opportunity:
-                print(f"[SKIP] Opportunity already exists for Sales Order: {so.name}")
-                continue
+			existing_opportunity = frappe.db.exists("Opportunity", {"sales_order": so.name})
+			if existing_opportunity:
+				print(f"[SKIP] Opportunity already exists for Sales Order: {so.name}")
+				continue
 
-            try:
-                opportunity = frappe.new_doc("Opportunity")
-                opportunity.opportunity_from = "Customer"
-                opportunity.party_name = so.customer
-                opportunity.status = "Open"
-                opportunity.opportunity_type = "Sales"
-                opportunity.sales_order = so.name
-                opportunity.naming_series = "CRM-OPP-.YYYY.-"
-                opportunity.company = frappe.db.get_single_value("Global Defaults", "default_company")
+			try:
+       
+				if so.status not in ["Draft", "Closed", "Cancelled"] or so.workflow_state not in ["Pending", "Cancelled"]:
+					frappe.log_error(so.status, so.workflow_state)
+					opportunity = frappe.new_doc("Opportunity")
+					opportunity.opportunity_from = "Customer"
+					opportunity.party_name = so.customer
+					opportunity.status = "Open"
+					opportunity.opportunity_type = "Sales"
+					opportunity.sales_order = so.name
+					opportunity.naming_series = "CRM-OPP-.YYYY.-"
+					opportunity.company = frappe.db.get_single_value("Global Defaults", "default_company")
 
-                opportunity.insert(ignore_permissions=True)
-                frappe.db.commit()
+					opportunity.insert(ignore_permissions=True)
+					frappe.db.commit()
 
-                print(f"[SUCCESS] Created Opportunity: {opportunity.name} for {subcat_name}")
+					print(f"[SUCCESS] Created Opportunity: {opportunity.name} for {subcat_name}")
 
-                # Create and assign Task
-                follow_up_user = frappe.db.get_value("Employee", compliance.follow_up_person, "user_id")
-                
-                if follow_up_user:
-                    try:
-                        task = frappe.new_doc("Task")
-                        task.subject = f"Follow up on Opportunity {opportunity.name}"
-                        task.reference_type = "Opportunity"
-                        task.reference_name = opportunity.name
-                        task.status = "Open"
-                        task.description = f"Follow up for compliance sub category: {subcat_name}"
-                        task.assigned_by = frappe.session.user
-                        task.company = opportunity.company
+					# Create and assign Task
+					follow_up_user = frappe.db.get_value("Employee", compliance.follow_up_person, "user_id")
 
-                        task.insert(ignore_permissions=True)
-                        frappe.db.commit()
+					try:
+						task = frappe.new_doc("Task")
+						task.subject = f"Follow up on Opportunity {opportunity.name}"
+						task.reference_type = "Opportunity"
+						task.reference_name = opportunity.name
+						task.status = "Open"so
+						task.description = f"Follow up for compliance sub category: {subcat_name}"
+						task.assigned_by = frappe.session.user
+						task.company = opportunity.company
 
-                        todo = frappe.new_doc("ToDo")
-                        todo.owner = follow_up_user
-                        todo.assigned_by = frappe.session.user
-                        todo.allocated_to = follow_up_user
-                        todo.reference_type = "Task"
-                        todo.reference_name = task.name
-                        todo.description = f"Follow up for compliance sub category: {subcat_name}"
-                        todo.status = "Open"
-                        todo.priority = "Medium"
-                        todo.date = today()
-                        todo.insert(ignore_permissions=True)
-                        frappe.db.commit()
+						task.insert(ignore_permissions=True)
+						frappe.db.commit()
 
-                        print(f"[SUCCESS] Created and assigned Task {task.name} to {follow_up_user}")
+						if follow_up_user:
+							todo = frappe.new_doc("ToDo")
+							todo.owner = follow_up_user
+							todo.assigned_by = frappe.session.user
+							todo.allocated_to = follow_up_user
+							todo.reference_type = "Task"
+							todo.reference_name = task.name
+							todo.description = f"Follow up for compliance sub category: {subcat_name}"
+							todo.status = "Open"
+							todo.priority = "Medium"
+							todo.date = today()
+							todo.insert(ignore_permissions=True)
+							frappe.db.commit()
 
-                    except Exception as e:
-                        print(f"[ERROR] Failed to create/assign Task for {subcat_name}: {e}")
+						print(f"[SUCCESS] Created and assigned Task {task.name} to {follow_up_user}")
 
-            except Exception as e:
-                print(f"[ERROR] Failed to create opportunity for {subcat_name}: {e}")
+					except Exception as e:
+						print(f"[ERROR] Failed to create/assign Task for {subcat_name}: {e}")
+
+			except Exception as e:
+				print(f"[ERROR] Failed to create opportunity for {subcat_name}: {e}")
 
 
 
 
 def set_compliance_fields(doc, method):
-    """
-    For each item , this function fetches the related compliance category 
-    and subcategory 
-    """
-    for item in doc.items:
-        if item.item_code:
-           subcat =  frappe.db.get_value(
+	"""
+	For each item , this function fetches the related compliance category 
+	and subcategory 
+	"""
+	for item in doc.items:
+		if item.item_code:
+			subcat =  frappe.db.get_value(
 				"Compliance Sub Category",
-                 {"item_code": item.item_code},
-                 ["compliance_category", "name"],
-                 as_dict=True
+				 {"item_code": item.item_code},
+				 ["compliance_category", "name"],
+				 as_dict=True
 			)
-           if subcat:
-               item.custom_compliance_category     = subcat.compliance_category
-               item.custom_compliance_subcategory  = subcat.name
+			if subcat:
+				item.custom_compliance_category     = subcat.compliance_category
+				item.custom_compliance_subcategory  = subcat.name
