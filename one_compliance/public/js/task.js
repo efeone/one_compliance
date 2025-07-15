@@ -30,7 +30,9 @@ frappe.ui.form.on('Task',{
     }
     if(!frm.is_new()){
       frm.add_custom_button('Status Update', () => {
-        update_status(frm)
+         frm.reload_doc().then(() => {
+           update_status(frm);
+         });
       });
     }
     if(frm.doc.custom_task_document_items){
@@ -212,13 +214,14 @@ let update_status = function(frm){
         label: 'Completed By',
         fieldname: 'completed_by',
         fieldtype: 'Link',
-        options: 'User'
+        options: 'User',
+        default: frappe.session.user,
       },
       {
         label: 'Completed On',
         fieldname: 'completed_on',
         fieldtype: 'Date',
-        default: 'Today'
+        default: frappe.datetime.get_today(),
       },
     ],
     primary_action_label: 'Update',
@@ -228,8 +231,8 @@ let update_status = function(frm){
         args: {
           'task_id': frm.doc.name,
           'status': values.status,
-          'completed_by': values.completed_by,
-          'completed_on': values.completed_on
+          'completed_by': values.completed_by || frappe.session.user,
+          'completed_on': values.completed_on || frappe.datetime.get_today()
         },
         callback: function(r){
           if (r.message){
@@ -240,6 +243,5 @@ let update_status = function(frm){
       });
     },
   });
-  d.set_value('completed_by', frappe.session.user);
 d.show();
 };
