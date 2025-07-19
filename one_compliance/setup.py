@@ -29,6 +29,7 @@ def create_custom_fields_for_app():
     create_custom_fields(get_terms_and_conditions_custom_fields())
     create_custom_fields(get_timesheet_custom_fields())
     create_custom_fields(get_todo_custom_fields())
+    create_custom_fields(get_compliance_sub_category_custom_fields())
 
 
 def delete_custom_fields_for_app():
@@ -48,6 +49,7 @@ def delete_custom_fields_for_app():
     delete_custom_fields(get_terms_and_conditions_custom_fields())
     delete_custom_fields(get_timesheet_custom_fields())
     delete_custom_fields(get_todo_custom_fields())
+    delete_custom_fields(get_compliance_sub_category_custom_fields())
 
 
 def create_fixtures():
@@ -2740,6 +2742,12 @@ def get_sales_order_custom_fields():
                 "options": "Event",
                 "read_only": 1
             },
+            {
+                "fieldname": "is_premium_project",
+                "fieldtype": "Check",
+                "label": "Is Premium Project",
+                "insert_after": "amended_from"
+            }
         ]
     }
 
@@ -4482,13 +4490,21 @@ def get_project_template_custom_fields():
                 "fieldtype": "Table",
                 "label": "Premium Tasks",
                 "options" : "Premium Tasks",
-                "insert_after": "custom_add_tasks"
+                "insert_after": "custom_add_tasks",
+                "depends_on": "eval:doc.has_premium_tasks"
             },
             {
                 "fieldname": "custom_add_tasks2",
                 "fieldtype": "Button",
                 "label": "Add Tasks",
-                "insert_after": "premium_tasks"
+                "insert_after": "premium_tasks",
+                "depends_on": "eval:doc.has_premium_tasks"
+            },
+            {
+                "fieldname": "has_premium_tasks",
+                "fieldtype": "Check",
+                "label": "Has Premium Tasks",
+                "insert_after": "enable_task_readiness_flow"
             }
         ]
     }
@@ -14302,6 +14318,19 @@ def get_todo_custom_fields():
                 "reqd": 0,
                 "hidden": 0,
                 "read_only": 0,
+            }
+        ]
+    }
+
+def get_compliance_sub_category_custom_fields():
+    return {
+        "Compliance Sub Category": [
+            {
+                "fieldname": "premium_task",
+                "label": "Has Premium Task",
+                "fieldtype": "Check",
+                "insert_after": "rate",
+                "in_list_view": 1
             }
         ]
     }
