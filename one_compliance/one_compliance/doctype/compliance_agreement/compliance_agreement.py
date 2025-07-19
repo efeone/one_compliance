@@ -364,6 +364,13 @@ def create_project_against_sub_category(compliance_agreement, compliance_sub_cat
 							create_todo('Task', task_doc.name, employee.user_id, employee.user_id, 'Task {0} Assigned Successfully'.format(task_doc.name))
 
 		frappe.db.commit()
+		agreement_doc = frappe.get_doc('Compliance Agreement', compliance_agreement)
+		for row in agreement_doc.compliance_category_details:
+			if row.name == compliance_category_details_id:
+				row.project = project.name
+
+		agreement_doc.save(ignore_permissions=True)
+		frappe.db.commit()		
 	else:
 		frappe.throw( title = _('ALERT !!'), msg = _('Project Template does not exist for {0}'.format(compliance_sub_category)))
 
