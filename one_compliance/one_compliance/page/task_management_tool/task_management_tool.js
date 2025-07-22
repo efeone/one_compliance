@@ -683,6 +683,12 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
                 reqd: true,
 								read_only: 1,
 								default: toTime
+            },
+            {
+                label: __("Lag Time"),
+                fieldname: "lag_time",
+                fieldtype: 'Duration',
+
             }
         ],
         primary_action: function (values) {
@@ -697,7 +703,8 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
 										employee: values.employee,
 										activity: values.activity,
 										from_time: values.from_time,
-										to_time: values.to_time
+										to_time: values.to_time,
+                                        lag_time: values.lag_time,
 								},
 								callback: function (r) {
 										frappe.msgprint("Timesheet created successfully!");

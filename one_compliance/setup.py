@@ -29,6 +29,7 @@ def create_custom_fields_for_app():
     create_custom_fields(get_terms_and_conditions_custom_fields())
     create_custom_fields(get_timesheet_custom_fields())
     create_custom_fields(get_todo_custom_fields())
+    create_custom_fields(get_timesheet_detail_custom_fields())
 
 
 def delete_custom_fields_for_app():
@@ -4869,6 +4870,12 @@ def get_project_template_task_custom_fields():
                 "unique": 0,
                 "width": None,
             },
+            {
+				"fieldname": "has_external_dependencies",
+				"fieldtype": "Check",
+				"label": "Has External Dependencies",
+				"insert_after": "custom_has_document"
+			}
         ]
     }
 
@@ -14305,3 +14312,20 @@ def get_todo_custom_fields():
             }
         ]
     }
+
+
+
+def get_timesheet_detail_custom_fields():
+    """
+    Returns custom fields for Timesheet Detail doctype.
+    """
+    return {
+		"Timesheet Detail": [
+			{
+				"fieldname": "lag_time",
+				"fieldtype": "Duration",
+				"label": "Lag Time",
+				"insert_after": "to_time"
+			}
+		]
+	}
