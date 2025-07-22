@@ -69,6 +69,42 @@ def after_migrate():
 	# Creating One Compliance specific fixtures
 	create_fixtures()
 
+
+def before_migrate():
+	delete_custom_fields_for_app()
+
+def create_custom_fields_for_app():
+
+	create_custom_fields(get_custom_fields())
+
+	create_custom_fields(get_customer_custom_fields())
+	create_custom_fields(get_department_custom_fields())
+	create_custom_fields(get_event_participant_custom_fields())
+	create_custom_fields(get_event_custom_fields())
+	create_custom_fields(get_item_custom_fields())
+	create_custom_fields(get_opportunity_custom_fields())
+	create_custom_fields(get_project_template_task_custom_fields())
+	create_custom_fields(get_project_template_custom_fields())
+	create_custom_fields(get_project_custom_fields())
+	create_custom_fields(get_sales_invoice_custom_fields())
+	create_custom_fields(get_sales_order_item_custom_fields())
+	create_custom_fields(get_sales_order_custom_fields())
+	create_custom_fields(get_task_custom_fields())
+	create_custom_fields(get_terms_and_conditions_custom_fields())
+	create_custom_fields(get_timesheet_custom_fields())
+	create_custom_fields(get_todo_custom_fields())
+	create_custom_fields(get_timesheet_detail_custom_fields())
+
+
+
+def delete_custom_fields_for_app():
+	delete_custom_fields(get_custom_fields())
+
+def create_property_setters_for_app():
+	create_property_setters(get_property_setters())
+
+
+
 def create_fixtures():
 	'''
 		Method to create One Compliance specific fixtures
