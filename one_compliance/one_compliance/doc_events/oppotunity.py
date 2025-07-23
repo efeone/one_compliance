@@ -39,3 +39,14 @@ def create_event_from_opportunity(oppotunity,event_category,start_on,subject,att
         })
     event.insert(ignore_permissions = True)
     return event.name
+
+def set_opportunity_converted(doc, method):
+	'''
+		Set Opportunity status to 'Converted' when a Customer is created from it.
+	'''
+	opportunity_name = getattr(doc, 'opportunity_name', None)
+
+	if opportunity_name:
+		opp = frappe.get_doc('Opportunity', opportunity_name)
+		opp.status = 'Converted'
+		opp.save()
