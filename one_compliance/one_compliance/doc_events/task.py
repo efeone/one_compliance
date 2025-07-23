@@ -694,3 +694,17 @@ def enable_customer_on_task_completion(doc, method):
 		customer.aml_compliance_checked = 1
 		customer.save(ignore_permissions=True)
 		frappe.msgprint(f"Customer {customer.name} has been enabled after AML compliance task completion.")
+def on_update(doc, method):
+	'''
+		Update the project's expected end date if the task's completion date is later.
+	'''	
+	if not doc.project or not doc.completed_on:
+		return
+
+	project = frappe.get_doc("Project", doc.project)
+
+	if project.expected_end_date < doc.completed_on:
+		project.db_set('expected_end_date', doc.completed_on)
+		comment_content = '<h2><b>Reason for updating project completion date:</b></h2>'
+		comment_content += f"Expected End Date updated to <b>{doc.completed_on}</b> based on Task <b>{doc.name}</b> completion."
+		project.add_comment(text=_(comment_content))
