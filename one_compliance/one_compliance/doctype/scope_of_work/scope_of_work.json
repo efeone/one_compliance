@@ -6,7 +6,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "scope_of_work"
+  "scope_of_work",
+  "heading",
+  "description"
  ],
  "fields": [
   {
@@ -14,12 +16,22 @@
    "fieldtype": "Data",
    "label": "Scope of Work",
    "unique": 1
+  },
+  {
+   "fieldname": "heading",
+   "fieldtype": "Data",
+   "label": "Heading"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Description"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-01 11:56:25.687631",
+ "modified": "2025-07-24 11:33:31.757398",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Scope of Work",

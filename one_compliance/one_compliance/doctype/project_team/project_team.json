@@ -7,7 +7,8 @@
  "engine": "InnoDB",
  "field_order": [
   "employee",
-  "employee_profile"
+  "employee_name",
+  "details"
  ],
  "fields": [
   {
@@ -18,18 +19,24 @@
    "options": "Employee"
   },
   {
-   "default": "0",
-   "fieldname": "employee_profile",
-   "fieldtype": "Check",
+   "fetch_from": "employee.employee_name",
+   "fieldname": "employee_name",
+   "fieldtype": "Data",
    "in_list_view": 1,
-   "label": "Employee Profile"
+   "label": "Employee Name"
+  },
+  {
+   "fieldname": "details",
+   "fieldtype": "Long Text",
+   "in_list_view": 1,
+   "label": "Details"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-30 17:01:57.011504",
+ "modified": "2025-07-24 11:31:37.130332",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Project Team",
