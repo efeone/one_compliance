@@ -39,3 +39,12 @@ def create_event_from_opportunity(oppotunity,event_category,start_on,subject,att
         })
     event.insert(ignore_permissions = True)
     return event.name
+
+def set_opportunity_converted(doc, method):
+	'''
+		Set Opportunity status to 'Converted' when a Customer is created from it.
+	'''
+	opportunity_name = getattr(doc, 'opportunity_name', None)
+
+	if opportunity_name:
+		frappe.db.set_value('Opportunity', opportunity_name, 'status', 'Converted')
