@@ -47,6 +47,4 @@ def set_opportunity_converted(doc, method):
 	opportunity_name = getattr(doc, 'opportunity_name', None)
 
 	if opportunity_name:
-		opp = frappe.get_doc('Opportunity', opportunity_name)
-		opp.status = 'Converted'
-		opp.save()
+		frappe.db.set_value('Opportunity', opportunity_name, 'status', 'Converted')
