@@ -18,6 +18,10 @@ def sales_invoice_on_submit(doc, method):
 					"Sales Order", item.sales_order, "workflow_state", "Invoiced"
 				)
 
+			project = frappe.db.get_value("Sales Order", item.sales_order, "project")
+			if project:
+				frappe.db.set_value("Project", project, "status", "Invoiced")	
+
 			todos = frappe.db.get_all("ToDo", filters={
 				"reference_type": "Sales Order",
 				"reference_name": item.sales_order,
