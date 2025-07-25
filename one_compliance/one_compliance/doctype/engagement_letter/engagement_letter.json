@@ -20,14 +20,17 @@
   "scope_of_work",
   "column_break_srmr",
   "project_works",
-  "section_break_2d5t",
-  "engagement_phase",
-  "engagement_fee_items",
   "section_break_nsok",
   "client_contact",
   "firm_contact",
   "column_break_xxfu",
   "status",
+  "section_break_2d5t",
+  "engagement_phase",
+  "engagement_fee_items",
+  "section_break_rszz",
+  "timeframedays",
+  "note",
   "tab_break_5ajn",
   "about_us_from_company",
   "backgroundunderstanding",
@@ -175,11 +178,25 @@
    "fieldname": "terms_and_conditions",
    "fieldtype": "Text Editor",
    "label": "Terms and conditions"
+  },
+  {
+   "fieldname": "timeframedays",
+   "fieldtype": "Int",
+   "label": "TimeFrame(Days)"
+  },
+  {
+   "fieldname": "section_break_rszz",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "note",
+   "fieldtype": "Text Editor",
+   "label": "Note"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-25 10:56:32.920900",
+ "modified": "2025-07-25 17:03:33.104264",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter",
