@@ -27,8 +27,7 @@
   },
   {
    "fieldname": "details",
-   "fieldtype": "Long Text",
-   "in_list_view": 1,
+   "fieldtype": "Text Editor",
    "label": "Details"
   }
  ],
@@ -36,7 +35,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-24 11:31:37.130332",
+ "modified": "2025-07-25 09:47:35.137227",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Project Team",

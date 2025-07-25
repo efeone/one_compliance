@@ -6,28 +6,13 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "item",
-  "subcategory",
+  "description",
   "column_break_octb",
   "amount",
-  "description",
   "section_break_3igl",
   "payment_terms"
  ],
  "fields": [
-  {
-   "fieldname": "item",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Item"
-  },
-  {
-   "fieldname": "subcategory",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Subcategory",
-   "options": "Compliance Sub Category"
-  },
   {
    "fieldname": "column_break_octb",
    "fieldtype": "Column Break"
@@ -40,7 +25,7 @@
   },
   {
    "fieldname": "description",
-   "fieldtype": "Select",
+   "fieldtype": "Text",
    "in_list_view": 1,
    "label": "Description"
   },
@@ -50,7 +35,7 @@
   },
   {
    "fieldname": "payment_terms",
-   "fieldtype": "Small Text",
+   "fieldtype": "Text Editor",
    "label": "Payment Terms"
   }
  ],
@@ -58,7 +43,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-06-30 17:03:01.685585",
+ "modified": "2025-07-25 15:36:18.847732",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter Fees",

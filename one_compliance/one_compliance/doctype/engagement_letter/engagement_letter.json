@@ -18,6 +18,9 @@
   "proposal_date",
   "section_break_1d6a",
   "scope_of_work",
+  "column_break_srmr",
+  "project_works",
+  "section_break_2d5t",
   "engagement_phase",
   "engagement_fee_items",
   "section_break_nsok",
@@ -29,6 +32,7 @@
   "about_us_from_company",
   "backgroundunderstanding",
   "past_exposure",
+  "terms_and_conditions",
   "team_details_tab",
   "project_team"
  ],
@@ -50,6 +54,7 @@
    "options": "Opportunity"
   },
   {
+   "fetch_from": "opportunity.opportunity_from",
    "fieldname": "opportunity_from",
    "fieldtype": "Data",
    "label": "Opportunity from"
@@ -57,8 +62,9 @@
   {
    "fetch_from": "opportunity.customer_name",
    "fieldname": "customer",
-   "fieldtype": "Data",
-   "label": "Customer"
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
   },
   {
    "fieldname": "proposal_code",
@@ -151,11 +157,29 @@
    "fieldtype": "Table MultiSelect",
    "label": "Scope of Work",
    "options": "Scope"
+  },
+  {
+   "fieldname": "project_works",
+   "fieldtype": "Data",
+   "label": "Project/ Works"
+  },
+  {
+   "fieldname": "section_break_2d5t",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_srmr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "terms_and_conditions",
+   "fieldtype": "Text Editor",
+   "label": "Terms and conditions"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-01 14:46:25.938178",
+ "modified": "2025-07-25 10:56:32.920900",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter",
