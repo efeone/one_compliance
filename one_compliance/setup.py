@@ -1,5 +1,6 @@
 import frappe
-from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
+from frappe.custom.doctype.custom_field.custom_field import \
+    create_custom_fields
 
 
 def after_migrate():
@@ -3995,7 +3996,7 @@ def get_project_template_custom_fields():
                 "columns": 0,
                 "creation": "2023-09-15 15:43:19.963650",
                 "default": None,
-                "depends_on": None,
+                "depends_on": "eval: doc.project_duration_type == 'Days'",
                 "description": None,
                 "docstatus": 0,
                 "dt": "Project Template",
@@ -4014,7 +4015,7 @@ def get_project_template_custom_fields():
                 "in_list_view": 0,
                 "in_preview": 0,
                 "in_standard_filter": 0,
-                "insert_after": "project_type",
+                "insert_after": "project_duration_type",
                 "is_system_generated": 0,
                 "is_virtual": 0,
                 "label": "Project Duration(Days)",
@@ -4490,7 +4491,23 @@ def get_project_template_custom_fields():
                 "fieldtype": "Button",
                 "label": "Add Tasks",
                 "insert_after": "premium_tasks"
-            }
+            },
+            {
+				"fieldname": "project_duration_type",
+				"fieldtype": "Select",
+				"label": "Project Duration Type",
+				"insert_after": "project_type",
+				"options": "\nDays\nMinutes"
+			},
+            {
+				"fieldname": "project_duration_minutes",
+				"fieldtype": "Duration",
+				"label": "Project Duration (Minutes)",
+				"insert_after": "project_duration_type",
+				"hide_days": 1,
+				"hide_seconds": 1,
+				"depends_on": "eval:doc.project_duration_type == 'Minutes' "
+			}
         ]
     }
 
@@ -4697,7 +4714,7 @@ def get_project_template_task_custom_fields():
                 "columns": 1,
                 "creation": "2023-10-05 16:55:57.256653",
                 "default": None,
-                "depends_on": None,
+                "depends_on": "eval:doc.task_duration_type == 'Days'",
                 "description": None,
                 "docstatus": 0,
                 "dt": "Project Template Task",
@@ -4716,7 +4733,7 @@ def get_project_template_task_custom_fields():
                 "in_list_view": 1,
                 "in_preview": 0,
                 "in_standard_filter": 0,
-                "insert_after": "subject",
+                "insert_after": "Task_duration_type",
                 "is_system_generated": 0,
                 "is_virtual": 0,
                 "label": "Task Duration",
@@ -4875,6 +4892,22 @@ def get_project_template_task_custom_fields():
 				"fieldtype": "Check",
 				"label": "Has External Dependencies",
 				"insert_after": "custom_has_document"
+			},
+             {
+				"fieldname": "Task_duration_type",
+				"fieldtype": "Select",
+				"label": "Task Duration Type",
+				"insert_after": "subject",
+				"options": "\nDays\nMinutes"
+			},
+            {
+				"fieldname": "task_duration_minutes",
+				"fieldtype": "Duration",
+				"label": "Task Duration (Minutes)",
+				"insert_after": "task_duration_type",
+				"hide_days": 1,
+				"hide_seconds": 1,
+				"depends_on": "eval:doc.task_duration_type == 'Minutes' "
 			}
         ]
     }
