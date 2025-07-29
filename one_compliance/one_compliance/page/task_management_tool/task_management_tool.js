@@ -699,6 +699,11 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
                 fieldname: "lag_time",
                 fieldtype: 'Duration',
 
+            },
+            {
+                label: __("Reason for Lag Time"),
+                fieldname: "reason_for_lag_time",
+                fieldtype: 'Small Text'
             }
         ],
         primary_action: function (values) {
@@ -715,6 +720,7 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
 										from_time: values.from_time,
 										to_time: values.to_time,
                                         lag_time: values.lag_time,
+                                        reason_for_lag_time: values.reason_for_lag_time,
 								},
 								callback: function (r) {
 										frappe.msgprint("Timesheet created successfully!");

@@ -74,27 +74,23 @@ def before_migrate():
 	delete_custom_fields_for_app()
 
 def create_custom_fields_for_app():
-
-	create_custom_fields(get_custom_fields())
-
-	create_custom_fields(get_customer_custom_fields())
-	create_custom_fields(get_department_custom_fields())
-	create_custom_fields(get_event_participant_custom_fields())
-	create_custom_fields(get_event_custom_fields())
-	create_custom_fields(get_item_custom_fields())
-	create_custom_fields(get_opportunity_custom_fields())
-	create_custom_fields(get_project_template_task_custom_fields())
-	create_custom_fields(get_project_template_custom_fields())
-	create_custom_fields(get_project_custom_fields())
-	create_custom_fields(get_sales_invoice_custom_fields())
-	create_custom_fields(get_sales_order_item_custom_fields())
-	create_custom_fields(get_sales_order_custom_fields())
-	create_custom_fields(get_task_custom_fields())
-	create_custom_fields(get_terms_and_conditions_custom_fields())
-	create_custom_fields(get_timesheet_custom_fields())
-	create_custom_fields(get_todo_custom_fields())
-	create_custom_fields(get_timesheet_detail_custom_fields())
-
+    create_custom_fields(get_customer_custom_fields())
+    create_custom_fields(get_department_custom_fields())
+    create_custom_fields(get_event_participant_custom_fields())
+    create_custom_fields(get_event_custom_fields())
+    create_custom_fields(get_item_custom_fields())
+    create_custom_fields(get_opportunity_custom_fields())
+    create_custom_fields(get_project_template_task_custom_fields())
+    create_custom_fields(get_project_template_custom_fields())
+    create_custom_fields(get_project_custom_fields())
+    create_custom_fields(get_sales_invoice_custom_fields())
+    create_custom_fields(get_sales_order_item_custom_fields())
+    create_custom_fields(get_sales_order_custom_fields())
+    create_custom_fields(get_task_custom_fields())
+    create_custom_fields(get_terms_and_conditions_custom_fields())
+    create_custom_fields(get_timesheet_custom_fields())
+    create_custom_fields(get_todo_custom_fields())
+    create_custom_fields(get_timesheet_detail_custom_fields())
 
 
 def delete_custom_fields_for_app():
@@ -137,94 +133,31 @@ def delete_custom_fields(custom_fields: dict):
 		frappe.db.delete(
 			'Custom Field',
 			{
-				'fieldname': ('in', [field.get('fieldname') for field in fields]),
-				'dt': doctype,
+				"fieldname": "lag_time",
+				"fieldtype": "Duration",
+				"label": "Lag Time",
+				"insert_after": "description"
 			},
-		)
-		frappe.clear_cache(doctype=doctype)
-
-def create_property_setters(property_setter_datas):
-	'''
-		Method to create custom property setters
-		args:
-			property_setter_datas : list of dict of property setter obj
-	'''
-	for property_setter_data in property_setter_datas:
-		if frappe.db.exists('Property Setter', property_setter_data):
-			continue
-		property_setter = frappe.new_doc('Property Setter')
-		property_setter.update(property_setter_data)
-		property_setter.flags.ignore_permissions = True
-		property_setter.insert()	
-
-def get_custom_fields():
-	'''
-		Method to get custom fields to be created for One Compliance
-	'''
-	custom_fields = get_customer_custom_fields()
-	custom_fields.update(get_department_custom_fields())
-	custom_fields.update(get_event_participant_custom_fields())
-	custom_fields.update(get_event_custom_fields())
-	custom_fields.update(get_item_custom_fields())
-	custom_fields.update(get_opportunity_custom_fields())
-	custom_fields.update(get_project_template_custom_fields())
-	custom_fields.update(get_project_template_task_custom_fields())
-	custom_fields.update(get_project_custom_fields())
-	custom_fields.update(get_sales_invoice_custom_fields())
-	custom_fields.update(get_sales_order_item_custom_fields())
-	custom_fields.update(get_sales_order_custom_fields())
-	custom_fields.update(get_task_custom_fields())
-	custom_fields.update(get_terms_and_conditions_custom_fields())
-	custom_fields.update(get_timesheet_custom_fields())
-	custom_fields.update(get_todo_custom_fields())
-	custom_fields.update(get_opportunity_item_custom_fields())
-	custom_fields.update(())
-	return custom_fields
-
-def get_property_setters():
-	'''
-		One Compliance specific property setters that need to be added to the Standard DocTypes
-	'''
-	property_setters = get_contact_email_property_setters()
-	property_setters.extend(get_contact_phone_property_setters())
-	property_setters.extend(get_contact_property_setters())
-	property_setters.extend(get_customer_property_setters())
-	property_setters.extend(get_employee_checkin_property_setters())
-	property_setters.extend(get_event_participant_property_setters())
-	property_setters.extend(get_event_property_setters())
-	property_setters.extend(get_item_property_setters())
-	property_setters.extend(get_lead_property_setters())
-	property_setters.extend(get_opportunity_property_setters())
-	property_setters.extend(get_project_template_task_property_setters())
-	property_setters.extend(get_project_template_property_setters())
-	property_setters.extend(get_project_property_setters())
-	property_setters.extend(get_quotation_item_property_setters())
-	property_setters.extend(get_quotation_property_setters())
-	property_setters.extend(get_sales_invoice_item_property_setters())
-	property_setters.extend(get_sales_invoice_property_setters())
-	property_setters.extend(get_sales_order_item_property_setters())
-	property_setters.extend(get_sales_order_property_setters())
-	property_setters.extend(get_task_property_setters())
-	property_setters.extend(get_timesheet_detail_property_setters())
-	property_setters.extend(get_timesheet_property_setters())
-	return property_setters
-
-def insert_docs(doc_list, doctype=None):
-	'''
-		Insert docs if not exists
-	'''
-	try:
-		for doc in doc_list:
-			if not doc.get("doctype"):
-				doc["doctype"] = doctype
-			if not frappe.db.exists(doc.get("doctype"), doc.get("name")):
-				try:
-					frappe.get_doc(doc).insert(ignore_permissions=True)
-				except Exception as e:
-					print(
-						"Error inserting {0} in {1}: {2}".format(
-							doc.get("name"), doc.get("doctype"), e
-						)
-					)
-	except Exception as e:
-		frappe.log_error("Error during migration", e)
+			{
+				"fieldname": "approval_status",
+				"fieldtype": "Select",
+				"label": "Approval Status(Lag Time)",
+				"options": "\nApprove\nReject",
+				"insert_after": "lag_time"
+			},
+			{
+				"fieldname": "reason_for_lag_time",
+				"fieldtype": "Small Text",
+				"label": "Reason For Lag Time",
+				"insert_after": "completed"
+			},
+			{
+				"fieldname": "lag_notification_sent",
+				"fieldtype": "Check",
+				"label": "Lag Notification Sent",
+				"insert_after": "reason_for_lag_time",
+                "hidden": 1
+			}
+   
+		]
+	}

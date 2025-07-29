@@ -92,7 +92,7 @@ def get_task(status = None, task = None, project = None, customer = None, depart
     return task_list
 
 @frappe.whitelist()
-def create_timesheet(project, task, employee, activity, from_time, to_time, lag_time=None):
+def create_timesheet(project, task, employee, activity, from_time, to_time, lag_time=None, reason_for_lag_time=None):
 
     from_time = get_datetime(from_time)
     to_time = get_datetime(to_time)
@@ -113,7 +113,8 @@ def create_timesheet(project, task, employee, activity, from_time, to_time, lag_
             "task": task,
             "from_time": from_time,
             "to_time": to_time,
-            "lag_time": lag_time
+            "lag_time": lag_time,
+            "reason_for_lag_time": reason_for_lag_time
         })
         existing_timesheet.save()
         frappe.db.commit()
@@ -126,7 +127,8 @@ def create_timesheet(project, task, employee, activity, from_time, to_time, lag_
             "task": task,
             "from_time": from_time,
             "to_time": to_time,
-            "lag_time": lag_time
+            "lag_time": lag_time,
+            "reason_for_lag_time": reason_for_lag_time
         })
 
         timesheet.insert(ignore_permissions=True)
