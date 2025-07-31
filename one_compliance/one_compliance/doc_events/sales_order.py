@@ -62,6 +62,12 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 	project_template  = compliance_sub_category.project_template
 	project_template_doc = frappe.get_doc('Project Template', project_template)
 	head_of_department = frappe.db.get_value('Employee', {'employee':compliance_sub_category.head_of_department}, 'user_id')
+	customer_group = frappe.db.get_value('Customer', self.customer, 'customer_group')
+	group_hod_user_id = None
+	if customer_group:
+		group_hod = frappe.db.get_value('Customer Group', customer_group, 'hod')
+		if group_hod:
+			group_hod_user_id = frappe.db.get_value('Employee', group_hod, 'user_id')
 	if project_template:
 		repeat_on = compliance_sub_category.repeat_on
 		project_based_on_prior_phase = compliance_sub_category.project_based_on_prior_phase
@@ -130,6 +136,8 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 					todo.save(ignore_permissions=True)
 					if todo:
 						frappe.msgprint(("Project is assigned to {0}".format(head_of_department)),alert = 1)
+			if group_hod_user_id and group_hod_user_id != head_of_department:
+				create_todo('Project', project.name, group_hod_user_id, frappe.session.user, "Project {} Assigned Successfully".format(project.name))
 			if assign_to:
 				for employee in employees:
 					user = frappe.db.get_value('Employee', employee, 'user_id')
@@ -171,6 +179,9 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 				if project.compliance_sub_category:
 					if compliance_sub_category and compliance_sub_category.head_of_department:
 						create_todo('Task', task_doc.name, head_of_department, frappe.session.user, "Task Assign to " + head_of_department)
+					if group_hod_user_id and group_hod_user_id != head_of_department:
+						group_hod_employee_name = frappe.db.get_value("Employee", {"user_id": group_hod_user_id}, "employee_name")
+						create_todo('Task', task_doc.name, group_hod_user_id, frappe.session.user, "Task Assign to " + group_hod_employee_name)	
 				if assign_to:
 					for employee in employees:
 						user = frappe.db.get_value('Employee', employee, 'user_id')
