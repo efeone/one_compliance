@@ -153,7 +153,8 @@ doc_events = {
         'before_save':[
             'one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',
             'one_compliance.one_compliance.doc_events.customer.set_expiry_dates'
-        ]
+        ],
+        'after_insert': 'one_compliance.one_compliance.doc_events.oppotunity.set_opportunity_converted'
     },
     'Sales Invoice':{
         'on_submit': 'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
