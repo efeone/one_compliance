@@ -1,11 +1,24 @@
 // Copyright (c) 2025, efeone and contributors
 // For license information, please see license.txt
 
-frappe.query_reports["Sales Order Receivable Summary"] = {
+frappe.query_reports["Sales Order Receivable Aging Summary"] = {
   onload: function (report) {
+    if (!report.get_filter_value('range')) {
+      report.set_filter_value('range', '30,60,90,120');
+    }
+
+    if (!report.get_filter_value('ageing_based_on')) {
+      report.set_filter_value('ageing_based_on', 'Posting Date');
+    }
+
     if (!report.get_filter_value('report_date')) {
       report.set_filter_value('report_date', frappe.datetime.get_today());
     }
+
+    // Add custom button
+    report.page.add_inner_button('Sales Order Receivable', () => {
+      frappe.set_route('query-report', 'Sales Order Receivable');
+    });
   },
 
   filters: [
@@ -36,6 +49,20 @@ frappe.query_reports["Sales Order Receivable Summary"] = {
       fieldname: "to_date",
       label: "To Date",
       fieldtype: "Date"
+    },
+    {
+      fieldname: "ageing_based_on",
+      label: "Ageing Based On",
+      fieldtype: "Select",
+      options: ["Posting Date", "Due Date"],
+      default: "Posting Date"
+    },
+    {
+      fieldname: "range",
+      label: "Ageing Ranges",
+      fieldtype: "Data",
+      default: "30,60,90,120",
+      description: "Comma-separated e.g. 30,60,90"
     },
     {
       fieldname: "territory",

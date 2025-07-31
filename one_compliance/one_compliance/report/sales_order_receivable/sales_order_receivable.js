@@ -3,8 +3,8 @@
 
 frappe.query_reports["Sales Order Receivable"] = {
     onload: function (report) {
-          report.page.add_inner_button("Sales Order Receivable Summary", function () {
-              frappe.set_route("query-report", "Sales Order Receivable Summary");
+          report.page.add_inner_button("Sales Order Receivable Aging Summary", function () {
+              frappe.set_route("query-report", "Sales Order Receivable Aging Summary");
           });
       },
     filters: [
