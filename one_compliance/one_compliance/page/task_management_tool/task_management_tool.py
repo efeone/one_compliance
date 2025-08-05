@@ -3,73 +3,101 @@ from frappe.utils import get_datetime
 from erpnext.accounts.party import get_party_account
 
 @frappe.whitelist()
-def get_task(status = None, task = None, project = None, customer = None, department = None, sub_category = None, employee = None, employee_group = None, from_date = None, to_date = None):
+def get_task(status=None, task=None, project=None, customer=None, department=None, 
+             sub_category=None, employee=None, employee_group=None, from_date=None, to_date=None):
     current_user = frappe.session.user
     roles = frappe.get_roles(current_user)
-    user_id = f'"{employee}"' if id else None
+    user_value = f'"{employee}"' if employee else None
 
-    # Construct the SQL query to fetch list of tasks
+    status_mapping = {
+        "open": "Open",
+        "working": "Working",
+        "pending_review": "Pending Review",
+        "overdue": "Overdue",
+        "hold": "Hold",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+    }
+
+    # Start building query with JOIN to compliance sub category
     query = """
-	SELECT
-        t.name,t.project,t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category, t.exp_start_date, t.exp_end_date, t._assign, t.status, t.assigned_to, t.completed_by, t.color, t.custom_is_payable, t.readiness_status
+    SELECT
+        t.name,
+        t.project,
+        t.subject,
+        t.project_name,
+        t.customer,
+        c.department,
+        t.compliance_sub_category,
+        t.exp_start_date,
+        t.exp_end_date,
+        t._assign,
+        t.status,
+        t.assigned_to,
+        t.completed_by,
+        t.color,
+        t.custom_is_payable,
+        t.readiness_status
     FROM
-        tabTask t LEFT JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
+        `tabTask` t
+    LEFT JOIN `tabCompliance Sub Category` c 
+        ON t.compliance_sub_category = c.name
     """
 
+    conditions = []
     if status:
-            query += f" WHERE t.status = '{status}'"
+        # Normalize and map status value
+        status = status.strip().lower()
+        db_status = status_mapping.get(status, status)
+        conditions.append(f"t.status = '{db_status}'")
     else:
-        query += " WHERE t.status IN ('open', 'working', 'overdue')"
+        conditions.append("t.status IN ('Open', 'Working', 'Pending Review', 'Overdue')")
 
     if task:
-            query += f" AND t.name = '{task}'"
-
+        conditions.append(f"t.name = '{task}'")
     if project:
-            query += f" AND t.project = '{project}'"
-
+        conditions.append(f"t.project = '{project}'")
     if customer:
-            query += f" AND t.customer = '{customer}'"
-
+        conditions.append(f"t.customer = '{customer}'")
     if department:
-            query += f" AND c.department = '{department}'"
-
+        conditions.append(f"c.department = '{department}'")
     if sub_category:
-            query += f" AND t.compliance_sub_category = '{sub_category}'"
-
+        conditions.append(f"t.compliance_sub_category = '{sub_category}'")
     if employee:
-            query += f" AND t._assign LIKE '%{user_id}%'"
-
+        # Use the employee value directly rather than the undefined id variable
+        conditions.append(f"t._assign LIKE '%{employee}%'")
     if employee_group:
-            query += f" AND t.assigned_to = '{employee_group}'"
-
+        conditions.append(f"t.assigned_to = '{employee_group}'")
     if from_date:
-            query += f" AND t.exp_start_date >= '{from_date}'"
-
+        conditions.append(f"t.exp_start_date >= '{from_date}'")
     if to_date:
-            query += f" AND t.exp_end_date < '{to_date}'"
+        conditions.append(f"t.exp_end_date < '{to_date}'")
 
-
-    # Only show tasks with readiness_status = "Ready" for Executive (excluding Administrator)
+    # Apply readiness check only for executives (excluding Administrator)
     if current_user != "Administrator" and "Executive" in roles:
-        query +="AND (t.readiness_status = 'Ready' OR t.readiness_status IS NULL OR t.readiness_status = '')"
+        conditions.append("(t.readiness_status = 'Ready' OR t.readiness_status IS NULL OR t.readiness_status = '')")
 
-    query += """ ORDER BY
-            t.modified DESC;"""
+    query += " WHERE " + " AND ".join(conditions)
+    query += " ORDER BY t.modified DESC;"
 
-    task_list = frappe.db.sql(query, as_dict=1)
+    task_list = frappe.db.sql(query, as_dict=True)
     for task in task_list:
         task['employee_names'] = []
         if task['_assign']:
-            user_ids = frappe.parse_json(task['_assign'])
+            try:
+                user_ids = frappe.parse_json(task['_assign'])
+            except Exception:
+                user_ids = []
 
             if user_ids:
-                user_names_query = """
+                placeholders = ', '.join(['%s'] * len(user_ids))
+                user_names_query = f"""
                     SELECT name, employee_name, user_id FROM `tabEmployee`
-                    WHERE user_id IN ({})
-                """.format(', '.join(['%s' for _ in user_ids]))
-
+                    WHERE user_id IN ({placeholders})
+                """
                 user_names = frappe.db.sql(user_names_query, tuple(user_ids), as_dict=True)
-                task['_assign'] = [{'employee_name': user['employee_name'], 'employee_id': user['name']} for user in user_names]
+                task['_assign'] = [{'employee_name': user['employee_name'], 'employee_id': user['name']} 
+                                    for user in user_names]
                 task['employee_names'] = [user['employee_name'] for user in user_names]
             else:
                 task['_assign'] = []
@@ -81,13 +109,19 @@ def get_task(status = None, task = None, project = None, customer = None, depart
         if task['completed_by']:
             if task['completed_by'] == 'Administrator':
                 task['completed_by_name'] = 'Administrator'
+                task['completed_by_id'] = 'Administrator'
             else:
-                completed_by = frappe.get_value("Employee", {"user_id": task['completed_by']}, ["name", "employee_name"], as_dict=True)
-                task['completed_by_name'] = completed_by["employee_name"]
-                task['completed_by_id'] = completed_by["name"]
+                completed_by = frappe.get_value("Employee", {"user_id": task['completed_by']}, 
+                                                  ["name", "employee_name"], as_dict=True)
+                if completed_by:
+                    task['completed_by_name'] = completed_by["employee_name"]
+                    task['completed_by_id'] = completed_by["name"]
+                else:
+                    task['completed_by_name'] = ""
+                    task['completed_by_id'] = ""
         else:
-            task['completed_by_name'] = []
-            task['completed_by_id'] = []
+            task['completed_by_name'] = ""
+            task['completed_by_id'] = ""
 
     return task_list
 

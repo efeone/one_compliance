@@ -762,6 +762,10 @@ function set_status_colors(page) {
             statusElement.style.color = 'tomato';
 						showTicIcon(statusElement);
 						projectElement.style.color = 'tomato';
+        } else if (status === 'Pending Review') {
+            statusElement.style.color = 'tomato';
+                        showTicIcon(statusElement);
+                        projectElement.style.color = 'tomato';
         }
 
 				if (projectColor) {
