@@ -18,30 +18,40 @@ def get_users_by_department(doctype, txt, searchfield, start, page_len, filters)
     exclude_email = filters.get("exclude_email")
     department = filters.get("department")
 
+    # Step 1: Get employees in the department, excluding those with status "Left"
     employees = frappe.get_all(
         "Employee",
-        filters={"department": department},
-        fields=["user_id"],
+        filters={
+            "department": department,
+            "status": ["!=", "Left"]
+        },
+        fields=["user_id"]
     )
+
+    # Step 2: Build list of user_ids from valid employees
     user_ids = [emp.user_id for emp in employees if emp.user_id]
+
+    # Step 3: Remove the excluded user if present
+    if exclude_email in user_ids:
+        user_ids.remove(exclude_email)
 
     if not user_ids:
         return []
 
-    if exclude_email in user_ids:
-        user_ids.remove(exclude_email)
-
+    # Step 4: Fetch users by user_ids without checking if enabled
     users = frappe.get_all(
         "User",
-        filters={"name": ["in", user_ids], "enabled": 1},
-        or_filters=[["name", "like", f"%{txt}%"], ["full_name", "like", f"%{txt}%"]],
+        filters={"name": ["in", user_ids]},
+        or_filters=[
+            ["name", "like", f"%{txt}%"],
+            ["full_name", "like", f"%{txt}%"]
+        ],
         fields=["name", "full_name"],
         start=start,
         page_length=page_len,
     )
 
     return [(user["name"], user["full_name"]) for user in users]
-
 
 @frappe.whitelist()
 def reassign_tasks(assign_from, assign_to, selected_tasks_json):
@@ -87,7 +97,7 @@ def reassign_tasks(assign_from, assign_to, selected_tasks_json):
                 "doctype": "ToDo",
                 "owner": assign_to,
                 "allocated_to": assign_to,
-                "assigned_by": assign_from,
+                "assigned_by": frappe.session.user,
                 "reference_type": "Task",
                 "reference_name": task_id,
                 "description": f"Task reassigned from {assign_from}",
@@ -240,3 +250,67 @@ def get_tasks_for_user(assign_from):
         {"task_id": task.name, "subject": task.subject, "project": task.project}
         for task in tasks
     ]
+@frappe.whitelist()
+def get_tasks_for_employee(assign_from, assignment_type=None):
+    # Query tasks from the ToDo doctype
+    tasks = frappe.get_all('ToDo', filters={'allocated_to': assign_from, 'status': 'Open'}, fields=['reference_type', 'reference_name', 'description'])
+
+    task_details = []
+    for task in tasks:
+        reference_type = task.reference_type
+        reference_id = task.reference_name
+        task_description = task.description
+        if reference_type == 'Task':
+            # Fetch details from the Task doctype based on the task_id
+            task_details_query = frappe.get_all('Task', filters={'name': reference_id}, fields=['subject', 'project'])
+            if task_details_query:
+                task_details.append({
+                    'task_id': reference_id,
+                    'subject': task_details_query[0]['subject'],
+                    'project': task_details_query[0]['project']
+                })
+        elif reference_type == 'Project' and assignment_type != 'Remove':
+
+            # Fetch task details from the Task doctype based on the project_name
+            tasks_for_project = frappe.get_all('Task', filters={'project': reference_id}, fields=['name', 'project', 'subject'])
+            project_task_details = []
+            for task in tasks_for_project:
+                project_task_details.append({
+                    'task_id': task.name,
+                    'subject': task.subject,
+                    'project': task.project
+                })
+            task_details.extend(project_task_details)
+    return task_details
+
+@frappe.whitelist()
+def remove_task_assignments(employee, selected_tasks_json):
+    import json
+
+    try:
+        selected_tasks = json.loads(selected_tasks_json)
+
+        if not selected_tasks:
+            return "No tasks selected."
+
+        for task_id in selected_tasks:
+            # Get ToDos for the given employee and task
+            todos = frappe.get_all("ToDo", filters={
+                "reference_type": "Task",
+                "reference_name": task_id,
+                "allocated_to": employee,
+                "status": "Open"
+            }, fields=["name"])
+
+            # Cancel each ToDo (no need to touch Task.assigned_to)
+            for todo in todos:
+                todo_doc = frappe.get_doc("ToDo", todo.name)
+                todo_doc.status = "Cancelled"
+                todo_doc.save(ignore_permissions=True)
+
+        frappe.db.commit()
+        return "Assignments removed successfully"
+
+    except Exception as e:
+        frappe.log_error(frappe.get_traceback(), "Task Assignment Removal Error")
+        return f"Error occurred: {str(e)}"

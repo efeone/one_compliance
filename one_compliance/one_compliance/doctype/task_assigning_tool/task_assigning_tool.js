@@ -2,6 +2,81 @@
 // For license information, please see license.txt
 
 frappe.ui.form.on('Task Assigning Tool', {
+
+  	assignment_type: function(frm) {
+      if (frm.doc.assignment_type === "Remove") {
+        frm.toggle_display('employee', true);
+        frm.toggle_display('assign_from', false);
+        frm.toggle_display('assign_to', false);
+        frm.toggle_display('assign', false);
+      } else if (frm.doc.assignment_type === "Transfer") {
+        frm.toggle_display('employee', false);
+        frm.toggle_display('assign_from', true);
+        frm.toggle_display('assign_to', true);
+        frm.toggle_display('assign', true);
+      }
+      clear_values(frm);
+    },
+
+    employee: function(frm) {
+      if (frm.doc.assignment_type === "Remove" && frm.doc.employee) {
+        frappe.call({
+          method: 'one_compliance.one_compliance.doctype.task_assigning_tool.task_assigning_tool.get_tasks_for_employee',
+          args: {
+            assign_from: frm.doc.employee,
+  					assignment_type: frm.doc.assignment_type
+          },
+          callback: function(r) {
+            if (r.message) {
+  						frm.clear_table('task_removal');
+  						r.message.forEach(task => {
+  						  let assigned_task = frm.add_child('task_removal');
+  						  assigned_task.task_id = task.task_id;
+  						  assigned_task.subject = task.subject;
+  						  assigned_task.project = task.project;
+  						});
+  						frm.refresh_field('task_removal');
+            }
+          }
+        });
+      }
+    },
+
+    remove_assignments: function(frm) {
+      if (!frm.doc.employee) {
+        frappe.msgprint("Please select an employee.");
+        return;
+      }
+
+      // Get only checked rows
+      const selectedTaskIds = (frm.doc.task_removal || [])
+        .filter(row => row.__checked === 1)  // Make sure only selected checkboxes are used
+        .map(row => row.task_id);
+
+      if (selectedTaskIds.length === 0) {
+        frappe.msgprint("Please select at least one task to remove.");
+        return;
+      }
+
+      frappe.call({
+        method: "one_compliance.one_compliance.doctype.task_assigning_tool.task_assigning_tool.remove_task_assignments",
+        args: {
+          employee: frm.doc.employee,
+          selected_tasks_json: JSON.stringify(selectedTaskIds)
+        },
+        freeze: true,
+        freeze_message: "Removing selected task assignments...",
+        callback: function(r) {
+          if (r.message === "Assignments removed successfully") {
+            frappe.msgprint("Selected assignments removed successfully.");
+            frm.trigger("employee"); // Re-fetch tasks
+          } else {
+            frappe.msgprint("Error: " + r.message);
+          }
+        }
+      });
+    },
+
     refresh: function(frm) {
     frm.disable_save();
         frm.toggle_display('add_to_subcategories', false);
@@ -38,7 +113,7 @@ frappe.ui.form.on('Task Assigning Tool', {
         var selectedTaskIds = selectedRows.map(function(rowName) {
             var row = frm.doc.task_reassigns.find(r => r.name === rowName);
             return row && row.task_id;
-        }).filter(Boolean);    
+        }).filter(Boolean);
 
         frappe.call({
             method: 'one_compliance.one_compliance.doctype.task_assigning_tool.task_assigning_tool.reassign_tasks',
@@ -60,7 +135,7 @@ frappe.ui.form.on('Task Assigning Tool', {
             }
         });
     },
-    
+
         compliance_categories: function(frm) {
              // Get the selected Compliance Category
              var selectedCategory = frm.doc.compliance_categories;
