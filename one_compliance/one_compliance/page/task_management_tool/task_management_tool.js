@@ -925,7 +925,12 @@ function update_status(page, taskName, projectId, taskId) {
 	        fieldname: 'completed_on',
 	        fieldtype: 'Date',
 	        default: 'Today'
-	    }
+	    },
+		{
+			label: 'Comment',
+			fieldname: 'comment',
+			fieldtype: 'Small Text'
+		}
 	];
 
 	let d = new frappe.ui.Dialog({
@@ -933,36 +938,61 @@ function update_status(page, taskName, projectId, taskId) {
 		fields: fields,
 		primary_action_label: 'Update',
 		primary_action(values) {
+			// Block if validation requires comment but it's missing
+			if (d.fields_dict.comment.df.reqd && !values.comment) {
+				frappe.msgprint(__('Please enter a comment before updating.'));
+				return;
+			}
+
 			frappe.call({
-		    method: 'one_compliance.one_compliance.doc_events.task.update_task_status',
-		    args: {
-		      'task_id': taskId,
-		      'status': values.status,
-		      'completed_by': values.completed_by,
-		      'completed_on': values.completed_on
-		    },
-		    callback: function(r){
-		      if (r.message){
-		        d.hide();
-						const selectedStatus = page.fields_dict.status.get_value();
-						const taskName = page.fields_dict.task.get_value();
-						const projectName = page.fields_dict.project.get_value();
-						const customerName = page.fields_dict.customer.get_value();
-						const department = page.fields_dict.department.get_value();
-						const subCategory = page.fields_dict.compliance_sub_category.get_value();
-						const employee = page.fields_dict.employee.get_value();
-						const employeeGroup = page.fields_dict.employee_group.get_value();
-						const from_date = page.fields_dict.from_date.get_value();
-						const to_date = page.fields_dict.to_date.get_value();
-						refresh_tasks_manually(page, selectedStatus, taskName, projectName, customerName, department, subCategory, employee, employeeGroup, from_date, to_date)
-						// location.reload();
-		      }
-		    }
-		  });
+			    method: 'one_compliance.one_compliance.doc_events.task.update_task_status',
+			    args: {
+			      'task_id': taskId,
+			      'status': values.status,
+			      'completed_by': values.completed_by,
+			      'completed_on': values.completed_on,
+			      'comment': values.comment
+			    },
+			    callback: function(r){
+			      if (r.message){
+			        d.hide();
+					const selectedStatus = page.fields_dict.status.get_value();
+					const taskName = page.fields_dict.task.get_value();
+					const projectName = page.fields_dict.project.get_value();
+					const customerName = page.fields_dict.customer.get_value();
+					const department = page.fields_dict.department.get_value();
+					const subCategory = page.fields_dict.compliance_sub_category.get_value();
+					const employee = page.fields_dict.employee.get_value();
+					const employeeGroup = page.fields_dict.employee_group.get_value();
+					const from_date = page.fields_dict.from_date.get_value();
+					const to_date = page.fields_dict.to_date.get_value();
+					refresh_tasks_manually(page, selectedStatus, taskName, projectName, customerName, department, subCategory, employee, employeeGroup, from_date, to_date)
+			      }
+			    }
+			});
 		},
 	});
 	d.set_value('completed_by', frappe.session.user);
-d.show();
+
+	//Hide comment initially
+	d.fields_dict.comment.$wrapper.hide();
+	d.set_df_property('comment', 'reqd', 0);
+
+	//Fetch project and validate dates
+	frappe.db.get_doc("Project", projectId).then(project => {
+	    if (project.expected_end_date) {
+	        let expectedDate = new Date(project.expected_end_date);
+	        let completedDate = new Date(frappe.datetime.get_today());
+
+	        if (completedDate > expectedDate) {
+	            // force comment if task is completed after project EED
+	            d.fields_dict.comment.$wrapper.show();
+	            d.set_df_property('comment', 'reqd', 1);
+	        }
+	    }
+	});
+
+	d.show();
 }
 
 // Function to update status to working when clicking start time

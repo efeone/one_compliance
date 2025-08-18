@@ -48,7 +48,7 @@ def create_todo(doctype, name, assign_to, owner, description):
 
 	add_custom(
 		{
-			"assign_to": assign_to,
+			"assign_to": [assign_to],
 			"doctype": doctype,
 			"name": name,
 			"description": description,

@@ -191,6 +191,21 @@ class CustomTask(NestedSet):
 		self.unassign_todo()
 		self.populate_depends_on()
 
+	def before_validate(self):
+		self.update_project_eed()
+
+	def update_project_eed(self):
+		'''
+			Update the project's expected end date if the task's completion date is later.
+		'''
+		if not self.project or not self.completed_on:
+			return
+
+		project = frappe.get_doc("Project", self.project)
+
+		if project.expected_end_date < self.completed_on:
+			project.expected_end_date = self.completed_on
+			project.save()
 	def unassign_todo(self):
 		if self.status == "Completed":
 			close_all_assignments(self.doctype, self.name)
@@ -344,13 +359,14 @@ def task_on_update(doc, method):
 			if frappe.db.exists('Project', doc.project):
 				project = frappe.get_doc ('Project', doc.project)
 				if project.status == 'Completed':
-					if not frappe.db.get_value("Sales Order", project.sales_order, "custom_is_rework"):
-						create_project_completion_todos(project.sales_order, project.project_name)
-					# send_project_completion_mail = frappe.db.get_value('Customer', project.customer, 'send_project_completion_mail')
-					# if send_project_completion_mail:
-					# 	email_id = frappe.db.get_value('Customer', project.customer, 'email_id')
-					# 	if email_id:
-					# 		project_complete_notification_for_customer(project, email_id)
+					sales_order = project.sales_order
+					if not sales_order or not frappe.db.exists('Sales Order', sales_order):
+						sales_order = frappe.db.exists("Sales Order", {"project":project.name, 'docstatus':1})
+						if not sales_order:
+							frappe.throw(_(f"Sales Order not found for {project.name}"))
+					if not frappe.db.get_value("Sales Order", sales_order, "custom_is_rework"):
+						create_project_completion_todos(sales_order, project.name)
+
 		# Check if this task is a dependency for other tasks
 		dependent_tasks = frappe.get_all('Task Depends On', filters={'task': doc.name}, fields=['parent'])
 		for dependent_task in dependent_tasks:
@@ -501,12 +517,31 @@ def create_sales_order(project, rate, sub_category_doc, payment_terms=None, subm
 	frappe.msgprint("Sales Order {0} Created against {1}".format(new_sales_order.name, project.name), alert=True)
 
 @frappe.whitelist()
-def update_task_status(task_id, status, completed_by, completed_on):
+def update_task_status(task_id, status, completed_by, completed_on, comment=None):
 	# Load the task document from the database
 	task_doc = frappe.get_doc("Task", task_id)
 	task_doc.completed_on = frappe.utils.getdate(completed_on)
 	task_doc.status = status
 	task_doc.completed_by = completed_by
+	if comment:
+		# Task comment
+		task_prefix = frappe.bold(_("Reason for updating task status:"))
+		task_comment = f"{task_prefix}<br> {frappe.utils.escape_html(comment)}"
+		task_doc.add_comment("Comment", task_comment)
+
+		# Project comment
+		if task_doc.project:
+			project_prefix = frappe.bold(_("Reason for updating expected end:"))
+			project_comment = (
+				f"{project_prefix} <br>"
+				f"Task <b>{task_doc.name}</b> updated to status <b>{status}</b> "
+				f"on {completed_on}.<br>"
+				f"Comment: {frappe.utils.escape_html(comment)}"
+			)
+			project_doc = frappe.get_doc("Project", task_doc.project)
+			project_doc.add_comment("Comment", project_comment)
+
+
 	task_doc.save()
 	frappe.db.commit()
 	frappe.msgprint("Task Status has been set to {0}".format(status), alert=True)
