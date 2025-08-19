@@ -34,12 +34,12 @@ def update_sales_order_billing_instruction(sales_order, custom_billing_instructi
 	"""
 	Updates the 'Billing Instruction' field in the Sales Order.
 	"""
-	if not frappe.db.exists("Sales Order", sales_order):
+	if frappe.db.exists('Sales Order', sales_order):
+		sales_order_doc = frappe.get_doc('Sales Order', sales_order)
+		sales_order_doc.custom_billing_instruction = custom_billing_instruction
+		sales_order_doc.save()
+	else:
 		frappe.throw(_("Sales Order does not exist"))
-
-	frappe.db.set_value(
-		"Sales Order", sales_order, "custom_billing_instruction", custom_billing_instruction
-	)
 
 
 @frappe.whitelist()
@@ -57,7 +57,11 @@ def set_project_status(project, status, comment=None):
 
 	project = frappe.get_doc("Project", project)
 	frappe.has_permission(doc=project, throw=True)
-
+	if status == "Cancelled" and project.sales_order:
+		if frappe.db.exists("Sales Order", project.sales_order):
+			so = frappe.get_doc("Sales Order", project.sales_order)
+			if so.docstatus == 1:
+				so.cancel()
 	tasks = frappe.get_all("Task", filters={"project": project.name}, fields=["name", "status"])
 
 	for task in tasks:
@@ -141,7 +145,6 @@ def convert_project_to_premium(project):
 			task.subject = premium_task.subject
 			task.project = project_doc.name
 			task.expected_time = premium_task.task_duration or 0
-			task.task_weightage = premium_task.task_weightage or 0
 			task.save()
 
 		project_doc.is_premium = 1
@@ -149,6 +152,6 @@ def convert_project_to_premium(project):
 
 		return "success"
 
-	except Exception:
+	except Exception as e:
 		frappe.log_error(frappe.get_traceback(), "Convert Project to Premium Error")
 		return "failed"
