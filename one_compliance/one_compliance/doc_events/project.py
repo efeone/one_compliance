@@ -172,3 +172,72 @@ def convert_project_to_premium(project):
     except Exception as e:
         frappe.log_error(frappe.get_traceback(), "Convert Project to Premium Error")
         return "failed"
+
+@frappe.whitelist()
+def create_tasks_from_template(project):
+    """Create tasks in a Project from its Sub Category's Project Template"""
+    project_doc = frappe.get_doc("Project", project)
+
+    if not project_doc.compliance_sub_category:
+        frappe.throw("No Compliance Sub Category linked with this Project")
+
+    sub_category_doc = frappe.get_doc("Compliance Sub Category", project_doc.compliance_sub_category)
+    if not sub_category_doc.project_template:
+        frappe.throw("No Project Template linked with this Sub Category")
+
+    template_doc = frappe.get_doc("Project Template", sub_category_doc.project_template)
+
+    created_tasks = []
+
+    for template_task in template_doc.tasks:
+        # Get original task template doc
+        template_task_doc = None
+        if template_task.task:
+            template_task_doc = frappe.get_doc("Task", template_task.task)
+
+        # Create new Task
+        task = frappe.new_doc("Task")
+        task.compliance_sub_category = project_doc.compliance_sub_category
+        task.subject = template_task.subject
+        task.project = project_doc.name
+        task.company = project_doc.company
+        task.project_name = project_doc.project_name
+        task.category_type = project_doc.category_type
+        task.custom_serial_number = template_task.idx
+
+        task.status = "Open"
+        task.save(ignore_permissions=True)
+
+        # Assignment logic
+        if template_task.type and template_task.employee_or_group:
+            # Just store reference in task (optional if you have assigned_to field)
+            frappe.db.set_value("Task", task.name, "assigned_to", template_task.employee_or_group)
+
+            if template_task.type == "Employee":
+                user_id = frappe.db.get_value("Employee", template_task.employee_or_group, "user_id")
+                if user_id:
+                    create_todo("Task", task.name, user_id, user_id, f"Task {task.name} Assigned Successfully")
+
+            elif template_task.type == "Employee Group":
+                employee_group = frappe.get_doc("Employee Group", template_task.employee_or_group)
+                if employee_group.employee_list:
+                    for emp in employee_group.employee_list:
+                        if emp.user_id:
+                            create_todo("Task", task.name, emp.user_id, emp.user_id, f"Task {task.name} Assigned Successfully")
+
+        created_tasks.append(task.name)
+
+    return created_tasks
+
+def create_todo(ref_type, ref_name, owner, allocated_to, description):
+    """Helper to create ToDo linked to a Task"""
+    todo = frappe.get_doc({
+        "doctype": "ToDo",
+        "description": description,
+        "reference_type": ref_type,
+        "reference_name": ref_name,
+        "owner": owner,
+        "allocated_to": allocated_to,
+    })
+    todo.insert(ignore_permissions=True)
+    return todo
