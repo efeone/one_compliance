@@ -37,10 +37,10 @@ def create_todo(doctype, name, assign_to, owner, description):
 			due_date = frappe.db.get_value(doctype, name, 'exp_end_date')
 	add_custom(
 		{
-	        "assign_to": [assign_to],
-	        "doctype": doctype,
-	        "name": name,
-	        "description": description,
+			"assign_to": [assign_to],
+			"doctype": doctype,
+			"name": name,
+			"description": description,
 			"assigned_by": frappe.session.user,
 			"date": due_date,
 		}
@@ -290,45 +290,54 @@ def audit_overdue():
 		return 0
 
 def create_project_completion_todos(sales_order, project_name):
-    project = frappe.get_doc("Project", project_name)
+	"""method to create ToDo for accounts user on project completion
 
-    if project.get("custom_is_internal"):
-        return
+	Args:
+		sales_order (str): ID of Sales Order linked with project
+		project_name (str): Project Name of the Project to handle completion
+	"""
+	project_id = frappe.db.exists("Project", {"project_name": project_name})
+	if not project_id:
+		frappe.throw(f"Project {project_name} does not exist")
+	project = frappe.get_doc("Project", project_id)
 
-    compliance_sub_category = project.get("compliance_sub_category")
-    customer = project.get("customer")
-    company = project.get("company")
+	if project.get("custom_is_internal"):
+		return
 
-    # Validate necessary fields
-    if not customer:
-        frappe.throw(f"Customer is missing in Project: {project_name}")
-    if not compliance_sub_category:
-        frappe.throw(f"Compliance Sub Category is missing in Project: {project_name}")
+	compliance_sub_category = project.get("compliance_sub_category")
+	customer = project.get("customer")
+	company = project.get("company")
 
-    # Construct task description
-    description = f"{compliance_sub_category} for {customer} is Completed, Please Proceed with the invoice"
-    if frappe.db.exists("ToDo", {
-        "reference_type": "Sales Order",
-        "reference_name": sales_order,
-        "description": description
-    }):
-        return
+	# Validate necessary fields
+	if not customer:
+		frappe.throw(f"Customer is missing in Project: {project_name}")
+	if not compliance_sub_category:
+		frappe.throw(f"Compliance Sub Category is missing in Project: {project_name}")
 
-    accounts_users = get_users_with_role("Accounts User")
+	# Construct task description
+	description = f"{compliance_sub_category} for {customer} is Completed, Please Proceed with the invoice"
+	if frappe.db.exists("ToDo", {
+		"reference_type": "Sales Order",
+		"reference_name": sales_order,
+		"description": description
+	}):
+		return
 
-    # Assign the task
-    todos = add_custom(
-        args={
-            "assign_to": accounts_users,
-            "doctype": "Sales Order",
-            "name": sales_order,
-            "description": description
-        },
-        ignore_permissions=True
-    )
+	accounts_users = get_users_with_role("Accounts User")
 
-    for todo in todos:
-        frappe.db.set_value("ToDo", todo.name, "company", company)
+	# Assign the task
+	todos = add_custom(
+		args={
+			"assign_to": accounts_users,
+			"doctype": "Sales Order",
+			"name": sales_order,
+			"description": description
+		},
+		ignore_permissions=True
+	)
+
+	for todo in todos:
+		frappe.db.set_value("ToDo", todo.name, "company", company)
 
 @frappe.whitelist()
 def make_time_sheet_entry(event):
@@ -346,57 +355,57 @@ def make_time_sheet_entry(event):
 
 @frappe.whitelist()
 def create_timesheet(employee, activity_type, from_time, to_time):
-    from_time = get_datetime(from_time)
-    to_time = get_datetime(to_time)
-    employee_id = frappe.get_value("Employee", {"name": employee}, "name")
+	from_time = get_datetime(from_time)
+	to_time = get_datetime(to_time)
+	employee_id = frappe.get_value("Employee", {"name": employee}, "name")
 
-    # Check if a timesheet already exists for the employee within the given date range
-    if frappe.db.exists("Timesheet", {"employee": employee_id, "start_date": from_time.date(), "end_date": to_time.date()}):
-        frappe.throw(_("Timesheet already Created"))
-    else:
-        timesheet = frappe.new_doc("Timesheet")
-        timesheet.employee = employee_id
-        timesheet.append("time_logs",{
-            "activity_type": activity_type,
-            "from_time": from_time,
-            "to_time": to_time
-        })
+	# Check if a timesheet already exists for the employee within the given date range
+	if frappe.db.exists("Timesheet", {"employee": employee_id, "start_date": from_time.date(), "end_date": to_time.date()}):
+		frappe.throw(_("Timesheet already Created"))
+	else:
+		timesheet = frappe.new_doc("Timesheet")
+		timesheet.employee = employee_id
+		timesheet.append("time_logs",{
+			"activity_type": activity_type,
+			"from_time": from_time,
+			"to_time": to_time
+		})
 
-        timesheet.insert(ignore_permissions=True)
-        frappe.db.commit()
+		timesheet.insert(ignore_permissions=True)
+		frappe.db.commit()
 
 @frappe.whitelist()
 def get_employee_list_for_hod():
-    user_roles = frappe.get_roles(frappe.session.user)
-    if "Head Of Department" in user_roles or "System Manager" in user_roles:
-        employees = frappe.db.sql("""
-            SELECT
-                employee as employee_id, employee_name
-            FROM
-                `tabEmployee`
-            WHERE
+	user_roles = frappe.get_roles(frappe.session.user)
+	if "Head Of Department" in user_roles or "System Manager" in user_roles:
+		employees = frappe.db.sql("""
+			SELECT
+				employee as employee_id, employee_name
+			FROM
+				`tabEmployee`
+			WHERE
 				status = 'Active'
-        """, as_dict=True)
-    else:
-        employees = frappe.db.sql("""
-            SELECT
-                employee as employee_id, employee_name
-            FROM
-                `tabEmployee`
-            WHERE
-                user_id = %s
-        """, frappe.session.user, as_dict=True)
-    return employees
+		""", as_dict=True)
+	else:
+		employees = frappe.db.sql("""
+			SELECT
+				employee as employee_id, employee_name
+			FROM
+				`tabEmployee`
+			WHERE
+				user_id = %s
+		""", frappe.session.user, as_dict=True)
+	return employees
 
 @frappe.whitelist()
 def add_custom(args=None, *, ignore_permissions=False):
 	"""add in someone's to do list
 	args = {
-	        "assign_to": [],
-	        "doctype": ,
-	        "name": ,
-	        "description": ,
-	        "assignment_rule":
+			"assign_to": [],
+			"doctype": ,
+			"name": ,
+			"description": ,
+			"assignment_rule":
 	}
 
 	"""
@@ -467,9 +476,9 @@ def add_custom(args=None, *, ignore_permissions=False):
 
 			# notify
 			ignore_email = frappe.db.get_value("Ignore ToDo Notifications Detail", {
-       			"parent": "Compliance Settings",
-          		"doctype_to_ignore":d.reference_type
-            }, "email")
+	   			"parent": "Compliance Settings",
+		  		"doctype_to_ignore":d.reference_type
+			}, "email")
 			ignore_system_notification = frappe.db.get_value("Ignore ToDo Notifications Detail", {
 	   			"parent": "Compliance Settings",
 		  		"doctype_to_ignore":d.reference_type
