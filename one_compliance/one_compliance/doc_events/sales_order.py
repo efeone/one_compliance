@@ -423,7 +423,7 @@ def create_opportunity():
 						task.subject = f"Follow up on Opportunity {opportunity.name}"
 						task.reference_type = "Opportunity"
 						task.reference_name = opportunity.name
-						task.status = "Open",
+						task.status = "Open"
 						task.description = f"Follow up for compliance sub category: {subcat_name}"
 						task.assigned_by = frappe.session.user
 						task.company = opportunity.company
