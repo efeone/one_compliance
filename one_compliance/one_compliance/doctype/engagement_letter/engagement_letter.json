@@ -37,14 +37,15 @@
   "past_exposure",
   "terms_and_conditions",
   "team_details_tab",
-  "project_team"
+  "project_team",
+  "amended_from"
  ],
  "fields": [
   {
    "fieldname": "engagement_letter_types",
    "fieldtype": "Select",
-   "label": "Engagement Letter types",
-   "options": "Preliminary analysis & report\nConsulting Engagement Letter"
+   "label": "Engagement Letter Types",
+   "options": "\nConsulting Engagement Letter"
   },
   {
    "fieldname": "section_break_dkkd",
@@ -60,7 +61,7 @@
    "fetch_from": "opportunity.opportunity_from",
    "fieldname": "opportunity_from",
    "fieldtype": "Data",
-   "label": "Opportunity from"
+   "label": " From Opportunity "
   },
   {
    "fetch_from": "opportunity.customer_name",
@@ -118,7 +119,8 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Draft\nSubmitted\nAccepted"
+   "options": "Draft\nSubmitted\nAccepted",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_xxfu",
@@ -132,12 +134,12 @@
   {
    "fieldname": "about_us_from_company",
    "fieldtype": "Text Editor",
-   "label": "About Us from company"
+   "label": "About Us "
   },
   {
    "fieldname": "backgroundunderstanding",
    "fieldtype": "Text Editor",
-   "label": "Background/Understanding"
+   "label": "Background / Understanding"
   },
   {
    "fieldname": "past_exposure",
@@ -164,7 +166,7 @@
   {
    "fieldname": "project_works",
    "fieldtype": "Data",
-   "label": "Project/ Works"
+   "label": "Project / Works"
   },
   {
    "fieldname": "section_break_2d5t",
@@ -177,12 +179,12 @@
   {
    "fieldname": "terms_and_conditions",
    "fieldtype": "Text Editor",
-   "label": "Terms and conditions"
+   "label": "Terms and Conditions"
   },
   {
    "fieldname": "timeframedays",
    "fieldtype": "Int",
-   "label": "TimeFrame(Days)"
+   "label": "Time Frame (Days)"
   },
   {
    "fieldname": "section_break_rszz",
@@ -192,11 +194,22 @@
    "fieldname": "note",
    "fieldtype": "Text Editor",
    "label": "Note"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Engagement Letter",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-07-25 17:03:33.104264",
+ "modified": "2025-09-01 12:27:21.557411",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter",
