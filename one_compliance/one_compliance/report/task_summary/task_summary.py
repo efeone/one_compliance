@@ -189,8 +189,7 @@ def get_task_data(filters):
     
     # Get employee names
     employee_names = get_employee_names([t.get("employee_id") for t in task_records if t.get("employee_id")])
-    
-    print(employee_names, "AJMAL")
+
   
     # Format task data
     formatted_data = []
