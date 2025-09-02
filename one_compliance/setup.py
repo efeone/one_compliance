@@ -5026,7 +5026,13 @@ def get_opportunity_custom_fields():
                 "label": "Sales Order",
                 "insert_after": "annual_revenue",
                 "options": "Sales Order"
-            }
+            },
+            {
+				"fieldname": "follow_up_reply",
+				"fieldtype": "Small Text",
+				"label": "Follow up Reply",			
+				"insert_after": "notes_html"
+			}
         ]
     }
 
