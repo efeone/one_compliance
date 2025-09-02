@@ -345,7 +345,7 @@ def task_on_update(doc, method):
 				project = frappe.get_doc ('Project', doc.project)
 				if project.status == 'Completed':
 					if not frappe.db.get_value("Sales Order", project.sales_order, "custom_is_rework"):
-						create_project_completion_todos(project.sales_order, project.name)
+						create_project_completion_todos(project.sales_order, project.project_name)
 					# send_project_completion_mail = frappe.db.get_value('Customer', project.customer, 'send_project_completion_mail')
 					# if send_project_completion_mail:
 					# 	email_id = frappe.db.get_value('Customer', project.customer, 'email_id')
