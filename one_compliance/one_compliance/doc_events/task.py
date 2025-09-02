@@ -6,7 +6,7 @@ from erpnext.accounts.party import get_party_account
 from frappe import _, throw
 from frappe.desk.form.assign_to import clear, close_all_assignments
 from frappe.email.doctype.notification.notification import get_context
-from frappe.utils import add_days, cstr, date_diff, flt, getdate
+from frappe.utils import add_days, cstr, date_diff, flt, getdate, today
 from frappe.utils.data import format_date
 from frappe.utils.nestedset import NestedSet
 from erpnext.projects.doctype.task.task import check_if_child_exists, CircularReferenceError
@@ -433,7 +433,9 @@ def make_sales_invoice(doc, method):
 								if frappe.db.get_value("Sales Order", sales_order, "custom_is_rework"):
 									frappe.db.set_value("Sales Order", sales_order, "workflow_state", "Completed")
 								else:
+									frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
 									frappe.db.set_value("Sales Order", sales_order, "workflow_state", "Proforma Invoice")
+									frappe.db.set_value("Sales Order", sales_order, "invoice_generation_date", today())
 							elif sales_order_status == "Pre-Invoice":
 								frappe.db.set_value("Sales Order", sales_order, "workflow_state", "Invoiced")
 						else:

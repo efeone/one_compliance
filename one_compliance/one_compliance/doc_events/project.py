@@ -1,15 +1,17 @@
 import frappe
-from frappe.model.mapper import get_mapped_doc
-from one_compliance.one_compliance.utils import create_project_completion_todos, send_notification
-from frappe.email.doctype.notification.notification import get_context
-from one_compliance.one_compliance.doc_events.task import update_expected_dates_in_task
-from frappe.utils import *
-from one_compliance.one_compliance.doc_events.task import (
-	create_sales_order, get_rate_from_compliance_agreement,
-	update_expected_dates_in_task)
-from frappe.utils.user import get_users_with_role
-from one_compliance.one_compliance.utils import add_custom as add_assign
 from frappe import _
+from frappe.email.doctype.notification.notification import get_context
+from frappe.utils import add_days, getdate, today
+from one_compliance.one_compliance.doc_events.task import (
+	create_sales_order,
+	get_rate_from_compliance_agreement,
+	update_expected_dates_in_task,
+)
+from one_compliance.one_compliance.utils import (
+	create_project_completion_todos,
+	send_notification,
+)
+
 
 @frappe.whitelist()
 def project_on_update(doc, method):
@@ -50,7 +52,7 @@ def set_project_status(project, status, comment=None):
 	"""
 	set status for project and all related tasks
 	"""
-	if not status in ("Open","Completed", "Cancelled", "Hold"):
+	if status not in ("Open","Completed", "Cancelled", "Hold"):
 		frappe.throw(_("Status must be or Open or Hold Cancelled or Completed"))
 
 	project = frappe.get_doc("Project", project)
@@ -96,6 +98,8 @@ def project_after_insert(doc, method):
 					doc.save(ignore_permissions=True)
 			if sales_order:
 				frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
+				frappe.db.set_value("Sales Order", sales_order, "workflow_state", "Proforma Invoice")
+				frappe.db.set_value("Sales Order", sales_order, "invoice_generation_date", today())
 			else:
 				payment_terms = None
 				rate = 0
@@ -170,6 +174,6 @@ def convert_project_to_premium(project):
 
         return "success"
 
-    except Exception as e:
+    except Exception:
         frappe.log_error(frappe.get_traceback(), "Convert Project to Premium Error")
         return "failed"
