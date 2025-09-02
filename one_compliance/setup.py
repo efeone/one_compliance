@@ -29,6 +29,7 @@ def create_custom_fields_for_app():
     create_custom_fields(get_terms_and_conditions_custom_fields())
     create_custom_fields(get_timesheet_custom_fields())
     create_custom_fields(get_todo_custom_fields())
+    create_custom_fields(get_opportunity_item_custom_fields())
 
 
 def delete_custom_fields_for_app():
@@ -14609,3 +14610,26 @@ def get_todo_custom_fields():
             }
         ]
     }
+
+
+def get_opportunity_item_custom_fields():
+	return {
+		"Opportunity Item": [
+			{
+				"fieldname": "compliance_category",
+				"label": "Compliance Category",
+				"fieldtype": "Link",
+				"options": "Compliance Category",
+				"insert_after": "item_code",
+				"in_list_view": 1,
+			},
+			{
+				"fieldname": "compliance_sub_category",
+				"label": "Compliance Sub Category",
+				"fieldtype": "Link",				
+				"options": "Compliance Sub Category",		
+				"insert_after": "compliance_category",
+				"in_list_view": 1,	
+			}
+		]
+}

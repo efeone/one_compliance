@@ -315,7 +315,6 @@ def delete_linked_records(sales_order):
 
 
 
-
 @frappe.whitelist()
 def create_opportunity():
 	"""
@@ -328,6 +327,7 @@ def create_opportunity():
 
 	print(f"[INFO] Today's Date: {today_date}")
 
+	# Get all eligible Sales Orders
 	sales_orders = frappe.db.get_all(
 		"Sales Order",
 		filters={"follow_up_for_next_project": 1},
@@ -335,19 +335,27 @@ def create_opportunity():
 	)
 
 	for so in sales_orders:
-		sales_order_items = frappe.db.get_all(
+		# Fetch Sales Order Items with compliance fields
+		sales_order_items = frappe.get_all(
 			"Sales Order Item",
 			filters={"parent": so.name},
-			fields=["custom_compliance_subcategory"]
+			fields=[
+				"item_code", "item_name", "uom", "qty",
+				"brand", "item_group", "description",
+				"image", "base_rate", "base_amount", "rate", "amount",
+				"custom_compliance_subcategory as compliance_sub_category",
+				"custom_compliance_category as compliance_category"
+			]
 		)
 
 		for item in sales_order_items:
-			subcat_name = item.custom_compliance_subcategory
+			subcat_name = item.compliance_sub_category
 			if not subcat_name:
 				continue
 
 			compliance = frappe.get_doc("Compliance Sub Category", subcat_name)
 
+			# Only if repeat + notifications allowed
 			if not (compliance.allow_repeat and compliance.renew_notif):
 				continue
 
@@ -392,15 +400,15 @@ def create_opportunity():
 			if notif_trigger_date != today_date:
 				continue
 
+			# Skip if Opportunity already exists
 			existing_opportunity = frappe.db.exists("Opportunity", {"sales_order": so.name})
 			if existing_opportunity:
 				print(f"[SKIP] Opportunity already exists for Sales Order: {so.name}")
 				continue
 
 			try:
-       
+				# Only create for active sales orders
 				if so.status not in ["Draft", "Closed", "Cancelled"] or so.workflow_state not in ["Pending", "Cancelled"]:
-					frappe.log_error(so.status, so.workflow_state)
 					opportunity = frappe.new_doc("Opportunity")
 					opportunity.opportunity_from = "Customer"
 					opportunity.party_name = so.customer
@@ -409,6 +417,26 @@ def create_opportunity():
 					opportunity.sales_order = so.name
 					opportunity.naming_series = "CRM-OPP-.YYYY.-"
 					opportunity.company = so.company
+
+					# Map Sales Order Items → Opportunity Items
+					for soi in sales_order_items:
+						opp_item = opportunity.append("items", {})
+						opp_item.item_code = soi.item_code
+						opp_item.item_name = soi.item_name
+						opp_item.uom = soi.uom
+						opp_item.qty = soi.qty
+						opp_item.brand = soi.brand
+						opp_item.item_group = soi.item_group
+						opp_item.description = soi.description
+						opp_item.image = soi.image
+						opp_item.base_rate = soi.base_rate
+						opp_item.base_amount = soi.base_amount
+						opp_item.rate = soi.rate
+						opp_item.amount = soi.amount
+
+						# Map compliance fields to Opportunity Item
+						opp_item.compliance_category = soi.compliance_category
+						opp_item.compliance_sub_category = soi.compliance_sub_category
 
 					opportunity.insert(ignore_permissions=True)
 					frappe.db.commit()
@@ -454,8 +482,6 @@ def create_opportunity():
 				print(f"[ERROR] Failed to create opportunity for {subcat_name}: {e}")
 
 
-
-
 def set_compliance_fields(doc, method):
 	"""
 	For each item , this function fetches the related compliance category 
@@ -472,3 +498,5 @@ def set_compliance_fields(doc, method):
 			if subcat:
 				item.custom_compliance_category     = subcat.compliance_category
 				item.custom_compliance_subcategory  = subcat.name
+    
+    

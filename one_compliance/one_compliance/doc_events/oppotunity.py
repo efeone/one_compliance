@@ -66,7 +66,9 @@ def create_sales_order(opportunity):
             "item_name": i.item_name,
             "uom": i.uom,
             "qty": i.qty,
-            "rate": i.rate
+            "rate": i.rate,
+            "custom_compliance_category": i.compliance_category,
+			"custom_compliance_subcategory": i.compliance_sub_category,
         })
 
     return {
