@@ -12,6 +12,7 @@ frappe.ui.form.on('Opportunity',{
             frm.add_custom_button('Create Event',() =>{
                 create_event(frm)
             });
+            make_buttons(frm);
         }
     },
     make_engagement_letter: function (frm) {
@@ -118,4 +119,46 @@ function create_event(frm) {
         }
     });
     d.show();
+}
+
+
+function make_buttons(frm){
+    if (!frm.is_new() && frm.doc.status !== 'Converted') {
+        let msg = 'System will create a Customer and Sales Order. Proceed?';
+        if (frm.doc.opportunity_from === 'Customer') {
+            msg = 'System will create a Sales Order. Proceed?';
+        }
+
+        frm.add_custom_button('Sales Order', () => {
+            if (!frm.doc.items.length) {
+                frm.scroll_to_field('items');
+                frappe.throw({
+                    message: __("Please fill the `Services` before creating Sales Order."),
+                    title: __("Missing fields")
+                });
+            }
+
+            frappe.confirm(msg, () => {
+                frappe.call({
+                    method: 'one_compliance.one_compliance.doc_events.oppotunity.create_sales_order',
+                    args: { opportunity: frm.doc.name },
+                    callback: (r) => {
+                        if (!r.exc) {
+                            const d = r.message;
+                            frappe.model.with_doctype('Sales Order', () => {
+                                const doc = frappe.model.get_new_doc('Sales Order');
+                                doc.customer = d.customer;
+                                doc.opportunity = frm.doc.name;
+                                d.items.forEach(i => {
+                                    let row = frappe.model.add_child(doc, 'items');
+                                    Object.assign(row, i);
+                                });
+                                frappe.set_route('Form', 'Sales Order', doc.name);
+                            });
+                        }
+                    }
+                });
+            });
+        }, 'Create');
+    }
 }

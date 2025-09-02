@@ -133,5 +133,11 @@ def get_sales_order_custom_fields():
 				"options": "Event",
 				"read_only": 1,
 			},
+			{
+                "fieldname": "follow_up_for_next_project",
+                "fieldtype": "Check",
+                "label": "Follow up for next Project",
+                "insert_after": "custom_create_project_automatically"
+            }
 		]
 	}
