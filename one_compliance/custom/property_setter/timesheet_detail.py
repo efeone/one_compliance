@@ -1,0 +1,86 @@
+def get_timesheet_detail_property_setters():
+	'''
+		Get property setters for Timesheet Detail doctype.
+	'''
+	return [
+		{
+			"doc_type": "Timesheet Detail",
+			"doctype_or_field": "DocField",
+			"field_name": "task",
+			"property": "columns",
+			"property_type": "Int",
+			"value": "1",
+		},
+		{
+			"doc_type": "Timesheet Detail",
+			"doctype_or_field": "DocField",
+			"field_name": "project_name",
+			"property": "columns",
+			"property_type": "Int",
+			"value": "2",
+		},
+		{
+			"doc_type": "Timesheet Detail",
+			"doctype_or_field": "DocField",
+			"field_name": "project_name",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "1",
+		},
+		{
+			"doc_type": "Timesheet Detail",
+			"doctype_or_field": "DocField",
+			"field_name": "activity_type",
+			"property": "columns",
+			"property_type": "Int",
+			"value": "1",
+		},
+		{
+			"doc_type": "Timesheet Detail",
+			"doctype_or_field": "DocField",
+			"field_name": "project",
+			"property": "columns",
+			"property_type": "Int",
+			"value": "2",
+		},
+		{
+			"doc_type": "Timesheet Detail",
+			"doctype_or_field": "DocField",
+			"field_name": "to_time",
+			"property": "columns",
+			"property_type": "Int",
+			"value": "2",
+		},
+		{
+			"doc_type": "Timesheet Detail",
+			"doctype_or_field": "DocField",
+			"field_name": "hours",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "0",
+		},
+		{
+			"doc_type": "Timesheet Detail",
+			"doctype_or_field": "DocField",
+			"field_name": "to_time",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "1",
+		},
+		{
+			"doc_type": "Timesheet Detail",
+			"doctype_or_field": "DocField",
+			"field_name": "is_billable",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "0",
+		},
+		{
+			"doc_type": "Timesheet Detail",
+			"doctype_or_field": "DocField",
+			"field_name": "task",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "1",
+		},
+	]

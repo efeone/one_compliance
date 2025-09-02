@@ -1,0 +1,85 @@
+def get_project_property_setters():
+	'''
+		Get property setters for Project doctype.
+	'''
+	return [
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocField",
+			"field_name": "category_type",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "1",
+		},
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocField",
+			"field_name": "compliance_sub_category",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "0",
+		},
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocField",
+			"field_name": "custom_sub_category_name",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "1",
+		},
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocField",
+			"field_name": "customer",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "1",
+		},
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocField",
+			"field_name": "department",
+			"property": "ignore_user_permissions",
+			"property_type": "Check",
+			"value": "1",
+		},
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocField",
+			"field_name": "estimated_costing",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "0",
+		},
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocField",
+			"field_name": "expected_end_date",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "1",
+		},
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocType",
+			"property": "field_order",
+			"property_type": "Data",
+			"value": '["naming_series", "project_name", "status", "project_type", "is_active", "percent_complete_method", "percent_complete", "site_location", "hold", "custom_instructions", "custom_billing_instruction", "column_break_5", "project_template", "compliance_category", "compliance_sub_category", "custom_sub_category_name", "custom_project_service", "category_type", "compliance_agreement", "expected_start_date", "expected_end_date", "priority", "department", "project_supervisor", "custom_is_internal", "customer_details", "customer", "column_break_14", "customer_name", "sales_order", "users_section", "users", "copied_from", "section_break0", "notes", "section_break_18", "actual_start_date", "actual_time", "column_break_20", "actual_end_date", "project_details", "estimated_costing", "total_costing_amount", "total_expense_claim", "total_purchase_cost", "company", "column_break_28", "total_sales_amount", "total_billable_amount", "total_billed_amount", "total_consumed_material_cost", "cost_center", "margin", "gross_margin", "column_break_37", "per_gross_margin", "monitor_progress", "collect_progress", "holiday_list", "frequency", "from_time", "to_time", "first_email", "second_email", "daily_time_to_send", "day_to_send", "weekly_time_to_send", "column_break_45", "message", "is_invoiced"]',
+		},
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocField",
+			"field_name": "project_name",
+			"property": "in_list_view",
+			"property_type": "Check",
+			"value": "1",
+		},
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocField",
+			"field_name": "status",
+			"property": "options",
+			"property_type": "Text",
+			"value": "Open\nInvoiced\nPaid\nHold\nOverdue\nCompleted\nCancelled",
+		},
+	]
