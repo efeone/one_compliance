@@ -331,7 +331,7 @@ def create_opportunity():
 	sales_orders = frappe.db.get_all(
 		"Sales Order",
 		filters={"follow_up_for_next_project": 1},
-		fields=["name", "customer", "status", "workflow_state"]
+		fields=["name", "customer", "status", "workflow_state", "company"]
 	)
 
 	for so in sales_orders:
@@ -408,7 +408,7 @@ def create_opportunity():
 					opportunity.opportunity_type = "Sales"
 					opportunity.sales_order = so.name
 					opportunity.naming_series = "CRM-OPP-.YYYY.-"
-					opportunity.company = frappe.db.get_single_value("Global Defaults", "default_company")
+					opportunity.company = so.company
 
 					opportunity.insert(ignore_permissions=True)
 					frappe.db.commit()
