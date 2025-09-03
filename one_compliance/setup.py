@@ -70,16 +70,17 @@ def after_migrate():
 	# Creating One Compliance specific fixtures
 	create_fixtures()
 
-
 def before_migrate():
 	delete_custom_fields_for_app()
 
 def create_custom_fields_for_app():
 	create_custom_fields(get_custom_fields())
 
-
 def delete_custom_fields_for_app():
 	delete_custom_fields(get_custom_fields())
+
+def create_property_setters_for_app():
+    create_property_setters(get_property_setters())
 
 
 def create_fixtures():

@@ -4,7 +4,7 @@
 import frappe
 from one_compliance.setup import (
     create_custom_fields_for_app,
-    create_property_setters,
+    create_property_setters_for_app,
     create_fixtures,
     delete_custom_fields_for_app,
 )
@@ -19,7 +19,7 @@ def after_install():
     create_compliance_service_item_group()
     create_custom_docperms()
     create_custom_fields_for_app()
-    create_property_setters()
+    create_property_setters_for_app()
     create_fixtures()
 
 
