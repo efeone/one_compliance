@@ -452,25 +452,14 @@ def create_opportunity():
 					follow_up_user = frappe.db.get_value("Employee", compliance.follow_up_person, "user_id")
 
 					try:
-						task = frappe.new_doc("Task")
-						task.subject = f"Follow up on Opportunity {opportunity.name}"
-						task.reference_type = "Opportunity"
-						task.reference_name = opportunity.name
-						task.status = "Open"
-						task.description = f"Follow up for compliance sub category: {subcat_name}"
-						task.assigned_by = frappe.session.user
-						task.company = opportunity.company
-
-						task.insert(ignore_permissions=True)
-						frappe.db.commit()
 
 						if follow_up_user:
 							todo = frappe.new_doc("ToDo")
 							todo.owner = follow_up_user
 							todo.assigned_by = frappe.session.user
 							todo.allocated_to = follow_up_user
-							todo.reference_type = "Task"
-							todo.reference_name = task.name
+							todo.reference_type = "Opportunity"
+							todo.reference_name = opportunity.name
 							todo.description = f"Follow up for compliance sub category: {subcat_name}"
 							todo.status = "Open"
 							todo.priority = "Medium"
@@ -478,10 +467,10 @@ def create_opportunity():
 							todo.insert(ignore_permissions=True)
 							frappe.db.commit()
 
-						print(f"[SUCCESS] Created and assigned Task {task.name} to {follow_up_user}")
+						print(f"[SUCCESS] Created and assigned Todo {todo.name} to {follow_up_user}")
 
 					except Exception as e:
-						print(f"[ERROR] Failed to create/assign Task for {subcat_name}: {e}")
+						print(f"[ERROR] Failed to create Todo for {subcat_name}: {e}")
 
 			except Exception as e:
 				print(f"[ERROR] Failed to create opportunity for {subcat_name}: {e}")
