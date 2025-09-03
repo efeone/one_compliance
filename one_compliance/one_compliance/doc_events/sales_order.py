@@ -1,10 +1,10 @@
+from datetime import datetime
+
 import frappe
 from frappe import _
 from frappe.utils import add_days, add_months, date_diff, getdate, json, today
 from one_compliance.one_compliance.utils import add_custom as add_assign
 from one_compliance.one_compliance.utils import create_todo, get_users_with_role
-
-from datetime import datetime
 
 
 @frappe.whitelist()
@@ -331,8 +331,8 @@ def create_opportunity():
 	# Get all eligible Sales Orders
 	sales_orders = frappe.db.get_all(
 		"Sales Order",
-		filters={"follow_up_for_next_project": 1},
-		fields=["name", "customer", "status", "workflow_state", "company"]
+		filters={"follow_up_for_next_project": 1, "follow_up_completed": 0},
+		fields=["name", "customer", "status", "workflow_state", "company", "follow_up_completed"]
 	)
 
 	for so in sales_orders:
@@ -404,7 +404,7 @@ def create_opportunity():
 			# Skip if Opportunity already exists
 			existing_opportunity = frappe.db.exists("Opportunity", {"sales_order": so.name})
 			if existing_opportunity:
-				print(f"[SKIP] Opportunity already exists for Sales Order: {so.name}")
+				print(f"[SKIP] Opportunity already exists for Opportunity Date : {today_date}")
 				continue
 
 			try:
@@ -418,6 +418,7 @@ def create_opportunity():
 					opportunity.sales_order = so.name
 					opportunity.naming_series = "CRM-OPP-.YYYY.-"
 					opportunity.company = so.company
+					opportunity.opportunity_date = today_date
 
 					# Map Sales Order Items → Opportunity Items
 					for soi in sales_order_items:
@@ -440,6 +441,9 @@ def create_opportunity():
 						opp_item.compliance_sub_category = soi.compliance_sub_category
 
 					opportunity.insert(ignore_permissions=True)
+					frappe.db.commit()
+     
+					frappe.db.set_value("Sales Order", so.name, "follow_up_completed", 1)
 					frappe.db.commit()
 
 					print(f"[SUCCESS] Created Opportunity: {opportunity.name} for {subcat_name}")
