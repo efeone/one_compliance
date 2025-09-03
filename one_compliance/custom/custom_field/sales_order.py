@@ -143,7 +143,8 @@ def get_sales_order_custom_fields():
 				"fieldname": "follow_up_completed",
 				"fieldtype": "Check",
 				"label": "Follow up Completed",
-				"insert_after": "follow_up_for_next_project"
+				"insert_after": "follow_up_for_next_project",
+				"hidden": 1
 			}
 		]
 	}

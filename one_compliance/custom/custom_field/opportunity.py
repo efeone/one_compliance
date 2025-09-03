@@ -40,7 +40,7 @@ def get_opportunity_custom_fields():
 				"fieldname": "follow_up_reply",
 				"fieldtype": "Small Text",
 				"label": "Follow up Reply",			
-				"insert_after": "notes_html"
+				"insert_after": "open_activities_html"
 			}
 		]
 	}
