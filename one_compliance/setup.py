@@ -152,7 +152,7 @@ def get_custom_fields():
 	custom_fields.update(get_terms_and_conditions_custom_fields())
 	custom_fields.update(get_timesheet_custom_fields())
 	custom_fields.update(get_todo_custom_fields())
- 	custom_fields.update(get_opportunity_item_custom_fields())
+	custom_fields.update(get_opportunity_item_custom_fields())
 	custom_fields.update(())
 	return custom_fields
 
