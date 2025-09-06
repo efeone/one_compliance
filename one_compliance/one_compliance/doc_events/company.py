@@ -32,11 +32,10 @@ def replace_abbr(company, old, new):
 		records = frappe.get_all(
 			dt,
 			filters={"company": company},
-			fields=["name"]
+			pluck = "name"
 		)
 
-		for r in records:
-			name = r["name"]
+		for name in records:
 			parts = name.rsplit(" - ", 1)
 
 			# only rename if no abbr or matches old abbr
