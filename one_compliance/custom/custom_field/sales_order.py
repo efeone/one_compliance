@@ -18,6 +18,7 @@ def get_sales_order_custom_fields():
 				"fieldtype": "Date",
 				"insert_after": "transaction_date",
 				"label": "Invoice Generation Date",
+				"read_only": 1,
 			},
 			{
 				"allow_on_submit": 1,

@@ -1,7 +1,7 @@
 import frappe
 from frappe import _
 from frappe.email.doctype.notification.notification import get_context
-from frappe.utils import add_days, getdate, today
+from frappe.utils import add_days, getdate
 from one_compliance.one_compliance.doc_events.task import (
 	create_sales_order,
 	get_rate_from_compliance_agreement,
@@ -96,11 +96,7 @@ def project_after_insert(doc, method):
 				if sales_order:
 					doc.sales_order = sales_order
 					doc.save(ignore_permissions=True)
-			if sales_order:
-				frappe.db.set_value("Sales Order", sales_order, "status", "Proforma Invoice")
-				frappe.db.set_value("Sales Order", sales_order, "workflow_state", "Proforma Invoice")
-				frappe.db.set_value("Sales Order", sales_order, "invoice_generation_date", today())
-			else:
+			if not sales_order:
 				payment_terms = None
 				rate = 0
 				if frappe.db.exists('Compliance Agreement', doc.compliance_agreement):
