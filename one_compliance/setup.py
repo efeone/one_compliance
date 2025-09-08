@@ -1,5 +1,4 @@
 import frappe
-from frappe.desk.page.setup_wizard.setup_wizard import make_records
 from frappe.custom.doctype.custom_field.custom_field import create_custom_fields
 
 # Custom field method imports
@@ -32,7 +31,6 @@ from one_compliance.custom.property_setter.event import get_event_property_sette
 from one_compliance.custom.property_setter.item import get_item_property_setters
 from one_compliance.custom.property_setter.lead import get_lead_property_setters
 from one_compliance.custom.property_setter.opportunity import get_opportunity_property_setters
-from one_compliance.custom.property_setter.item import get_item_property_setters
 from one_compliance.custom.property_setter.project_template_task import get_project_template_task_property_setters
 from one_compliance.custom.property_setter.project_template import get_project_template_property_setters
 from one_compliance.custom.property_setter.project import get_project_property_setters
@@ -81,27 +79,27 @@ def delete_custom_fields_for_app():
 	delete_custom_fields(get_custom_fields())
 
 def create_property_setters_for_app():
-    create_property_setters(get_property_setters())
+	create_property_setters(get_property_setters())
 
 
 def create_fixtures():
 	'''
 		Method to create One Compliance specific fixtures
 	'''
-	make_records(category_type_fixtures())
-	make_records(get_role_fixtures())
-	make_records(get_web_page_fixtures())
-	make_records(get_workflow_state_fixtures())
-	make_records(get_workflow_action_master_fixtures())
-	make_records(get_workflow_fixtures())
-	make_records(get_web_page_fixtures())
-	make_records(get_designation_fixtures())
-	make_records(get_role_profile_fixtures())
-	make_records(get_translations_fixtures())
-	make_records(get_customer_type_fixtures())
-	make_records(get_module_profile_fixtures())
-	make_records(get_notification_template_fixtures())
-	make_records(get_document_register_type_fixtures())
+	insert_docs(category_type_fixtures())
+	insert_docs(get_role_fixtures())
+	insert_docs(get_web_page_fixtures())
+	insert_docs(get_workflow_state_fixtures())
+	insert_docs(get_workflow_action_master_fixtures())
+	insert_docs(get_workflow_fixtures())
+	insert_docs(get_web_page_fixtures())
+	insert_docs(get_designation_fixtures())
+	insert_docs(get_role_profile_fixtures())
+	insert_docs(get_translations_fixtures())
+	insert_docs(get_customer_type_fixtures())
+	insert_docs(get_module_profile_fixtures())
+	insert_docs(get_notification_template_fixtures())
+	insert_docs(get_document_register_type_fixtures())
 
 def delete_custom_fields(custom_fields: dict):
 	'''
@@ -184,3 +182,23 @@ def get_property_setters():
 	property_setters.extend(get_timesheet_detail_property_setters())
 	property_setters.extend(get_timesheet_property_setters())
 	return property_setters
+
+def insert_docs(doc_list, doctype=None):
+	'''
+		Insert docs if not exists
+	'''
+	try:
+		for doc in doc_list:
+			if not doc.get("doctype"):
+				doc["doctype"] = doctype
+			if not frappe.db.exists(doc.get("doctype"), doc.get("name")):
+				try:
+					frappe.get_doc(doc).insert(ignore_permissions=True)
+				except Exception as e:
+					print(
+						"Error inserting {0} in {1}: {2}".format(
+							doc.get("name"), doc.get("doctype"), e
+						)
+					)
+	except Exception as e:
+		frappe.log_error("Error during migration", e)
