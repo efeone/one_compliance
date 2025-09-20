@@ -48,13 +48,13 @@ def get_project_custom_fields():
 				"fieldtype": "Long Text",
 				"insert_after": "custom_instructions",
 				"label": "Billing Instruction",
-				"read_only": 1,
 			},
 			{
 				"fieldname": "custom_instructions",
 				"fieldtype": "Long Text",
 				"insert_after": "hold",
 				"label": "Instructions",
+				"read_only": 1,
 			},
 			{
 				"fieldname": "custom_is_internal",
