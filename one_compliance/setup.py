@@ -66,6 +66,9 @@ def after_migrate():
 	# Creating One Compliance specific Property Setters
 	create_property_setters(get_property_setters())
 
+	# creating One Compliance specific roles
+	create_custom_roles(get_compliance_roles())
+
 	# Creating One Compliance specific fixtures
 	create_fixtures()
 
@@ -130,6 +133,23 @@ def create_property_setters(property_setter_datas):
 		property_setter.update(property_setter_data)
 		property_setter.flags.ignore_permissions = True
 		property_setter.insert()
+
+def create_custom_roles(roles):
+	'''
+		Method to create custom Role
+		args:
+			roles : Role List (list of string)
+		example:
+			["HOD", "Manager"]
+	'''
+	for role in roles:
+		if not frappe.db.exists("Role", role):
+			role_doc = frappe.get_doc({
+				"doctype": "Role",
+				"role_name": role
+			})
+			role_doc.insert(ignore_permissions=True)
+	frappe.db.commit()		
 
 def get_custom_fields():
 	'''
@@ -202,3 +222,10 @@ def insert_docs(doc_list, doctype=None):
 					)
 	except Exception as e:
 		frappe.log_error("Error during migration", e)
+
+def get_compliance_roles():
+	'''
+		Method to get One Compliance specific roles
+	'''
+	return ['AML Manager']
+

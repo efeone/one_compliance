@@ -114,5 +114,12 @@ def get_customer_custom_fields():
 				"read_only_depends_on": "eval.doc.customer_type == 1",
 				"reqd": 1,
 			},
+			{
+				"fieldname": "aml_compliance_checked",
+				"fieldtype": "Check",
+				"label": "AML Compliance Checked",
+				"insert_after": "custom_company_preferred",
+				"in_list_view": 1
+			},
 		]
 	}
