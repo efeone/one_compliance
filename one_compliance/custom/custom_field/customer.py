@@ -118,7 +118,7 @@ def get_customer_custom_fields():
 				"fieldname": "aml_compliance_checked",
 				"fieldtype": "Check",
 				"label": "AML Compliance Checked",
-				"insert_after": "custom_company_preferred",
+				"insert_after": "send_project_completion_mail",
 				"in_list_view": 1
 			},
 		]
