@@ -73,6 +73,20 @@ frappe.ui.form.on('Customer',{
         }
     });
 
+    // Hide/Show aml_compliance_checked based on Compliance Settings
+    frappe.call({
+        method: "frappe.client.get_single_value",
+        args: {
+            doctype: "Compliance Settings",
+            field: "enable_aml_compliance"
+        },
+        callback: function(r) {
+            if (r.message !== undefined) {
+                frm.toggle_display("aml_compliance_checked", r.message);
+            }
+        }
+    });
+
     // Set Only Once for aml_compliance_checked
     if (!frm.is_new()) {
         frm.toggle_enable("aml_compliance_checked", 0)
@@ -318,4 +332,3 @@ let send_clarification_message = function (frm){
   });
   d.show()
 }
-

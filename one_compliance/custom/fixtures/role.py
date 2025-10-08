@@ -35,4 +35,9 @@ def get_role_fixtures():
 			"name": "Compliance Manager",
 			"role_name": "Compliance Manager",
 		},
+		{
+			"doctype": "Role",
+			"name": "AML Manager",
+			"role_name": "AML Manager",
+		}
 	]

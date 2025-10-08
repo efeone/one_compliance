@@ -684,10 +684,13 @@ def enable_customer_on_task_completion(doc, method):
 	'''
 		Enable Customer when AML compliance Task is completed
 	'''
+	compliance_enabled = frappe.db.get_single_value("Compliance Settings", "enable_aml_compliance")
+	if not compliance_enabled:
+		return
 	if doc.status == "Completed" and doc.customer:
 		customer = frappe.get_doc("Customer", doc.customer)
 		if customer.disabled:
 			customer.disabled = 0
-			customer.aml_compliance_checked = 1
-			customer.save(ignore_permissions=True)
-			frappe.msgprint(f"Customer {customer.name} has been enabled after AML compliance task completion.")
+		customer.aml_compliance_checked = 1
+		customer.save(ignore_permissions=True)
+		frappe.msgprint(f"Customer {customer.name} has been enabled after AML compliance task completion.")

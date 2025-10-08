@@ -6,6 +6,7 @@ from frappe.utils.user import get_users_with_role
 from one_compliance.one_compliance.utils import add_custom as add_assignment
 from one_compliance.one_compliance.utils import *
 from frappe.email.doctype.notification.notification import get_context
+from one_compliance.one_compliance.utils import create_todo 
 
 @frappe.whitelist()
 def set_customer_type_value(doc):
@@ -489,43 +490,55 @@ def send_expiry_notif_and_create_proj(doc, method=None):
 					frappe.throw( title = _('ALERT !!'), msg = _('Project Template does not exist for {0}'.format(compliance_sub_category)))
 
 def disable_customer_on_creation(doc, method):
-	'''
-		Disable customer when Enable AML Compliance is checked
-	'''
-	compliance_enabled = frappe.db.get_single_value("Compliance Settings", "enable_aml_compliance")
+    '''
+    Disable customer when AML Compliance is enabled,
+    unless the logged-in user has the role allowed to bypass AML Compliance.
+    '''
+    compliance_enabled = frappe.db.get_single_value("Compliance Settings", "enable_aml_compliance")
+    bypass_role = frappe.db.get_single_value("Compliance Settings", "role_allowed_to_bypass_aml_compliance")
 
-	if compliance_enabled:
-		doc.disabled = 1
+    if compliance_enabled:
+        if bypass_role and bypass_role in frappe.get_roles(frappe.session.user):
+            doc.disabled = 0 
+        else:
+            doc.disabled = 1
 
 def create_aml_task(doc, method):
-	'''
-		Create AML compliance task when a new Customer is created
-	'''
-	compliance_enabled = frappe.db.get_single_value("Compliance Settings", "enable_aml_compliance")
+    '''
+    Create AML compliance task when a new Customer is created
+    '''
+    compliance_enabled = frappe.db.get_single_value("Compliance Settings", "enable_aml_compliance")
+    role_to_assign = frappe.db.get_single_value("Compliance Settings", "role_allowed_to_manage_aml_compliance")
 
-	if not compliance_enabled:
-		return
+    if not compliance_enabled or not role_to_assign:
+        return
 
-	task = frappe.get_doc({
-		"doctype": "Task",
-		"subject": f"AML Compliance Check - {doc.customer_name}",
-		"status": "Open",
-		"customer": doc.name,
-		"description": f"Perform AML compliance verification for customer {doc.customer_name} ({doc.name})."
-	})
-	task.insert(ignore_permissions=True)
+    task = frappe.get_doc({
+        "doctype": "Task",
+        "subject": f"AML Compliance Check - {doc.customer_name}",
+        "status": "Open",
+        "customer": doc.name,
+        "description": f"Perform AML compliance verification for customer {doc.customer_name} ({doc.name})."
+    })
+    task.insert(ignore_permissions=True)
 
-	aml_users = frappe.db.sql("""
-		SELECT DISTINCT r.parent
-		FROM `tabHas Role` r
-		WHERE r.role = 'AML Manager'
-	""", as_dict=True)
+    users_with_role = frappe.get_all(
+        "Has Role",
+        filters={"role": role_to_assign},
+        fields=["parent"]
+    )
 
-	for user in aml_users:
-		frappe.get_doc({
-			"doctype": "ToDo",
-			"allocated_to": user.parent,
-			"reference_type": "Task",
-			"reference_name": task.name,
-			"description": f"AML Compliance check required for customer {doc.customer_name}"
-		}).insert(ignore_permissions=True)
+    if not users_with_role:
+        return
+
+    for user in users_with_role:
+        if frappe.db.exists("User", user.parent):
+            frappe.get_doc({
+                "doctype": "ToDo",
+                "allocated_to": user.parent,
+                "reference_type": "Task",
+                "reference_name": task.name,
+                "description": f"AML Compliance check required for customer {doc.customer_name}"
+            }).insert(ignore_permissions=True)
+        else:
+            frappe.log_error(f"User {user.parent} does not exist", "AML Task Creation")
