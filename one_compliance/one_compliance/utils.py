@@ -494,8 +494,6 @@ def add_custom(args=None, *, ignore_permissions=False):
 	   			"parent": "Compliance Settings",
 		  		"doctype_to_ignore":d.reference_type
 			}, "system_notification")
-			print("ignore_email", ignore_email)
-			print("ignore_system_notification", ignore_system_notification)
 			notify_assignment(
 				d.assigned_by,
 				d.allocated_to,
