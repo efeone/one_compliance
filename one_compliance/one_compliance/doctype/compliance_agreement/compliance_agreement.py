@@ -40,7 +40,13 @@ class ComplianceAgreement(Document):
 	def validate(self):
 		self.validate_agreement_dates()
 		self.validate_date_range()
-		self.change_agreement_status()
+		# self.change_agreement_status()
+
+	def on_submit(self):
+		self.update_compliance_agreement_status()	
+
+	def on_update_after_submit(self):
+		self.update_compliance_agreement_status()
 
 	def on_trash(self):
 		delete_project_along_with_compliance_agreement = frappe.db.get_single_value('Compliance Settings', 'delete_project_along_with_compliance_agreement')
@@ -63,16 +69,54 @@ class ComplianceAgreement(Document):
 			if getdate(self.valid_from) > getdate(self.valid_upto):
 				frappe.throw('From Date cannot be greater than Valid Upto Date')
 
-	def change_agreement_status(self):
-		if self.status != 'Hold':
-			if self.valid_from:
-				today = getdate(frappe.utils.today())
-			if today < getdate(self.valid_from):
-				self.status = "Open"
-			elif ((self.valid_upto and today > getdate(self.valid_upto)) and not self.has_long_term_validity):
-				self.status = "Expired"
-			else:
-				self.status = "Active"
+	# def change_agreement_status(self):
+	# 	if self.status != 'Hold':
+	# 		if self.valid_from:
+	# 			today = getdate(frappe.utils.today())
+	# 		if today < getdate(self.valid_from):
+	# 			self.status = "Open"
+	# 		elif ((self.valid_upto and today > getdate(self.valid_upto)) and not self.has_long_term_validity):
+	# 			self.status = "Expired"
+	# 		else:
+	# 			self.status = "Active"
+
+	def update_compliance_agreement_status(self):
+		"""
+		Update Compliance Agreement status based on:
+		- Customer freeze/disable state (highest priority)
+		- Workflow state
+		- Validity period (valid_from and valid_upto)
+		- Cancellation state (docstatus)
+		"""
+
+		today = getdate(frappe.utils.today())
+
+		if self.customer:
+			customer_status = frappe.db.get_value(
+				"Customer", self.customer, ["is_frozen", "disabled"], as_dict=True
+			)
+			if customer_status and (customer_status.is_frozen or customer_status.disabled):
+				self.db_set("status", "Hold")
+				return
+
+		if self.docstatus == 2:
+			self.db_set("status", "Cancelled")
+			return
+
+		if self.valid_from and today < getdate(self.valid_from):
+			self.db_set("status", "Open")
+			return
+
+		if self.valid_upto and today > getdate(self.valid_upto) and not self.has_long_term_validity:
+			self.db_set("status", "Expired")
+			return
+
+		if self.workflow_state in ["Customer Approval Waiting", "Pending", "Draft"]:
+			self.db_set("status", "Draft")
+		elif self.workflow_state in ["Customer Approved"]:
+			self.db_set("status", "Active")
+		else:
+			self.db_set("status", "Open")
 
 	def validate_date_range(self):
 		existing_agreements = frappe.get_all(
@@ -469,7 +513,9 @@ def get_rate_from_compliance_agreement(compliance_agreement, compliance_sub_cate
 @frappe.whitelist()
 def create_sales_orders_from_compliance_agreements():
 	"""
-	Create Sales Orders automatically from active Compliance Agreements.
+	Create Sales Orders and/or Projects automatically from active Compliance Agreements.
+	Sales Order is created only if the Compliance Sub Category is billable.
+	Project is created in both cases.
 	"""
 	current_date = getdate(today())
 
@@ -518,7 +564,7 @@ def create_sales_orders_from_compliance_agreements():
 				[
 					"allow_repeat", "repeat_on", "day", "month", "item_code",
 					"project_template", "head_of_department", "category_type",
-					"department", "compliance_category"
+					"department", "compliance_category", "is_billable"
 				],
 				as_dict=True
 			)
@@ -531,6 +577,7 @@ def create_sales_orders_from_compliance_agreements():
 			repeat_month = sub_category.month
 			item_code = sub_category.item_code
 			project_template = sub_category.project_template
+			is_billable = sub_category.is_billable
 
 			if valid_upto and current_date > valid_upto:
 				continue
@@ -550,66 +597,90 @@ def create_sales_orders_from_compliance_agreements():
 			if not should_create:
 				continue
 
-			if frappe.db.exists("Sales Order", {
-				"compliance_agreement": agreement.name,
-				"compliance_sub_category": sub_cat,
-				"transaction_date": nowdate()
-			}):
-				continue
+			project = None
+			if project_template:
+				project = create_project_from_template(
+					None,
+					project_template,
+					agreement.customer,
+					agreement.company,
+					sub_cat,
+					detail.name,
+					agreement.name,
+					sub_category.compliance_category
+				)
 
-			try:
-				item_name = frappe.db.get_value("Item", item_code, "item_name") if item_code else None
-				if not item_code:
-					continue
+			# === Calculate compliance dates (common for both cases) ===
+			base_date = getdate(nowdate())
+			compliance_date = None
+			next_compliance_date = None
 
-				so = frappe.new_doc("Sales Order")
-				so.customer = agreement.customer
-				so.company = agreement.company
-				so.compliance_agreement = agreement.name
-				so.compliance_sub_category = sub_cat
-				so.transaction_date = nowdate()
-				so.delivery_date = nowdate()
-
-				if agreement.default_payment_terms_template:
-					so.payment_terms_template = agreement.default_payment_terms_template
-
-				so.append("items", {
-					"item_code": item_code,
-					"item_name": item_name,
-					"qty": 1,
-					"rate": detail.rate or 0,
-					"description": f"Auto-created from Compliance Agreement {agreement.name}"
-				})
-
-				so.insert(ignore_permissions=True)
-				so.submit()
-
-				if project_template:
-					project = create_project_from_template(
-						so.name,
-						project_template,
-						so.customer,
-						so.company,
-						sub_cat,
-						detail.name,
-						agreement.name,
-						sub_category.compliance_category
-					)
-					if project:
-						so.db_set("project", project.name)
-
-				compliance_date = getdate(nowdate())
+			if allow_repeat:
+				if repeat_on == "Monthly":
+					compliance_date = add_months(base_date, 1)
+					next_compliance_date = add_months(compliance_date, 1)
+				elif repeat_on == "Quarterly":
+					compliance_date = add_months(base_date, 3)
+					next_compliance_date = add_months(compliance_date, 3)
+				elif repeat_on == "Half Yearly":
+					compliance_date = add_months(base_date, 6)
+					next_compliance_date = add_months(compliance_date, 6)
+				elif repeat_on == "Yearly":
+					compliance_date = add_months(base_date, 12)
+					next_compliance_date = add_months(compliance_date, 12)
+			else:
+				compliance_date = base_date
 				next_compliance_date = None
-				if allow_repeat:
-					if repeat_on == "Monthly":
-						next_compliance_date = add_months(compliance_date, 1)
-					elif repeat_on == "Quarterly":
-						next_compliance_date = add_months(compliance_date, 3)
-					elif repeat_on == "Half Yearly":
-						next_compliance_date = add_months(compliance_date, 6)
-					elif repeat_on == "Yearly":
-						next_compliance_date = add_months(compliance_date, 12)
 
+			# === Create Sales Order only if billable ===
+			if is_billable:
+				if not frappe.db.exists("Sales Order", {
+					"compliance_agreement": agreement.name,
+					"compliance_sub_category": sub_cat,
+					"transaction_date": nowdate()
+				}):
+					try:
+						item_name = frappe.db.get_value("Item", item_code, "item_name") if item_code else None
+						if not item_code:
+							continue
+
+						so = frappe.new_doc("Sales Order")
+						so.customer = agreement.customer
+						so.company = agreement.company
+						so.compliance_agreement = agreement.name
+						so.compliance_sub_category = sub_cat
+						so.transaction_date = nowdate()
+						so.delivery_date = nowdate()
+						if agreement.default_payment_terms_template:
+							so.payment_terms_template = agreement.default_payment_terms_template
+
+						so.append("items", {
+							"item_code": item_code,
+							"item_name": item_name,
+							"qty": 1,
+							"rate": detail.rate or 0,
+							"description": f"Auto-created from Compliance Agreement {agreement.name}"
+						})
+
+						so.insert(ignore_permissions=True)
+						so.submit()
+
+						if project:
+							project.db_set("sales_order", so.name)
+							so.db_set("project", project.name)
+
+						frappe.db.set_value(
+							"Compliance Category Details",
+							detail.name,
+							{
+								"compliance_date": compliance_date,
+								"next_compliance_date": next_compliance_date
+							}
+						)
+
+					except Exception:
+						frappe.log_error(frappe.get_traceback(), f"SO Creation Failed - {agreement.name}")
+			else:
 				frappe.db.set_value(
 					"Compliance Category Details",
 					detail.name,
@@ -619,13 +690,9 @@ def create_sales_orders_from_compliance_agreements():
 					}
 				)
 
-			except Exception:
-				frappe.log_error(frappe.get_traceback(), f"SO Creation Failed - {agreement.name}")
-
-
 def create_project_from_template(sales_order, project_template, customer, company,
-                                 compliance_sub_category, compliance_category_details_id,
-                                 compliance_agreement, compliance_category):
+								 compliance_sub_category, compliance_category_details_id,
+								 compliance_agreement, compliance_category):
 	"""
 	Create Project and Tasks from Project Template for Compliance Sub Category.
 	"""
@@ -680,7 +747,7 @@ def create_project_from_template(sales_order, project_template, customer, compan
 			hod_user = frappe.db.get_value('Employee', sub_category_doc.head_of_department, 'user_id')
 			if hod_user:
 				create_todo("Project", project.name, hod_user, frappe.session.user,
-				            f"Project assigned to {sub_category_doc.head_of_department}")
+							f"Project assigned to {sub_category_doc.head_of_department}")
 
 		# Create Tasks from Template
 		for template_task in project_template_doc.tasks:
@@ -724,14 +791,28 @@ def create_project_from_template(sales_order, project_template, customer, compan
 
 			for user in assigned_users:
 				create_todo("Task", task_doc.name, user, frappe.session.user,
-				            f"Task assigned: {task_doc.subject}")
+							f"Task assigned: {task_doc.subject}")
 
 			if hod_user and hod_user not in assigned_users:
 				create_todo("Task", task_doc.name, hod_user, frappe.session.user,
-				            f"HOD notified for task: {task_doc.subject}")
+							f"HOD notified for task: {task_doc.subject}")
 
 		return project
 
 	except Exception:
 		frappe.log_error(frappe.get_traceback(), "Project Creation Failed")
 		return None
+
+def update_status_on_customer_change(doc, method):
+	"""
+	Trigger Compliance Agreement status update when customer is frozen/disabled or re-enabled
+	"""
+	agreements = frappe.get_all(
+		"Compliance Agreement",
+		filters={"customer": doc.name, "docstatus": ["!=", 2]},
+		pluck="name"
+	)
+
+	for agreement_name in agreements:
+		self = frappe.get_doc("Compliance Agreement", agreement_name)
+		self.update_compliance_agreement_status()

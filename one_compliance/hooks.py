@@ -149,7 +149,8 @@ doc_events = {
     'Customer':{
         'on_update':[
             'one_compliance.one_compliance.doc_events.customer.customer_on_update',
-            'one_compliance.one_compliance.doc_events.customer.create_project_from_customer'
+            'one_compliance.one_compliance.doc_events.customer.create_project_from_customer',
+			'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.update_status_on_customer_change'
         ],
         'before_save':[
             'one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',

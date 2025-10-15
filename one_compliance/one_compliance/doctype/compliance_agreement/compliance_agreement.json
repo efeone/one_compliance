@@ -176,7 +176,7 @@
    "fieldname": "status",
    "fieldtype": "Select",
    "label": "Status",
-   "options": "Open\nActive\nExpired\nHold\nCancelled",
+   "options": "Open\nDraft\nActive\nExpired\nHold\nCancelled",
    "read_only": 1
   },
   {
@@ -235,10 +235,11 @@
    "label": "Invoice End Date"
   }
  ],
+ "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2024-01-05 12:33:54.501190",
+ "modified": "2025-10-13 14:44:39.831592",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Agreement",
@@ -262,6 +263,8 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "search_fields": "customer_name",
  "sort_field": "modified",
  "sort_order": "DESC",
