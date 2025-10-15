@@ -1,20 +1,30 @@
-frappe.pages['task-management-tool'].on_page_load = function(wrapper) {
-	var page = frappe.ui.make_app_page({
-		parent: wrapper,
-		title: 'Task Management Tool',
-		single_column: true
-	});
+frappe.pages['task-management-tool'].on_page_load = function (wrapper) {
+    var page = frappe.ui.make_app_page({
+        parent: wrapper,
+        title: 'Task Management Tool',
+        single_column: true
+    });
 
-	// Button to refresh the page
-	let $button = page.set_secondary_action('Refresh',() => location.reload())
+    page.main.addClass("frappe-card");
 
-	page.main.addClass("frappe-card");
+    make_filters(page);
+    if (!frappe.route_options || !frappe.route_options.project) {
+        refresh_tasks(page);
+    }
+}
 
-	// Filter options
-	make_filters(page);
-
-	// Refresh task
-  refresh_tasks(page);
+frappe.pages['task-management-tool'].on_page_show = function (wrapper) {
+    var page = wrapper.page;
+    
+    if (frappe.route_options && frappe.route_options.project) {
+        page.fields_dict.project.set_value(frappe.route_options.project);
+        
+        frappe.route_options = null;
+        
+        setTimeout(() => {
+            refresh_tasks(page);
+        }, 500);
+    }
 }
 
 function make_filters(page) {
