@@ -490,55 +490,57 @@ def send_expiry_notif_and_create_proj(doc, method=None):
 					frappe.throw( title = _('ALERT !!'), msg = _('Project Template does not exist for {0}'.format(compliance_sub_category)))
 
 def disable_customer_on_creation(doc, method):
-    '''
-    Disable customer when AML Compliance is enabled,
-    unless the logged-in user has the role allowed to bypass AML Compliance.
-    '''
-    compliance_enabled = frappe.db.get_single_value("Compliance Settings", "enable_aml_compliance")
-    bypass_role = frappe.db.get_single_value("Compliance Settings", "role_allowed_to_bypass_aml_compliance")
+	'''
+	Disable customer when AML Compliance is enabled,
+	unless the logged-in user has the role allowed to bypass AML Compliance.
+	'''
+	compliance_enabled = frappe.db.get_single_value("Compliance Settings", "enable_aml_compliance")
+	bypass_role = frappe.db.get_single_value("Compliance Settings", "role_allowed_to_bypass_aml_compliance")
 
-    if compliance_enabled:
-        if bypass_role and bypass_role in frappe.get_roles(frappe.session.user):
-            doc.disabled = 0 
-        else:
-            doc.disabled = 1
+	if compliance_enabled:
+		if bypass_role and bypass_role in frappe.get_roles(frappe.session.user):
+			doc.disabled = 0 
+		else:
+			doc.disabled = 1
 
 def create_aml_task(doc, method):
-    '''
-    Create AML compliance task when a new Customer is created
-    '''
-    compliance_enabled = frappe.db.get_single_value("Compliance Settings", "enable_aml_compliance")
-    role_to_assign = frappe.db.get_single_value("Compliance Settings", "role_allowed_to_manage_aml_compliance")
+	"""
+	Create AML compliance task when a new Customer is created.
+	Task should always be created, even if no role/user is assigned.
+	"""
+	compliance_enabled = frappe.db.get_single_value("Compliance Settings", "enable_aml_compliance")
+	role_to_assign = frappe.db.get_single_value("Compliance Settings", "role_allowed_to_manage_aml_compliance")
 
-    if not compliance_enabled or not role_to_assign:
-        return
+	if not compliance_enabled:
+		return
 
-    task = frappe.get_doc({
-        "doctype": "Task",
-        "subject": f"AML Compliance Check - {doc.customer_name}",
-        "status": "Open",
-        "customer": doc.name,
-        "description": f"Perform AML compliance verification for customer {doc.customer_name} ({doc.name})."
-    })
-    task.insert(ignore_permissions=True)
+	task = frappe.get_doc({
+		"doctype": "Task",
+		"subject": f"AML Compliance Check - {doc.customer_name}",
+		"status": "Open",
+		"customer": doc.name,
+		"description": f"Perform AML compliance verification for customer <b>{doc.customer_name}</b>"
+	})
+	task.insert(ignore_permissions=True)
 
-    users_with_role = frappe.get_all(
-        "Has Role",
-        filters={"role": role_to_assign},
-        fields=["parent"]
-    )
+	if role_to_assign:
+		users_with_role = frappe.get_all(
+			"Has Role",
+			filters={"role": role_to_assign},
+			fields=["parent"]
+		)
 
-    if not users_with_role:
-        return
-
-    for user in users_with_role:
-        if frappe.db.exists("User", user.parent):
-            frappe.get_doc({
-                "doctype": "ToDo",
-                "allocated_to": user.parent,
-                "reference_type": "Task",
-                "reference_name": task.name,
-                "description": f"AML Compliance check required for customer {doc.customer_name}"
-            }).insert(ignore_permissions=True)
-        else:
-            frappe.log_error(f"User {user.parent} does not exist", "AML Task Creation")
+		for user in users_with_role:
+			if frappe.db.exists("User", user.parent):
+				try:
+					create_todo(
+						doctype="Task",
+						name=task.name,
+						assign_to=user.parent,
+						owner=frappe.session.user,
+						description=f"AML Compliance check required for customer {doc.customer_name}"
+					)
+				except Exception as e:
+					frappe.log_error(f"Failed to assign AML Task to {user.parent}: {str(e)}", "AML Task Creation")
+			else:
+				frappe.log_error(f"User {user.parent} does not exist", "AML Task Creation")

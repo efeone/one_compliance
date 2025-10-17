@@ -393,20 +393,20 @@
   {
    "fieldname": "role_allowed_to_bypass_aml_compliance",
    "fieldtype": "Link",
-   "label": "Role Allowed to bypass AML Compliance",
+   "label": "Role Allowed to Bypass AML Compliance",
    "options": "Role"
   },
   {
    "fieldname": "role_allowed_to_manage_aml_compliance",
    "fieldtype": "Link",
-   "label": "Role Allowed to manage AML Compliance",
+   "label": "Role Allowed to Manage AML Compliance",
    "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-10-08 11:29:16.250374",
+ "modified": "2025-10-17 15:49:16.690818",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
