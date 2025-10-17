@@ -516,31 +516,33 @@ def create_aml_task(doc, method):
 
 	task = frappe.get_doc({
 		"doctype": "Task",
-		"subject": f"AML Compliance Check - {doc.customer_name}",
+		"subject": "AML Compliance Check - {}".format(doc.customer_name),
 		"status": "Open",
 		"customer": doc.name,
-		"description": f"Perform AML compliance verification for customer <b>{doc.customer_name}</b>"
+		"description": "Perform AML compliance verification for customer <b>{}</b>".format(doc.customer_name)
 	})
 	task.insert(ignore_permissions=True)
 
 	if role_to_assign:
-		users_with_role = frappe.get_all(
-			"Has Role",
-			filters={"role": role_to_assign},
-			fields=["parent"]
-		)
+		users_with_role = get_users_with_role(role_to_assign)
 
-		for user in users_with_role:
-			if frappe.db.exists("User", user.parent):
+		for username in users_with_role:
+			if frappe.db.exists("User", username):
 				try:
 					create_todo(
 						doctype="Task",
 						name=task.name,
-						assign_to=user.parent,
+						assign_to=username,
 						owner=frappe.session.user,
-						description=f"AML Compliance check required for customer {doc.customer_name}"
+						description="AML Compliance check required for customer {}".format(doc.customer_name)
 					)
 				except Exception as e:
-					frappe.log_error(f"Failed to assign AML Task to {user.parent}: {str(e)}", "AML Task Creation")
+					frappe.log_error(
+						"Failed to assign AML Task to {}: {}".format(username, str(e)),
+						"AML Task Creation"
+					)
 			else:
-				frappe.log_error(f"User {user.parent} does not exist", "AML Task Creation")
+				frappe.log_error(
+					"User {} does not exist".format(username),
+					"AML Task Creation"
+				)

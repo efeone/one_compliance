@@ -120,7 +120,7 @@ def get_customer_custom_fields():
 				"label": "AML Compliance Checked",
 				"insert_after": "send_project_completion_mail",
 				"in_list_view": 1,
-				"read_only": 1
+				"read_only": 1,
 			},
 		]
 	}
