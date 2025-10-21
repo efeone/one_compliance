@@ -196,7 +196,8 @@ scheduler_events = {
         'one_compliance.one_compliance.utils.project_overdue_notification',
         'one_compliance.one_compliance.doc_events.project.set_status_to_overdue',
         'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.send_repeat_notif',
-        'one_compliance.one_compliance.doc_events.sales_order.create_opportunity'
+        'one_compliance.one_compliance.doc_events.sales_order.create_opportunity',
+		'one_compliance.one_compliance.doc_events.task.set_tasks_as_overdue',
     ],
 #	"hourly": [
 #		"one_compliance.tasks.hourly"
