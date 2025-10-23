@@ -129,7 +129,7 @@ def create_property_setters(property_setter_datas):
 		property_setter = frappe.new_doc('Property Setter')
 		property_setter.update(property_setter_data)
 		property_setter.flags.ignore_permissions = True
-		property_setter.insert()
+		property_setter.insert()	
 
 def get_custom_fields():
 	'''

@@ -51,7 +51,46 @@ frappe.ui.form.on('Customer',{
           })
         }
       }
-    })
+    });
+
+    // Permission to edit disabled field
+    frappe.call({
+        method: "frappe.client.get_value",
+        args: {
+            doctype: "Compliance Settings",
+            fieldname: "role_allowed_to_bypass_aml_compliance"
+        },
+        callback: function(r) {
+            if (r.message) {
+                let allowed_role = r.message.role_allowed_to_bypass_aml_compliance;
+
+                if (allowed_role && frappe.user_roles.includes(allowed_role)) {
+                    frm.set_df_property("disabled", "read_only", 0);
+                } else {
+                    frm.set_df_property("disabled", "read_only", 1);
+                }
+            }
+        }
+    });
+
+    // Hide/Show aml_compliance_checked based on Compliance Settings
+    frappe.call({
+        method: "frappe.client.get_single_value",
+        args: {
+            doctype: "Compliance Settings",
+            field: "enable_aml_compliance"
+        },
+        callback: function(r) {
+            if (r.message !== undefined) {
+                frm.toggle_display("aml_compliance_checked", r.message);
+            }
+        }
+    });
+
+    // Set Only Once for aml_compliance_checked
+    if (!frm.is_new()) {
+        frm.toggle_enable("aml_compliance_checked", 0)
+    }
   }
 });
 /* applied dialog instance to add or view customer Credential */

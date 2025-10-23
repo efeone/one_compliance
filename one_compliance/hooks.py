@@ -133,6 +133,7 @@ doc_events = {
             'one_compliance.one_compliance.doc_events.task.make_sales_invoice',
             'one_compliance.one_compliance.doc_events.task.subtask_on_update',
             'one_compliance.one_compliance.doc_events.task.on_task_update',
+			'one_compliance.one_compliance.doc_events.task.enable_customer_on_task_completion'
         ],
         'validate':[
             'one_compliance.one_compliance.doc_events.task.append_users_to_project',
@@ -154,7 +155,11 @@ doc_events = {
             'one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',
             'one_compliance.one_compliance.doc_events.customer.set_expiry_dates'
         ],
-        'after_insert': 'one_compliance.one_compliance.doc_events.oppotunity.set_opportunity_converted'
+        'after_insert': [
+			'one_compliance.one_compliance.doc_events.oppotunity.set_opportunity_converted',
+			'one_compliance.one_compliance.doc_events.customer.create_aml_task'
+		],	
+		'before_insert': 'one_compliance.one_compliance.doc_events.customer.disable_customer_on_creation'
     },
     'Sales Invoice':{
         'on_submit': 'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'

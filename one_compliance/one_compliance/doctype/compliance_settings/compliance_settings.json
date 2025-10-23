@@ -13,10 +13,13 @@
   "column_break_begm",
   "create_project_from_sales_order_automatically",
   "delete_project_along_with_compliance_agreement",
+  "enable_aml_compliance",
   "section_break_saeum",
   "role_of_project_creator",
   "role_allowed_to_unlink_and_delete_sales_orders",
   "role_allowed_to_change_readiness_status",
+  "role_allowed_to_bypass_aml_compliance",
+  "role_allowed_to_manage_aml_compliance",
   "compliance_service_item_group",
   "default_invoice_due_day",
   "column_break_gnzz",
@@ -380,12 +383,30 @@
    "fieldtype": "Link",
    "label": "Role Allowed to Change Readiness Status",
    "options": "Role"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_aml_compliance",
+   "fieldtype": "Check",
+   "label": "Enable AML Compliance"
+  },
+  {
+   "fieldname": "role_allowed_to_bypass_aml_compliance",
+   "fieldtype": "Link",
+   "label": "Role Allowed to Bypass AML Compliance",
+   "options": "Role"
+  },
+  {
+   "fieldname": "role_allowed_to_manage_aml_compliance",
+   "fieldtype": "Link",
+   "label": "Role Allowed to Manage AML Compliance",
+   "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-10 09:59:56.364596",
+ "modified": "2025-10-17 15:49:16.690818",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
