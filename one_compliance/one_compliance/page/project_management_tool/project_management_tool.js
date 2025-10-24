@@ -11,6 +11,9 @@ frappe.pages['project-management_tool'].on_page_load = function (wrapper) {
 	page.main.addClass("frappe-card");
 
 	make_filters(page);
+	// Initialize pagination
+	page.current_page = 1;
+	page.page_length = 20;
 
 	refresh_projects(page);
 }
@@ -143,10 +146,18 @@ function get_employee_id() {
 		return frappe.session.user
 	}
 }
+// Clear existing projects from the page
+function refresh_projects(page, page_num = null) {
+	// Handle page number
+	if (page_num) {
+		page.current_page = page_num;
+	} else {
+		page.current_page = page.current_page || 1;
+	}
 
-function refresh_projects(page) {
-	// Clear existing projects from the page
+	// Clear existing project list and pagination controls
 	page.body.find(".frappe-list").remove();
+	page.body.find(".pagination-container").remove();
 
 	const selectedStatus = page.fields_dict.status.get_value();
 	const projectName = page.fields_dict.project.get_value();
@@ -167,7 +178,9 @@ function refresh_projects(page) {
 			sub_category: subCategory,
 			employee: employee,
 			from_date: from_date,
-			to_date: to_date
+			to_date: to_date,
+			page: page.current_page,
+			page_length: page.page_length
 		},
 		callback: (r) => {
 			if (r.message && r.message.length > 0) {
@@ -184,13 +197,38 @@ function refresh_projects(page) {
 					// Navigate to the task management tool page
 					frappe.set_route('task-management-tool');
 				});
+
+				// Render pagination controls
+				render_pagination_controls(page, r.message.length);
 			} else {
 				// If no projects are found, append a message to the page body
-				$('<div class="frappe-list"></div>').appendTo(page.body).append('<div class="no-result text-muted flex justify-center align-center" style="text-align: center;"><p>No Project found with matching filters.</p></div>');
+				$('<div class="frappe-list"></div>').appendTo(page.body)
+					.append('<div class="no-result text-muted flex justify-center align-center" style="text-align: center;"><p>No Project found with matching filters.</p></div>');
 			}
 		},
 		freeze: true,
 		freeze_message: 'Loading Project'
 	});
+}
 
+/*
+Renders pagination controls (Previous, Next, and Page Info) inside #pagination-container.
+*/
+function render_pagination_controls(page, result_count) {
+	const container = $("#pagination-container");
+	container.empty();
+
+	const prev_btn = $('<button class="page-btn btn btn-default btn-sm me-2">Previous</button>');
+	const next_btn = $('<button class="page-btn btn btn-default btn-sm">Next</button>');
+	const info_text = $(`<span style="margin: 0 10px;">Page ${page.current_page}</span>`);
+
+	// Disable logic
+	if (page.current_page === 1) prev_btn.prop('disabled', true);
+	if (result_count < page.page_length) next_btn.prop('disabled', true);
+
+	// Events
+	prev_btn.on('click', () => refresh_projects(page, page.current_page - 1));
+	next_btn.on('click', () => refresh_projects(page, page.current_page + 1));
+
+	container.append(prev_btn, info_text, next_btn);
 }
