@@ -1,20 +1,20 @@
 /* Style to each task card */
 .card {
-				margin: 10px;
+				margin: 20px 10px;
 				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 				border: None;
 				border-radius: 8px;
 				overflow: hidden;
 				padding: 2px;
-				background-color: aliceblue;
+				background-color: rgb(242, 242, 243);
 		}
 		/* background color to the main page */
 		.layout-main-section.frappe-card {
-			background-color: #fdf7f9;
+			background-color: #ffffff;
 		}
 		/* background color to the filter form */
 		.page-form {
-			background-color: #fdf7f9;
+			background-color: #ffffff;
 		}
 		/* transparent background to the header tag */
 		.list-row-head {
