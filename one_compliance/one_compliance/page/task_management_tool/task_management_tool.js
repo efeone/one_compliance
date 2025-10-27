@@ -841,6 +841,7 @@ function cusomerCredentials(subCategory, customer){
 				fieldname: 'purpose',
 				fieldtype: 'Link',
 				options: 'Credential Type',
+				reqd: 1,
 				get_query: function () {
 					return {
 						filters: {
@@ -852,6 +853,10 @@ function cusomerCredentials(subCategory, customer){
 		],
 		primary_action_label: 'View Credential',
 		primary_action(values) {
+			if (!values.purpose) {
+				frappe.msgprint(__('Please select a Purpose before viewing credentials.'));
+				return;
+			}
 			frappe.call({
 				method:'one_compliance.one_compliance.utils.view_credential_details',
 				args:{
