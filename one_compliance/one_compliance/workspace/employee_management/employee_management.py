@@ -71,90 +71,18 @@ def get_on_duty_employees_today():
 
     return len(requests)
 
-
-
-
-# @frappe.whitelist()
-# def get_all_employees_with_status():
-#     today_date = today()
-
-#     employees = frappe.get_all(
-#         "Employee",
-#         filters={"status": "Active"},
-#         fields=["name", "employee_name", "designation", "user_id"]
-#     )
-
-#     checkins = frappe.get_all(
-#         "Employee Checkin",
-#         filters={
-#             "log_type": "IN",
-#             "time": ["between", [today_date + " 00:00:00", today_date + " 23:59:59"]]
-#         },
-#         fields=["employee"]
-#     )
-
-#     leave = frappe.get_all(
-#         "Leave Application",
-#         filters={
-#             "status": "Approved",
-#             "from_date": ["<=", today_date],
-#             "to_date": [">=", today_date]
-#         },
-#         pluck="employee"
-#     )
-
-#     available, wfh = set(), set()
-#     for row in checkins:
-#         (wfh if row.work_from_home else available).add(row.employee)
-
-#     on_leave = set(leave)
-
-#     final = []
-#     for emp in employees:
-#         status = "unavailable"
-#         if emp.name in on_leave:
-#             status = "on_leave"
-#         elif emp.name in wfh:
-#             status = "work_from_home"
-#         elif emp.name in available:
-#             status = "available"
-
-
-#         task_weightages = frappe.get_all(
-#             "Task",
-#             filters={"assigned_to": emp.user_id,
-#                     'exp_start_date':['<=', today_date],
-# 					'exp_end_date': ['>=', today_date]},
-#             pluck="task_weightage"
-#         )
-
-#         final.append({
-#             "employee": emp.name,
-#             "employee_name": emp.employee_name,
-#             "designation": emp.designation,
-#             "status": status,
-#             "email": emp.user_id,
-#             "task_weightages": task_weightages,
-#             "total_task_weightage": sum([float(t) for t in task_weightages if t])
-#         })
-
-#     return final
-
-
 @frappe.whitelist()
 def get_all_employees_with_status():
     from frappe.utils import today
 
     today_date = today()
 
-    # 1️⃣ Active employees
     employees = frappe.get_all(
         "Employee",
         filters={"status": "Active"},
         fields=["name", "employee_name", "designation", "user_id"]
     )
 
-    # 2️⃣ Employees who have checked in today
     checkins = frappe.get_all(
         "Employee Checkin",
         filters={
@@ -163,8 +91,6 @@ def get_all_employees_with_status():
         },
         pluck="employee"
     )
-
-    # 3️⃣ Employees on approved leave today
     leave = frappe.get_all(
         "Leave Application",
         filters={
@@ -175,7 +101,6 @@ def get_all_employees_with_status():
         pluck="employee"
     )
 
-    # 4️⃣ Employees with Work From Home attendance requests
     wfh = frappe.get_all(
         "Attendance Request",
         filters={
@@ -185,8 +110,6 @@ def get_all_employees_with_status():
         },
         pluck="employee"
     )
-
-    # 5️⃣ Employees with On Duty attendance requests
     on_duty = frappe.get_all(
         "Attendance Request",
         filters={
@@ -196,16 +119,12 @@ def get_all_employees_with_status():
         },
         pluck="employee"
     )
-
-    # Convert to sets for faster lookup
     available = set(checkins)
     on_leave = set(leave)
     work_from_home = set(wfh)
     on_duty_set = set(on_duty)
 
     final = []
-
-    # 6️⃣ Determine employee status
     for emp in employees:
         status = "unavailable"
 
@@ -239,11 +158,6 @@ def get_all_employees_with_status():
         })
 
     return final
-
-
-
-
-
 
 @frappe.whitelist()
 def get_employee_tasks_today(employee_id=None):
