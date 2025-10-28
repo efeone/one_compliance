@@ -179,9 +179,7 @@ def get_employee_tasks_today(employee_id=None):
             filters={
                 'assigned_to': employee_id,
                 'docstatus': ['!=', 2],
-                'status': ['not in', ['Completed', 'Cancelled']],
-                'exp_start_date':['<=', today_date],
-                'exp_end_date': ['>=', today_date]
+                'status': ['not in', ['Completed', 'Cancelled', 'Template']]
             },
             fields=[
                 'name',
