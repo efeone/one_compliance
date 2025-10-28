@@ -278,59 +278,10 @@ override_doctype_dashboards = {
 #	"one_compliance.auth.validate"
 # ]
 fixtures = [
-    {
-        'dt': 'Role',
-        'filters': [['name', 'in', ['Founder','Director','Compliance Manager','Senior Manager','Manager','Executive','Head Of Department']]]
-    },
-    {
-        'dt': "Document Register Type"
-    },
-    {
-        'dt': 'Customer Type'
-    },
-    {
-        'dt': 'Workflow State',
-        'filters': [['name', 'in', ['Draft','Approved','Rejected','Pending','Sent to Customer','Customer Approval Waiting','Customer Approved',
-                                    'Customer Rejected','Cancelled','Verified','Tax Invoice','Proforma Invoice', 'Closed', 'In Progress',
-                                    'Pre-Invoice', 'Partially Paid', 'Paid', 'Invoiced', 'Completed']]]
-    },
-    {
-        'dt': 'Workflow',
-        'filters': [['name', 'in', ['Compliance Agreement Workflow', 'Sales Order Workflow']]]
-    },
-    {
-        'dt': 'Workflow Action Master',
-        'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval',
-                                    'Customer Reject','Customer Approval waiting','Cancelled','Generate Proforma Invoice','Generate Tax Invoice',
-                                    'Cancel', 'Proceed', 'Close', 'Create Pre-Invoice']]]
-    },
-    {
-        'dt' : 'Notification Template'
-    },
-    {
-        'dt': 'Designation',
-        'filters': [['name', 'in',['Founder','Director','Head Of Department','Senior Manager','Manager','Executive']]]
-    },
-    {
-        'dt': 'Module Profile',
-        'filters': [['name', 'in', ['Founder','Director','Head Of Department','Super Admin','Senior Manager','Manager','Executive']]]
-    },
-    {
-        'dt': 'Web Page',
-        'filters': [['name', 'in', ['customer-credentials', 'project-status', 'agreement-approval', 'login-page', 'customer-documents']]]
-    },
-    {
-        'dt': 'Role Profile'
-    },
-    {
-        'dt': 'Category Type',
-        'filters': [['name','in',['Audit','Compliance','Tax','Consulting']]]
-    },
-    {
-        'dt': 'Translation'
-    },
-    {
-        'dt': 'Property Setter',
-        'filters': [['module', '=', 'One Compliance']]
+	{
+        "dt": "Custom HTML Block",
+        "filters": [
+            ["name", "in", ["Employee Management", "Employee Management"]]
+        ]
     }
 ]
