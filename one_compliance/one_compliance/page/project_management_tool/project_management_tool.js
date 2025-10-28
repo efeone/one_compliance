@@ -157,7 +157,6 @@ function refresh_projects(page, page_num = null) {
 
 	// Clear existing project list and pagination controls
 	page.body.find(".frappe-list").remove();
-	page.body.find(".pagination-container").remove();
 
 	const selectedStatus = page.fields_dict.status.get_value();
 	const projectName = page.fields_dict.project.get_value();
@@ -198,8 +197,9 @@ function refresh_projects(page, page_num = null) {
 					frappe.set_route('task-management-tool');
 				});
 
-				// Render pagination controls
+				// Attach pagination controls and page-length button logic
 				render_pagination_controls(page, r.message.length);
+				setup_page_length_buttons(page);
 			} else {
 				// If no projects are found, append a message to the page body
 				$('<div class="frappe-list"></div>').appendTo(page.body)
@@ -231,4 +231,17 @@ function render_pagination_controls(page, result_count) {
 	next_btn.on('click', () => refresh_projects(page, page.current_page + 1));
 
 	container.append(prev_btn, info_text, next_btn);
+}
+
+/*
+Sets up event listeners for page length buttons to change the number of items displayed per page.
+*/
+function setup_page_length_buttons(page) {
+	$(".page-length-btn").off('click').on('click', function () {
+		$(".page-length-btn").removeClass("active");
+		$(this).addClass("active");
+		page.page_length = parseInt($(this).attr("data-length"));
+		page.current_page = 1;
+		refresh_projects(page);
+	});
 }
