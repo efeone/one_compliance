@@ -6,6 +6,10 @@ def get_project(
 	status=None, project=None, customer=None, department=None, sub_category=None,
 	employee=None, from_date=None, to_date=None, page=1, page_length=20
 ):
+	"""
+	Fetch a list of projects based on various filters such as status, customer, department,
+	sub-category, assigned employee, and date range. Supports pagination.
+	"""
 	current_user = frappe.session.user
 	user_id = f'"{employee}"' if employee else None
 	offset = (int(page) - 1) * int(page_length)

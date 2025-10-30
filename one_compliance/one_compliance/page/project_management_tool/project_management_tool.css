@@ -1,76 +1,89 @@
-/* Style to each task card */
+/* Style for each task card */
 .card {
-				margin: 20px 10px;
-				box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-				border: None;
-				border-radius: 8px;
-				overflow: hidden;
-				padding: 2px;
-				background-color: rgb(242, 242, 243);
-		}
-		/* background color to the main page */
-		.layout-main-section.frappe-card {
-			background-color: #ffffff;
-		}
-		/* background color to the filter form */
-		.page-form {
-			background-color: #ffffff;
-		}
-		/* transparent background to the header tag */
-		.list-row-head {
-			background-color: transparent;
-		}
-		/* padding to each card body */
-		.card-body {
-				padding: 10px 20px 10px 20px;
-		}
-		/* Alignment for Assignee section */
-		.card-text {
-				margin-bottom: 15px;
-		}
-		/* style to button */
-		.btn{
-				max-width: 100px;
-				max-height: 30px;
-				margin: auto 0px;
-		}
-		/* style to the project link */
-		.project-link{
-			display: inline-block;
-			max-width: 100%; /* Adjust as needed */
-			overflow: hidden;
-			white-space: nowrap;
-			text-overflow: ellipsis;
-		}
-		/* on hover, show full project link */
-		.project-link:hover {
-				max-width: none;
-				white-space: normal;
-		}
-		#pagination-container {
-				margin-top: 15px;
-				text-align: center;
-		}
+	margin: 20px 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border: none;
+	border-radius: 8px;
+	overflow: hidden;
+	padding: 2px;
+	background-color: rgb(242, 242, 243);
+}
 
-		#pagination-container .page-btn {
-				display: inline-block;
-				margin: 0 5px;
-				padding: 5px 12px;
-				font-size: 14px;
-				border-radius: 5px;
-				border: 1px solid #3e89ec;
-				color: #007bff;
-				background-color: white;
-				cursor: pointer;
-				transition: all 0.2s ease;
-		}
+/* Background color for the main page */
+.layout-main-section.frappe-card {
+	background-color: #ffffff;
+}
 
-		#pagination-container .page-btn:hover {
-				background-color: #1d7be0;
-				color: white;
-		}
+/* Background color for the filter form */
+.page-form {
+	background-color: #ffffff;
+}
 
-		#pagination-container .page-btn:disabled {
-				cursor: not-allowed;
-				opacity: 0.6;
-		}
+/* Transparent background for the header section */
+.list-row-head {
+	background-color: transparent;
+}
+
+/* Padding for each card body */
+.card-body {
+	padding: 10px 20px;
+}
+
+/* Alignment for Assignee section */
+.card-text {
+	margin-bottom: 15px;
+}
+
+/* Style for buttons */
+.btn {
+	max-width: 100px;
+	max-height: 30px;
+	margin: auto 0px;
+}
+
+/* Style for the project link */
+.project-link {
+	display: inline-block;
+	max-width: 100%; /* Prevent overflow */
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+/* On hover, show full project link */
+.project-link:hover {
+	max-width: none;
+	white-space: normal;
+}
+
+/* Pagination container */
+#pagination-container {
+	margin-top: 15px;
+	text-align: center;
+}
+
+/* Pagination buttons */
+#pagination-container .page-btn {
+	display: inline-block;
+	margin: 0 5px;
+	padding: 5px 12px;
+	font-size: 14px;
+	border-radius: 5px;
+	border: 1px solid #3e89ec;
+	color: #007bff;
+	background-color: white;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+/* Pagination button hover effect */
+#pagination-container .page-btn:hover {
+	background-color: #1d7be0;
+	color: white;
+}
+
+/* Disabled pagination button style */
+#pagination-container .page-btn:disabled {
+	cursor: not-allowed;
+	opacity: 0.6;
+}
