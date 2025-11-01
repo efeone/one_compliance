@@ -6,6 +6,7 @@ app_publisher = "efeone"
 app_description = "Frappe app to facilitate operations in Compliances and Tasks"
 app_email = "info@efeone.com"
 app_license = "MIT"
+required_apps = ["frappe/erpnext", "frappe/hrms"]
 
 # Includes in <head>
 # ------------------
