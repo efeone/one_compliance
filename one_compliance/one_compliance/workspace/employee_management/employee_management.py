@@ -34,7 +34,6 @@ def get_employees_on_leave_today():
 
 @frappe.whitelist()
 def get_work_from_home_employees_today():
-    from frappe.utils import today
 
     today_date = today()
 
@@ -54,7 +53,6 @@ def get_work_from_home_employees_today():
 
 @frappe.whitelist()
 def get_on_duty_employees_today():
-    from frappe.utils import today
 
     today_date = today()
 
@@ -73,7 +71,6 @@ def get_on_duty_employees_today():
 
 @frappe.whitelist()
 def get_all_employees_with_status():
-    from frappe.utils import today
 
     today_date = today()
 
@@ -178,7 +175,6 @@ def get_employee_tasks_today(employee_id=None):
             'Task',
             filters={
                 'assigned_to': employee_id,
-                'docstatus': ['!=', 2],
                 'status': ['not in', ['Completed', 'Cancelled', 'Template']]
             },
             fields=[
