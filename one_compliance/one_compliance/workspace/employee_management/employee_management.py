@@ -45,8 +45,7 @@ def get_work_from_home_employees_today():
             "from_date": ["<=", today_date],
             "to_date": [">=", today_date],
         },
-        fields=["employee", "employee_name"],
-        distinct=True
+        fields=["employee", "employee_name"]
     )
 
     return len(requests)
@@ -63,8 +62,7 @@ def get_on_duty_employees_today():
             "from_date": ["<=", today_date],
             "to_date": [">=", today_date],
         },
-        fields=["employee", "employee_name"],
-        distinct=True
+        fields=["employee", "employee_name"]
     )
 
     return len(requests)
