@@ -151,7 +151,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 				task_doc.exp_start_date = start_date
 				task_doc.custom_serial_number = template_task.idx
 				task_doc.department = compliance_sub_category.department
-				task_doc.task_weightage = template_task_doc.task_weightage or 0
+				task_doc.task_weightage = template_task.task_weightage or 0
 				if template_task_doc.expected_time:
 					task_doc.expected_time = template_task_doc.expected_time
 				if template_task.custom_task_duration:

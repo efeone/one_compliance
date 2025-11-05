@@ -21,7 +21,6 @@ from one_compliance.custom.custom_field.todo import get_todo_custom_fields
 from one_compliance.custom.custom_field.opportunity_item import get_opportunity_item_custom_fields
 from one_compliance.custom.custom_field.compliance_sub_category import get_compliance_sub_category_custom_fields
 
-
 # Custom property setter method imports
 from one_compliance.custom.property_setter.contact_email import get_contact_email_property_setters
 from one_compliance.custom.property_setter.contact_phone import get_contact_phone_property_setters
