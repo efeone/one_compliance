@@ -179,9 +179,7 @@ doc_events = {
     },
     'ToDo':{
         'before_insert':[
-            'one_compliance.one_compliance.doc_events.todo.set_company_from_task',
-            'one_compliance.one_compliance.doc_events.todo.set_company_from_project',
-            'one_compliance.one_compliance.doc_events.todo.set_company_from_event'
+            'one_compliance.one_compliance.doc_events.todo.set_company_and_related_fields',
         ]
     }
 }
