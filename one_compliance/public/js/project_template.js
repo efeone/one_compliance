@@ -140,7 +140,7 @@ function show_task_popup(frm, table_field) {
                 fieldtype: 'Check',
                 change: () => {
                     primary_action_label = dialog.get_value('is_existing_task') ? 'Add' : 'Create & Add';
-                    dialog.set_primary_action_label(primary_action_label);
+                    set_primary_action_label(dialog, primary_action_label);
                 }
             },
             {
@@ -226,4 +226,8 @@ function clear_blank_rows(frm, tables) {
             frm.refresh_field(table_field);
         });
     }
+}
+
+function set_primary_action_label(dialog, primary_action_label) {
+    dialog.get_primary_btn().removeClass("hide").html(primary_action_label);
 }
