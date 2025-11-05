@@ -10,7 +10,7 @@ def get_available_employees_today():
             "log_type": "IN",
             "time": [">=", today()]
         },
-        fields=["distinct employee", "employee_name"]
+        fields=["employee_name"]
     )
 
     return len(checkins)
