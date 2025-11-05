@@ -54,6 +54,7 @@ def create_project_template_custom_button(source_name, target_doc = None):
 	def set_missing_values(source, target):
 		target.compliance_category= source.compliance_category
 		target.compliance_sub_category = source.name
+		target.has_premium_tasks = 1 if source.premium_task else 0
 	doc = get_mapped_doc(
 		'Compliance Sub Category',
 		source_name,

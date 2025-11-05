@@ -74,7 +74,8 @@ def get_project_template_custom_fields():
 				"label": "Premium Tasks",
 				"options": "Premium Tasks",
 				"insert_after": "custom_add_tasks",
-				"depends_on": "eval:doc.has_premium_tasks"
+				"depends_on": "eval:doc.has_premium_tasks",
+				"mandatory_depends_on": "eval:doc.has_premium_tasks == 1"
 			},
 			{
 				"fieldname": "custom_add_tasks2",
