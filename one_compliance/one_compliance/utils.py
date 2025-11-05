@@ -32,12 +32,23 @@ def create_notification_log(subject, type, for_user, email_content, document_typ
 def create_todo(doctype, name, assign_to, owner, description):
 	''' Method used for create ToDo '''
 	due_date = frappe.utils.today()
-	if doctype =='Task':
-		if frappe.db.get_value(doctype, name, 'exp_end_date'):
-			due_date = frappe.db.get_value(doctype, name, 'exp_end_date')
+	if doctype == 'Task':
+		exp_end_date = frappe.db.get_value(doctype, name, 'exp_end_date')
+		if exp_end_date:
+			due_date = exp_end_date
+
+	if isinstance(assign_to, str):
+		try:
+			assign_to = json.loads(assign_to)
+		except Exception:
+			assign_to = [assign_to]
+
+	if not isinstance(assign_to, list):
+		assign_to = [assign_to]
+
 	add_custom(
 		{
-			"assign_to": [assign_to],
+			"assign_to": assign_to,
 			"doctype": doctype,
 			"name": name,
 			"description": description,
