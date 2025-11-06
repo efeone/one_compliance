@@ -1,6 +1,7 @@
 import frappe
 from frappe.utils import get_datetime
 from erpnext.accounts.party import get_party_account
+from frappe import _
 
 @frappe.whitelist()
 def get_task(status=None, task=None, project=None, customer=None, department=None, sub_category=None, employee=None, employee_group=None, from_date=None, to_date=None, page=1, page_length=20):
@@ -55,13 +56,11 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 		conditions.append("t.exp_end_date < %(to_date)s")
 		values["to_date"] = to_date
 
-	# Only show tasks with readiness_status = "Ready" for Executive (excluding Administrator)
 	if current_user != "Administrator" and "Executive" in roles:
 		conditions.append("(t.readiness_status = 'Ready' OR t.readiness_status IS NULL OR t.readiness_status = '')")
 
 	where_clause = "WHERE " + " AND ".join(conditions) if conditions else ""
 
-	# Count query
 	count_query = f"""
 		SELECT COUNT(t.name)
 		FROM tabTask t
@@ -70,7 +69,6 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 	"""
 	total_tasks = frappe.db.sql(count_query, values.copy(), as_dict=False)[0][0]
 
-	# Data query
 	data_query = f"""
 		SELECT
 			t.name, t.project, t.subject, t.project_name, t.customer, c.department, t.compliance_sub_category,
@@ -124,15 +122,15 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 		"total_tasks": total_tasks
 	}
 
-
 @frappe.whitelist()
 def create_timesheet(project, task, employee, activity, from_time, to_time):
-
+	"""
+	Create or update a Timesheet for an employee based on provided time logs.
+	"""
 	from_time = get_datetime(from_time)
 	to_time = get_datetime(to_time)
 	employee_id = frappe.get_value("Employee", {"employee_name": employee}, "name")
 
-	# Check if a timesheet already exists for the employee within the given date range
 	existing_timesheets = frappe.get_all("Timesheet", filters={
 		"employee": employee_id,
 		"start_date": from_time.date(),
@@ -149,7 +147,6 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
 			"to_time": to_time
 		})
 		existing_timesheet.save()
-		frappe.db.commit()
 	else:
 		timesheet = frappe.new_doc("Timesheet")
 		timesheet.employee = employee_id
@@ -162,10 +159,12 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
 		})
 
 		timesheet.insert(ignore_permissions=True)
-		frappe.db.commit()
 
 @frappe.whitelist()
 def update_task_status(task, project, status):
+	"""
+	Create or update a Timesheet for an employee based on provided time logs.
+	"""
 	task_doc = frappe.get_doc("Task", {"name":task,"project":project})
 
 	task_doc.status = status
@@ -173,9 +172,11 @@ def update_task_status(task, project, status):
 	task_doc.save()
 	return "success"
 
-
 @frappe.whitelist()
 def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=None, reference_date=None, user_remark=None):
+	"""
+	Add payment details to a task and create related Journal Entry and Reimbursement records.
+	"""
 	task_doc = frappe.get_doc("Task", task_id)
 	payment_info = {
 		"payable_amount": payable_amount,
@@ -188,11 +189,6 @@ def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=
 	payment_info['journal_entry'] = journal_entry
 	task_doc.append("custom_task_payment_informations", payment_info)
 	task_doc.custom_is_payable = 1
-	# task_doc.custom_payable_amount = payable_amount
-	# task_doc.custom_mode_of_payment = mode_of_payment
-	# task_doc.custom_reference_number = reference_number
-	# task_doc.custom_reference_date = reference_date
-	# task_doc.custom_user_remark = user_remark
 	task_doc.save()
 	task_doc.reload()
 	sales_order = frappe.db.get_value("Project", task_doc.project, 'sales_order') or None
@@ -208,9 +204,11 @@ def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=
 		so_reimburse.save(ignore_permissions= True)
 		total_reimbursement_amount = get_total_reimbursement_amount(sales_order)
 		frappe.db.set_value('Sales Order', sales_order, 'custom_total_reimbursement_amount', total_reimbursement_amount)
-	frappe.db.commit()
 
 def create_journal_entry_pay_info(task, payment_info):
+	"""
+	Create a Journal Entry for the provided payment information.
+	"""
 	if payment_info['payable_amount'] and payment_info['mode_of_payment']:
 		account = get_party_account('Customer', task.customer, task.company)
 		default_account = get_default_account_for_mode_of_payment(payment_info['mode_of_payment'], task.company)
@@ -237,6 +235,9 @@ def create_journal_entry_pay_info(task, payment_info):
 		return journal_entry.name
 
 def get_default_account_for_mode_of_payment(mode_of_payment, company):
+	"""
+	Get the default account for the specified mode of payment and company.
+	"""
 	mode_of_payment_doc = frappe.get_doc("Mode of Payment", mode_of_payment)
 	for account in mode_of_payment_doc.accounts:
 		if account.company == company:
@@ -244,6 +245,9 @@ def get_default_account_for_mode_of_payment(mode_of_payment, company):
 	frappe.throw(_("Default account not found for mode of payment {0} and company {1}").format(mode_of_payment, company))
 
 def get_total_reimbursement_amount(sales_order):
+	"""
+	Calculate the total reimbursement amount for a given Sales Order
+	"""
 	total_reimbursement_amount = 0
 	amounts = frappe.db.get_all('Reimbursement Details', { 'parent':sales_order, 'parentfield':'custom_reimbursement_details', 'parenttype':'Sales Order'}, pluck='amount')
 	for amount in amounts:
