@@ -104,7 +104,7 @@ def project_after_insert(doc, method):
 				frappe.db.set_value("Sales Order", sales_order, {
 					"status": "Proforma Invoice",
 					"workflow_state": "Proforma Invoice",
-					"invoice_generation_date": today(),
+					"invoice_generation_date": frappe.utils.today(),
 				})
 
 			else:
