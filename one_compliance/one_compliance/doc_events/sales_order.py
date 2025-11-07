@@ -117,6 +117,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 				project.custom_instructions = custom_instructions
 			project.notes = remark
 			project.sales_order = sales_order
+			project.is_premium = 1 if (self.is_premium_project and project_template_doc.has_premium_tasks) else 0
 			project.category_type = compliance_sub_category.category_type
 			project.department = compliance_sub_category.department
 			project.save(ignore_permissions=True)
@@ -212,6 +213,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 								task_doc.compliance_sub_category = compliance_sub_category.name
 								task_doc.exp_start_date = start_date
 								task_doc.custom_serial_number = premium_task.idx
+								task_doc.task_weightage = premium_task.task_weightage
 
 								if premium_task.task_duration:
 									task_doc.duration = premium_task.task_duration

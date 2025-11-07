@@ -135,8 +135,13 @@ def convert_project_to_premium(project):
 			return "no_template"
 
 		template_doc = frappe.get_doc("Project Template", sub_category_doc.project_template)
-
 		for premium_task in template_doc.premium_tasks:
+			existing_task = frappe.db.exists("Task", {
+				"project": project_doc.name,
+				"subject": premium_task.subject
+			})
+			if existing_task:
+				continue
 			task = frappe.new_doc("Task")
 			task.subject = premium_task.subject
 			task.project = project_doc.name
