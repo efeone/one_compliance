@@ -1,0 +1,83 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-11-11 15:57:00.938138",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "stakeholder",
+  "full_name",
+  "is_employee",
+  "is_shareholder",
+  "is_contact_person",
+  "is_poa",
+  "is_ubo"
+ ],
+ "fields": [
+  {
+   "fieldname": "stakeholder",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Stakeholder",
+   "options": "Stakeholder"
+  },
+  {
+   "fetch_from": "stakeholder.full_name",
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Full Name"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_employee",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Employee"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_shareholder",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Shareholder"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_contact_person",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Contact Person"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_poa",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is POA"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_ubo",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is UBO"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-11-11 16:16:38.091196",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Stakeholders Detail",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
