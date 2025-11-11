@@ -145,12 +145,12 @@ doc_events = {
     },
     'Project':{
         'on_update': 'one_compliance.one_compliance.doc_events.project.project_on_update',
-        'after_insert': 'one_compliance.one_compliance.doc_events.project.project_after_insert'
     },
     'Customer':{
         'on_update':[
             'one_compliance.one_compliance.doc_events.customer.customer_on_update',
-            'one_compliance.one_compliance.doc_events.customer.create_project_from_customer'
+            'one_compliance.one_compliance.doc_events.customer.create_project_from_customer',
+			'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.update_status_on_customer_change'
         ],
         'before_save':[
             'one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',
@@ -200,7 +200,8 @@ scheduler_events = {
         'one_compliance.one_compliance.utils.project_overdue_notification',
         'one_compliance.one_compliance.doc_events.project.set_status_to_overdue',
         'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.send_repeat_notif',
-        'one_compliance.one_compliance.doc_events.sales_order.create_opportunity'
+        'one_compliance.one_compliance.doc_events.sales_order.create_opportunity',
+		'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_sales_orders_from_compliance_agreements'
     ],
 #	"hourly": [
 #		"one_compliance.tasks.hourly"
