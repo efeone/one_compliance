@@ -69,19 +69,6 @@ def after_migrate():
 	# Creating One Compliance specific fixtures
 	create_fixtures()
 
-def before_migrate():
-	delete_custom_fields_for_app()
-
-def create_custom_fields_for_app():
-	create_custom_fields(get_custom_fields())
-
-def delete_custom_fields_for_app():
-	delete_custom_fields(get_custom_fields())
-
-def create_property_setters_for_app():
-	create_property_setters(get_property_setters())
-
-
 def create_fixtures():
 	'''
 		Method to create One Compliance specific fixtures
@@ -100,6 +87,9 @@ def create_fixtures():
 	insert_docs(get_module_profile_fixtures())
 	insert_docs(get_notification_template_fixtures())
 	insert_docs(get_document_register_type_fixtures())
+
+def delete_custom_fields_on_uninstall():
+	delete_custom_fields(get_custom_fields())
 
 def delete_custom_fields(custom_fields: dict):
 	'''
