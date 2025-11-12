@@ -390,7 +390,8 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 					sub_cat,
 					detail.name,
 					agreement.name,
-					sub_category.compliance_category
+					sub_category.compliance_category,
+					posting_date
 				)
 
 			# === Calculate compliance dates (common for both cases) ===
@@ -475,20 +476,36 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 
 def create_project_from_template(sales_order, project_template, customer, company,
 								 compliance_sub_category, compliance_category_details_id,
-								 compliance_agreement, compliance_category):
+								 compliance_agreement, compliance_category, compliance_date=today()):
 	"""
 	Create Project and Tasks from Project Template for Compliance Sub Category.
 	"""
 	try:
+		compliance_date = getdate(compliance_date)
 		project_template_doc = frappe.get_doc("Project Template", project_template)
 		sub_category_doc = frappe.get_doc('Compliance Sub Category', compliance_sub_category)
-
-		naming = frappe.db.count('Project') + 1
-		compliance_date = getdate(nowdate())
-
+		repeat_on = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'repeat_on')
+		project_based_on_prior_phase = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_based_on_prior_phase')
+		previous_month_date = add_months(getdate(compliance_date), -1)
+		naming_year = getdate(previous_month_date).year if project_based_on_prior_phase else getdate(compliance_date).year
+		naming_month = getdate(previous_month_date).strftime("%B") if project_based_on_prior_phase else getdate(compliance_date).strftime("%B")
+		if naming_month in ['January', 'February', 'March']:
+			naming_quarter = 'Quarter 1'
+		elif naming_month in ['April', 'May', 'June']:
+			naming_quarter = 'Quarter 2'
+		elif naming_month in ['July', 'August', 'September']:
+			naming_quarter = 'Quarter 3'
+		else:
+			naming_quarter = 'Quarter 4'
+		if repeat_on == "Yearly":
+			naming = naming_year
+		elif repeat_on == "Quarterly":
+			naming = str(naming_year) + ' ' + naming_quarter
+		else:
+			naming = str(naming_year) + ' ' + naming_month
 		project = frappe.new_doc('Project')
 		project.company = company
-		project.cost_center = frappe.get_cached_value("Company", company, "cost_center")
+		# project.cost_center = frappe.get_cached_value("Company", company, "cost_center")
 
 		add_compliance_category_in_project_name = frappe.db.get_single_value(
 			'Compliance Settings', 'add_compliance_category_in_project_name'
