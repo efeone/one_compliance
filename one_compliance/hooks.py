@@ -83,8 +83,6 @@ before_uninstall = "one_compliance.install.before_uninstall"
 
 after_migrate = "one_compliance.setup.after_migrate"
 
-before_migrate = "one_compliance.setup.before_migrate"
-
 # Uninstallation
 # ------------
 
