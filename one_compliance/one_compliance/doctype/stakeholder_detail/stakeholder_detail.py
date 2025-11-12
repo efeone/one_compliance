@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class StakeholdersDetail(Document):
+class StakeholderDetail(Document):
 	pass

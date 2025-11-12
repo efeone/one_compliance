@@ -102,7 +102,7 @@ def get_customer_custom_fields():
 			{
 				"fieldname": "other_details",
 				"fieldtype": "Tab Break",
-				"insert_after": "custom_audit_list",
+				"insert_after": "stakeholder_details",
 				"label": "Other Details",
 			},
 			{
@@ -121,6 +121,13 @@ def get_customer_custom_fields():
 				"insert_after": "send_project_completion_mail",
 				"in_list_view": 1,
 				"read_only": 1,
+			},
+			{
+				"fieldname": "stakeholder_details",
+				"fieldtype": "Table",
+				"insert_after": "custom_audit_list",
+				"label": "Stakeholder Details",
+				"options": "Stakeholder Detail",
 			},
 		]
 	}

@@ -12,14 +12,16 @@
   {
    "fieldname": "risk_category",
    "fieldtype": "Data",
+   "in_list_view": 1,
    "label": "Risk Category ",
+   "reqd": 1,
    "unique": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-11 15:40:35.316853",
+ "modified": "2025-11-12 11:16:20.124072",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "AML Risk Category",
