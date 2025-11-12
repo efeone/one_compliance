@@ -281,23 +281,6 @@ def check_project_exists_or_not(compliance_sub_category, compliance_agreement):
 	return False
 
 @frappe.whitelist()
-def compliance_agreement_daily_scheduler():
-	agreements = frappe.db.get_all('Compliance Agreement', filters = {'status': 'Active'})
-	if agreements:
-		for agreement in agreements:
-			try:
-				self = frappe.get_doc('Compliance Agreement', agreement.name)
-				self.create_project_if_not_exists()
-			except Exception as e:
-				frappe.log_error(str(e), 'Error in Compliance Agreement Creating Project')
-			try:
-				if self.invoice_based_on == 'Consolidated' and self.next_invoice_date == getdate(today()):
-					self.make_sales_invoice()
-			except Exception as e:
-				frappe.log_error(str(e), 'Error in Compliance Agreement Daily Scheduler')
-		frappe.db.commit()
-
-@frappe.whitelist()
 def get_rate_from_compliance_agreement(compliance_agreement, compliance_sub_category):
 	rate_result = frappe.db.sql(
 		"""
@@ -311,13 +294,13 @@ def get_rate_from_compliance_agreement(compliance_agreement, compliance_sub_cate
 		return rate_result[0].rate
 
 @frappe.whitelist()
-def create_sales_orders_from_compliance_agreements():
+def create_sales_orders_from_compliance_agreements(posting_date=today()):
 	"""
 	Create Sales Orders and/or Projects automatically from active Compliance Agreements.
 	Sales Order is created only if the Compliance Sub Category is billable.
 	Project is created in both cases.
 	"""
-	current_date = getdate(today())
+	current_date = getdate(posting_date)
 
 	MONTH_MAP = {
 		"January": 1, "February": 2, "March": 3, "April": 4,
