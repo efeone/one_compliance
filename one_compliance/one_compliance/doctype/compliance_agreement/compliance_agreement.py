@@ -483,7 +483,26 @@ def create_project_from_template(sales_order, project_template, customer, compan
 		project_template_doc = frappe.get_doc("Project Template", project_template)
 		sub_category_doc = frappe.get_doc('Compliance Sub Category', compliance_sub_category)
 
-		naming = frappe.db.count('Project') + 1
+		# naming = frappe.db.count('Project') + 1
+		repeat_on = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'repeat_on')
+		project_based_on_prior_phase = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_based_on_prior_phase')
+		previous_month_date = add_months(getdate(compliance_date), -1)
+		naming_year = getdate(previous_month_date).year if project_based_on_prior_phase else getdate(compliance_date).year
+		naming_month = getdate(previous_month_date).strftime("%B") if project_based_on_prior_phase else getdate(compliance_date).strftime("%B")
+		if naming_month in ['January', 'February', 'March']:
+			naming_quarter = 'Quarter 1'
+		elif naming_month in ['April', 'May', 'June']:
+			naming_quarter = 'Quarter 2'
+		elif naming_month in ['July', 'August', 'September']:
+			naming_quarter = 'Quarter 3'
+		else:
+			naming_quarter = 'Quarter 4'
+		if repeat_on == "Yearly":
+			naming = naming_year
+		elif repeat_on == "Quarterly":
+			naming = str(naming_year) + ' ' + naming_quarter
+		else:
+			naming = str(naming_year) + ' ' + naming_month
 		compliance_date = getdate(nowdate())
 
 		project = frappe.new_doc('Project')
