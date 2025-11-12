@@ -1,6 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "SH-.#####",
  "creation": "2025-11-11 14:53:06.742690",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -19,7 +20,7 @@
   "contact_number",
   "email_id",
   "whatsapp_number",
-  "contact_and_address_section",
+  "address_and_contacts_section",
   "residential_address",
   "column_break_zhky",
   "home_address",
@@ -40,12 +41,14 @@
   {
    "fieldname": "personal_information_section",
    "fieldtype": "Section Break",
-   "label": "Personal Information"
+   "label": "Personal Informations"
   },
   {
    "fieldname": "first_name",
    "fieldtype": "Data",
-   "label": "First Name"
+   "in_list_view": 1,
+   "label": "First Name",
+   "reqd": 1
   },
   {
    "fieldname": "middle_name",
@@ -64,7 +67,8 @@
   {
    "fieldname": "full_name",
    "fieldtype": "Data",
-   "label": "Full Name"
+   "label": "Full Name",
+   "read_only": 1
   },
   {
    "fieldname": "nationality",
@@ -110,14 +114,9 @@
    "label": "Passport Expiry Date"
   },
   {
-   "fieldname": "contact_and_address_section",
-   "fieldtype": "Section Break",
-   "label": "Contact and Address"
-  },
-  {
    "fieldname": "uae_information_section",
    "fieldtype": "Section Break",
-   "label": "UAE Information"
+   "label": "UAE Related Informations"
   },
   {
    "fieldname": "uae_contact_number",
@@ -128,7 +127,7 @@
    "fieldname": "uae_residency_status",
    "fieldtype": "Select",
    "label": "UAE Residency Status",
-   "options": "UAE Citizen\nUAE Resident (with valid visa)\nGCC Citizen\nVisitor / Tourist\nNon-Resident\nTemporary Worker\nStudent"
+   "options": "\nUAE Citizen\nUAE Resident (with valid visa)\nGCC Citizen\nVisitor / Tourist\nNon-Resident\nTemporary Worker\nStudent"
   },
   {
    "fieldname": "uae_residency_visa_expiry_date",
@@ -188,15 +187,21 @@
    "fieldname": "residential_address",
    "fieldtype": "Small Text",
    "label": "Residential Address"
+  },
+  {
+   "fieldname": "address_and_contacts_section",
+   "fieldtype": "Section Break",
+   "label": "Address and Contacts"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-11 15:51:45.516471",
+ "modified": "2025-11-12 11:26:29.682027",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Stakeholder",
+ "naming_rule": "Expression (old style)",
  "owner": "Administrator",
  "permissions": [
   {
@@ -216,5 +221,6 @@
  "rows_threshold_for_grid_search": 20,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "full_name"
 }
