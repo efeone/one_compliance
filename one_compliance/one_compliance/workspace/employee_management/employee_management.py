@@ -75,7 +75,7 @@ def get_all_employees_with_status():
     employees = frappe.get_all(
         "Employee",
         filters={"status": "Active"},
-        fields=["name", "employee_name", "designation", "user_id"]
+        fields=["name", "employee_name", "designation", "user_id", "image"]
     )
 
     checkins = frappe.get_all(
@@ -148,6 +148,7 @@ def get_all_employees_with_status():
             "designation": emp.designation,
             "status": status,
             "email": emp.user_id,
+			"profile_image_url": emp.image or None, 
             "task_weightages": task_weightages,
             "total_task_weightage": sum([float(t) for t in task_weightages if t])
         })
