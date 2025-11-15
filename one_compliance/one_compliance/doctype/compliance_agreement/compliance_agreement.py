@@ -615,3 +615,108 @@ def update_status_on_customer_change(doc, method):
 	for agreement_name in agreements:
 		self = frappe.get_doc("Compliance Agreement", agreement_name)
 		self.update_compliance_agreement_status()
+
+@frappe.whitelist()
+def create_sales_order_and_project_from_popup(compliance_agreement,compliance_sub_category,compliance_date,compliance_category_details_id):
+	"""
+	Create Sales Orders from compliance agreement popup.
+	"""
+	compliance_date = getdate(compliance_date)
+	agreement = frappe.get_doc("Compliance Agreement", compliance_agreement)
+
+	subcat = frappe.db.get_value(
+		"Compliance Sub Category",
+		compliance_sub_category,
+		[
+			"item_code",
+			"is_billable",
+			"project_template",
+			"compliance_category"
+		],
+		as_dict=True
+	)
+
+	if not subcat:
+		frappe.throw("Compliance Sub Category not found")
+
+	if not subcat.item_code:
+		frappe.throw("Item Code missing in Compliance Sub Category")
+
+	rate = frappe.db.get_value(
+		"Compliance Category Details",
+		compliance_category_details_id,
+		"rate"
+	) or 0
+
+	project = None
+	if subcat.project_template:
+		project = create_project_from_template(
+			sales_order=None,                      
+			project_template=subcat.project_template,
+			customer=agreement.customer,
+			company=agreement.company,
+			compliance_sub_category=compliance_sub_category,
+			compliance_category_details_id=compliance_category_details_id,
+			compliance_agreement=compliance_agreement,
+			compliance_category=subcat.compliance_category,
+			compliance_date=compliance_date
+		)
+	if subcat.is_billable:
+
+		exists = frappe.db.exists("Sales Order", {
+			"compliance_agreement": compliance_agreement,
+			"compliance_sub_category": compliance_sub_category,
+			"transaction_date": compliance_date
+		})
+
+		if exists:
+			return "Sales Order already exists for this date"
+
+		so = frappe.new_doc("Sales Order")
+		so.customer = agreement.customer
+		so.company = agreement.company
+		so.compliance_agreement = compliance_agreement
+		so.compliance_sub_category = compliance_sub_category
+		so.transaction_date = compliance_date
+		so.delivery_date = compliance_date
+
+		if agreement.default_payment_terms_template:
+			so.payment_terms_template = agreement.default_payment_terms_template
+
+		item_name = frappe.db.get_value("Item", subcat.item_code, "item_name")
+
+		so.append("items", {
+			"item_code": subcat.item_code,
+			"item_name": item_name,
+			"qty": 1,
+			"rate": rate,
+			"description": f"Auto-created from Compliance Agreement {compliance_agreement}"
+		})
+
+		so.insert(ignore_permissions=True)
+		so.submit()
+		if project:
+			project.db_set("sales_order", so.name)
+			so.db_set("project", project.name)
+
+		frappe.db.set_value(
+			"Compliance Category Details",
+			compliance_category_details_id,
+			{
+				"compliance_date": compliance_date,
+				"next_compliance_date": None
+			}
+		)
+
+		return f"Sales Order Created: {so.name} | Project Created: {project.name if project else 'No Template'}"
+
+	frappe.db.set_value(
+		"Compliance Category Details",
+		compliance_category_details_id,
+		{
+			"compliance_date": compliance_date,
+			"next_compliance_date": None
+		}
+	)
+
+	return f"Project Created: {project.name if project else 'No Template'} | Not Billable"

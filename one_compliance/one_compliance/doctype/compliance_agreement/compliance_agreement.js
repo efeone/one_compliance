@@ -163,12 +163,6 @@ let create_project = function (frm) {
     title: 'Create Project',
     fields: [
       {
-        label: 'Start Date',
-        fieldname: 'start_date',
-        fieldtype: 'Date',
-        reqd: 1,
-      },
-      {
         label: 'Compliance Category',
         fieldname: 'compliance_category',
         fieldtype: 'Link',
@@ -180,7 +174,22 @@ let create_project = function (frm) {
         fieldname: 'compliance_sub_category',
         fieldtype: 'Link',
         reqd: 1,
-        options: 'Compliance Sub Category'
+        options: 'Compliance Sub Category',
+        onchange: function() {
+                    let selected_sub = d.get_value('compliance_sub_category');
+                    let matching_item = frm.doc.compliance_category_details.find(item => item.compliance_sub_category === selected_sub);
+                    if (matching_item && matching_item.compliance_date) {
+                        d.set_value('start_date', matching_item.compliance_date);
+                    } else {
+                        d.set_value('start_date', null);
+                    }
+                }
+      },
+      {
+        label: 'Start Date',
+        fieldname: 'start_date',
+        fieldtype: 'Date',
+        reqd: 1,
       }
     ],
     primary_action_label: 'Submit',
@@ -188,7 +197,7 @@ let create_project = function (frm) {
       frm.doc.compliance_category_details.forEach((item) => {
         if (item.compliance_sub_category == values.compliance_sub_category) {
           frappe.call({
-            method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_project_against_sub_category',
+            method: 'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_sales_order_and_project_from_popup',
             args: {
               'compliance_agreement': frm.doc.name,
               'compliance_sub_category': values.compliance_sub_category,
