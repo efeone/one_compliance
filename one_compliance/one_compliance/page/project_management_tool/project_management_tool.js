@@ -192,6 +192,10 @@ function render_pagination_controls(page, result_count) {
 Sets up event listeners for page length buttons to change the number of items displayed per page.
 */
 function setup_page_length_buttons(page) {
+	$(".page-length-btn").removeClass("active");
+
+	$(`.page-length-btn[data-length="${page.page_length}"]`).addClass("active");
+
 	$(".page-length-btn").off('click').on('click', function () {
 		$(".page-length-btn").removeClass("active");
 		$(this).addClass("active");
