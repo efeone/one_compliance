@@ -20,8 +20,9 @@ def get_project_template_custom_fields():
 			{
 				"fieldname": "custom_project_duration",
 				"fieldtype": "Int",
-				"insert_after": "project_type",
+				"insert_after": "project_duration_type",
 				"label": "Project Duration(Days)",
+				"depends_on": "eval: doc.project_duration_type == 'Days'"
 			},
 			{
 				"fetch_from": "compliance_sub_category.category_type",
@@ -81,5 +82,21 @@ def get_project_template_custom_fields():
 				"label": "Add Tasks",
 				"insert_after": "premium_tasks",
 			},
+			{
+				"fieldname": "project_duration_type",
+				"fieldtype": "Select",
+				"label": "Project Duration Type",
+				"insert_after": "project_type",
+				"options": "\nDays\nMinutes"
+			},
+            {
+				"fieldname": "project_duration_minutes",
+				"fieldtype": "Duration",
+				"label": "Project Duration (Minutes)",
+				"insert_after": "project_duration_type",
+				"hide_days": 1,
+				"hide_seconds": 1,
+				"depends_on": "eval:doc.project_duration_type == 'Minutes' "
+			}
 		]
 	}

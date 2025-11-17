@@ -58,6 +58,28 @@ def get_project_template_task_custom_fields():
 				"options": "\n0\n1\n2\n3\n4\n5\n",
 				"insert_after": "custom_task_duration",
 				"in_list_view": 1
+			},
+			{
+				"fieldname": "has_external_dependencies",
+				"fieldtype": "Check",
+				"label": "Has External Dependencies",
+				"insert_after": "custom_has_document"
+			},
+             {
+				"fieldname": "Task_duration_type",
+				"fieldtype": "Select",
+				"label": "Task Duration Type",
+				"insert_after": "subject",
+				"options": "\nDays\nMinutes"
+			},
+            {
+				"fieldname": "task_duration_minutes",
+				"fieldtype": "Duration",
+				"label": "Task Duration (Minutes)",
+				"insert_after": "task_duration_type",
+				"hide_days": 1,
+				"hide_seconds": 1,
+				"depends_on": "eval:doc.task_duration_type == 'Minutes' "
 			}
 		]
 	}

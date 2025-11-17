@@ -658,41 +658,47 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
                 fieldname: "project",
                 fieldtype: 'Link',
                 options: 'Project',
-								default: projectName
+				default: projectName
             },
             {
                 label: __("From Time"),
                 fieldname: "from_time",
                 fieldtype: 'Datetime',
                 reqd: true,
-								read_only: 1,
-								default: fromTime,
+				read_only: 1,
+				default: fromTime,
             },
-						{
-							fieldtype: "Column Break",
-							fieldname: "col_break_1",
-						},
-						{
+			{
+				fieldtype: "Column Break",
+				fieldname: "col_break_1",
+			},
+			{
                 label: __("Task"),
                 fieldname: "task",
                 fieldtype: 'Link',
                 options: 'Task',
-								default: taskName
+				default: taskName
             },
 						{
                 label: __("Activity"),
                 fieldname: "activity",
                 fieldtype: 'Link',
                 reqd: true,
-								options: 'Activity Type'
+				options: 'Activity Type'
             },
             {
                 label: __("To Time"),
                 fieldname: "to_time",
                 fieldtype: 'Datetime',
                 reqd: true,
-								read_only: 1,
-								default: toTime
+				read_only: 1,
+				default: toTime
+            },
+            {
+                label: __("Lag Time"),
+                fieldname: "lag_time",
+                fieldtype: 'Duration',
+
             }
         ],
         primary_action: function (values) {
@@ -707,7 +713,8 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
 										employee: values.employee,
 										activity: values.activity,
 										from_time: values.from_time,
-										to_time: values.to_time
+										to_time: values.to_time,
+                                        lag_time: values.lag_time,
 								},
 								callback: function (r) {
 										frappe.msgprint("Timesheet created successfully!");

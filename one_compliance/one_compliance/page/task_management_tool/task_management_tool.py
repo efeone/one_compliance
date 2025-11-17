@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 from frappe.utils import get_datetime
 from erpnext.accounts.party import get_party_account
 
@@ -92,7 +93,7 @@ def get_task(status = None, task = None, project = None, customer = None, depart
     return task_list
 
 @frappe.whitelist()
-def create_timesheet(project, task, employee, activity, from_time, to_time):
+def create_timesheet(project, task, employee, activity, from_time, to_time, lag_time=None):
 
     from_time = get_datetime(from_time)
     to_time = get_datetime(to_time)
@@ -112,7 +113,8 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
             "project": project,
             "task": task,
             "from_time": from_time,
-            "to_time": to_time
+            "to_time": to_time,
+            "lag_time": lag_time
         })
         existing_timesheet.save()
         frappe.db.commit()
@@ -124,7 +126,8 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
             "project": project,
             "task": task,
             "from_time": from_time,
-            "to_time": to_time
+            "to_time": to_time,
+            "lag_time": lag_time
         })
 
         timesheet.insert(ignore_permissions=True)
@@ -154,11 +157,6 @@ def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=
     payment_info['journal_entry'] = journal_entry
     task_doc.append("custom_task_payment_informations", payment_info)
     task_doc.custom_is_payable = 1
-    # task_doc.custom_payable_amount = payable_amount
-    # task_doc.custom_mode_of_payment = mode_of_payment
-    # task_doc.custom_reference_number = reference_number
-    # task_doc.custom_reference_date = reference_date
-    # task_doc.custom_user_remark = user_remark
     task_doc.save()
     task_doc.reload()
     sales_order = frappe.db.get_value("Project", task_doc.project, 'sales_order') or None
