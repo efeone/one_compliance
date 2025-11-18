@@ -617,7 +617,12 @@ def update_status_on_customer_change(doc, method):
 		self.update_compliance_agreement_status()
 
 @frappe.whitelist()
-def create_sales_order_and_project_from_popup(compliance_agreement,compliance_sub_category,compliance_date,compliance_category_details_id):
+def create_sales_order_and_project_from_popup(
+	compliance_agreement,
+	compliance_sub_category,
+	compliance_date,
+	compliance_category_details_id
+):
 	"""
 	Create Sales Orders from compliance agreement popup.
 	"""
