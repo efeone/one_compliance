@@ -162,35 +162,35 @@ let create_project = function (frm) {
   let d = new frappe.ui.Dialog({
     title: 'Create Project',
     fields: [
-      {
+    {
         label: 'Compliance Category',
         fieldname: 'compliance_category',
         fieldtype: 'Link',
         reqd: 1,
         options: 'Compliance Category',
-      },
-      {
+    },
+    {
         label: 'Compliance Sub Category',
         fieldname: 'compliance_sub_category',
         fieldtype: 'Link',
         reqd: 1,
         options: 'Compliance Sub Category',
         onchange: function() {
-                    let selected_sub = d.get_value('compliance_sub_category');
-                    let matching_item = frm.doc.compliance_category_details.find(item => item.compliance_sub_category === selected_sub);
-                    if (matching_item && matching_item.compliance_date) {
-                        d.set_value('start_date', matching_item.compliance_date);
-                    } else {
-                        d.set_value('start_date', null);
-                    }
+            let selected_sub = d.get_value('compliance_sub_category');
+            let matching_item = frm.doc.compliance_category_details.find(item => item.compliance_sub_category === selected_sub);
+            if (matching_item && matching_item.compliance_date) {
+                d.set_value('start_date', matching_item.compliance_date);
+            } else {
+                d.set_value('start_date', null);
                 }
-      },
-      {
+            }
+    },
+    {
         label: 'Start Date',
         fieldname: 'start_date',
         fieldtype: 'Date',
         reqd: 1,
-      }
+    }
     ],
     primary_action_label: 'Submit',
     primary_action(values) {
