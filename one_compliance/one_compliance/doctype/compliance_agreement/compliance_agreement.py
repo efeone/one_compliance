@@ -647,6 +647,14 @@ def create_project_from_template(sales_order, project_template, customer, compan
 		compliance_date = getdate(compliance_date)
 		project_template_doc = frappe.get_doc("Project Template", project_template)
 		sub_category_doc = frappe.get_doc('Compliance Sub Category', compliance_sub_category)
+
+		customer_group = frappe.db.get_value("Customer", customer, "customer_group")
+		group_hod_user_id = None
+		if customer_group:
+			group_hod = frappe.db.get_value("Customer Group", customer_group, "hod")
+			if group_hod:
+				group_hod_user_id = frappe.db.get_value("Employee", group_hod, "user_id")
+
 		repeat_on = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'repeat_on')
 		project_based_on_prior_phase = frappe.db.get_value('Compliance Sub Category', compliance_sub_category, 'project_based_on_prior_phase')
 		previous_month_date = add_months(getdate(compliance_date), -1)
@@ -712,6 +720,10 @@ def create_project_from_template(sales_order, project_template, customer, compan
 				create_todo("Project", project.name, hod_user, frappe.session.user,
 							f"Project assigned to {sub_category_doc.head_of_department}")
 
+		if group_hod_user_id and group_hod_user_id != hod_user:
+			create_todo("Project", project.name, group_hod_user_id,
+						frappe.session.user, f"Project {project.name} Assigned Successfully")
+
 		# Create Tasks from Template
 		for template_task in project_template_doc.tasks:
 			template_task_doc = frappe.get_doc('Task', template_task.task)
@@ -768,6 +780,10 @@ def create_project_from_template(sales_order, project_template, customer, compan
 			if hod_user and hod_user not in assigned_users:
 				create_todo("Task", task_doc.name, hod_user, frappe.session.user,
 							f"HOD notified for task: {task_doc.subject}")
+
+			if group_hod_user_id and group_hod_user_id not in assigned_users and group_hod_user_id != hod_user:
+				create_todo("Task", task_doc.name, group_hod_user_id,
+							frappe.session.user, "Task Assign to Customer Group HOD")
 
 		return project
 
