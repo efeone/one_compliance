@@ -44,6 +44,7 @@ def get_work_from_home_employees_today():
             "reason": "Work From Home",
             "from_date": ["<=", today_date],
             "to_date": [">=", today_date],
+            "docstatus": 1,
         },
         fields=["employee", "employee_name"]
     )
@@ -61,6 +62,7 @@ def get_on_duty_employees_today():
             "reason": "On Duty",
             "from_date": ["<=", today_date],
             "to_date": [">=", today_date],
+            "docstatus": 1,
         },
         fields=["employee", "employee_name"]
     )
