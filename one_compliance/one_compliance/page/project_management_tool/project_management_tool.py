@@ -33,7 +33,7 @@ def get_project(
 
 	if status:
 		query += f" AND p.status = '{status}'"
-	else:
+	elif not project:
 		query += " AND p.status IN ('Open', 'Working', 'Overdue')"
 
 	if project:
