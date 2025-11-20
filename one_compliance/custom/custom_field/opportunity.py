@@ -35,6 +35,13 @@ def get_opportunity_custom_fields():
 				"fieldtype": "Small Text",
 				"label": "Follow up Reply",			
 				"insert_after": "open_activities_html"
-			}
+			},
+			{
+				"fieldname": "custom_customer_type",
+				"fieldtype": "Link",
+				"label": "Customer Type",
+				"options": "Customer Type",
+				"insert_after": "website"
+			},
 		]
 	}
