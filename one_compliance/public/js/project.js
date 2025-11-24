@@ -30,23 +30,28 @@ frappe.ui.form.on('Project',{
     }
     // Add "Convert to Premium" button on existing Project
     if (!frm.is_new()) {
-            frm.add_custom_button(__('Convert to Premium'), function() {
-                frappe.call({
-                    method: 'one_compliance.one_compliance.doc_events.project.convert_project_to_premium',
-                    args: {
-                        project: frm.doc.name
-                    },
-                    callback: function(r) {
-                        if (r.message === 'success') {
-                            frappe.msgprint(__('Project converted to Premium successfully.'));
-                            frm.reload_doc();
-                        } else {
-                            frappe.msgprint(__('Failed to convert project to Premium.'));
+            frappe.db.get_value('Compliance Sub Category', frm.doc.compliance_sub_category, 'premium_task')
+            .then(value => {
+                if (value.message && value.message.premium_task) {
+                    frm.add_custom_button(__('Convert to Premium'), function () {
+                        frappe.call({
+                            method: 'one_compliance.one_compliance.doc_events.project.convert_project_to_premium',
+                            args: {
+                                project: frm.doc.name
+                            },
+                            callback: function (r) {
+                                if (r.message === 'success') {
+                                    frappe.msgprint(__('Project converted to Premium successfully.'));
+                                    frm.reload_doc();
+                                } else {
+                                    frappe.msgprint(__('Failed to convert project to Premium.'));
+                                }
                         }
-                    }
+                    });
                 });
-            });
-        }
+            }
+        });
+    }
   }
 });
 

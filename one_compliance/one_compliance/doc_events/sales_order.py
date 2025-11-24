@@ -117,6 +117,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 				project.custom_instructions = custom_instructions
 			project.notes = remark
 			project.sales_order = sales_order
+			project.is_premium = 1 if (self.is_premium_project and project_template_doc.has_premium_tasks) else 0
 			project.category_type = compliance_sub_category.category_type
 			project.department = compliance_sub_category.department
 			project.save(ignore_permissions=True)
@@ -151,7 +152,7 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 				task_doc.exp_start_date = start_date
 				task_doc.custom_serial_number = template_task.idx
 				task_doc.department = compliance_sub_category.department
-				task_doc.task_weightage = template_task_doc.task_weightage or 0
+				task_doc.task_weightage = template_task.task_weightage or 0
 				if template_task_doc.expected_time:
 					task_doc.expected_time = template_task_doc.expected_time
 				if template_task.custom_task_duration:
@@ -190,6 +191,45 @@ def create_project_from_sales_order(sales_order, start_date, item_code, priority
 						if employee_group.employee_list:
 							for employee in employee_group.employee_list:
 								create_todo('Task', task_doc.name, employee.user_id, frappe.session.user, 'Task {0} Assigned Successfully'.format(task_doc.name))
+
+                # Assign premium tasks from the project template to a project
+				if self.get("is_premium_project"):
+					if hasattr(project_template_doc, "premium_tasks"):
+						for premium_task in project_template_doc.premium_tasks:
+								existing_task = frappe.db.exists("Task", {
+									"project": project.name,
+									"subject": premium_task.subject
+								})
+								if existing_task:
+									continue
+
+								task_doc = frappe.new_doc("Task")
+								task_doc.subject = premium_task.subject
+								task_doc.project = project.name
+								task_doc.company = project.company
+								task_doc.project_name = project.project_name
+								task_doc.category_type = project.category_type
+								task_doc.department = compliance_sub_category.department
+								task_doc.compliance_sub_category = compliance_sub_category.name
+								task_doc.exp_start_date = start_date
+								task_doc.custom_serial_number = premium_task.idx
+								task_doc.task_weightage = premium_task.task_weightage
+
+								if premium_task.task_duration:
+									task_doc.duration = premium_task.task_duration
+									task_doc.expected_time = premium_task.task_duration
+									task_doc.exp_end_date = add_days(start_date, premium_task.task_duration)
+
+								task_doc.save(ignore_permissions=True)
+
+								if compliance_sub_category.head_of_department:
+									create_todo('Task', task_doc.name, head_of_department, frappe.session.user, "Premium Task assigned to " + head_of_department)
+
+								if assign_to:
+									for employee in employees:
+										user = frappe.db.get_value('Employee', employee, 'user_id')
+										if user and user != head_of_department:
+											create_todo('Task', task_doc.name, user, frappe.session.user, f'Premium Task {task_doc.name} Assigned')
 
 			frappe.db.commit()
 	else:
