@@ -566,8 +566,19 @@ def create_project_from_template(sales_order, project_template, customer, compan
 			if template_task.custom_task_duration:
 				task_doc.duration = template_task.custom_task_duration
 				task_doc.exp_end_date = add_days(compliance_date, template_task.custom_task_duration)
+			if template_task.task_weightage :
+				task_doc.task_weightage = template_task.task_weightage
+
+			if template_task.custom_has_document:
+				for documents in project_template_doc.custom_documents_required:
+					if documents.task == template_task.task:
+						for docs in documents.documents.split(', '):
+							task_doc.append("custom_task_document_items", {
+								"document": docs
+							})
 
 			task_doc.insert(ignore_permissions=True)
+
 			assigned_users = []
 
 			# Employee assignment
