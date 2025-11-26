@@ -92,8 +92,6 @@ function make_filters(page) {
 			{ label: "Pending Review", value: "pending_review" },
 			{ label: "Overdue", value: "overdue" },
 			{ label: "Hold", value: "hold" },
-			{ label: "Completed", value: "completed" },
-			{ label: "Cancelled", value: "cancelled" },
 		],
 		default: "",
 		change() {
@@ -622,17 +620,19 @@ function set_status_colors(page) {
 		const project_color = project_el.attr("color");
 
 		const color_map = {
-			Open: "blue",
-			Completed: "green",
-			Overdue: "red",
-			Working: "tomato",
+			"Open": "blue",
+			"Completed": "green",
+			"Overdue": "red",
+			"Working": "tomato",
+			"Pending Review": "orange",
+			"Hold": "gray",
 		};
 
 		const color = color_map[status] || project_color;
 		status_el.css("color", color);
 		project_el.css("color", color);
 
-		if (["Open", "Overdue", "Working"].includes(status)) add_check_icon(status_el[0]);
+		if (["Open", "Overdue", "Working", "Pending Review", "Hold"].includes(status)) add_check_icon(status_el[0]);
 	});
 
 	function add_check_icon(element) {
@@ -782,20 +782,7 @@ function update_status(page, task_name, project_id, task_id) {
 				callback(r) {
 					if (r.message) {
 						dialog.hide();
-						const f = page.fields_dict;
-						refresh_tasks_manually(
-							page,
-							f.status.get_value(),
-							f.task.get_value(),
-							f.project.get_value(),
-							f.customer.get_value(),
-							f.department.get_value(),
-							f.compliance_sub_category.get_value(),
-							f.employee.get_value(),
-							f.employee_group.get_value(),
-							f.from_date.get_value(),
-							f.to_date.get_value()
-						);
+						refresh_tasks(page);
 					}
 				},
 			});
