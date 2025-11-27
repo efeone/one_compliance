@@ -103,3 +103,8 @@
 	display: flex;
 	align-items: center;
 	}
+
+	.page-length-btn.active {
+		background-color: #007bff;
+		color: white;
+	}

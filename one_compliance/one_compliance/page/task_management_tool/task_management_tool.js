@@ -357,6 +357,10 @@ that allow users to control how many items are shown per page
 */
 
 function setup_page_length_buttons(page) {
+	// Set the active button based on the current page length
+	$(".page-length-btn").removeClass("active");
+	$(`.page-length-btn[data-length=${page.page_length}]`).addClass("active");
+
 	$(".page-length-btn").off("click").on("click", function () {
 		$(".page-length-btn").removeClass("active");
 		$(this).addClass("active");
