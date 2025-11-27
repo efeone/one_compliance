@@ -443,7 +443,6 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 							"item_name": item_name,
 							"qty": 1,
 							"rate": detail.rate or 0,
-							"description": f"Auto-created from Compliance Agreement {agreement.name}"
 						})
 
 						so.insert(ignore_permissions=True)
