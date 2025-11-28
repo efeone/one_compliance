@@ -31,8 +31,9 @@ def get_project_template_task_custom_fields():
 				"fieldname": "custom_task_duration",
 				"fieldtype": "Int",
 				"in_list_view": 1,
-				"insert_after": "subject",
+				"insert_after": "task_duration_type",
 				"label": "Task Duration",
+				"depends_on": "eval:doc.task_duration_type == 'Days'",
 			},
 			{
 				"columns": 1,
@@ -57,7 +58,29 @@ def get_project_template_task_custom_fields():
 				"label": "Task Weightage",
 				"options": "\n0\n1\n2\n3\n4\n5\n",
 				"insert_after": "custom_task_duration",
-				"in_list_view": 1
-			}
+				"in_list_view": 1,
+			},
+			{
+				"fieldname": "has_external_dependencies",
+				"fieldtype": "Check",
+				"label": "Has External Dependencies",
+				"insert_after": "custom_documents_required",
+			},
+             {
+				"fieldname": "task_duration_type",
+				"fieldtype": "Select",
+				"label": "Task Duration Type",
+				"insert_after": "subject",
+				"options": "\nDays\nMinutes",
+			},
+            {
+				"fieldname": "task_duration_minutes",
+				"fieldtype": "Duration",
+				"label": "Task Duration (Minutes)",
+				"insert_after": "task_duration_type",
+				"hide_days": 1,
+				"hide_seconds": 1,
+				"depends_on": "eval:doc.task_duration_type == 'Minutes' ",
+			},
 		]
 	}

@@ -1,4 +1,5 @@
 import frappe
+from frappe import _
 from frappe.utils import get_datetime
 from erpnext.accounts.party import get_party_account
 from frappe import _
@@ -127,7 +128,7 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 	}
 
 @frappe.whitelist()
-def create_timesheet(project, task, employee, activity, from_time, to_time):
+def create_timesheet(project, task, employee, activity, from_time, to_time, lag_time=None, reason_for_lag_time=None):
 	"""
 	Create or update a Timesheet for an employee based on provided time logs.
 	"""
@@ -140,7 +141,6 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
 		"start_date": from_time.date(),
 		"end_date": to_time.date(),
 	})
-
 	if existing_timesheets:
 		existing_timesheet = frappe.get_doc("Timesheet", existing_timesheets)
 		existing_timesheet.append("time_logs",{
@@ -148,9 +148,12 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
 			"project": project,
 			"task": task,
 			"from_time": from_time,
-			"to_time": to_time
+			"to_time": to_time,
+			"lag_time": lag_time,
+			"reason_for_lag_time": reason_for_lag_time
 		})
 		existing_timesheet.save()
+		frappe.db.commit()
 	else:
 		timesheet = frappe.new_doc("Timesheet")
 		timesheet.employee = employee_id
@@ -159,10 +162,13 @@ def create_timesheet(project, task, employee, activity, from_time, to_time):
 			"project": project,
 			"task": task,
 			"from_time": from_time,
-			"to_time": to_time
+			"to_time": to_time,
+			"lag_time": lag_time,
+			"reason_for_lag_time": reason_for_lag_time
 		})
 
 		timesheet.insert(ignore_permissions=True)
+		frappe.db.commit()
 
 @frappe.whitelist()
 def update_task_status(task, project, status):
