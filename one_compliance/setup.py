@@ -145,6 +145,7 @@ def get_custom_fields():
 	custom_fields.update(get_todo_custom_fields())
 	custom_fields.update(get_opportunity_item_custom_fields())
 	custom_fields.update(get_compliance_sub_category_custom_fields())
+	custom_fields.update(get_timesheet_detail_custom_fields())
 	custom_fields.update(())
 	return custom_fields
 

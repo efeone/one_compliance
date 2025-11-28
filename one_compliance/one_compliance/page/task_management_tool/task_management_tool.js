@@ -576,7 +576,6 @@ function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) 
                     label: __("Lag Time"),
                     fieldname: "lag_time",
                     fieldtype: 'Duration',
-
                 },
                 {
                     label: __("Reason for Lag Time"),
@@ -797,6 +796,16 @@ function show_time_entry_dialog(page, task_name, project_name, assignees, start_
 				read_only: 1,
 				default: to_time,
 			},
+            {
+                label: __("Lag Time"),
+                fieldname: "lag_time",
+                fieldtype: 'Duration',
+            },
+            {
+                label: __("Reason for Lag Time"),
+                fieldname: "reason_for_lag_time",
+                fieldtype: 'Small Text'
+            }
 		],
 		primary_action_label: __("Submit"),
 		primary_action(values) {

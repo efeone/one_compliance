@@ -9,6 +9,18 @@ def get_timesheet_detail_custom_fields():
 				"fieldtype": "Duration",
 				"label": "Lag Time",
 				"insert_after": "to_time",
-			}
+			},
+			{
+				"fieldname": "reason_for_lag_time",
+				"fieldtype": "Small Text",
+				"label": "Reason for Lag Time",
+				"insert_after": "lag_time",
+			},
+			{
+				"fieldname": "lag_notification_sent",
+				"fieldtype": "Check",
+				"label": "Lag Notification Sent",
+				"insert_after": "reason_for_lag_time",
+			},
 		]
 	}

@@ -124,7 +124,7 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 	}
 
 @frappe.whitelist()
-def create_timesheet(project, task, employee, activity, from_time, to_time):
+def create_timesheet(project, task, employee, activity, from_time, to_time, lag_time=None, reason_for_lag_time=None):
 	"""
 	Create or update a Timesheet for an employee based on provided time logs.
 	"""
