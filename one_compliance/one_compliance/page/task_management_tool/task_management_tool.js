@@ -396,6 +396,7 @@ function assignee_and_completed_by_section(taskStatus) {
         $('.completed-by-section').hide();
     }
 }
+}
 
 function paymentEntryDialog(taskId, payableAmount, modeOfPayment, referenceNumber, referenceDate, userRemark){
 	var dialog = new frappe.ui.Dialog({
