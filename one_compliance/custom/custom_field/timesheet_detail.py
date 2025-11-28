@@ -22,5 +22,12 @@ def get_timesheet_detail_custom_fields():
 				"label": "Lag Notification Sent",
 				"insert_after": "reason_for_lag_time",
 			},
+			{
+				"fieldname": "approval_status",
+				"fieldtype": "Select",
+				"label": "Approval Status(Lag Time)",
+				"options": "\nApprove\nReject",
+				"insert_after": "lag_notification_sent",
+			},
 		]
 	}
