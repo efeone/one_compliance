@@ -25,6 +25,7 @@
   "column_break_gnzz",
   "customer_type",
   "default_tds_account",
+  "role_allowed_to_approve_lag_time",
   "task_settings_section",
   "task_template_series",
   "column_break_kqmy",
@@ -401,12 +402,18 @@
    "fieldtype": "Link",
    "label": "Role Allowed to Manage AML Compliance",
    "options": "Role"
+  },
+  {
+   "fieldname": "role_allowed_to_approve_lag_time",
+   "fieldtype": "Link",
+   "label": "Role Allowed to Approve Lag Time",
+   "options": "Role"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-10-17 15:49:16.690818",
+ "modified": "2025-11-12 10:41:44.045720",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",

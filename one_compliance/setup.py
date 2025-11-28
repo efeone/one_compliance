@@ -20,6 +20,7 @@ from one_compliance.custom.custom_field.timesheet import get_timesheet_custom_fi
 from one_compliance.custom.custom_field.todo import get_todo_custom_fields
 from one_compliance.custom.custom_field.opportunity_item import get_opportunity_item_custom_fields
 from one_compliance.custom.custom_field.compliance_sub_category import get_compliance_sub_category_custom_fields
+from one_compliance.custom.custom_field.timesheet_detail import get_timesheet_detail_custom_fields
 
 # Custom property setter method imports
 from one_compliance.custom.property_setter.contact_email import get_contact_email_property_setters
