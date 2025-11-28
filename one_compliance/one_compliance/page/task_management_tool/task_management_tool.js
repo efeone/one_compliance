@@ -757,7 +757,7 @@ function update_status(page, task_name, project_id, task_id) {
 				label: __("Status"),
 				fieldname: "status",
 				fieldtype: "Select",
-				options: "Open\nWorking\nPending Review\nCompleted\nHold",
+				options: "Open\nWorking\nPending Review\nHold\nCompleted",
 				default: "Completed",
 			},
 			{
