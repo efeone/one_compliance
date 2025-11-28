@@ -15,10 +15,14 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 	values = {}
 
 	if status:
-		conditions.append("t.status = %(status)s")
-		values["status"] = status
+		if status in ["completed", "cancelled"]:
+			return
+		else:
+			proper_status = status.replace("_", " ").title()
+			conditions.append("t.status = %(status)s")
+			values["status"] = proper_status
 	else:
-		conditions.append("t.status IN ('open', 'working', 'overdue')")
+		conditions.append("t.status NOT IN ('Completed', 'Cancelled')")
 
 	if task:
 		conditions.append("t.name = %(task)s")
