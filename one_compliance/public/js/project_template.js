@@ -36,7 +36,7 @@ function handle_documents_required(frm, cdt, cdn, has_document_field) {
 		return;
 	}
 
-	if (frm.is_new()) {
+	if (frm.is_new() || frm.is_dirty()) {
 		frappe.throw(__('You need to save the document to perform this action.'));
 		return;
 	}
