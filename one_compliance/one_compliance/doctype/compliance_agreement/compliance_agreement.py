@@ -705,8 +705,7 @@ def create_sales_order_and_project_from_popup(
 			"item_code": subcat.item_code,
 			"item_name": item_name,
 			"qty": 1,
-			"rate": rate,
-			"description": f"Auto-created from Compliance Agreement {compliance_agreement}"
+			"rate": rate
 		})
 
 		so.insert(ignore_permissions=True)
