@@ -73,7 +73,7 @@ def get_project_template_custom_fields():
 				"fieldname": "premium_tasks",
 				"fieldtype": "Table",
 				"label": "Premium Tasks",
-				"options": "Premium Tasks",
+				"options": "Project Template Task",
 				"insert_after": "custom_add_tasks",
 				"depends_on": "eval:doc.has_premium_tasks",
 				"mandatory_depends_on": "eval:doc.has_premium_tasks == 1",
@@ -98,7 +98,7 @@ def get_project_template_custom_fields():
 				"insert_after": "project_type",
 				"options": "\nDays\nMinutes",
 			},
-            {
+			{
 				"fieldname": "project_duration_minutes",
 				"fieldtype": "Duration",
 				"label": "Project Duration (Minutes)",
@@ -106,6 +106,6 @@ def get_project_template_custom_fields():
 				"hide_days": 1,
 				"hide_seconds": 1,
 				"depends_on": "eval:doc.project_duration_type == 'Minutes' ",
-			}
+			},
 		]
 	}

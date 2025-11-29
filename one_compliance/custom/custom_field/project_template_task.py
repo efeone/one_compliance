@@ -66,14 +66,21 @@ def get_project_template_task_custom_fields():
 				"label": "Has External Dependencies",
 				"insert_after": "custom_documents_required",
 			},
-             {
+			{
+				"fieldname": "send_email_notification_for_lag_time",
+				"fieldtype": "Check",
+				"label": "Send Email Notification for Lag Time",
+				"insert_after": "has_external_dependencies",
+				"depends_on": "eval:doc.has_external_dependencies",
+			},
+			{
 				"fieldname": "task_duration_type",
 				"fieldtype": "Select",
 				"label": "Task Duration Type",
 				"insert_after": "subject",
 				"options": "\nDays\nMinutes",
 			},
-            {
+			{
 				"fieldname": "task_duration_minutes",
 				"fieldtype": "Duration",
 				"label": "Task Duration (Minutes)",

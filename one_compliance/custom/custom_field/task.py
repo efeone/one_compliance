@@ -147,6 +147,28 @@ def get_task_custom_fields():
 				"read_only": 1,
 			},
 			{
+				"fieldname": "is_premium_task",
+				"fieldtype": "Check",
+				"label": "Is Premium Task",
+				"insert_after": "compliance_sub_category",
+				"read_only": 1,
+			},
+			{
+				"fieldname": "has_external_dependencies",
+				"fieldtype": "Check",
+				"label": "Has External Dependencies",
+				"insert_after": "is_premium_task",
+				"read_only": 1,
+			},
+			{
+				"fieldname": "send_email_notification_for_lag_time",
+				"fieldtype": "Check",
+				"label": "Send Email Notification for Lag Time",
+				"insert_after": "has_external_dependencies",
+				"depends_on": "eval:doc.has_external_dependencies",
+				"read_only": 1,
+			},
+			{
 				"fieldname": "task_weightage",
 				"fieldtype": "Select",
 				"label": "Task Weightage",
