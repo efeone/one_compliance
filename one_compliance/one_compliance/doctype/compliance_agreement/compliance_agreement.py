@@ -1,23 +1,13 @@
 import frappe
-import json
 from frappe.model.document import Document
-from frappe.model.mapper import *
-from frappe import _
-from frappe.utils import *
-from one_compliance.one_compliance.utils import *
-from datetime import datetime, timedelta
-from frappe import enqueue
-from frappe.utils import getdate, today, nowdate, add_months, add_days, get_last_day
+from frappe.utils import add_days, add_months, get_last_day, getdate, nowdate, today
+
+from frappe.utils.data import cint
 from one_compliance.one_compliance.utils import create_todo
-from datetime import datetime
+
 
 class ComplianceAgreement(Document):
-	''' Method used for validate Signature '''
-	def on_update_after_submit(self):
-		self.sign_validation()
 	def before_insert(self):
-		# from hrms.hr.doctype.shift_type.shift_type import process_auto_attendance_for_all_shifts
-
 		self.status = "Open"
 
 	def sign_validation(self):
@@ -35,7 +25,9 @@ class ComplianceAgreement(Document):
 		self.set_compliance_date()
 
 	def on_update_after_submit(self):
+		self.sign_validation()
 		self.update_compliance_agreement_status()
+		self.set_compliance_date()
 
 	def on_trash(self):
 		delete_project_along_with_compliance_agreement = frappe.db.get_single_value('Compliance Settings', 'delete_project_along_with_compliance_agreement')
@@ -70,7 +62,7 @@ class ComplianceAgreement(Document):
 				if sub.repeat_on == "Monthly":
 					try:
 						date = valid_from.replace(day=day)
-					except:
+					except Exception:
 						date = get_last_day(valid_from)
 					if date < valid_from:
 						date = add_months(date, 1)
@@ -81,7 +73,7 @@ class ComplianceAgreement(Document):
 					base = getdate(f"{valid_from.year}-{month_no}-01")
 					try:
 						date = base.replace(day=day)
-					except:
+					except Exception:
 						date = get_last_day(base)
 
 					step = {"Quarterly": 3, "Half Yearly": 6, "Yearly": 12}[sub.repeat_on]
@@ -92,8 +84,15 @@ class ComplianceAgreement(Document):
 				row.compliance_date = date
 				row.next_compliance_date = next_date
 				continue
-			if not sub.allow_repeat:
-				project_date = today_date if today_date >= valid_from else valid_from
+
+			else:
+				if self.status != "Active":
+					continue
+				if today_date > valid_from:
+					continue
+				else:
+					project_date = valid_from
+
 				if sub.project_template and not frappe.db.exists("Project", {
 					"compliance_agreement": self.name,
 					"compliance_sub_category": sub.name
@@ -118,43 +117,44 @@ class ComplianceAgreement(Document):
 						},
 						"name"
 					)
-			if (not sub.allow_repeat and sub.is_billable):
-				exists = frappe.db.exists(
-					"Sales Order",
-					{
-						"compliance_agreement": self.name,
-						"compliance_sub_category": sub.name,
-						"transaction_date": project_date
-					}
-				)
 
-				if not exists:
-					so = frappe.new_doc("Sales Order")
-					so.customer = self.customer
-					so.company = self.company
-					so.compliance_agreement = self.name
-					so.compliance_sub_category = sub.name
-					so.transaction_date = today_date
-					so.delivery_date = today_date
+				if sub.is_billable:
+					exists = frappe.db.exists(
+						"Sales Order",
+						{
+							"compliance_agreement": self.name,
+							"compliance_sub_category": sub.name,
+							"transaction_date": project_date
+						}
+					)
 
-					if self.default_payment_terms_template:
-						so.payment_terms_template = self.default_payment_terms_template
+					if not exists:
+						so = frappe.new_doc("Sales Order")
+						so.customer = self.customer
+						so.company = self.company
+						so.compliance_agreement = self.name
+						so.compliance_sub_category = sub.name
+						so.transaction_date = today_date
+						so.delivery_date = today_date
 
-					item_code = sub.item_code
-					item_name = frappe.db.get_value("Item", item_code, "item_name")
-					rate = sub.rate or 0
+						if self.default_payment_terms_template:
+							so.payment_terms_template = self.default_payment_terms_template
 
-					so.append("items", {
-						"item_code": item_code,
-						"item_name": item_name,
-						"qty": 1,
-						"rate": rate
-					})
-					so.insert(ignore_permissions=True)
-					so.submit()
-					if row.project:
-						frappe.db.set_value("Project", row.project, "sales_order", so.name)
-						frappe.db.set_value("Sales Order", so.name, "project", row.project)
+						item_code = sub.item_code
+						item_name = frappe.db.get_value("Item", item_code, "item_name")
+						rate = sub.rate or 0
+
+						so.append("items", {
+							"item_code": item_code,
+							"item_name": item_name,
+							"qty": 1,
+							"rate": rate
+						})
+						so.insert(ignore_permissions=True)
+						so.submit()
+						if row.project:
+							frappe.db.set_value("Project", row.project, "sales_order", so.name)
+							frappe.db.set_value("Sales Order", so.name, "project", row.project)
 		self.save(ignore_permissions=True)
 
 	def validate_agreement_dates(self):
@@ -777,8 +777,10 @@ def create_future_one_time_projects():
 				)
 
 			except Exception as e:
-				frappe.log_error(frappe.get_traceback(), 
-					f"Failed to create project for Agreement: {doc.name}, Sub Category: {sub_cat.name}")
+				frappe.log_error(
+					f"Failed to create project for Agreement: {doc.name}, Sub Category: {sub_cat.name}",
+					e
+				)
 			if not sub_cat.allow_repeat and sub_cat.is_billable:
 				exists = frappe.db.exists(
 					"Sales Order",
