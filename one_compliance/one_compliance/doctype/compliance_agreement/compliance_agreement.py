@@ -1,8 +1,8 @@
 import frappe
 from frappe.model.document import Document
 from frappe.utils import add_days, add_months, get_last_day, getdate, nowdate, today
-
 from frappe.utils.data import cint
+
 from one_compliance.one_compliance.utils import create_todo
 
 
@@ -47,16 +47,20 @@ class ComplianceAgreement(Document):
 		'''
 		valid_from = getdate(self.valid_from)
 		today_date = getdate(today())
+		has_changes = False  # Track if any changes were made
 
 		MONTH_MAP = {
 			"January": 1, "February": 2, "March": 3, "April": 4,
 			"May": 5, "June": 6, "July": 7, "August": 8,
 			"September": 9, "October": 10, "November": 11, "December": 12
 		}
+
 		for row in self.compliance_category_details:
 			if not row.compliance_sub_category:
 				continue
+
 			sub = frappe.get_doc("Compliance Sub Category", row.compliance_sub_category)
+
 			if sub.allow_repeat:
 				day = cint(sub.day)
 				if sub.repeat_on == "Monthly":
@@ -66,7 +70,6 @@ class ComplianceAgreement(Document):
 						date = get_last_day(valid_from)
 					if date < valid_from:
 						date = add_months(date, 1)
-
 					next_date = add_months(date, 1)
 				else:
 					month_no = MONTH_MAP.get(sub.month)
@@ -75,41 +78,42 @@ class ComplianceAgreement(Document):
 						date = base.replace(day=day)
 					except Exception:
 						date = get_last_day(base)
-
 					step = {"Quarterly": 3, "Half Yearly": 6, "Yearly": 12}[sub.repeat_on]
-
 					if date < valid_from:
 						date = add_months(date, step)
 					next_date = add_months(date, step)
-				row.compliance_date = date
-				row.next_compliance_date = next_date
-				continue
 
+				# Check if values actually changed
+				if row.compliance_date != date or row.next_compliance_date != next_date:
+					row.compliance_date = date
+					row.next_compliance_date = next_date
+					has_changes = True
+				continue
 			else:
 				if self.status != "Active":
 					continue
-				if today_date > valid_from:
+				if valid_from > today_date:
 					continue
 				else:
 					project_date = valid_from
 
-				if sub.project_template and not frappe.db.exists("Project", {
-					"compliance_agreement": self.name,
-					"compliance_sub_category": sub.name
-				}):
-					create_project_from_template(
-						sales_order=None,
-						project_template=sub.project_template,
-						customer=self.customer,
-						company=self.company,
-						compliance_sub_category=sub.name,
-						compliance_category_details_id=row.name,
-						compliance_agreement=self.name,
-						compliance_category=sub.compliance_category or "",
-						compliance_date=project_date
-					)
+					if sub.project_template and not frappe.db.exists("Project", {
+						"compliance_agreement": self.name,
+						"compliance_sub_category": sub.name
+					}):
+						create_project_from_template(
+							sales_order=None,
+							project_template=sub.project_template,
+							customer=self.customer,
+							company=self.company,
+							compliance_sub_category=sub.name,
+							compliance_category_details_id=row.name,
+							compliance_agreement=self.name,
+							compliance_category=sub.compliance_category or "",
+							compliance_date=project_date
+						)
 
-					row.project = frappe.db.get_value(
+					project_name = frappe.db.get_value(
 						"Project",
 						{
 							"compliance_agreement": self.name,
@@ -118,44 +122,57 @@ class ComplianceAgreement(Document):
 						"name"
 					)
 
-				if sub.is_billable:
-					exists = frappe.db.exists(
-						"Sales Order",
-						{
-							"compliance_agreement": self.name,
-							"compliance_sub_category": sub.name,
-							"transaction_date": project_date
-						}
-					)
+					# Check if project field changed
+					if not row.get("project"):
+						row.project = project_name
+						has_changes = True
+					elif row.project != project_name:
+						row.project = project_name
+						has_changes = True
 
-					if not exists:
-						so = frappe.new_doc("Sales Order")
-						so.customer = self.customer
-						so.company = self.company
-						so.compliance_agreement = self.name
-						so.compliance_sub_category = sub.name
-						so.transaction_date = today_date
-						so.delivery_date = today_date
+					if sub.is_billable:
+						exists = frappe.db.exists(
+							"Sales Order",
+							{
+								"compliance_agreement": self.name,
+								"compliance_sub_category": sub.name,
+								"transaction_date": project_date
+							}
+						)
 
-						if self.default_payment_terms_template:
-							so.payment_terms_template = self.default_payment_terms_template
+						if not exists:
+							so = frappe.new_doc("Sales Order")
+							so.customer = self.customer
+							so.company = self.company
+							so.compliance_agreement = self.name
+							so.compliance_sub_category = sub.name
+							so.transaction_date = today_date
+							so.delivery_date = today_date
 
-						item_code = sub.item_code
-						item_name = frappe.db.get_value("Item", item_code, "item_name")
-						rate = sub.rate or 0
+							if self.default_payment_terms_template:
+								so.payment_terms_template = self.default_payment_terms_template
 
-						so.append("items", {
-							"item_code": item_code,
-							"item_name": item_name,
-							"qty": 1,
-							"rate": rate
-						})
-						so.insert(ignore_permissions=True)
-						so.submit()
-						if row.project:
-							frappe.db.set_value("Project", row.project, "sales_order", so.name)
-							frappe.db.set_value("Sales Order", so.name, "project", row.project)
-		self.save(ignore_permissions=True)
+							item_code = sub.item_code
+							item_name = frappe.db.get_value("Item", item_code, "item_name")
+							rate = sub.rate or 0
+
+							so.append("items", {
+								"item_code": item_code,
+								"item_name": item_name,
+								"qty": 1,
+								"rate": rate
+							})
+
+							so.insert(ignore_permissions=True)
+							so.submit()
+
+							if row.project:
+								frappe.db.set_value("Project", row.project, "sales_order", so.name)
+								frappe.db.set_value("Sales Order", so.name, "project", row.project)
+
+		# Only save if there were actual changes
+		if has_changes:
+			self.save(ignore_permissions=True)
 
 	def validate_agreement_dates(self):
 		if self.posting_date:
