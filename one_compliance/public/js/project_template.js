@@ -1,13 +1,12 @@
 // Copyright (c) 2024, efeone and contributors
 // For license information, please see license.txt
+
 frappe.ui.form.on('Project Template', {
 	setup(frm) {
 		set_filters(frm);
 		restrict_task_field(frm, 'tasks');
 		restrict_task_field(frm, 'premium_tasks');
-	},
-	refresh(frm) {
-		clear_blank_rows(frm, ["tasks", "premium_tasks"]);
+		clear_blank_rows(frm, ['tasks', 'premium_tasks']);
 	},
 	custom_add_tasks(frm) {
 		show_task_popup(frm, 'tasks');
@@ -19,80 +18,51 @@ frappe.ui.form.on('Project Template', {
 
 frappe.ui.form.on('Project Template Task', {
 	custom_documents_required(frm, cdt, cdn) {
-		const child = locals[cdt][cdn];
-		if (child.custom_has_document) {
-			if (frm.is_new()) {
-				frappe.throw('You need to save the document to perform this action.');
-			} else {
-				frappe.call({
-					method: 'one_compliance.one_compliance.doc_events.project_template.get_existing_documents',
-					args: {
-						template: frm.doc.name,
-						task: child.task,
-					},
-					callback(r) {
-						if (r.message) {
-							documents_required_popup(frm, r.message, child);
-						}
-					}
-				});
-			}
-		}
+		handle_documents_required(frm, cdt, cdn, 'custom_has_document');
 	},
 	custom_has_document(frm, cdt, cdn) {
-		const child = locals[cdt][cdn];
-		if (!child.custom_has_document) {
-			frm.doc.custom_documents_required = (frm.doc.custom_documents_required || []).filter(
-				row => row.task !== child.task
-			);
-			frm.refresh_field('custom_documents_required');
-		}
+		handle_has_document_toggle(frm, cdt, cdn);
 	}
 });
 
-frappe.ui.form.on('Premium Tasks', {
-    documents_required: function(frm, cdt, cdn) {
-        handle_documents_required(frm, cdt, cdn);
-    },
-
-    has_document: function(frm, cdt, cdn) {
-        handle_has_document(frm, cdt, cdn);
-    }
-});
-
 /**
- * Event handlers for the 'Premium Tasks' child table in the 'Project Template' form.
- * Manages the logic for handling required documents associated with premium tasks.
+ * Handles the documents required action for both task types.
+ * @param {string} has_document_field - The field name to check (varies by child table).
  */
-function handle_documents_required(frm, cdt, cdn) {
-    const child = locals[cdt][cdn];
+function handle_documents_required(frm, cdt, cdn, has_document_field) {
+	const child = locals[cdt][cdn];
 
-    if (child.has_document) {
-        if (frm.is_new()) {
-            frappe.throw('You need to save the document to perform this action.');
-        } else {
-            frappe.call({
-                method: 'one_compliance.one_compliance.doc_events.project_template.get_existing_documents',
-                args: {
-                    template: frm.doc.name,
-                    task: child.task,
-                },
-                callback(r) {
-                    if (r.message) {
-                        documents_required_popup(frm, r.message, child);
-                    }
-                }
-            });
-        }
-    }
+	if (!child[has_document_field]) {
+		return;
+	}
+
+	if (frm.is_new()) {
+		frappe.throw(__('You need to save the document to perform this action.'));
+		return;
+	}
+
+	frappe.call({
+		method: 'one_compliance.one_compliance.doc_events.project_template.get_existing_documents',
+		args: {
+			template: frm.doc.name,
+			task: child.task,
+		},
+		callback(r) {
+			if (r.message) {
+				documents_required_popup(frm, r.message, child);
+			}
+		}
+	});
 }
 
 /**
  * Removes entries from the 'documents_required' table when 'has_document' is unchecked.
  */
-function handle_has_document(frm, cdt, cdn) {
+function handle_has_document_toggle(frm, cdt, cdn) {
 	const child = locals[cdt][cdn];
-	if (!child.has_document) {
+	const has_document = child.custom_has_document || child.has_document;
+
+	if (!has_document && child.task) {
 		frm.doc.custom_documents_required = (frm.doc.custom_documents_required || []).filter(
 			row => row.task !== child.task
 		);
@@ -101,8 +71,7 @@ function handle_has_document(frm, cdt, cdn) {
 }
 
 /**
- * Sets up filters and restricts row addition for task and premium task tables on the Project Template form.
- * Called during the form's setup event.
+ * Sets up filters for the Project Template form.
  */
 function set_filters(frm) {
 	frm.set_query('compliance_sub_category', () => ({
@@ -111,26 +80,44 @@ function set_filters(frm) {
 }
 
 /**
+ * Gets all tasks already added to either tasks or premium_tasks tables.
+ * @returns {Array<string>} Array of task names.
+ */
+function get_existing_tasks(frm) {
+	const existing_tasks = new Set();
+	
+	['tasks', 'premium_tasks'].forEach(table_field => {
+		(frm.doc[table_field] || []).forEach(row => {
+			if (row.task) {
+				existing_tasks.add(row.task);
+			}
+		});
+	});
+	
+	return Array.from(existing_tasks);
+}
+
+/**
  * Displays a dialog to select or create documents required for a task.
  */
 function documents_required_popup(frm, documents_required, child) {
 	const dialog = new frappe.ui.Dialog({
-		title: __("Documents Required"),
+		title: __('Documents Required'),
 		fields: [
 			{
-				label: __("Documents Required"),
-				fieldname: "documents_required",
+				label: __('Documents Required'),
+				fieldname: 'documents_required',
 				fieldtype: 'MultiSelectPills',
 				default: documents_required,
-				get_data: txt => frappe.db.get_link_options("Task Document", txt),
+				get_data: txt => frappe.db.get_link_options('Task Document', txt),
 			}
 		],
-		primary_action_label: __("Save"),
+		primary_action_label: __('Save'),
 		primary_action(values) {
 			update_documents_required(frm, values, child);
 			dialog.hide();
 		},
-		secondary_action_label: __("Create a New Task Document"),
+		secondary_action_label: __('Create a New Task Document'),
 		secondary_action() {
 			frappe.new_doc('Task Document');
 		}
@@ -153,7 +140,7 @@ function update_documents_required(frm, values, child) {
 			if (r.message === 'success') {
 				frm.reload_doc();
 			} else {
-				frappe.msgprint('Error: Unable to update documents required.');
+				frappe.msgprint(__('Error: Unable to update documents required.'));
 			}
 		}
 	});
@@ -180,26 +167,32 @@ function restrict_task_field(frm, table_field) {
  * @param {string} table_field - The name of the child table field.
  */
 function show_task_popup(frm, table_field) {
-	let primary_action_label = 'Create & Add';
+	const existing_tasks = get_existing_tasks(frm);
+	
 	const dialog = new frappe.ui.Dialog({
-		title: 'Task details',
+		title: __('Task details'),
 		fields: [
 			{
-				label: 'Is Existing Task',
+				label: __('Is Existing Task'),
 				fieldname: 'is_existing_task',
 				fieldtype: 'Check',
 				change: () => {
-					primary_action_label = dialog.get_value('is_existing_task') ? 'Add' : 'Create & Add';
-					set_primary_action_label(dialog, primary_action_label);
+					const label = dialog.get_value('is_existing_task') ? __('Add') : __('Create & Add');
+					dialog.get_primary_btn().removeClass('hide').html(label);
 				}
 			},
 			{
-				label: 'Task',
+				label: __('Task'),
 				fieldname: 'task',
 				fieldtype: 'Link',
 				options: 'Task',
 				only_select: 1,
-				get_query: () => ({ filters: { is_template: 1 } }),
+				get_query: () => ({
+					filters: {
+						is_template: 1,
+						name: ['not in', existing_tasks]
+					}
+				}),
 				depends_on: 'eval: doc.is_existing_task',
 				mandatory_depends_on: 'eval: doc.is_existing_task',
 				change: () => {
@@ -212,14 +205,14 @@ function show_task_popup(frm, table_field) {
 				}
 			},
 			{
-				label: 'Subject',
+				label: __('Subject'),
 				fieldname: 'subject',
 				fieldtype: 'Data',
 				depends_on: 'eval: !doc.is_existing_task',
 				mandatory_depends_on: 'eval: !doc.is_existing_task',
 			}
 		],
-		primary_action_label,
+		primary_action_label: __('Create & Add'),
 		primary_action(values) {
 			if (values.is_existing_task) {
 				add_task_row(frm, table_field, values.task, values.subject);
@@ -248,6 +241,8 @@ function create_task(frm, table_field, subject) {
 		if (doc.name) {
 			add_task_row(frm, table_field, doc.name, subject);
 		}
+	}).catch(err => {
+		frappe.msgprint(__('Error creating task: {0}', [err.message]));
 	});
 }
 
@@ -276,8 +271,4 @@ function clear_blank_rows(frm, tables) {
 			frm.refresh_field(table_field);
 		});
 	}
-}
-
-function set_primary_action_label(dialog, primary_action_label) {
-	dialog.get_primary_btn().removeClass("hide").html(primary_action_label);
 }
