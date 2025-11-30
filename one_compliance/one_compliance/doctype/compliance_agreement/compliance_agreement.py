@@ -221,43 +221,96 @@ class ComplianceAgreement(Document):
 			self.db_set("status", "Open")
 
 	def validate_date_range(self):
+		"""Validate that compliance categories don't overlap with existing approved agreements."""
+		
+		# Get current instance data
+		instance_valid_from = getdate(self.valid_from)
+		instance_valid_upto = getdate(self.valid_upto) if self.valid_upto else None
+		instance_categories = {d.sub_category_name for d in self.compliance_category_details}
+		
+		if not instance_categories:
+			return
+		
+		# Fetch existing data
 		existing_agreements = frappe.get_all(
 			"Compliance Agreement",
 			filters={
 				"customer": self.customer,
 				"workflow_state": "Customer Approved",
+				"name": ["!=", self.name],
 			},
-			fields=["name"],
+			fields=["name", "valid_from", "valid_upto", "has_long_term_validity"],
 		)
-		for compliance_agreement in existing_agreements:
-			agreement = frappe.get_doc("Compliance Agreement", compliance_agreement.name)
-			# Get compliance category details of the current agreement
-			agreement_categories = [d.sub_category_name for d in agreement.compliance_category_details]
-			agreement_valid_from = getdate(agreement.valid_from)
-			agreement_valid_upto = getdate(agreement.valid_upto)
-
-			# Get compliance category details of the current instance
-			for d in self.compliance_category_details:
-				instance_categories = d.sub_category_name
-				instance_valid_from = getdate(self.valid_from)
-				instance_valid_upto = getdate(self.valid_upto)
-
-				# Check if all categories in the agreement exist in the instance and vice versa
-				if instance_categories in set(agreement_categories):
-					if self.has_long_term_validity:
-						if agreement.has_long_term_validity:
-							if instance_valid_from >= agreement_valid_from:
-								frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
-						else:
-							if instance_valid_from < agreement_valid_upto:
-								frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
-					else:
-						if agreement.has_long_term_validity:
-							if agreement_valid_from and instance_valid_from >= instance_valid_from:
-								frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
-						elif agreement_valid_upto and instance_valid_upto:
-							if instance_valid_from >= agreement_valid_from and instance_valid_upto <= agreement_valid_upto:
-								frappe.throw("The compliance subcategories chosen in the agreement '{}' already exist in the Agreement '{}' within the date range.".format(instance_categories, agreement))
+		
+		# Get category details for all existing agreements
+		for agreement_data in existing_agreements:
+			agreement_valid_from = getdate(agreement_data.valid_from)
+			agreement_valid_upto = getdate(agreement_data.valid_upto) if agreement_data.valid_upto else None
+			
+			# Fetch categories for this agreement
+			agreement_categories = frappe.get_all(
+				"Compliance Category Details",
+				filters={"parent": agreement_data.name},
+				fields=["sub_category_name"],
+				pluck="sub_category_name"
+			)
+			
+			# Check for overlapping categories
+			overlapping_categories = instance_categories.intersection(set(agreement_categories))
+			
+			if not overlapping_categories:
+				continue
+			
+			# Check for date range overlap
+			has_overlap = self._check_date_overlap(
+				instance_valid_from,
+				instance_valid_upto,
+				self.has_long_term_validity,
+				agreement_valid_from,
+				agreement_valid_upto,
+				agreement_data.has_long_term_validity
+			)
+			
+			if has_overlap:
+				categories_list = ", ".join(sorted(overlapping_categories))
+				frappe.throw(
+					f"The compliance subcategories ({categories_list}) already exist in "
+					f"Agreement '{agreement_data.name}' with overlapping date ranges.<br>"
+					f"Instance: {instance_valid_from} to {instance_valid_upto or 'Indefinite'}<br>"
+					f"Existing: {agreement_valid_from} to {agreement_valid_upto or 'Indefinite'}"
+				)
+		
+	def _check_date_overlap(self, start1, end1, long_term1, start2, end2, long_term2):
+		"""
+		Check if two date ranges overlap.
+		
+		Two date ranges overlap if: start1 <= end2 AND start2 <= end1
+		For long-term (indefinite) agreements, end date is considered as infinite.
+		"""
+		
+		# Handle long-term validity (no end date = indefinite)
+		if long_term1:
+			end1 = None  # Indefinite end
+		if long_term2:
+			end2 = None  # Indefinite end
+		
+		# If either range has no end date, check if the other starts before the first ends
+		if end1 is None and end2 is None:
+			# Both are indefinite - they overlap if one starts before or on the other
+			return True
+		
+		if end1 is None:
+			# Instance is indefinite, agreement has end date
+			# Overlap if instance starts on or before agreement ends
+			return start1 <= end2
+		
+		if end2 is None:
+			# Agreement is indefinite, instance has end date
+			# Overlap if agreement starts on or before instance ends
+			return start2 <= end1
+		
+		# Both have end dates - standard overlap check
+		return start1 <= end2 and start2 <= end1
 
 	def make_sales_invoice(self):
 
