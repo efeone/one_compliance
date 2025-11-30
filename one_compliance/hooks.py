@@ -201,7 +201,8 @@ scheduler_events = {
         'one_compliance.one_compliance.doc_events.project.set_status_to_overdue',
         'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.send_repeat_notif',
         'one_compliance.one_compliance.doc_events.sales_order.create_opportunity',
-		'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_sales_orders_from_compliance_agreements'
+		'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_sales_orders_from_compliance_agreements',
+		'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_future_one_time_projects',
     ],
 #	"hourly": [
 #		"one_compliance.tasks.hourly"
