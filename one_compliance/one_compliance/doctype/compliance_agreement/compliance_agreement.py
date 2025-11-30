@@ -47,7 +47,6 @@ class ComplianceAgreement(Document):
 		'''
 		valid_from = getdate(self.valid_from)
 		today_date = getdate(today())
-		has_changes = False  # Track if any changes were made
 
 		MONTH_MAP = {
 			"January": 1, "February": 2, "March": 3, "April": 4,
@@ -85,9 +84,8 @@ class ComplianceAgreement(Document):
 
 				# Check if values actually changed
 				if row.compliance_date != date or row.next_compliance_date != next_date:
-					row.compliance_date = date
-					row.next_compliance_date = next_date
-					has_changes = True
+					row.db_set("compliance_date", date)
+					row.db_set("next_compliance_date", next_date)
 				continue
 			else:
 				if self.status != "Active":
@@ -121,14 +119,6 @@ class ComplianceAgreement(Document):
 						},
 						"name"
 					)
-
-					# Check if project field changed
-					if not row.get("project"):
-						row.project = project_name
-						has_changes = True
-					elif row.project != project_name:
-						row.project = project_name
-						has_changes = True
 
 					if sub.is_billable:
 						exists = frappe.db.exists(
@@ -166,13 +156,9 @@ class ComplianceAgreement(Document):
 							so.insert(ignore_permissions=True)
 							so.submit()
 
-							if row.project:
-								frappe.db.set_value("Project", row.project, "sales_order", so.name)
-								frappe.db.set_value("Sales Order", so.name, "project", row.project)
-
-		# Only save if there were actual changes
-		if has_changes:
-			self.save(ignore_permissions=True)
+							if project_name:
+								frappe.db.set_value("Project", project_name, "sales_order", so.name)
+								frappe.db.set_value("Sales Order", so.name, "project", project_name)
 
 	def validate_agreement_dates(self):
 		if self.posting_date:
