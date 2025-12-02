@@ -111,6 +111,9 @@ def get_data(filters: dict) -> list[dict]:
 	return result
 
 def get_journal_entries(filters):
+	"""
+	Returns filtered Journal Entry records linked to customers.
+	"""
 	conditions = []
 	vals = []
 
