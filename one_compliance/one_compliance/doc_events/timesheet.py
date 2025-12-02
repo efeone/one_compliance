@@ -1,5 +1,5 @@
 import frappe
-from apps.one_compliance.one_compliance.one_compliance.utils import (
+from one_compliance.one_compliance.utils import (
 	create_notification_log,
 )
 
