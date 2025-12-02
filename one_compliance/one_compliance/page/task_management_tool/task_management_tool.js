@@ -1044,7 +1044,7 @@ function update_task_status(page, task_name, project_name, status) {
 		args: { task: task_name, project: project_name, status },
 		callback(r) {
 			if (r.message === "success") {
-				page.fields_dict.status.set_value("working");
+                refresh_tasks(page); 
 			} else {
 				console.warn("Failed to update task status");
 			}
