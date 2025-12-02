@@ -121,45 +121,17 @@ class ComplianceAgreement(Document):
 					)
 
 					if sub.is_billable:
-						exists = frappe.db.exists(
-							"Sales Order",
-							{
-								"compliance_agreement": self.name,
-								"compliance_sub_category": sub.name,
-								"transaction_date": project_date
-							}
+						so = make_sales_order(
+							customer=self.customer,
+							company=self.company,
+							compliance_agreement=self.name,
+							compliance_sub_category=sub.name,
+							transaction_date=project_date,
+							item_code=sub.item_code,
+							rate=sub.rate or 0,
+							project_name=project_name,
+							payment_terms_template=self.default_payment_terms_template
 						)
-
-						if not exists:
-							so = frappe.new_doc("Sales Order")
-							so.customer = self.customer
-							so.company = self.company
-							so.compliance_agreement = self.name
-							so.compliance_sub_category = sub.name
-							so.transaction_date = today_date
-							so.delivery_date = today_date
-
-							if self.default_payment_terms_template:
-								so.payment_terms_template = self.default_payment_terms_template
-
-							item_code = sub.item_code
-							item_name = frappe.db.get_value("Item", item_code, "item_name")
-							rate = sub.rate or 0
-
-							so.append("items", {
-								"item_code": item_code,
-								"item_name": item_name,
-								"qty": 1,
-								"rate": rate
-							})
-
-							so.insert(ignore_permissions=True)
-							so.submit()
-
-							if project_name:
-								frappe.db.set_value("Project", project_name, "sales_order", so.name)
-								frappe.db.set_value("Sales Order", so.name, "project", project_name)
-
 	def validate_agreement_dates(self):
 		if self.posting_date:
 			if getdate(self.posting_date) > getdate(today()):
@@ -838,42 +810,19 @@ def create_future_one_time_projects():
 					e
 				)
 			if not sub_cat.allow_repeat and sub_cat.is_billable:
-				exists = frappe.db.exists(
-					"Sales Order",
-					{
-						"compliance_agreement": doc.name,
-						"compliance_sub_category": sub_cat.name,
-						"transaction_date": today_date
-					}
+				rate = row.rate or sub_cat.rate or 0
+
+				make_sales_order(
+					customer=doc.customer,
+					company=doc.company,
+					compliance_agreement=doc.name,
+					compliance_sub_category=sub_cat.name,
+					transaction_date=today_date,
+					item_code=sub_cat.item_code,
+					rate=rate,
+					project_name=row.project,
+					payment_terms_template=doc.default_payment_terms_template
 				)
-				if not exists:
-					so = frappe.new_doc("Sales Order")
-					so.customer = doc.customer
-					so.company = doc.company
-					so.compliance_agreement = doc.name
-					so.compliance_sub_category = sub_cat.name
-					so.transaction_date = today_date
-					so.delivery_date = today_date
-
-					if doc.default_payment_terms_template:
-						so.payment_terms_template = doc.default_payment_terms_template
-
-					item_code = sub_cat.item_code
-					item_name = frappe.db.get_value("Item", item_code, "item_name")
-					rate = sub_cat.rate or 0
-
-					so.append("items", {
-						"item_code": item_code,
-						"item_name": item_name,
-						"qty": 1,
-						"rate": rate
-					})
-
-					so.insert(ignore_permissions=True)
-					so.submit()
-					if row.project:
-						frappe.db.set_value("Project", row.project, "sales_order", so.name)
-						frappe.db.set_value("Sales Order", so.name, "project", row.project)
 		doc.save(ignore_permissions=True)
 						
 @frappe.whitelist()
@@ -956,35 +905,17 @@ def create_sales_order_and_project_from_popup(
 
 		return f"Project Created: {project.name if project else 'No Template'} | Not Billable"
 
-	exists = frappe.db.exists("Sales Order", {
-		"compliance_agreement": compliance_agreement,
-		"compliance_sub_category": compliance_sub_category,
-		"transaction_date": new_compliance_date
-	})
-
-	if exists:
-		return "Sales Order already exists for this date"
-	so = frappe.new_doc("Sales Order")
-	so.customer = agreement.customer
-	so.company = agreement.company
-	so.compliance_agreement = compliance_agreement
-	so.compliance_sub_category = compliance_sub_category
-	so.transaction_date = new_compliance_date
-	so.delivery_date = new_compliance_date
-
-	if agreement.default_payment_terms_template:
-		so.payment_terms_template = agreement.default_payment_terms_template
-
-	item_name = frappe.db.get_value("Item", subcat.item_code, "item_name")
-	so.append("items", {
-		"item_code": subcat.item_code,
-		"item_name": item_name,
-		"qty": 1,
-		"rate": rate,
-	})
-
-	so.insert(ignore_permissions=True)
-	so.submit()
+	so = make_sales_order(
+		customer=agreement.customer,
+		company=agreement.company,
+		compliance_agreement=compliance_agreement,
+		compliance_sub_category=compliance_sub_category,
+		transaction_date=new_compliance_date,
+		item_code=subcat.item_code,
+		rate=rate,
+		project_name=project.name if project else None,
+		payment_terms_template=agreement.default_payment_terms_template
+	)
 
 	if project:
 		project.db_set("sales_order", so.name)
@@ -1000,3 +931,56 @@ def create_sales_order_and_project_from_popup(
 	)
 
 	return f"Sales Order Created: {so.name} | Project Created: {project.name if project else 'No Template'}"
+
+def make_sales_order(
+	customer,
+	company,
+	compliance_agreement,
+	compliance_sub_category,
+	transaction_date,
+	item_code,
+	rate,
+	project_name=None,
+	payment_terms_template=None
+):
+	"""
+	Helper function to create sales order
+	"""
+	existing_so = frappe.db.exists(
+		"Sales Order",
+		{
+			"compliance_agreement": compliance_agreement,
+			"compliance_sub_category": compliance_sub_category,
+			"transaction_date": transaction_date,
+		}
+	)
+	if existing_so:
+		return frappe.get_doc("Sales Order", existing_so)
+
+	so = frappe.new_doc("Sales Order")
+	so.customer = customer
+	so.company = company
+	so.compliance_agreement = compliance_agreement
+	so.compliance_sub_category = compliance_sub_category
+	so.transaction_date = transaction_date
+	so.delivery_date = transaction_date
+
+	if payment_terms_template:
+		so.payment_terms_template = payment_terms_template
+
+	item_name = frappe.db.get_value("Item", item_code, "item_name")
+
+	so.append("items", {
+		"item_code": item_code,
+		"item_name": item_name,
+		"qty": 1,
+		"rate": rate
+	})
+
+	so.insert(ignore_permissions=True)
+	so.submit()
+	if project_name:
+		frappe.db.set_value("Project", project_name, "sales_order", so.name)
+		so.db_set("project", project_name)
+
+	return so
