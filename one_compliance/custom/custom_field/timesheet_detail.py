@@ -21,6 +21,7 @@ def get_timesheet_detail_custom_fields():
 				"fieldtype": "Check",
 				"label": "Lag Notification Sent",
 				"insert_after": "reason_for_lag_time",
+				"hidden": 1,
 			},
 			{
 				"fieldname": "approval_status",

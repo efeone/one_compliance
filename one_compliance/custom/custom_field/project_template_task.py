@@ -33,7 +33,6 @@ def get_project_template_task_custom_fields():
 				"in_list_view": 1,
 				"insert_after": "task_duration_type",
 				"label": "Task Duration",
-				"depends_on": "eval:doc.task_duration_type == 'Days'",
 			},
 			{
 				"columns": 1,
@@ -66,21 +65,20 @@ def get_project_template_task_custom_fields():
 				"label": "Has External Dependencies",
 				"insert_after": "custom_documents_required",
 			},
-             {
-				"fieldname": "task_duration_type",
-				"fieldtype": "Select",
-				"label": "Task Duration Type",
-				"insert_after": "subject",
-				"options": "\nDays\nMinutes",
+			{
+				"fieldname": "send_email_notification_for_lag_time",
+				"fieldtype": "Check",
+				"label": "Send Email Notification for Lag Time",
+				"insert_after": "has_external_dependencies",
+				"depends_on": "eval:doc.has_external_dependencies",
 			},
-            {
+			{
 				"fieldname": "task_duration_minutes",
 				"fieldtype": "Duration",
 				"label": "Task Duration (Minutes)",
-				"insert_after": "task_duration_type",
+				"insert_after": "subject",
 				"hide_days": 1,
 				"hide_seconds": 1,
-				"depends_on": "eval:doc.task_duration_type == 'Minutes' ",
 			},
 		]
 	}

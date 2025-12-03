@@ -281,7 +281,20 @@ function initialize_task_actions(page) {
 		const project_name = $(this).attr("project-id");
 		const assignees = $(this).attr("assignees");
 		const start_time = localStorage.getItem(`start-time-task-${task_name}-project-${project_name}`);
-		show_time_entry_dialog(page, task_name, project_name, assignees, start_time);
+		frappe.db.get_value("Task", task_name, "has_external_dependencies")
+		.then(({ message }) => {
+			const show_lag = !!message?.has_external_dependencies;
+
+			show_time_entry_dialog(
+			page,
+			task_name,
+			project_name,
+			assignees,
+			start_time,
+			show_lag
+			);
+		});
+
 	});
 
 	body.find(".documentButton").off().on("click", function () {
@@ -390,231 +403,12 @@ function assignee_and_completed_by_section(taskStatus) {
 		$('.assignee-section').hide();
 	} else {
 		$('.completed-by-section').hide();
-    if (taskStatus === 'completed') {
-        $('.assignee-section').hide();
-    } else {
-        $('.completed-by-section').hide();
-    }
+	if (taskStatus === 'completed') {
+		$('.assignee-section').hide();
+	} else {
+		$('.completed-by-section').hide();
+	}
 }
-}
-
-function paymentEntryDialog(taskId, payableAmount, modeOfPayment, referenceNumber, referenceDate, userRemark){
-	var dialog = new frappe.ui.Dialog({
-        title: __("Add Payment Info"),
-        fields: [
-                {
-                    label: __("Task"),
-                    fieldname: "task",
-                    fieldtype: 'Link',
-                    options: 'Task',
-                    default: taskId,
-                    read_only: 1,
-                },
-                {
-                    label: __("Payable Amount"),
-                    fieldname: "payable_amount",
-                    fieldtype: 'Currency',
-                    reqd: true,
-                    default: payableAmount,
-                },
-                {
-                    label: __("Mode of payment"),
-                    fieldname: "mode_of_payment",
-                    fieldtype: 'Link',
-                    options: 'Mode of Payment',
-                    reqd: true,
-                    default: modeOfPayment
-                },
-                {
-                    fieldtype: "Column Break",
-                    fieldname: "col_break_1",
-                },
-                {
-                    label: __("Reference Number"),
-                    fieldname: "reference_number",
-                    fieldtype: 'Data',
-                    default: referenceNumber
-                },
-                {
-                    label: __("Reference Date"),
-                    fieldname: "reference_date",
-                    fieldtype: 'Date',
-                    default: referenceDate
-                },
-                {
-                    label: __("User remark"),
-                    fieldname: "user_remark",
-                    fieldtype: 'Small Text',
-                    default: userRemark
-                }
-        ],
-        primary_action: function (values) {
-            frappe.call({
-                method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.add_payment_info",
-                args: {
-                    task_id: taskId,
-                    payable_amount: values.payable_amount,
-                    mode_of_payment: values.mode_of_payment,
-                    reference_number: values.reference_number,
-                    reference_date: values.reference_date,
-                    user_remark: values.user_remark,
-            },
-                callback: function (r) {
-                    frappe.msgprint("Payment info added successfully!");
-                        frm.reload_doc();
-                }
-						});
-            dialog.hide();
-        },
-        primary_action_label: __("Save")
-    });
-    dialog.show();
-}
-
-function showAssignEntryDialog(taskName){
-	var dialog = new frappe.ui.Dialog({
-        title: __("Add Employees"),
-        fields: [
-                {
-                    label: __("Assign To"),
-                    fieldname: "assign_to",
-                    fieldtype: 'MultiSelectPills',
-                    get_data: function (txt) {
-                        return frappe.db.get_link_options("User", txt, {
-                            user_type: "System User",
-                            enabled: 1,
-                        });
-                    },
-                }
-        ],
-        primary_action: function (values) {
-            frappe.call({
-                method: "frappe.desk.form.assign_to.add",
-                args: {
-                    doctype: "Task",
-                    name: taskName,
-                    assign_to: values.assign_to,
-                },
-                callback: function (r) {
-                    frappe.msgprint("Assignment added successfully!");
-										location.reload();
-                }
-						});
-            dialog.hide();
-        },
-        primary_action_label: __("Add")
-    });
-    dialog.show();
-}
-// Function to show the dialog box for timesheet entry
-function showTimeEntryDialog(page, taskName, projectName, assignees, startTime) {
-	var assigneesList = assignees ? assignees.split(',') : [];
-
-	var status = page.fields_dict.status.get_value();
-  if (status === 'completed' | status === 'hold'| status === 'cancelled') {
-      return;
-  }
-
-	// Get the pre-filled from_time and to_time values
-  var fromTime = startTime
-  var toTime = frappe.datetime.now_datetime(); // Get the current date and time for the to_time field
-
-	var dialog = new frappe.ui.Dialog({
-        title: __("Time Entry Dialog"),
-        fields: [
-                {
-                    label: __("Employee"),
-                    fieldname: "employee",
-                    fieldtype: 'Select',
-                    options: assigneesList,
-                    default: get_employee(assigneesList, function (employee) {
-                        dialog.set_value("employee", employee);
-                })
-                },
-                {
-                    label: __("Project"),
-                    fieldname: "project",
-                    fieldtype: 'Link',
-                    options: 'Project',
-                    default: projectName
-                },
-                {
-                    label: __("From Time"),
-                    fieldname: "from_time",
-                    fieldtype: 'Datetime',
-                    reqd: true,
-                    read_only: 1,
-                    default: fromTime,
-                },
-                {
-                    fieldtype: "Column Break",
-                    fieldname: "col_break_1",
-                },
-                {
-                    label: __("Task"),
-                    fieldname: "task",
-                    fieldtype: 'Link',
-                    options: 'Task',
-                    default: taskName
-                },
-                {
-                    label: __("Activity"),
-                    fieldname: "activity",
-                    fieldtype: 'Link',
-                    reqd: true,
-                    options: 'Activity Type'
-                },
-                {
-                    label: __("To Time"),
-                    fieldname: "to_time",
-                    fieldtype: 'Datetime',
-                    reqd: true,
-                    read_only: 1,
-                    default: toTime
-                },
-                {
-                    label: __("Lag Time"),
-                    fieldname: "lag_time",
-                    fieldtype: 'Duration',
-                },
-                {
-                    label: __("Reason for Lag Time"),
-                    fieldname: "reason_for_lag_time",
-                    fieldtype: 'Small Text'
-                }
-        ],
-        primary_action: function (values) {
-						// Clear start time from local storage upon submitting timesheet
-						localStorage.removeItem("start-time-task-" + taskName + "-project-" + projectName);
-
-						frappe.call({
-								method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.create_timesheet",
-								args: {
-										project: values.project,
-										task: values.task,
-										employee: values.employee,
-										activity: values.activity,
-										from_time: values.from_time,
-										to_time: values.to_time,
-                                        lag_time: values.lag_time,
-                                        reason_for_lag_time: values.reason_for_lag_time,
-								},
-								callback: function (r) {
-										frappe.msgprint("Timesheet created successfully!");
-										// After creating timesheet show start button and hide start-time and time entry button
-										page.body.find(".start-time[task-id='" + taskName + "'][project-id='" + projectName + "']").hide();
-										page.body.find(".startButton[task-id='" + taskName + "'][project-id='" + projectName + "']").show();
-										page.body.find(".timeEntryButton[task-id='" + taskName + "'][project-id='" + projectName + "']").hide();
-
-								}
-						});
-            dialog.hide();
-        },
-        primary_action_label: __("Submit")
-    });
-
-    // Show the dialog
-    dialog.show();
 }
 
 // Function to get frappe.session.user in the employee field to filter the task
@@ -741,7 +535,7 @@ function show_assign_entry_dialog(task_name) {
 Shows a dialog for time entry linked to a specific task.
 */
 
-function show_time_entry_dialog(page, task_name, project_name, assignees, start_time) {
+function show_time_entry_dialog(page, task_name, project_name, assignees, start_time, show_lag_time_fields) {
 	const status = page.fields_dict.status.get_value();
 	if (["completed", "hold", "cancelled"].includes(status)) return;
 
@@ -796,16 +590,18 @@ function show_time_entry_dialog(page, task_name, project_name, assignees, start_
 				read_only: 1,
 				default: to_time,
 			},
-            {
-                label: __("Lag Time"),
-                fieldname: "lag_time",
-                fieldtype: 'Duration',
-            },
-            {
-                label: __("Reason for Lag Time"),
-                fieldname: "reason_for_lag_time",
-                fieldtype: 'Small Text'
-            }
+			{
+				label: __("Lag Time"),
+				fieldname: "lag_time",
+				fieldtype: 'Duration',
+				hidden: !show_lag_time_fields
+			},
+			{
+				label: __("Reason for Lag Time"),
+				fieldname: "reason_for_lag_time",
+				fieldtype: 'Small Text',
+				hidden: !show_lag_time_fields
+			}
 		],
 		primary_action_label: __("Submit"),
 		primary_action(values) {

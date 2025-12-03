@@ -1,242 +1,271 @@
-frappe.ui.form.on('Project',{
-		refresh(frm){
-			if(!frm.is_new()){
-				setTimeout(() => {
-						frm.remove_custom_button('Duplicate Project with Tasks','Actions')
-						frm.remove_custom_button('Set Project Status','Actions')
-						})
-			}
+frappe.ui.form.on('Project', {
+	refresh(frm) {
+	if (!frm.is_new()) {
+		setTimeout(() => {
+		frm.remove_custom_button('Duplicate Project with Tasks', 'Actions');
+		frm.remove_custom_button('Set Project Status', 'Actions');
+		});
+	}
 
-				let roles = frappe.user_roles;
-				if (roles.includes('Compliance Manager') || roles.includes('Director')) {
-					if (!frm.is_new()) {
-							frm.add_custom_button('Customer Credentials', () => {
-									customer_credentials(frm);
-							},
-							__("View")
-						);
-							frm.add_custom_button('Customer Documents', () => {
-								customer_documents(frm);
-						},
-						__("View")
+	let roles = frappe.user_roles;
+	if (roles.includes('Compliance Manager') || roles.includes('Director')) {
+		if (!frm.is_new()) {
+		frm.add_custom_button(
+			'Customer Credentials',
+			() => {
+			customer_credentials(frm);
+			},
+			__('View')
+		);
+		frm.add_custom_button(
+			'Customer Documents',
+			() => {
+			customer_documents(frm);
+			},
+			__('View')
+		);
+		}
+	}
+
+	if (!frm.is_new()) {
+		frm.add_custom_button('Set Project Status', () => {
+		update_project_status(frm);
+		});
+	}
+	// Add 'Convert to Premium' button on existing Project
+	if (!frm.is_new() && !frm.doc.is_premium) {
+		frappe.db
+		.get_value(
+			'Compliance Sub Category',
+			frm.doc.compliance_sub_category,
+			'premium_task'
+		)
+		.then((value) => {
+			if (value.message && value.message.premium_task) {
+			frm.add_custom_button(__('Convert to Premium'), function () {
+				frappe.call({
+				method:
+					'one_compliance.one_compliance.doc_events.project.convert_project_to_premium',
+				args: {
+					project: frm.doc.name,
+				},
+				callback: function (r) {
+					if (r.message === 'success') {
+					frappe.msgprint(
+						__('Project converted to Premium successfully.')
+					);
+					frm.reload_doc();
+					} else {
+					frappe.msgprint(
+						__('Failed to convert project to Premium.')
 					);
 					}
-			}
-
-		if(!frm.is_new()){
-			frm.add_custom_button('Set Project Status', () => {
-				update_project_status(frm)
-			});
-		}
-		// Add "Convert to Premium" button on existing Project
-		if (!frm.is_new()) {
-						frappe.db.get_value('Compliance Sub Category', frm.doc.compliance_sub_category, 'premium_task')
-						.then(value => {
-								if (value.message && value.message.premium_task) {
-										frm.add_custom_button(__('Convert to Premium'), function () {
-												frappe.call({
-														method: 'one_compliance.one_compliance.doc_events.project.convert_project_to_premium',
-														args: {
-																project: frm.doc.name
-														},
-														callback: function (r) {
-																if (r.message === 'success') {
-																		frappe.msgprint(__('Project converted to Premium successfully.'));
-																		frm.reload_doc();
-																} else {
-																		frappe.msgprint(__('Failed to convert project to Premium.'));
-																}
-												}
-										});
-								});
-						}
+				},
 				});
+			});
+			}
+		});
 
-			// Add "Create Tasks" button if no tasks exist
-			frappe.db.count("Task", {
-			filters: { project: frm.doc.name }
-			}).then(function (count) {
+		// Add 'Create Tasks' button if no tasks exist
+		frappe.db
+		.count('Task', {
+			filters: { project: frm.doc.name },
+		})
+		.then(function (count) {
 			if (count === 0) {
-				frm.add_custom_button(__('Create Tasks'), function () {
+			frm.add_custom_button(
+				__('Create Tasks'),
+				function () {
 				frappe.call({
-					method: "one_compliance.one_compliance.doc_events.project.create_tasks_from_template",
+					method:
+					'one_compliance.one_compliance.doc_events.project.create_tasks_from_template',
 					args: { project: frm.doc.name },
 					callback: function (r) {
 					if (!r.exc) {
-						frappe.msgprint(__('Tasks created from Project Template'));
+						frappe.msgprint(
+						__('Tasks created from Project Template')
+						);
 						frm.reload_doc();
 					}
-					}
+					},
 				});
-				}, __("Actions"));
+				},
+				__('Actions')
+			);
 			}
-			});
-		}
+		});
 	}
+	},
 });
 
-let set_status = function(frm, status, comment) {
-	frappe.confirm(__('Set Project and all Tasks to status {0}?', [status.bold()]), () => {
-		frappe.xcall('one_compliance.one_compliance.doc_events.project.set_project_status',
-			{project: frm.doc.name, status: status, comment: comment}).then(() => {
+let set_status = function (frm, status, comment) {
+	frappe.confirm(
+	__('Set Project and all Tasks to status {0}?', [status.bold()]),
+	() => {
+		frappe
+		.xcall(
+			'one_compliance.one_compliance.doc_events.project.set_project_status',
+			{ project: frm.doc.name, status: status, comment: comment }
+		)
+		.then(() => {
 			frm.reload_doc();
 		});
-	});
-}
+	}
+	);
+};
 
-let update_project_status = function(frm){
+let update_project_status = function (frm) {
 	let d = new frappe.ui.Dialog({
-			title: 'Set Project Status',
-			fields: [
-				{
-					"fieldname": "status",
-					"fieldtype": "Select",
-					"label": "Status",
-					"reqd": 1,
-					"options": "\nOpen\nHold\nCompleted\nCancelled",
-				},
-				{
-					"fieldname": "comment",
-					"fieldtype": "Small Text",
-					"label": "Comment",
-					"depends_on": "eval:doc.status == 'Hold'",
-					"mandatory_depends_on": "eval:doc.status == 'Hold'",
-				},
-			],
-			size: 'small',
-			primary_action: function() {
-				set_status(frm, d.get_values().status, d.get_values().comment);
-				d.hide();
-			},
-			primary_action_label: __("Set Project Status")
+	title: 'Set Project Status',
+	fields: [
+		{
+		fieldname: 'status',
+		fieldtype: 'Select',
+		label: 'Status',
+		reqd: 1,
+		options: '\nOpen\nHold\nCompleted\nCancelled',
+		},
+		{
+		fieldname: 'comment',
+		fieldtype: 'Small Text',
+		label: 'Comment',
+		depends_on: 'eval:doc.status == "Hold"',
+		mandatory_depends_on: 'eval:doc.status == "Hold"',
+		},
+	],
+	size: 'small',
+	primary_action: function () {
+		set_status(frm, d.get_values().status, d.get_values().comment);
+		d.hide();
+	},
+	primary_action_label: __('Set Project Status'),
 	});
 
 	d.show();
-}
+};
 
 /* applied dialog instance to show customer Credential */
 let customer_credentials = function (frm) {
 	let d = new frappe.ui.Dialog({
-		title: 'Enter details',
-		fields: [
-			{
-				label: 'Purpose',
-				fieldname: 'purpose',
-				fieldtype: 'Link',
-				options: 'Credential Type',
-				get_query: function () {
-					return {
-						filters: {
-							'compliance_sub_category':frm.doc.compliance_sub_category
-						}
-					};
-				}
+	title: 'Enter details',
+	fields: [
+		{
+		label: 'Purpose',
+		fieldname: 'purpose',
+		fieldtype: 'Link',
+		options: 'Credential Type',
+		get_query: function () {
+			return {
+			filters: {
+				compliance_sub_category: frm.doc.compliance_sub_category,
+			},
+			};
+		},
+		},
+	],
+	primary_action_label: 'View Credential',
+	primary_action(values) {
+		frappe.call({
+		method: 'one_compliance.one_compliance.utils.view_credential_details',
+		args: {
+			customer: frm.doc.customer,
+			purpose: values.purpose,
+		},
+		callback: function (r) {
+			if (r.message) {
+			d.hide();
+			let newd = new frappe.ui.Dialog({
+				title: 'Credential details',
+				fields: [
+				{
+					label: 'Username',
+					fieldname: 'username',
+					fieldtype: 'Data',
+					read_only: 1,
+					default: r.message[0],
+				},
+				{
+					label: 'Password',
+					fieldame: 'password',
+					fieldtype: 'Data',
+					read_only: 1,
+					default: r.message[1],
+				},
+				{
+					label: 'Url',
+					fieldname: 'url',
+					fieldtype: 'Data',
+					options: 'URL',
+					read_only: 1,
+					default: r.message[2],
+				},
+				],
+				primary_action_label: 'Close',
+				primary_action(value) {
+				newd.hide();
+				},
+				secondary_action_label: 'Go To URL',
+				secondary_action(value) {
+				window.open(r.message[2]);
+				},
+			});
+			newd.show();
 			}
-		],
-		primary_action_label: 'View Credential',
-		primary_action(values) {
-			frappe.call({
-				method:'one_compliance.one_compliance.utils.view_credential_details',
-				args:{
-							'customer':frm.doc.customer,
-							'purpose':values.purpose
-						 },
-				callback:function(r){
-					if (r.message){
-						d.hide();
-						let newd = new frappe.ui.Dialog({
-							title: 'Credential details',
-							fields: [
-								{
-									label: 'Username',
-									fieldname: 'username',
-									fieldtype: 'Data',
-									read_only: 1,
-									default:r.message[0]
-								},
-								{
-									label: 'Password',
-									fieldame: 'password',
-									fieldtype: 'Data',
-									read_only: 1,
-									default:r.message[1]
-								},
-								{
-									label: 'Url',
-									fieldname: 'url',
-									fieldtype: 'Data',
-									options: 'URL',
-									read_only: 1,
-									default:r.message[2]
-								}
-							],
-							primary_action_label: 'Close',
-							primary_action(value) {
-									newd.hide();
-							},
-							secondary_action_label : 'Go To URL',
-							secondary_action(value){
-								window.open(r.message[2])
-							}
-					});
-					newd.show();
-					}
-				}
-			})
-		}
-});
-d.show();
-}
+		},
+		});
+	},
+	});
+	d.show();
+};
 
 /* applied dialog instance to show customer document */
-
 let customer_documents = function (frm) {
 	let d = new frappe.ui.Dialog({
-		title: 'Enter details',
-		fields: [
-			{
-				label: 'Compliance Sub Category',
-				fieldname: 'compliance_sub_category',
-				fieldtype: 'Link',
-				options: 'Compliance Sub Category'
-			}
-		],
-		primary_action_label: 'View Document',
-		primary_action(values) {
-			frappe.call({
-				method:'one_compliance.one_compliance.utils.view_customer_documents',
-				args:{
-							'customer':frm.doc.customer,
-							'compliance_sub_category':values.compliance_sub_category
-						},
-						callback:function(r){
-							if (r.message){
-								d.hide();
-								let newd = new frappe.ui.Dialog({
-									title: 'Document details',
-									fields: [
-										{
-											label: 'Document Attachment',
-											fieldname: 'document_attachment',
-											fieldtype: 'Data',
-											read_only: 1,
-											default:r.message[0]
-										},
-									],
-									primary_action_label: 'Close',
-									primary_action(value) {
-										newd.hide();
-									},
-									secondary_action_label : 'Download',
-									secondary_action(value){
-										window.open(r.message[0])
-									}
-								});
-								newd.show();
-							}
-						}
-					})
-				}
+	title: 'Enter details',
+	fields: [
+		{
+		label: 'Compliance Sub Category',
+		fieldname: 'compliance_sub_category',
+		fieldtype: 'Link',
+		options: 'Compliance Sub Category',
+		},
+	],
+	primary_action_label: 'View Document',
+	primary_action(values) {
+		frappe.call({
+		method: 'one_compliance.one_compliance.utils.view_customer_documents',
+		args: {
+			customer: frm.doc.customer,
+			compliance_sub_category: values.compliance_sub_category,
+		},
+		callback: function (r) {
+			if (r.message) {
+			d.hide();
+			let newd = new frappe.ui.Dialog({
+				title: 'Document details',
+				fields: [
+				{
+					label: 'Document Attachment',
+					fieldname: 'document_attachment',
+					fieldtype: 'Data',
+					read_only: 1,
+					default: r.message[0],
+				},
+				],
+				primary_action_label: 'Close',
+				primary_action(value) {
+				newd.hide();
+				},
+				secondary_action_label: 'Download',
+				secondary_action(value) {
+				window.open(r.message[0]);
+				},
 			});
-			d.show();
-		}
+			newd.show();
+			}
+		},
+		});
+	},
+	});
+	d.show();
+};
