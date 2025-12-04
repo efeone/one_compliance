@@ -19,14 +19,14 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 	values = {}
 
 	if status:
-		if status in ["completed", "cancelled"]:
+		if status in ["completed", "cancelled", "Template"]:
 			return
 		else:
 			proper_status = status.replace("_", " ").title()
 			conditions.append("t.status = %(status)s")
 			values["status"] = proper_status
 	else:
-		conditions.append("t.status NOT IN ('Completed', 'Cancelled')")
+		conditions.append("t.status NOT IN ('Completed', 'Cancelled', 'Template')")
 
 	if task:
 		conditions.append("t.name = %(task)s")
