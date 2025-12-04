@@ -30,6 +30,10 @@
   "task_template_series",
   "column_break_kqmy",
   "ignore_dependent_task_validation",
+  "task_management_tool_settings_section",
+  "hide_document_icon",
+  "hide_credentials_icon",
+  "hide_payment_icon",
   "tab_break_us4n3",
   "notifications_from_subcategory_section",
   "enable_task_before_due_date_notification",
@@ -408,12 +412,35 @@
    "fieldtype": "Link",
    "label": "Role Allowed to Approve Lag Time",
    "options": "Role"
+  },
+  {
+   "fieldname": "task_management_tool_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Task Management Tool Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "hide_document_icon",
+   "fieldtype": "Check",
+   "label": "Hide Document Icon"
+  },
+  {
+   "default": "0",
+   "fieldname": "hide_payment_icon",
+   "fieldtype": "Check",
+   "label": "Hide Payment Icon"
+  },
+  {
+   "default": "0",
+   "fieldname": "hide_credentials_icon",
+   "fieldtype": "Check",
+   "label": "Hide Credentials Icon"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-11-12 10:41:44.045720",
+ "modified": "2025-12-04 12:24:47.745819",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
