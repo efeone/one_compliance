@@ -1,7 +1,8 @@
 import frappe
 from frappe import _
 from frappe.email.doctype.notification.notification import get_context
-from frappe.utils import add_days, getdate
+from frappe.utils import add_days, getdate, today
+from one_compliance.one_compliance.utils import create_todo
 from one_compliance.one_compliance.doc_events.task import (
 	create_sales_order,
 	get_rate_from_compliance_agreement,
@@ -31,15 +32,15 @@ def project_on_update(doc, method):
 		update_sales_order_billing_instruction(doc.sales_order, doc.custom_billing_instruction)
 
 def update_sales_order_billing_instruction(sales_order, custom_billing_instruction):
-    """
-    Updates the 'Billing Instruction' field in the Sales Order.
-    """
-    if frappe.db.exists('Sales Order', sales_order):
-        sales_order_doc = frappe.get_doc('Sales Order', sales_order)
-        sales_order_doc.custom_billing_instruction = custom_billing_instruction
-        sales_order_doc.save()
-    else:
-        frappe.throw(_("Sales Order does not exist"))
+	"""
+	Updates the 'Billing Instruction' field in the Sales Order.
+	"""
+	if not frappe.db.exists("Sales Order", sales_order):
+		frappe.throw(_("Sales Order does not exist"))
+
+	frappe.db.set_value(
+		"Sales Order", sales_order, "custom_billing_instruction", custom_billing_instruction
+	)
 
 
 @frappe.whitelist()
@@ -57,10 +58,13 @@ def set_project_status(project, status, comment=None):
 
 	project = frappe.get_doc("Project", project)
 	frappe.has_permission(doc=project, throw=True)
+
 	tasks = frappe.get_all("Task", filters={"project": project.name}, fields=["name", "status"])
+
 	for task in tasks:
 		if task.status == "Completed":
 			continue
+
 		frappe.db.set_value("Task", task.name, "status", status)
 		if status == "Hold":
 			frappe.db.set_value("Task", task.name, "hold", 1)
@@ -77,43 +81,19 @@ def set_project_status(project, status, comment=None):
 		project.add_comment('Comment', comment)
 
 @frappe.whitelist()
-def project_after_insert(doc, method):
-	if not doc.expected_end_date and doc.compliance_sub_category:
-		project_template = frappe.db.get_value('Compliance Sub Category', doc.compliance_sub_category, 'project_template')
-		if doc.expected_start_date and project_template:
-			project_duration = frappe.db.get_value('Project Template', project_template, 'custom_project_duration')
-			doc.expected_end_date = add_days(doc.expected_start_date, project_duration)
-			doc.save()
-		frappe.db.commit
-
-	# Creating a Sales Order after a project is created
-	if frappe.db.exists('Compliance Sub Category', doc.compliance_sub_category):
-		sub_category_doc = frappe.get_doc('Compliance Sub Category', doc.compliance_sub_category)
-		if sub_category_doc.is_billable:
-			sales_order = frappe.db.exists('Sales Order', doc.sales_order)
-			if not sales_order:
-				sales_order = frappe.db.exists("Sales Order", {"project":doc.name})
-				if sales_order:
-					doc.sales_order = sales_order
-					doc.save(ignore_permissions=True)
-			if not sales_order:
-				payment_terms = None
-				rate = 0
-				if frappe.db.exists('Compliance Agreement', doc.compliance_agreement):
-					payment_terms = frappe.db.get_value('Compliance Agreement', doc.compliance_agreement,'default_payment_terms_template')
-					rate = get_rate_from_compliance_agreement(doc.compliance_agreement, doc.compliance_sub_category)
-				create_sales_order(doc, rate, sub_category_doc, payment_terms, submit=True)
-
-@frappe.whitelist()
 def set_status_to_overdue():
-	projects = frappe.db.get_all('Project', filters= {'status': ['not in',['Cancelled','Hold','Completed', 'Invoiced']]})
-	if projects:
-		for project in projects:
-			doc = frappe.get_doc('Project', project.name)
-			today = getdate(frappe.utils.today())
-			if today > getdate(doc.expected_end_date):
-				frappe.db.set_value('Project', project.name, 'status', 'Overdue')
-			frappe.db.commit()
+
+	projects = frappe.get_all(
+		"Project",
+		filters={"status": ["not in", ["Cancelled", "Hold", "Completed", "Invoiced"]]},
+		fields=["name", "expected_end_date"],
+	)
+
+	today_date = getdate(today())
+	for project in projects:
+		if project.expected_end_date and today_date > getdate(project.expected_end_date):
+			frappe.db.set_value("Project", project.name, "status", "Overdue")
+
 
 @frappe.whitelist()
 def get_permission_query_conditions(user):
@@ -141,35 +121,93 @@ def get_permission_query_conditions(user):
 
 @frappe.whitelist()
 def convert_project_to_premium(project):
-    """
-    Convert Project to Premium by adding its associated Premium Tasks.
-    """
-    try:
-        project_doc = frappe.get_doc("Project", project)
+	"""
+	Convert Project to Premium by adding its associated Premium Tasks.
+	"""
+	try:
+		project_doc = frappe.get_doc("Project", project)
 
-        if not project_doc.compliance_sub_category:
-            return "no_sub_category"
+		if not project_doc.compliance_sub_category:
+			return "no_sub_category"
 
-        sub_category_doc = frappe.get_doc("Compliance Sub Category", project_doc.compliance_sub_category)
+		sub_category_doc = frappe.get_doc("Compliance Sub Category", project_doc.compliance_sub_category)
 
-        if not sub_category_doc.project_template:
-            return "no_template"
+		if not sub_category_doc.project_template:
+			return "no_template"
 
-        template_doc = frappe.get_doc("Project Template", sub_category_doc.project_template)
+		template_doc = frappe.get_doc("Project Template", sub_category_doc.project_template)
+		for premium_task in template_doc.premium_tasks:
+			existing_task = frappe.db.exists("Task", {
+				"project": project_doc.name,
+				"subject": premium_task.subject
+			})
+			if existing_task:
+				continue
+			task = frappe.new_doc("Task")
+			task.subject = premium_task.subject
+			task.project = project_doc.name
+			task.expected_time = premium_task.task_duration or 0
+			task.task_weightage = premium_task.task_weightage or 0
+			task.save()
 
-        for premium_task in template_doc.premium_tasks:
-            task = frappe.new_doc("Task")
-            task.subject = premium_task.subject
-            task.project = project_doc.name
-            task.expected_time = premium_task.task_duration or 0
-            task.task_weightage = premium_task.task_weightage or 0
-            task.save()
+		project_doc.is_premium = 1
+		project_doc.save()
 
-        project_doc.is_premium = 1
-        project_doc.save()
+		return "success"
 
-        return "success"
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "Convert Project to Premium Error")
+		return "failed"
 
-    except Exception:
-        frappe.log_error(frappe.get_traceback(), "Convert Project to Premium Error")
-        return "failed"
+@frappe.whitelist()
+def create_tasks_from_template(project):
+	"""Create tasks in a Project from its Sub Category's Project Template"""
+	project_doc = frappe.get_doc("Project", project)
+
+	if not project_doc.compliance_sub_category:
+		frappe.throw("No Compliance Sub Category linked with this Project")
+
+	sub_category_doc = frappe.get_doc("Compliance Sub Category", project_doc.compliance_sub_category)
+	if not sub_category_doc.project_template:
+		frappe.throw("No Project Template linked with this Sub Category")
+
+	template_doc = frappe.get_doc("Project Template", sub_category_doc.project_template)
+
+	created_tasks = []
+
+	for template_task in template_doc.tasks:
+		template_task_doc = None
+		if template_task.task:
+			template_task_doc = frappe.get_doc("Task", template_task.task)
+
+		task = frappe.new_doc("Task")
+		task.compliance_sub_category = project_doc.compliance_sub_category
+		task.subject = template_task.subject
+		task.task_weightage = template_task.task_weightage or 0
+		task.project = project_doc.name
+		task.company = project_doc.company
+		task.project_name = project_doc.project_name
+		task.category_type = project_doc.category_type
+		task.custom_serial_number = template_task.idx
+
+		task.status = "Open"
+		task.save(ignore_permissions=True)
+
+		if template_task.type and template_task.employee_or_group:
+			frappe.db.set_value("Task", task.name, "assigned_to", template_task.employee_or_group)
+
+			if template_task.type == "Employee":
+				user_id = frappe.db.get_value("Employee", template_task.employee_or_group, "user_id")
+				if user_id:
+					create_todo("Task", task.name, user_id, user_id, f"Task {task.name} Assigned Successfully")
+
+			elif template_task.type == "Employee Group":
+				employee_group = frappe.get_doc("Employee Group", template_task.employee_or_group)
+				if employee_group.employee_list:
+					for emp in employee_group.employee_list:
+						if emp.user_id:
+							create_todo("Task", task.name, emp.user_id, emp.user_id, f"Task {task.name} Assigned Successfully")
+
+		created_tasks.append(task.name)
+
+	return created_tasks

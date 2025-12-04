@@ -6,6 +6,7 @@ app_publisher = "efeone"
 app_description = "Frappe app to facilitate operations in Compliances and Tasks"
 app_email = "info@efeone.com"
 app_license = "MIT"
+required_apps = ["frappe/erpnext", "frappe/hrms"]
 
 # Includes in <head>
 # ------------------
@@ -82,8 +83,6 @@ before_uninstall = "one_compliance.install.before_uninstall"
 
 after_migrate = "one_compliance.setup.after_migrate"
 
-before_migrate = "one_compliance.setup.before_migrate"
-
 # Uninstallation
 # ------------
 
@@ -133,6 +132,7 @@ doc_events = {
             'one_compliance.one_compliance.doc_events.task.make_sales_invoice',
             'one_compliance.one_compliance.doc_events.task.subtask_on_update',
             'one_compliance.one_compliance.doc_events.task.on_task_update',
+			'one_compliance.one_compliance.doc_events.task.enable_customer_on_task_completion'
         ],
         'validate':[
             'one_compliance.one_compliance.doc_events.task.append_users_to_project',
@@ -143,18 +143,22 @@ doc_events = {
     },
     'Project':{
         'on_update': 'one_compliance.one_compliance.doc_events.project.project_on_update',
-        'after_insert': 'one_compliance.one_compliance.doc_events.project.project_after_insert'
     },
     'Customer':{
         'on_update':[
             'one_compliance.one_compliance.doc_events.customer.customer_on_update',
-            'one_compliance.one_compliance.doc_events.customer.create_project_from_customer'
+            'one_compliance.one_compliance.doc_events.customer.create_project_from_customer',
+			'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.update_status_on_customer_change'
         ],
         'before_save':[
             'one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',
             'one_compliance.one_compliance.doc_events.customer.set_expiry_dates'
         ],
-        'after_insert': 'one_compliance.one_compliance.doc_events.oppotunity.set_opportunity_converted'
+        'after_insert': [
+			'one_compliance.one_compliance.doc_events.oppotunity.set_opportunity_converted',
+			'one_compliance.one_compliance.doc_events.customer.create_aml_task'
+		],	
+		'before_insert': 'one_compliance.one_compliance.doc_events.customer.disable_customer_on_creation'
     },
     'Sales Invoice':{
         'on_submit': 'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
@@ -173,12 +177,13 @@ doc_events = {
     },
     'ToDo':{
         'before_insert':[
-            'one_compliance.one_compliance.doc_events.todo.set_company_from_task',
-            'one_compliance.one_compliance.doc_events.todo.set_company_from_project',
-            'one_compliance.one_compliance.doc_events.todo.set_company_from_event'
+            'one_compliance.one_compliance.doc_events.todo.set_company_and_related_fields',
         ]
-    }
-}
+    },
+	'Timesheet': {
+		'on_update': 'one_compliance.one_compliance.doc_events.timesheet.check_lag_and_notify',
+	}
+}	
 
 # Scheduled Tasks
 # ---------------
@@ -190,14 +195,15 @@ scheduler_events = {
 	"daily": [
         'one_compliance.one_compliance.utils.task_daily_sheduler',
         'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.change_agreement_status_scheduler',
-        'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.compliance_agreement_daily_scheduler',
         'one_compliance.one_compliance.doc_events.customer.create_project_from_customer_scheduler',
         'one_compliance.one_compliance.utils.notification_for_digital_signature_expiry',
         'one_compliance.one_compliance.utils.project_overdue_notification',
         'one_compliance.one_compliance.doc_events.project.set_status_to_overdue',
         'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.send_repeat_notif',
         'one_compliance.one_compliance.doc_events.sales_order.create_opportunity',
-		'one_compliance.one_compliance.doc_events.task.set_tasks_as_overdue',
+        'one_compliance.one_compliance.doc_events.task.set_tasks_as_overdue',
+        'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_sales_orders_from_compliance_agreements',
+        'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_future_one_time_projects',
     ],
 #	"hourly": [
 #		"one_compliance.tasks.hourly"
@@ -274,59 +280,10 @@ override_doctype_dashboards = {
 #	"one_compliance.auth.validate"
 # ]
 fixtures = [
-    {
-        'dt': 'Role',
-        'filters': [['name', 'in', ['Founder','Director','Compliance Manager','Senior Manager','Manager','Executive','Head Of Department']]]
-    },
-    {
-        'dt': "Document Register Type"
-    },
-    {
-        'dt': 'Customer Type'
-    },
-    {
-        'dt': 'Workflow State',
-        'filters': [['name', 'in', ['Draft','Approved','Rejected','Pending','Sent to Customer','Customer Approval Waiting','Customer Approved',
-                                    'Customer Rejected','Cancelled','Verified','Tax Invoice','Proforma Invoice', 'Closed', 'In Progress',
-                                    'Pre-Invoice', 'Partially Paid', 'Paid', 'Invoiced', 'Completed']]]
-    },
-    {
-        'dt': 'Workflow',
-        'filters': [['name', 'in', ['Compliance Agreement Workflow', 'Sales Order Workflow']]]
-    },
-    {
-        'dt': 'Workflow Action Master',
-        'filters': [['name', 'in', ['Rejected','Approved','Request for Review','Review','Reject','Approve','Sent to Customer','Customer Approval',
-                                    'Customer Reject','Customer Approval waiting','Cancelled','Generate Proforma Invoice','Generate Tax Invoice',
-                                    'Cancel', 'Proceed', 'Close', 'Create Pre-Invoice']]]
-    },
-    {
-        'dt' : 'Notification Template'
-    },
-    {
-        'dt': 'Designation',
-        'filters': [['name', 'in',['Founder','Director','Head Of Department','Senior Manager','Manager','Executive']]]
-    },
-    {
-        'dt': 'Module Profile',
-        'filters': [['name', 'in', ['Founder','Director','Head Of Department','Super Admin','Senior Manager','Manager','Executive']]]
-    },
-    {
-        'dt': 'Web Page',
-        'filters': [['name', 'in', ['customer-credentials', 'project-status', 'agreement-approval', 'login-page', 'customer-documents']]]
-    },
-    {
-        'dt': 'Role Profile'
-    },
-    {
-        'dt': 'Category Type',
-        'filters': [['name','in',['Audit','Compliance','Tax','Consulting']]]
-    },
-    {
-        'dt': 'Translation'
-    },
-    {
-        'dt': 'Property Setter',
-        'filters': [['module', '=', 'One Compliance']]
+	{
+        "dt": "Custom HTML Block",
+        "filters": [
+            ["name", "in", ["Employee Management", "Employee Management"]]
+        ]
     }
 ]

@@ -57,143 +57,290 @@ def get_compliance_subcategory(item_code):
 
 @frappe.whitelist()
 def create_project_from_sales_order(sales_order, start_date, item_code, priority, assign_to=None, expected_end_date=None, remark=None, custom_instructions=None):
-	if(assign_to):
-		employees = json.loads(assign_to)
-	self = frappe.get_doc('Sales Order', sales_order)
-	compliance_sub_category = frappe.get_doc('Compliance Sub Category',{'item_code':item_code})
-	project_template  = compliance_sub_category.project_template
-	project_template_doc = frappe.get_doc('Project Template', project_template)
-	head_of_department = frappe.db.get_value('Employee', {'employee':compliance_sub_category.head_of_department}, 'user_id')
-	if project_template:
-		repeat_on = compliance_sub_category.repeat_on
-		project_based_on_prior_phase = compliance_sub_category.project_based_on_prior_phase
-		previous_month_date = add_months(getdate(start_date), -1)
-		naming_year = getdate(previous_month_date).year if project_based_on_prior_phase else getdate(start_date).year
-		naming_month = getdate(previous_month_date).strftime("%B") if project_based_on_prior_phase else getdate(start_date).strftime("%B")
-		if naming_month in ['January', 'February', 'March']:
-			naming_quarter = 'Quarter 1'
-		elif naming_month in ['April', 'May', 'June']:
-			naming_quarter = 'Quarter 2'
-		elif naming_month in ['July', 'August', 'September']:
-			naming_quarter = 'Quarter 3'
-		else:
-			naming_quarter = 'Quarter 4'
-		if repeat_on == "Yearly":
-			naming = naming_year
-		elif repeat_on == "Quarterly":
-			naming = str(naming_year) + ' ' + naming_quarter
-		else:
-			naming = str(naming_year) + ' ' + naming_month
-		if not assign_to and not any(template_task.type and template_task.employee_or_group for template_task in project_template_doc.tasks):
-			frappe.msgprint("Project can't be created since no assignees are specified in tasks")
-		else:
-			project = frappe.new_doc('Project')
-			project.company = self.company
-			project.cost_center = frappe.get_cached_value("Company", self.company, "cost_center")
-			add_compliance_category_in_project_name = frappe.db.get_single_value('Compliance Settings', 'add_compliance_category_in_project_name')
-			if self.custom_project_name_automatically:
-				if add_compliance_category_in_project_name:
-					project.project_name = (self.customer_name or ' ') + '-' + compliance_sub_category.name + '-' + str(naming)
-				else:
-					project.project_name = (self.customer_name  or ' ') + '-' + compliance_sub_category.sub_category + '-' + str(naming)
-			else:
-				project.project_name = (self.custom_project_name or ' ') + '-'+ self.customer_name + '-' + compliance_sub_category.name + '-' + str(naming)
-			project.customer = self.customer
-			project.compliance_sub_category = compliance_sub_category.name
-			project.compliance_category = compliance_sub_category.compliance_category
-			project.expected_start_date = start_date
-			if expected_end_date:
-				days_diff = date_diff(getdate(expected_end_date), getdate(start_date))
-				if(days_diff > project_template_doc.custom_project_duration):
-					project.expected_end_date = expected_end_date
-				else:
-					project.expected_end_date = add_days(start_date, project_template_doc.custom_project_duration)
-			else:
-				if project_template_doc.custom_project_duration:
-					project.expected_end_date = add_days(start_date, project_template_doc.custom_project_duration)
-			project.priority = priority
-			project.custom_project_service = compliance_sub_category.name + '-' + str(naming)
-			if custom_instructions:
-				project.custom_instructions = custom_instructions
-			project.notes = remark
-			project.sales_order = sales_order
-			project.category_type = compliance_sub_category.category_type
-			project.department = compliance_sub_category.department
-			project.save(ignore_permissions=True)
-			if project.compliance_sub_category:
-				if compliance_sub_category and compliance_sub_category.head_of_department:
-					todo = frappe.new_doc('ToDo')
-					todo.status = 'Open'
-					todo.allocated_to = head_of_department
-					todo.description = "project  Assign to " + head_of_department
-					todo.reference_type = 'Project'
-					todo.reference_name = project.name
-					todo.assigned_by = frappe.session.user
-					todo.save(ignore_permissions=True)
-					if todo:
-						frappe.msgprint(("Project is assigned to {0}".format(head_of_department)),alert = 1)
-			if assign_to:
-				for employee in employees:
-					user = frappe.db.get_value('Employee', employee, 'user_id')
-					if user and user != head_of_department:
-						create_todo('Project', project.name, user, user, 'Project {0} Assigned Successfully'.format(project.name))
-			frappe.msgprint('Project Created for {0}.'.format(compliance_sub_category.name), alert = 1)
-			for template_task in reversed(project_template_doc.tasks):
-				''' Method to create task against created project from the Project Template '''
-				template_task_doc = frappe.get_doc('Task', template_task.task)
-				task_doc = frappe.new_doc('Task')
-				task_doc.compliance_sub_category = compliance_sub_category.name
-				task_doc.subject = template_task.subject
-				task_doc.project = project.name
-				task_doc.company = project.company
-				task_doc.project_name = project.project_name
-				task_doc.category_type = project.category_type
-				task_doc.exp_start_date = start_date
-				task_doc.custom_serial_number = template_task.idx
-				task_doc.department = compliance_sub_category.department
-				task_doc.task_weightage = template_task_doc.task_weightage or 0
-				if template_task_doc.expected_time:
-					task_doc.expected_time = template_task_doc.expected_time
-				if template_task.custom_task_duration:
-					task_doc.duration = template_task.custom_task_duration
-					task_doc.exp_end_date = add_days(start_date, template_task.custom_task_duration)
-				if template_task_doc.depends_on:
-					for depends_task in template_task_doc.depends_on:
-						dependent_task = frappe.get_doc('Task', {'project':project.name,'subject':depends_task.subject}, 'name')
-						task_doc.append("depends_on", {
-							"task": dependent_task.name,
-						})
-				if template_task.custom_has_document:
-					for documents in project_template_doc.custom_documents_required:
-						if documents.task == template_task.task:
-							for docs in documents.documents.split(', '):
-								task_doc.append("custom_task_document_items", {
-									"document": docs
-								})
-				task_doc.save(ignore_permissions=True)
-				if project.compliance_sub_category:
-					if compliance_sub_category and compliance_sub_category.head_of_department:
-						create_todo('Task', task_doc.name, head_of_department, frappe.session.user, "Task Assign to " + head_of_department)
-				if assign_to:
-					for employee in employees:
-						user = frappe.db.get_value('Employee', employee, 'user_id')
-						if user and user != head_of_department:
-							create_todo('Task', task_doc.name, user, frappe.session.user, 'Task {0} Assigned Successfully'.format(task_doc.name))
-				elif not assign_to and template_task.type and template_task.employee_or_group:
-					frappe.db.set_value('Task', task_doc.name, 'assigned_to', template_task.employee_or_group)
-					if template_task.type == "Employee":
-						employee = frappe.db.get_value('Employee', template_task.employee_or_group, 'user_id')
-						if employee and employee != head_of_department:
-							create_todo('Task', task_doc.name, employee, frappe.session.user, 'Task {0} Assigned Successfully'.format(task_doc.name))
-					if template_task.type == "Employee Group":
-						employee_group = frappe.get_doc('Employee Group', template_task.employee_or_group)
-						if employee_group.employee_list:
-							for employee in employee_group.employee_list:
-								create_todo('Task', task_doc.name, employee.user_id, frappe.session.user, 'Task {0} Assigned Successfully'.format(task_doc.name))
+	"""Create project from sales order with tasks based on project template"""
+	employees = json.loads(assign_to) if assign_to else []
+	
+	# Fetch required documents
+	sales_order_doc = frappe.get_doc('Sales Order', sales_order)
+	compliance_sub_category = frappe.get_doc('Compliance Sub Category', {'item_code': item_code})
+	
+	if not compliance_sub_category.project_template:
+		frappe.throw(
+			title=_('ALERT !!'), 
+			msg=_(f'Project Template does not exist for {compliance_sub_category.name}')
+		)
+	
+	project_template_doc = frappe.get_doc('Project Template', compliance_sub_category.project_template)
+	head_of_department = frappe.db.get_value(
+		'Employee', 
+		{'employee': compliance_sub_category.head_of_department}, 
+		'user_id'
+	)
+	
+	# Validate assignees
+	if not assign_to and not _has_template_assignees(project_template_doc):
+		frappe.msgprint("Project can't be created since no assignees are specified in tasks")
+		return
+	
+	# Create project
+	project = _create_project(
+		sales_order_doc, 
+		compliance_sub_category, 
+		project_template_doc,
+		start_date, 
+		expected_end_date, 
+		priority, 
+		remark, 
+		custom_instructions
+	)
+	
+	# Assign to head of department
+	if compliance_sub_category.head_of_department:
+		_assign_to_head_of_department(project.name, head_of_department, 'Project')
+	
+	# Assign to additional employees
+	if assign_to:
+		_assign_to_employees(employees, project.name, head_of_department, 'Project')
+	
+	frappe.msgprint(f'Project Created for {compliance_sub_category.name}.', alert=1)
+	
+	# Create tasks from template
+	_create_tasks_from_template(
+		project, 
+		project_template_doc, 
+		compliance_sub_category,
+		start_date, 
+		employees, 
+		head_of_department
+	)
+	
+	# Create premium tasks if applicable
+	if sales_order_doc.get("is_premium_project") and hasattr(project_template_doc, "premium_tasks"):
+		_create_premium_tasks(
+			project, 
+			project_template_doc, 
+			compliance_sub_category,
+			start_date, 
+			employees, 
+			head_of_department
+		)
+	
+	frappe.db.commit()
 
-			frappe.db.commit()
+
+def _has_template_assignees(project_template_doc):
+	"""Check if any template task has assignees"""
+	return any(
+		template_task.type and template_task.employee_or_group 
+		for template_task in project_template_doc.tasks
+	)
+
+
+def _get_naming_info(start_date, compliance_sub_category):
+	"""Calculate naming year, month, and quarter based on repeat settings"""
+	project_based_on_prior_phase = compliance_sub_category.project_based_on_prior_phase
+	repeat_on = compliance_sub_category.repeat_on
+	
+	reference_date = add_months(getdate(start_date), -1) if project_based_on_prior_phase else getdate(start_date)
+	naming_year = reference_date.year
+	naming_month = reference_date.strftime("%B")
+	
+	# Determine quarter
+	month_to_quarter = {
+		**dict.fromkeys(['January', 'February', 'March'], 'Quarter 1'),
+		**dict.fromkeys(['April', 'May', 'June'], 'Quarter 2'),
+		**dict.fromkeys(['July', 'August', 'September'], 'Quarter 3'),
+		**dict.fromkeys(['October', 'November', 'December'], 'Quarter 4')
+	}
+	naming_quarter = month_to_quarter[naming_month]
+	
+	# Build naming string
+	if repeat_on == "Yearly":
+		return str(naming_year)
+	elif repeat_on == "Quarterly":
+		return f"{naming_year} {naming_quarter}"
 	else:
-		frappe.throw( title = _('ALERT !!'), msg = _('Project Template does not exist for {0}'.format(compliance_sub_category)))
+		return f"{naming_year} {naming_month}"
+
+
+def _create_project(sales_order_doc, compliance_sub_category, project_template_doc, 
+					start_date, expected_end_date, priority, remark, custom_instructions):
+	"""Create and save project document"""
+	naming = _get_naming_info(start_date, compliance_sub_category)
+	
+	project = frappe.new_doc('Project')
+	project.company = sales_order_doc.company
+	project.cost_center = frappe.get_cached_value("Company", sales_order_doc.company, "cost_center")
+	
+	# Set project name
+	add_compliance_category = frappe.db.get_single_value(
+		'Compliance Settings', 
+		'add_compliance_category_in_project_name'
+	)
+	
+	if sales_order_doc.custom_project_name_automatically:
+		category_name = compliance_sub_category.name if add_compliance_category else compliance_sub_category.sub_category
+		project.project_name = f"{sales_order_doc.customer_name or ' '}-{category_name}-{naming}"
+	else:
+		project.project_name = f"{sales_order_doc.custom_project_name or ' '}-{sales_order_doc.customer_name}-{compliance_sub_category.name}-{naming}"
+	
+	# Set project fields
+	project.customer = sales_order_doc.customer
+	project.compliance_sub_category = compliance_sub_category.name
+	project.compliance_category = compliance_sub_category.compliance_category
+	project.expected_start_date = start_date
+	project.priority = priority
+	project.custom_project_service = f"{compliance_sub_category.name}-{naming}"
+	project.sales_order = sales_order_doc.name
+	project.category_type = compliance_sub_category.category_type
+	project.department = compliance_sub_category.department
+	project.is_premium = 1 if (sales_order_doc.is_premium_project and project_template_doc.has_premium_tasks) else 0
+	
+	if custom_instructions:
+		project.custom_instructions = custom_instructions
+	if remark:
+		project.notes = remark
+	
+	# Calculate end date
+	if expected_end_date:
+		days_diff = date_diff(getdate(expected_end_date), getdate(start_date))
+		project.expected_end_date = expected_end_date if days_diff > project_template_doc.custom_project_duration else add_days(start_date, project_template_doc.custom_project_duration)
+	elif project_template_doc.custom_project_duration:
+		project.expected_end_date = add_days(start_date, project_template_doc.custom_project_duration)
+	
+	project.save(ignore_permissions=True)
+	return project
+
+
+def _assign_to_head_of_department(reference_name, head_of_department, reference_type):
+	"""Create ToDo for head of department"""
+	create_todo(reference_type, reference_name, head_of_department, frappe.session.user, f"{reference_type} assigned to {head_of_department}")
+	frappe.msgprint(f"{reference_type} is assigned to {head_of_department}", alert=1)
+
+
+def _assign_to_employees(employees, reference_name, head_of_department, reference_type):
+	"""Assign reference to multiple employees"""
+	for employee in employees:
+		user = frappe.db.get_value('Employee', employee, 'user_id')
+		if user and user != head_of_department:
+			message = f'{reference_type} {reference_name} Assigned Successfully'
+			create_todo(reference_type, reference_name, user, frappe.session.user, message)
+
+
+def _create_tasks_from_template(project, project_template_doc, compliance_sub_category, 
+								start_date, employees, head_of_department):
+	"""Create tasks from project template"""
+	for template_task in reversed(project_template_doc.tasks):
+		task_doc = _create_task_doc(
+			project, 
+			template_task, 
+			compliance_sub_category, 
+			project_template_doc,
+			start_date,
+			is_premium=False
+		)
+		
+		_assign_task(task_doc, template_task, employees, head_of_department, compliance_sub_category)
+
+
+def _create_task_doc(project, template_task, compliance_sub_category, project_template_doc, 
+					start_date, is_premium=False):
+	"""Create a single task document from template task (regular or premium)"""
+	template_task_doc = frappe.get_doc('Task', template_task.task)
+	
+	task_doc = frappe.new_doc('Task')
+	task_doc.compliance_sub_category = compliance_sub_category.name
+	task_doc.subject = template_task.subject
+	task_doc.project = project.name
+	task_doc.company = project.company
+	task_doc.project_name = project.project_name
+	task_doc.category_type = project.category_type
+	task_doc.exp_start_date = start_date
+	task_doc.custom_serial_number = template_task.idx
+	task_doc.department = compliance_sub_category.department
+	task_doc.task_weightage = template_task.task_weightage or 0
+	task_doc.is_premium_task = 1 if is_premium else 0
+	
+	if template_task_doc.expected_time:
+		task_doc.expected_time = template_task_doc.expected_time
+	
+	if template_task.custom_task_duration:
+		task_doc.duration = template_task.custom_task_duration
+		task_doc.exp_end_date = add_days(start_date, template_task.custom_task_duration)
+
+	if template_task.has_external_dependencies:
+		task_doc.has_external_dependencies = 1
+		task_doc.send_email_notification_for_lag_time = template_task.send_email_notification_for_lag_time
+	
+	# Add dependencies
+	if template_task_doc.depends_on:
+		for depends_task in template_task_doc.depends_on:
+			dependent_task = frappe.get_doc('Task', {'project': project.name, 'subject': depends_task.subject}, 'name')
+			task_doc.append("depends_on", {"task": dependent_task.name})
+	
+	# Add documents
+	if template_task.custom_has_document:
+		_add_task_documents(task_doc, template_task, project_template_doc)
+	
+	task_doc.save(ignore_permissions=True)
+	return task_doc
+
+
+def _add_task_documents(task_doc, template_task, project_template_doc):
+	"""Add required documents to task"""
+	for documents in project_template_doc.custom_documents_required:
+		if documents.task == template_task.task:
+			for doc in documents.documents.split(', '):
+				task_doc.append("custom_task_document_items", {"document": doc})
+
+
+def _assign_task(task_doc, template_task, employees, head_of_department, compliance_sub_category):
+	"""Assign task to appropriate users"""
+	# Assign to head of department
+	if compliance_sub_category.head_of_department:
+		create_todo('Task', task_doc.name, head_of_department, frappe.session.user, 
+					f"Task Assign to {head_of_department}")
+	
+	# Assign to specific employees if provided
+	if employees:
+		_assign_to_employees(employees, task_doc.name, head_of_department, 'Task')
+	
+	# Assign based on template settings
+	elif template_task.type and template_task.employee_or_group:
+		frappe.db.set_value('Task', task_doc.name, 'assigned_to', template_task.employee_or_group)
+		
+		if template_task.type == "Employee":
+			employee_user = frappe.db.get_value('Employee', template_task.employee_or_group, 'user_id')
+			if employee_user and employee_user != head_of_department:
+				create_todo('Task', task_doc.name, employee_user, frappe.session.user, 
+						   f'Task {task_doc.name} Assigned Successfully')
+		
+		elif template_task.type == "Employee Group":
+			employee_group = frappe.get_doc('Employee Group', template_task.employee_or_group)
+			if employee_group.employee_list:
+				for employee in employee_group.employee_list:
+					create_todo('Task', task_doc.name, employee.user_id, frappe.session.user, 
+							   f'Task {task_doc.name} Assigned Successfully')
+
+
+def _create_premium_tasks(project, project_template_doc, compliance_sub_category, 
+						 start_date, employees, head_of_department):
+	"""Create premium tasks from project template"""
+	for premium_task in project_template_doc.premium_tasks:
+		# Skip if task already exists
+		if frappe.db.exists("Task", {"project": project.name, "subject": premium_task.subject}):
+			continue
+		
+		task_doc = _create_task_doc(
+			project, 
+			premium_task, 
+			compliance_sub_category, 
+			project_template_doc,
+			start_date,
+			is_premium=True
+		)
+		
+		_assign_task(task_doc, premium_task, employees, head_of_department, compliance_sub_category)
 
 @frappe.whitelist()
 def create_sales_order_from_event(event, customer=None, sub_category=None, rate=None, description=None, company=None):

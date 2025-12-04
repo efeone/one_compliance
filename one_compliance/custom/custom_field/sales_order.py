@@ -135,17 +135,32 @@ def get_sales_order_custom_fields():
 				"read_only": 1,
 			},
 			{
-                "fieldname": "follow_up_for_next_project",
-                "fieldtype": "Check",
-                "label": "Follow up for next Project",
-                "insert_after": "custom_create_project_automatically"
-            },
+				"fieldname": "follow_up_for_next_project",
+				"fieldtype": "Check",
+				"label": "Follow up for next Project",
+				"insert_after": "custom_create_project_automatically"
+			},
 			{
 				"fieldname": "follow_up_completed",
 				"fieldtype": "Check",
 				"label": "Follow up Completed",
 				"insert_after": "follow_up_for_next_project",
 				"hidden": 1
-			}
+			},
+			{
+				"fieldname": "compliance_agreement",
+				"fieldtype": "Link",
+				"label": "Compliance Agreement",
+				"options": "Compliance Agreement",
+				"insert_after": "custom_is_rework",
+				"read_only": 1
+			},
+			{
+
+				"fieldname": "is_premium_project",
+				"fieldtype": "Check",
+				"label": "Is Premium Project",
+				"insert_after": "amended_from"
+			},
 		]
 	}

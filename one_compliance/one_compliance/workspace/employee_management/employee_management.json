@@ -1,0 +1,34 @@
+{
+ "charts": [],
+ "content": "[{\"id\":\"Efb6pSnlZK\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Employee Management</span>\",\"col\":12}},{\"id\":\"7EfSiP4Ukk\",\"type\":\"custom_block\",\"data\":{\"custom_block_name\":\"Employee Management\",\"col\":12}}]",
+ "creation": "2025-10-24 15:23:33.486321",
+ "custom_blocks": [
+  {
+   "custom_block_name": "Employee Management",
+   "label": "Employee Management"
+  }
+ ],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "share-people",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Employee Management",
+ "links": [],
+ "modified": "2025-10-25 19:25:47.387672",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Employee Management",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 42.0,
+ "shortcuts": [],
+ "title": "Employee Management"
+}

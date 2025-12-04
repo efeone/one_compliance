@@ -1,0 +1,256 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "SH-.#####",
+ "creation": "2025-11-11 14:53:06.742690",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "personal_information_section",
+  "first_name",
+  "middle_name",
+  "last_name",
+  "full_name",
+  "column_break_wbks",
+  "nationality",
+  "second_nationality",
+  "passport_number",
+  "passport_expiry_date",
+  "column_break_rbpf",
+  "contact_number",
+  "email_id",
+  "whatsapp_number",
+  "date_of_birth",
+  "address_and_contacts_section",
+  "residential_address",
+  "column_break_zhky",
+  "home_address",
+  "uae_information_tab",
+  "uae_information_section",
+  "uae_contact_number",
+  "uid_number",
+  "emirates_id_expiry_date",
+  "column_break_wosz",
+  "uae_residency_status",
+  "uae_residency_visa_expiry_date",
+  "aml_section",
+  "aml_risk_category",
+  "column_break_mtii",
+  "aml_risk_status",
+  "ksa_information_tab",
+  "iqama_id",
+  "iqama_expiry_date",
+  "iqama_profession"
+ ],
+ "fields": [
+  {
+   "fieldname": "personal_information_section",
+   "fieldtype": "Section Break",
+   "label": "Personal Informations"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "First Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "middle_name",
+   "fieldtype": "Data",
+   "label": "Middle Name"
+  },
+  {
+   "fieldname": "last_name",
+   "fieldtype": "Data",
+   "label": "Last Name"
+  },
+  {
+   "fieldname": "column_break_wbks",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "full_name",
+   "fieldtype": "Data",
+   "label": "Full Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "nationality",
+   "fieldtype": "Link",
+   "label": "Nationality",
+   "options": "Country"
+  },
+  {
+   "fieldname": "second_nationality",
+   "fieldtype": "Link",
+   "label": "Second Nationality",
+   "options": "Country"
+  },
+  {
+   "fieldname": "contact_number",
+   "fieldtype": "Data",
+   "label": "Contact Number",
+   "options": "Phone"
+  },
+  {
+   "fieldname": "email_id",
+   "fieldtype": "Data",
+   "label": "Email ID",
+   "options": "Email"
+  },
+  {
+   "fieldname": "whatsapp_number",
+   "fieldtype": "Data",
+   "label": "WhatsApp Number"
+  },
+  {
+   "fieldname": "column_break_zhky",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "passport_number",
+   "fieldtype": "Data",
+   "label": "Passport Number"
+  },
+  {
+   "fieldname": "passport_expiry_date",
+   "fieldtype": "Date",
+   "label": "Passport Expiry Date"
+  },
+  {
+   "fieldname": "uae_information_section",
+   "fieldtype": "Section Break",
+   "label": "UAE Related Informations"
+  },
+  {
+   "fieldname": "uae_contact_number",
+   "fieldtype": "Data",
+   "label": "UAE Contact Number"
+  },
+  {
+   "fieldname": "uae_residency_status",
+   "fieldtype": "Select",
+   "label": "UAE Residency Status",
+   "options": "\nUAE Citizen\nUAE Resident (with valid visa)\nGCC Citizen\nVisitor / Tourist\nNon-Resident\nTemporary Worker\nStudent"
+  },
+  {
+   "fieldname": "uae_residency_visa_expiry_date",
+   "fieldtype": "Date",
+   "label": "UAE Residency Visa Expiry Date"
+  },
+  {
+   "fieldname": "uid_number",
+   "fieldtype": "Data",
+   "label": "UID Number"
+  },
+  {
+   "fieldname": "emirates_id_expiry_date",
+   "fieldtype": "Date",
+   "label": "Emirates ID Expiry Date"
+  },
+  {
+   "fieldname": "column_break_wosz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_rbpf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "home_address",
+   "fieldtype": "Small Text",
+   "label": "Home Address"
+  },
+  {
+   "fieldname": "uae_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "UAE Information"
+  },
+  {
+   "fieldname": "aml_section",
+   "fieldtype": "Section Break",
+   "label": "AML"
+  },
+  {
+   "fieldname": "aml_risk_status",
+   "fieldtype": "Select",
+   "label": "AML Risk Status",
+   "options": "Low Risk\nMedium Risk\nHigh Risk"
+  },
+  {
+   "fieldname": "aml_risk_category",
+   "fieldtype": "Link",
+   "label": "AML Risk Category",
+   "options": "AML Risk Category"
+  },
+  {
+   "fieldname": "column_break_mtii",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "residential_address",
+   "fieldtype": "Small Text",
+   "label": "Residential Address"
+  },
+  {
+   "fieldname": "address_and_contacts_section",
+   "fieldtype": "Section Break",
+   "label": "Address and Contacts"
+  },
+  {
+   "fieldname": "date_of_birth",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
+  },
+  {
+   "fieldname": "ksa_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "KSA Information"
+  },
+  {
+   "fieldname": "iqama_id",
+   "fieldtype": "Data",
+   "label": "Iqama ID"
+  },
+  {
+   "fieldname": "iqama_expiry_date",
+   "fieldtype": "Date",
+   "label": "Iqama Expiry Date"
+  },
+  {
+   "fieldname": "iqama_profession",
+   "fieldtype": "Data",
+   "label": "Iqama profession"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-11-25 08:30:28.215033",
+ "modified_by": "Administrator",
+ "module": "One Compliance",
+ "name": "Stakeholder",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "full_name"
+}

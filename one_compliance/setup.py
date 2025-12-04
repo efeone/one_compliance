@@ -19,6 +19,8 @@ from one_compliance.custom.custom_field.terms_and_conditions import get_terms_an
 from one_compliance.custom.custom_field.timesheet import get_timesheet_custom_fields
 from one_compliance.custom.custom_field.todo import get_todo_custom_fields
 from one_compliance.custom.custom_field.opportunity_item import get_opportunity_item_custom_fields
+from one_compliance.custom.custom_field.compliance_sub_category import get_compliance_sub_category_custom_fields
+from one_compliance.custom.custom_field.timesheet_detail import get_timesheet_detail_custom_fields
 
 # Custom property setter method imports
 from one_compliance.custom.property_setter.contact_email import get_contact_email_property_setters
@@ -69,19 +71,6 @@ def after_migrate():
 	# Creating One Compliance specific fixtures
 	create_fixtures()
 
-def before_migrate():
-	delete_custom_fields_for_app()
-
-def create_custom_fields_for_app():
-	create_custom_fields(get_custom_fields())
-
-def delete_custom_fields_for_app():
-	delete_custom_fields(get_custom_fields())
-
-def create_property_setters_for_app():
-	create_property_setters(get_property_setters())
-
-
 def create_fixtures():
 	'''
 		Method to create One Compliance specific fixtures
@@ -100,6 +89,9 @@ def create_fixtures():
 	insert_docs(get_module_profile_fixtures())
 	insert_docs(get_notification_template_fixtures())
 	insert_docs(get_document_register_type_fixtures())
+
+def delete_custom_fields_on_uninstall():
+	delete_custom_fields(get_custom_fields())
 
 def delete_custom_fields(custom_fields: dict):
 	'''
@@ -129,7 +121,7 @@ def create_property_setters(property_setter_datas):
 		property_setter = frappe.new_doc('Property Setter')
 		property_setter.update(property_setter_data)
 		property_setter.flags.ignore_permissions = True
-		property_setter.insert()
+		property_setter.insert()	
 
 def get_custom_fields():
 	'''
@@ -152,6 +144,8 @@ def get_custom_fields():
 	custom_fields.update(get_timesheet_custom_fields())
 	custom_fields.update(get_todo_custom_fields())
 	custom_fields.update(get_opportunity_item_custom_fields())
+	custom_fields.update(get_compliance_sub_category_custom_fields())
+	custom_fields.update(get_timesheet_detail_custom_fields())
 	custom_fields.update(())
 	return custom_fields
 

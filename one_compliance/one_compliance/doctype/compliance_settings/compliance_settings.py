@@ -4,6 +4,9 @@
 import frappe
 from frappe.model.document import Document
 from frappe.utils import getdate
+from one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement import (
+	create_sales_orders_from_compliance_agreements,
+)
 
 
 class ComplianceSettings(Document):
@@ -12,12 +15,7 @@ class ComplianceSettings(Document):
 @frappe.whitelist()
 def manual_project_creations(starting_date):
 	if starting_date:
-		agreements = frappe.db.get_all('Compliance Agreement', filters = {'status': 'Active'})
-		if agreements:
-			for agreement in agreements:
-				self = frappe.get_doc('Compliance Agreement', agreement.name)
-				create_project_if_not_exists(self, starting_date)
-			frappe.db.commit()
+		create_sales_orders_from_compliance_agreements(getdate(starting_date))
 	return True
 
 def create_project_if_not_exists(self, starting_date):
