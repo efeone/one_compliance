@@ -58,11 +58,6 @@ def get_compliance_subcategory(item_code):
 @frappe.whitelist()
 def create_project_from_sales_order(sales_order, start_date, item_code, priority, assign_to=None, expected_end_date=None, remark=None, custom_instructions=None):
 	"""Create project from sales order with tasks based on project template
-
-	This function merges behaviours from both branches:
-	- uses helper functions (_get_naming_info, _create_project) for clean logic
-	- supports customer-group HOD assignment (group_hod_user_id)
-	- assigns HOD, additional assignees, creates tasks and premium tasks
 	"""
 	# Parse assignees
 	employees = json.loads(assign_to) if assign_to else []
