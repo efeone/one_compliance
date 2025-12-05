@@ -245,10 +245,10 @@
    "read_only": 1
   },
   {
-   "default": "1",
+   "default": "0",
    "fieldname": "project_based_on_prior_phase",
    "fieldtype": "Check",
-   "label": "Project based on Prior Phase"
+   "label": "Project Based on Prior Phase"
   },
   {
    "fieldname": "section_break_qmwb",
