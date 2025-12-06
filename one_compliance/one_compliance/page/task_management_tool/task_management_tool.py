@@ -2,9 +2,9 @@
 # For license information, please see license.txt
 
 import frappe
-from erpnext.accounts.party import get_party_account
 from frappe import _
 from frappe.utils import get_datetime
+from erpnext.accounts.party import get_party_account
 
 
 @frappe.whitelist()
@@ -19,12 +19,11 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 	values = {}
 
 	if status:
-		if status in ["completed", "cancelled", "Template"]:
+		if status in ["Completed", "Cancelled", "Template"]:
 			return
 		else:
-			proper_status = status.replace("_", " ").title()
+			values["status"] = status
 			conditions.append("t.status = %(status)s")
-			values["status"] = proper_status
 	else:
 		conditions.append("t.status NOT IN ('Completed', 'Cancelled', 'Template')")
 
@@ -127,7 +126,8 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 
 	return {
 		"tasks": task_list,
-		"total_tasks": total_tasks
+		"total_tasks": total_tasks,
+		"icons": get_icon_hidden_status()
 	}
 
 @frappe.whitelist()
@@ -174,14 +174,13 @@ def create_timesheet(project, task, employee, activity, from_time, to_time, lag_
 		frappe.db.commit()
 
 @frappe.whitelist()
-def update_task_status(task, project, status):
+def update_task_status(task, status):
 	"""
-	Create or update a Timesheet for an employee based on provided time logs.
+		Create or update a Timesheet for an employee based on provided time logs.
 	"""
-	task_doc = frappe.get_doc("Task", {"name":task,"project":project})
-
+	#Using get_doc and save to trigger doctype events
+	task_doc = frappe.get_doc("Task", task)
 	task_doc.status = status
-
 	task_doc.save()
 	return "success"
 
@@ -266,3 +265,15 @@ def get_total_reimbursement_amount(sales_order):
 	for amount in amounts:
 		total_reimbursement_amount += amount
 	return total_reimbursement_amount
+
+@frappe.whitelist()
+def get_icon_hidden_status():
+	"""
+		Check if the task icons is set to be hidden in One Compliance Settings.
+	"""
+	data ={
+		'hide_document_icon': frappe.db.get_single_value("Compliance Settings", "hide_document_icon"),
+		'hide_credentials_icon': frappe.db.get_single_value("Compliance Settings", "hide_credentials_icon"),
+		'hide_payment_icon': frappe.db.get_single_value("Compliance Settings", "hide_payment_icon")
+	}
+	return data

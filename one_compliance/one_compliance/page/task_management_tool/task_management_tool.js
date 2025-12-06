@@ -18,12 +18,12 @@ frappe.pages['task-management-tool'].on_page_load = function (wrapper) {
 
 frappe.pages['task-management-tool'].on_page_show = function (wrapper) {
 	var page = wrapper.page;
-	
+
 	if (frappe.route_options && frappe.route_options.project) {
 		page.fields_dict.project.set_value(frappe.route_options.project);
-		
+
 		frappe.route_options = null;
-		
+
 		setTimeout(() => {
 			refresh_tasks(page);
 		}, 500);
@@ -85,19 +85,31 @@ function make_filters(page) {
 		label: __("Status"),
 		fieldname: "status",
 		fieldtype: "Select",
-		options: [
-			{},
-			{ label: "Open", value: "open" },
-			{ label: "Working", value: "working" },
-			{ label: "Pending Review", value: "pending_review" },
-			{ label: "Overdue", value: "overdue" },
-			{ label: "Hold", value: "hold" },
-		],
 		default: "",
 		change() {
 			refresh_tasks(page);
 		}
 	});
+
+	frappe.model.with_doctype('Task', () => {
+		let meta = frappe.get_meta('Task');
+		let status_field = meta.fields.find(df => df.fieldname === 'status');
+
+		// List values to exclude
+		const exclude = ["Template", "Completed", "Cancelled"];
+
+		let options = (status_field.options || "")
+			.split("\n")
+			.filter(opt => opt && opt.trim() !== "" && !exclude.includes(opt))
+			.map(opt => ({ label: opt, value: opt }));
+
+		// Add empty option at top
+		options.unshift({});
+
+		page.fields_dict.status.df.options = options;
+		page.fields_dict.status.refresh();
+	});
+
 }
 
 /*
@@ -148,7 +160,7 @@ function refresh_tasks(page, reset_page = false) {
 		},
 		callback: (r) => {
 			if (r.message && r.message.tasks.length > 0) {
-				render_task_list(page, r.message.tasks);
+				render_task_list(page, r.message.tasks, r.message.icons);
 				setup_pagination(page, r.message.total_tasks);
 				setup_page_length_buttons(page);
 				initialize_task_actions(page);
@@ -184,7 +196,9 @@ function refresh_tasks_manually(page, selected_status, task_name, project_name, 
 		},
 		callback: (r) => {
 			if (r.message && r.message.length > 0) {
-				render_task_list(page, r.message);
+				let task_list = r.message.tasks;
+				let icons = r.message.icons;
+				render_task_list(page, task_list, icons);
 				initialize_task_actions(page);
 			} else {
 				show_no_task_found(page);
@@ -199,8 +213,14 @@ function refresh_tasks_manually(page, selected_status, task_name, project_name, 
 Renders task list into the page
 */
 
-function render_task_list(page, tasks) {
-	$(frappe.render_template("task_management_tool", { task_list: tasks })).appendTo(page.body);
+function render_task_list(page, tasks, icons) {
+	let data = {
+		task_list: tasks,
+		is_document_icon_hidden: icons.hide_document_icon,
+		is_credentials_icon_hidden: icons.hide_credentials_icon,
+		is_payment_icon_hidden: icons.hide_payment_icon
+	}
+	$(frappe.render_template("task_management_tool", data)).appendTo(page.body);
 }
 
 /**
@@ -232,14 +252,14 @@ function initialize_task_actions(page) {
 		const project_name = $(this).attr("project-id");
 		const status = page.fields_dict.status.get_value();
 
-		if (["completed", "hold", "cancelled"].includes(status)) return;
+		if (["Completed", "Hold", "Cancelled"].includes(status)) return;
 
 		const current_time = frappe.datetime.now_datetime();
 		const formatted_time = frappe.datetime.str_to_user(current_time);
 		localStorage.setItem(`start-time-task-${task_name}-project-${project_name}`, current_time);
 
 		body.find(`.start-time[task-id='${task_name}'][project-id='${project_name}']`).text(formatted_time);
-		update_task_status(page, task_name, project_name, "Working");
+		update_task_status(page, task_name, "Working");
 
 		$(this).hide();
 		body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).show();
@@ -282,18 +302,18 @@ function initialize_task_actions(page) {
 		const assignees = $(this).attr("assignees");
 		const start_time = localStorage.getItem(`start-time-task-${task_name}-project-${project_name}`);
 		frappe.db.get_value("Task", task_name, "has_external_dependencies")
-		.then(({ message }) => {
-			const show_lag = !!message?.has_external_dependencies;
+			.then(({ message }) => {
+				const show_lag = !!message?.has_external_dependencies;
 
-			show_time_entry_dialog(
-			page,
-			task_name,
-			project_name,
-			assignees,
-			start_time,
-			show_lag
-			);
-		});
+				show_time_entry_dialog(
+					page,
+					task_name,
+					project_name,
+					assignees,
+					start_time,
+					show_lag
+				);
+			});
 
 	});
 
@@ -385,8 +405,8 @@ Hides the add assignee button if the task is completed, on hold, or cancelled.
 @param {string} taskStatus - The status of the task.
 */
 function hide_add_assignee_button(taskStatus) {
-	if (taskStatus === 'completed' || taskStatus === 'hold' || taskStatus === 'cancelled') {
-				$('.startButton').hide();
+	if (taskStatus === 'Completed' || taskStatus === 'Hold' || taskStatus === 'Cancelled') {
+		$('.startButton').hide();
 		$('.addAssigneeBtn').hide();
 	} else {
 		$('.addAssigneeBtn').show();
@@ -399,22 +419,22 @@ based on the current task status.
 */
 
 function assignee_and_completed_by_section(taskStatus) {
-	if (taskStatus === 'completed') {
+	if (taskStatus === 'Completed') {
 		$('.assignee-section').hide();
 	} else {
 		$('.completed-by-section').hide();
-	if (taskStatus === 'completed') {
-		$('.assignee-section').hide();
-	} else {
-		$('.completed-by-section').hide();
+		if (taskStatus === 'Completed') {
+			$('.assignee-section').hide();
+		} else {
+			$('.completed-by-section').hide();
+		}
 	}
-}
 }
 
 // Function to get frappe.session.user in the employee field to filter the task
 function get_employee(assigneesList, callback) {
 	if (frappe.session.user === 'Administrator') {
-			return assigneesList[0]
+		return assigneesList[0]
 	}
 }
 
@@ -537,7 +557,7 @@ Shows a dialog for time entry linked to a specific task.
 
 function show_time_entry_dialog(page, task_name, project_name, assignees, start_time, show_lag_time_fields) {
 	const status = page.fields_dict.status.get_value();
-	if (["completed", "hold", "cancelled"].includes(status)) return;
+	if (["Completed", "Hold", "Cancelled"].includes(status)) return;
 
 	const assignees_list = assignees ? assignees.split(",") : [];
 	const from_time = start_time;
@@ -635,15 +655,11 @@ function get_employee(assignees_list, callback) {
 		return;
 	}
 
-	frappe.db.get_value("Employee", { user_id: frappe.session.user }, "employee_name")
-		.then((r) => {
-			console.log("Employee fetched:", r.message?.employee_name);
-			callback(r.message?.employee_name || null);
-		})
-		.catch((err) => {
-			console.error("Error fetching employee:", err);
-			callback(null);
-		});
+	frappe.db.get_value("Employee", { user_id: frappe.session.user }, "employee_name").then((r) => {
+		callback(r.message?.employee_name || null);
+	}).catch((err) => {
+		callback(null);
+	});
 }
 
 /**
@@ -664,6 +680,7 @@ function set_status_colors(page) {
 			"Overdue": "red",
 			"Working": "tomato",
 			"Pending Review": "orange",
+			"Pending with Authority": "purple",
 			"Hold": "gray",
 		};
 
@@ -671,7 +688,7 @@ function set_status_colors(page) {
 		status_el.css("color", color);
 		project_el.css("color", color);
 
-		if (["Open", "Overdue", "Working", "Pending Review", "Hold"].includes(status)) add_check_icon(status_el[0]);
+		if (["Open", "Overdue", "Working", "Pending Review", "Hold", "Pending with Authority"].includes(status)) add_check_icon(status_el[0]);
 	});
 
 	function add_check_icon(element) {
@@ -789,58 +806,71 @@ Opens a dialog to update the status of a specific task and refreshes the task li
 */
 
 function update_status(page, task_name, project_id, task_id) {
-	const dialog = new frappe.ui.Dialog({
-		title: __("Update Task Status"),
-		fields: [
-			{
-				label: __("Status"),
-				fieldname: "status",
-				fieldtype: "Select",
-				options: "Open\nWorking\nPending Review\nHold\nCompleted",
-				default: "Completed",
-			},
-			{
-				label: __("Completed By"),
-				fieldname: "completed_by",
-				fieldtype: "Link",
-				options: "User",
-				default: frappe.session.user,
-			},
-			{
-				label: __("Completed On"),
-				fieldname: "completed_on",
-				fieldtype: "Date",
-				default: frappe.datetime.get_today(),
-			},
-		],
-		primary_action_label: __("Update"),
-		primary_action(values) {
-			frappe.call({
-				method: "one_compliance.one_compliance.doc_events.task.update_task_status",
-				args: { task_id, ...values },
-				callback(r) {
-					if (r.message) {
-						dialog.hide();
-						refresh_tasks(page);
-					}
+	frappe.model.with_doctype('Task', () => {
+		let meta = frappe.get_meta('Task');
+		let status_field = meta.fields.find(df => df.fieldname === 'status');
+
+		const exclude = ["Template", "Cancelled", "Overdue"];
+
+		// Create newline string
+		let option_string = (status_field.options || "")
+			.split("\n")
+			.filter(opt => opt && opt.trim() !== "" && !exclude.includes(opt))
+			.join("\n");
+
+		const dialog = new frappe.ui.Dialog({
+			title: __("Update Task Status"),
+			fields: [
+				{
+					label: __("Status"),
+					fieldname: "status",
+					fieldtype: "Select",
+					options: option_string,
+					default: "Completed",
 				},
-			});
-		},
+				{
+					label: __("Completed By"),
+					fieldname: "completed_by",
+					fieldtype: "Link",
+					options: "User",
+					default: frappe.session.user,
+				},
+				{
+					label: __("Completed On"),
+					fieldname: "completed_on",
+					fieldtype: "Date",
+					default: frappe.datetime.get_today(),
+				},
+			],
+			primary_action_label: __("Update"),
+			primary_action(values) {
+				frappe.call({
+					method: "one_compliance.one_compliance.doc_events.task.update_task_status",
+					args: { task_id, ...values },
+					callback(r) {
+						if (r.message) {
+							dialog.hide();
+							refresh_tasks(page);
+						}
+					},
+				});
+			},
+		});
+		dialog.show();
 	});
-	dialog.show();
 }
 
 /**
 Updates the task status to "Working" when start time is clicked.
 */
 
-function update_task_status(page, task_name, project_name, status) {
+function update_task_status(page, task_name, status) {
 	frappe.call({
 		method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.update_task_status",
-		args: { task: task_name, project: project_name, status },
+		args: { task: task_name, status },
 		callback(r) {
 			if (r.message === "success") {
-                refresh_tasks(page); 
+				refresh_tasks(page);
 			} else {
 				console.warn("Failed to update task status");
 			}
