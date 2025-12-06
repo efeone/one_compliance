@@ -58,6 +58,11 @@ def set_project_status(project, status, comment=None):
 
 	project = frappe.get_doc("Project", project)
 	frappe.has_permission(doc=project, throw=True)
+	if status == "Cancelled" and project.sales_order:
+		if frappe.db.exists("Sales Order", project.sales_order):
+			so = frappe.get_doc("Sales Order", project.sales_order)
+			if so.docstatus == 1:
+				so.cancel()
 
 	tasks = frappe.get_all("Task", filters={"project": project.name}, fields=["name", "status"])
 
@@ -211,3 +216,4 @@ def create_tasks_from_template(project):
 		created_tasks.append(task.name)
 
 	return created_tasks
+	

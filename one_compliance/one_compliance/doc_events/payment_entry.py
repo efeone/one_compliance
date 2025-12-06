@@ -16,9 +16,14 @@ def payment_entry_on_submit(doc, method):
 
 			if payment_reference.outstanding_amount == 0:
 				new_state = "Paid"
+				project_status = "Paid"
 			elif payment_reference.allocated_amount < payment_reference.outstanding_amount:
 					new_state = "Partially Paid"
+					project_status = "Partially Paid" 
 			else:
 				continue
 			
 			frappe.db.set_value("Sales Order", sales_order, "workflow_state", new_state)
+			project = frappe.db.get_value("Sales Order", sales_order, "project")
+			if project:
+				frappe.db.set_value("Project", project, "status", project_status)

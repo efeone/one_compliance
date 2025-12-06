@@ -80,6 +80,14 @@ def get_project_property_setters():
 			"field_name": "status",
 			"property": "options",
 			"property_type": "Text",
-			"value": "Open\nInvoiced\nPaid\nHold\nOverdue\nCompleted\nCancelled",
+			"value": "Open\nInvoiced\nPaid\nPartially Paid\nHold\nOverdue\nCompleted\nCancelled",
+		},
+		{
+			"doc_type": "Project",
+			"doctype_or_field": "DocField",
+			"field_name": "status",
+			"property": "read_only",
+			"property_type": "Check",
+			"value": "1",
 		},
 	]
