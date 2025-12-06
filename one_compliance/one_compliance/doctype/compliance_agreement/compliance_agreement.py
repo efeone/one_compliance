@@ -730,8 +730,16 @@ def create_project_from_template(sales_order, project_template, customer, compan
 			if template_task.custom_task_duration:
 				task_doc.duration = template_task.custom_task_duration
 				task_doc.exp_end_date = add_days(compliance_date, template_task.custom_task_duration)
-			if template_task.task_weightage :
+
+			# Bring over additional fields from template task table
+			if template_task.task_weightage:
 				task_doc.task_weightage = template_task.task_weightage
+			if template_task.has_external_dependencies:
+				task_doc.has_external_dependencies = template_task.has_external_dependencies
+			if template_task.send_email_notification_for_lag_time:
+				task_doc.send_email_notification_for_lag_time = template_task.send_email_notification_for_lag_time
+			if template_task.has_reimbursement:
+				task_doc.has_reimbursement = template_task.has_reimbursement
 
 			if template_task.custom_has_document:
 				for documents in project_template_doc.custom_documents_required:

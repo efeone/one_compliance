@@ -85,6 +85,7 @@ class CustomTask(NestedSet):
 		self.update_depends_on()
 		self.validate_dependencies_for_template_task()
 		self.validate_completed_on()
+		self.validate_reimbursement_check()
 
 	def validate_dates(self):
 		self.validate_from_to_dates("exp_start_date", "exp_end_date")
@@ -172,6 +173,15 @@ class CustomTask(NestedSet):
 	def validate_completed_on(self):
 		if self.completed_on and getdate(self.completed_on) > getdate():
 			frappe.throw(_("Completed On cannot be greater than Today"))
+
+	def validate_reimbursement_check(self):
+		'''
+			Validate Rembursement JV on Task Completion
+		'''
+		if self.status == "Completed" and self.has_reimbursement and not self.custom_is_payable:
+			frappe.throw(
+				title=_("Reimbursement Journal Entry Missing"),
+				msg=_("Please create Reimbursement Journal Entry before marking the task <b>`{0}`</b> as Completed".format(self.name)))
 
 	def update_depends_on(self):
 		depends_on_tasks = ""
