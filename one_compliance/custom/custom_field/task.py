@@ -174,6 +174,13 @@ def get_task_custom_fields():
 				"label": "Task Weightage",
 				"options": "\n0\n1\n2\n3\n4\n5\n",
 				"insert_after": "start"
-			}
+			},
+			{
+				"fieldname": "has_reimbursement",
+				"fieldtype": "Check",
+				"label": "Has Reimbursement",
+				"read_only": 1,
+				"insert_after": "send_email_notification_for_lag_time",
+			},
 		]
 	}

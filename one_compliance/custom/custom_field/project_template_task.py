@@ -80,5 +80,11 @@ def get_project_template_task_custom_fields():
 				"hide_days": 1,
 				"hide_seconds": 1,
 			},
+			{
+				"fieldname": "has_reimbursement",
+				"fieldtype": "Check",
+				"label": "Has Reimbursement",
+				"insert_after": "send_email_notification_for_lag_time",
+			},
 		]
 	}

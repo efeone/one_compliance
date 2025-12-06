@@ -247,7 +247,7 @@ def _create_task_doc(project, template_task, compliance_sub_category, project_te
 					start_date, is_premium=False):
 	"""Create a single task document from template task (regular or premium)"""
 	template_task_doc = frappe.get_doc('Task', template_task.task)
-	
+
 	task_doc = frappe.new_doc('Task')
 	task_doc.compliance_sub_category = compliance_sub_category.name
 	task_doc.subject = template_task.subject
@@ -260,10 +260,10 @@ def _create_task_doc(project, template_task, compliance_sub_category, project_te
 	task_doc.department = compliance_sub_category.department
 	task_doc.task_weightage = template_task.task_weightage or 0
 	task_doc.is_premium_task = 1 if is_premium else 0
-	
+
 	if template_task_doc.expected_time:
 		task_doc.expected_time = template_task_doc.expected_time
-	
+
 	if template_task.custom_task_duration:
 		task_doc.duration = template_task.custom_task_duration
 		task_doc.exp_end_date = add_days(start_date, template_task.custom_task_duration)
@@ -271,20 +271,22 @@ def _create_task_doc(project, template_task, compliance_sub_category, project_te
 	if template_task.has_external_dependencies:
 		task_doc.has_external_dependencies = 1
 		task_doc.send_email_notification_for_lag_time = template_task.send_email_notification_for_lag_time
-	
+
+	if template_task.has_reimbursement:
+		task_doc.has_reimbursement = template_task.has_reimbursement
+
 	# Add dependencies
 	if template_task_doc.depends_on:
 		for depends_task in template_task_doc.depends_on:
 			dependent_task = frappe.get_doc('Task', {'project': project.name, 'subject': depends_task.subject}, 'name')
 			task_doc.append("depends_on", {"task": dependent_task.name})
-	
+
 	# Add documents
 	if template_task.custom_has_document:
 		_add_task_documents(task_doc, template_task, project_template_doc)
-	
+
 	task_doc.save(ignore_permissions=True)
 	return task_doc
-
 
 def _add_task_documents(task_doc, template_task, project_template_doc):
 	"""Add required documents to task"""
@@ -292,7 +294,6 @@ def _add_task_documents(task_doc, template_task, project_template_doc):
 		if documents.task == template_task.task:
 			for doc in documents.documents.split(', '):
 				task_doc.append("custom_task_document_items", {"document": doc})
-
 
 def _assign_task(task_doc, template_task, employees, head_of_department, compliance_sub_category):
 	"""Assign task to appropriate users"""
