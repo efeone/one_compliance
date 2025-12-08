@@ -11,15 +11,15 @@ def get_timesheet_custom_fields():
 			},
 			{
 				"fieldname": "custom_tomorrows_plan",
+				"label": "Tomorrows Plan",
 				"fieldtype": "Small Text",
 				"insert_after": "custom_column_break_7mef3",
-				"label": "Tomorrows Plan",
 			},
 			{
 				"fieldname": "custom_end_of_the_day_review",
+				"label": "End of the Day Review",
 				"fieldtype": "Small Text",
 				"insert_after": "custom_section_break_0jvhs",
-				"label": "End of the Day Review",
 			},
 			{
 				"fieldname": "custom_column_break_7mef3",
@@ -27,30 +27,15 @@ def get_timesheet_custom_fields():
 				"insert_after": "custom_end_of_the_day_review",
 			},
 			{
-				"fieldname": "lag_time",
-				"fieldtype": "Duration",
-				"label": "Lag Time",
-				"insert_after": "description",
+				"fieldname": "total_lag_hours",
+				"fieldtype": "Float",
+				"label": "Total Lag Hours",
+				"insert_after": "column_break_8meg",
 			},
 			{
-				"fieldname": "approval_status",
-				"fieldtype": "Select",
-				"label": "Approval Status(Lag Time)",
-				"options": "\nApprove\nReject",
-				"insert_after": "lag_time",
-			},
-			{
-				"fieldname": "reason_for_lag_time",
-				"fieldtype": "Small Text",
-				"label": "Reason For Lag Time",
-				"insert_after": "completed",
-			},
-			{
-				"fieldname": "lag_notification_sent",
-				"fieldtype": "Check",
-				"label": "Lag Notification Sent",
-				"insert_after": "reason_for_lag_time",
-                "hidden": 1,
+				"fieldname": "column_break_8meg",
+				"fieldtype": "Column Break",
+				"insert_after": "total_hours",
 			}
 		]
 	}
