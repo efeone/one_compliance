@@ -410,6 +410,8 @@ def create_sales_order_from_event(event, customer=None, sub_category=None, rate=
 def so_on_cancel_custom(doc, method=None):
 	"""Set workflow state to Cancelled when cancelling sales order"""
 	doc.db_set("workflow_state", "Cancelled")
+	if doc.project:
+		frappe.db.set_value("Project", doc.project, "status", "Cancelled")
 
 def so_on_update_after_submit(doc, method):
 	'''
