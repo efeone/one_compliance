@@ -6,11 +6,10 @@ from frappe import _
 from frappe.utils import get_datetime
 from erpnext.accounts.party import get_party_account
 
-
 @frappe.whitelist()
 def get_task(status=None, task=None, project=None, customer=None, department=None, sub_category=None, employee=None, employee_group=None, from_date=None, to_date=None, page=1, page_length=20):
 	"""
-	Retrieve a filtered, paginated list of tasks from the Task Management Tool.
+		Retrieve a filtered, paginated list of tasks from the Task Management Tool.
 	"""
 	current_user = frappe.session.user
 	roles = frappe.get_roles(current_user)
@@ -133,7 +132,7 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 @frappe.whitelist()
 def create_timesheet(project, task, employee, activity, from_time, to_time, lag_time=None, reason_for_lag_time=None):
 	"""
-	Create or update a Timesheet for an employee based on provided time logs.
+		Create or update a Timesheet for an employee based on provided time logs.
 	"""
 	from_time = get_datetime(from_time)
 	to_time = get_datetime(to_time)
@@ -185,9 +184,9 @@ def update_task_status(task, status):
 	return "success"
 
 @frappe.whitelist()
-def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=None, reference_date=None, user_remark=None):
+def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=None, reference_date=None, user_remark=None, type=None):
 	"""
-	Add payment details to a task and create related Journal Entry and Reimbursement records.
+		Add payment details to a task and create related Journal Entry and Reimbursement records.
 	"""
 	task_doc = frappe.get_doc("Task", task_id)
 	payment_info = {
@@ -195,7 +194,8 @@ def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=
 		"mode_of_payment": mode_of_payment,
 		"reference_number": reference_number,
 		"reference_date": reference_date,
-		"user_remark": user_remark
+		"user_remark": user_remark,
+		"type": type
 	}
 	journal_entry = create_journal_entry_pay_info(task_doc, payment_info)
 	payment_info['journal_entry'] = journal_entry
@@ -219,13 +219,14 @@ def add_payment_info(task_id, payable_amount, mode_of_payment, reference_number=
 
 def create_journal_entry_pay_info(task, payment_info):
 	"""
-	Create a Journal Entry for the provided payment information.
+		Create a Journal Entry for the provided payment information.
 	"""
 	if payment_info['payable_amount'] and payment_info['mode_of_payment']:
 		account = get_party_account('Customer', task.customer, task.company)
 		default_account = get_default_account_for_mode_of_payment(payment_info['mode_of_payment'], task.company)
+		voucher_type = 'Bank Entry' if payment_info['type'] == 'Bank' else 'Journal Entry'
 		journal_entry = frappe.new_doc('Journal Entry')
-		journal_entry.voucher_type = 'Bank Entry'
+		journal_entry.voucher_type = voucher_type
 		journal_entry.company = task.company
 		journal_entry.cheque_no = payment_info['reference_number']
 		journal_entry.cheque_date = payment_info['reference_date']
@@ -248,7 +249,7 @@ def create_journal_entry_pay_info(task, payment_info):
 
 def get_default_account_for_mode_of_payment(mode_of_payment, company):
 	"""
-	Get the default account for the specified mode of payment and company.
+		Get the default account for the specified mode of payment and company.
 	"""
 	mode_of_payment_doc = frappe.get_doc("Mode of Payment", mode_of_payment)
 	for account in mode_of_payment_doc.accounts:
@@ -258,7 +259,7 @@ def get_default_account_for_mode_of_payment(mode_of_payment, company):
 
 def get_total_reimbursement_amount(sales_order):
 	"""
-	Calculate the total reimbursement amount for a given Sales Order
+		Calculate the total reimbursement amount for a given Sales Order
 	"""
 	total_reimbursement_amount = 0
 	amounts = frappe.db.get_all('Reimbursement Details', { 'parent':sales_order, 'parentfield':'custom_reimbursement_details', 'parenttype':'Sales Order'}, pluck='amount')
