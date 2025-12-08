@@ -460,6 +460,7 @@ function payment_entry_dialog(task_id, payable_amount, mode_of_payment, referenc
 				fieldtype: "Currency",
 				reqd: 1,
 				default: payable_amount,
+				non_negative: 1
 			},
 			{
 				label: __("Mode of Payment"),
@@ -467,7 +468,30 @@ function payment_entry_dialog(task_id, payable_amount, mode_of_payment, referenc
 				fieldtype: "Link",
 				options: "Mode of Payment",
 				reqd: 1,
+				only_select: 1,
 				default: mode_of_payment,
+				change: function () {
+					let mode_of_payment = dialog.get_value('mode_of_payment');
+					// Setting the Type field based on selected Mode of Payment
+					if (mode_of_payment) {
+						frappe.db.get_value("Mode of Payment", mode_of_payment, "type").then(({ message }) => {
+							if (message) {
+								dialog.set_value("type", message.type);
+							} else {
+								dialog.set_value("type", "");
+							}
+						});
+					} else {
+						dialog.set_value("type", "");
+					}
+				}
+			},
+			{
+				label: __("Type"),
+				fieldname: "type",
+				fieldtype: "Data",
+				read_only: 1,
+				hidden: 1
 			},
 			{ fieldtype: "Column Break" },
 			{
@@ -475,12 +499,14 @@ function payment_entry_dialog(task_id, payable_amount, mode_of_payment, referenc
 				fieldname: "reference_number",
 				fieldtype: "Data",
 				default: reference_number,
+				mandatory_depends_on: "eval:doc.type == 'Bank'",
 			},
 			{
 				label: __("Reference Date"),
 				fieldname: "reference_date",
 				fieldtype: "Date",
 				default: reference_date,
+				mandatory_depends_on: "eval:doc.type == 'Bank'",
 			},
 			{
 				label: __("User Remark"),
@@ -500,6 +526,7 @@ function payment_entry_dialog(task_id, payable_amount, mode_of_payment, referenc
 					reference_number: values.reference_number,
 					reference_date: values.reference_date,
 					user_remark: values.user_remark,
+					type: values.type
 				},
 				callback: function (r) {
 					frappe.msgprint("Payment info added successfully!");
