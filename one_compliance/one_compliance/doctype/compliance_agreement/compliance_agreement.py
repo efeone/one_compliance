@@ -5,6 +5,14 @@ from frappe.utils.data import cint
 
 from one_compliance.one_compliance.utils import create_todo
 
+MONTH_MAP = {
+	"January": 1, "February": 2, "March": 3, "April": 4,
+	"May": 5, "June": 6, "July": 7, "August": 8,
+	"September": 9, "October": 10, "November": 11, "December": 12
+}
+
+def get_month_name(num):
+    return next(name for name, number in MONTH_MAP.items() if number == num)
 
 class ComplianceAgreement(Document):
 	def before_insert(self):
@@ -28,6 +36,64 @@ class ComplianceAgreement(Document):
 		self.sign_validation()
 		self.update_compliance_agreement_status()
 		self.set_compliance_date()
+		self.validate_compliance_dates_on_table()
+
+	def validate_compliance_dates_on_table(self):
+		'''
+			Validate compliance_date and next_compliance_date for each compliance sub category detail.
+		'''
+		for row in self.compliance_category_details:
+			if row.compliance_date and row.compliance_sub_category:
+				compliance_date = getdate(row.compliance_date)
+				next_compliance_date = getdate(row.next_compliance_date)
+				sub = frappe.get_doc("Compliance Sub Category", row.compliance_sub_category)
+				day = cint(sub.day)
+				step = {"Monthly":1, "Quarterly": 3, "Half Yearly": 6, "Yearly": 12}[sub.repeat_on]
+				next_compliance_date = add_months(compliance_date, step)
+				row.db_set("next_compliance_date", next_compliance_date)
+
+				#Day Check
+				if compliance_date.day != day:
+					frappe.throw(
+						title='Invalid Compliance Date',
+						msg=f'Compliance Date must be on day <b>`{day}`</b> on Row <b>#{row.idx}</b>.'
+					)
+
+				# Validate Month based on repeat_on
+				if sub.repeat_on == "Yearly":
+					if sub.month:
+						month_num = MONTH_MAP.get(sub.month)
+						if compliance_date.month != month_num:
+							frappe.throw(
+								title='Invalid Compliance Date',
+								msg=f'Compliance Date must be on month <b>`{sub.month}`</b> on Row <b>#{row.idx}</b>.'
+							)
+
+				# Validate Month for Quarterly
+				elif sub.repeat_on == "Quarterly":
+					if sub.month:
+						start_month = MONTH_MAP.get(sub.month)
+						valid_months = [(start_month + i*3 - 1) % 12 + 1 for i in range(4)]
+
+						if compliance_date.month not in valid_months:
+							allowed = ", ".join([get_month_name(m) for m in valid_months])
+							frappe.throw(
+								title='Invalid Compliance Date',
+								msg=f'Compliance Date must be on month of <b>`{allowed}`</b> on Row <b>#{row.idx}</b>.'
+							)
+
+				# Validate Month for Half Yearly
+				elif sub.repeat_on == "Half Yearly":
+					if sub.month:
+						start_month = MONTH_MAP.get(sub.month)
+						valid_months = [start_month, ((start_month + 5) % 12) + 1]
+
+						if compliance_date.month not in valid_months:
+							allowed = ", ".join([get_month_name(m) for m in valid_months])
+							frappe.throw(
+								title='Invalid Compliance Date',
+								msg=f'Compliance Date must be on month of <b>`{allowed}`</b> on Row <b>#{row.idx}</b>.'
+							)
 
 	def on_trash(self):
 		delete_project_along_with_compliance_agreement = frappe.db.get_single_value('Compliance Settings', 'delete_project_along_with_compliance_agreement')
@@ -47,12 +113,6 @@ class ComplianceAgreement(Document):
 		'''
 		valid_from = getdate(self.valid_from)
 		today_date = getdate(today())
-
-		MONTH_MAP = {
-			"January": 1, "February": 2, "March": 3, "April": 4,
-			"May": 5, "June": 6, "July": 7, "August": 8,
-			"September": 9, "October": 10, "November": 11, "December": 12
-		}
 
 		for row in self.compliance_category_details:
 			if not row.compliance_sub_category:
@@ -78,13 +138,14 @@ class ComplianceAgreement(Document):
 					except Exception:
 						date = get_last_day(base)
 					step = {"Quarterly": 3, "Half Yearly": 6, "Yearly": 12}[sub.repeat_on]
-					if date < valid_from:
+					while date < valid_from:
 						date = add_months(date, step)
 					next_date = add_months(date, step)
 
 				# Check if values actually changed
-				if row.compliance_date != date or row.next_compliance_date != next_date:
+				if not row.compliance_date:
 					row.db_set("compliance_date", date)
+				if not row.next_compliance_date:
 					row.db_set("next_compliance_date", next_date)
 				continue
 			else:
@@ -465,12 +526,6 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 	Project is created in both cases.
 	"""
 	current_date = getdate(posting_date)
-
-	MONTH_MAP = {
-		"January": 1, "February": 2, "March": 3, "April": 4,
-		"May": 5, "June": 6, "July": 7, "August": 8,
-		"September": 9, "October": 10, "November": 11, "December": 12
-	}
 
 	agreements = frappe.db.sql("""
 		SELECT 
