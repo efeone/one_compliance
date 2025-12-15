@@ -1,10 +1,11 @@
 import json
+from datetime import datetime, timedelta
 
 import frappe
 from frappe import _
 from frappe.desk.form.assign_to import format_message_for_assign_to, get
 from frappe.email.doctype.notification.notification import get_context
-from frappe.utils import date_diff, get_datetime, getdate
+from frappe.utils import date_diff, get_datetime, getdate, today, add_days, add_months
 from frappe.utils.user import get_users_with_role
 from frappe.desk.doctype.notification_log.notification_log import (
 	enqueue_create_notification,
@@ -13,6 +14,7 @@ from frappe.desk.doctype.notification_log.notification_log import (
 )
 from frappe.desk.form.document_follow import follow_document
 from frappe.utils.data import strip_html
+from frappe.utils.data import cint
 
 
 @frappe.whitelist()
@@ -562,3 +564,402 @@ def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLO
 
 		enqueue_create_notification(allocated_to, notification_doc)
 
+
+
+# SHARED PROJECT & TASK UTILITIES
+
+def get_compliance_period_name(start_date, sub_category_doc):
+	"""
+	Calculates the suffix for the project name (e.g., '2024 Quarter 1')
+	based on repeat settings and prior phase logic.
+	"""
+	start_date = getdate(start_date)
+
+	project_based_on_prior_phase = sub_category_doc.project_based_on_prior_phase
+	repeat_on = sub_category_doc.repeat_on
+
+	# Adjust date if based on prior phase
+	# (e.g. Audit done in Feb for Jan data)
+	reference_date = (
+		add_months(start_date, -1)
+		if project_based_on_prior_phase
+		else start_date
+	)
+
+	naming_year = reference_date.year
+	naming_month = reference_date.strftime("%B")
+
+	month_to_quarter = {
+		**dict.fromkeys(["January", "February", "March"], "Quarter 1"),
+		**dict.fromkeys(["April", "May", "June"], "Quarter 2"),
+		**dict.fromkeys(["July", "August", "September"], "Quarter 3"),
+		**dict.fromkeys(["October", "November", "December"], "Quarter 4"),
+	}
+
+	naming_quarter = month_to_quarter.get(naming_month, "Quarter 1")
+
+	if repeat_on == "Yearly":
+		return str(naming_year)
+	elif repeat_on == "Quarterly":
+		return f"{naming_year} {naming_quarter}"
+	else:
+		return f"{naming_year} {naming_month}"
+
+
+def create_compliance_project(args):
+	"""
+	Unified function to create a Project and its Tasks.
+
+	args: {
+		"compliance_sub_category": str,
+		"customer": str,
+		"company": str,
+		"start_date": date,
+		"sales_order": str (optional),
+		"compliance_agreement": str (optional),
+		"assign_to_employees": list (optional),
+		"is_premium": bool,
+		"priority": str,
+		"remark": str,
+		"custom_instructions": str,
+		"naming_override": dict (optional)
+			{ "auto": bool, "custom_name": str }
+	}
+	"""
+	sub_cat_name = args.get("compliance_sub_category")
+	sub_cat_doc = frappe.get_doc("Compliance Sub Category", {'item_code' : sub_cat_name})
+
+	if not sub_cat_doc.project_template:
+		frappe.throw(_(f"Project Template does not exist for {sub_cat_name}"))
+
+	template_doc = frappe.get_doc(
+		"Project Template",
+		sub_cat_doc.project_template
+	)
+
+	naming_suffix = get_compliance_period_name(
+		args.get("start_date"),
+		sub_cat_doc
+	)
+
+	# 1. Create Project Header
+	project = frappe.new_doc("Project")
+	project.company = args.get("company")
+	project.customer = args.get("customer")
+	project.compliance_sub_category = sub_cat_name
+	project.compliance_category = sub_cat_doc.compliance_category
+	project.expected_start_date = args.get("start_date")
+	project.priority = args.get("priority", "Medium")
+	project.custom_project_service = f"{sub_cat_name}-{naming_suffix}"
+	project.category_type = sub_cat_doc.category_type
+	project.department = sub_cat_doc.department
+
+	# Linkages
+	if args.get("sales_order"):
+		project.sales_order = args.get("sales_order")
+
+	if args.get("compliance_agreement"):
+		project.compliance_agreement = args.get("compliance_agreement")
+
+	# Optional fields
+	if args.get("remark"):
+		project.notes = args.get("remark")
+
+	if args.get("custom_instructions"):
+		project.custom_instructions = args.get("custom_instructions")
+
+	# Naming Logic
+	add_cat_in_name = frappe.db.get_single_value(
+		"Compliance Settings",
+		"add_compliance_category_in_project_name",
+	)
+
+	naming_config = args.get("naming_override", {})
+
+	customer_name = args.get("customer")
+
+	if args.get("sales_order"):
+		so_cust_name = frappe.db.get_value(
+			"Sales Order",
+			args.get("sales_order"),
+			"customer_name",
+		)
+		if so_cust_name:
+			customer_name = so_cust_name
+
+	if naming_config.get("auto", True):
+		mid_name = (
+			sub_cat_name
+			if add_cat_in_name
+			else sub_cat_doc.sub_category
+		)
+		project.project_name = (
+			f"{customer_name or ' '}-"
+			f"{mid_name}-"
+			f"{naming_suffix}"
+		)
+	else:
+		custom_name = naming_config.get("custom_name", "")
+		project.project_name = (
+			f"{custom_name or ' '}-"
+			f"{customer_name}-"
+			f"{sub_cat_name}-"
+			f"{naming_suffix}"
+		)
+
+	# Dates & Flags
+	duration = template_doc.custom_project_duration or 0
+	project.expected_end_date = add_days(
+		args.get("start_date"),
+		duration,
+	)
+
+	project.is_premium = (
+		1
+		if (
+			args.get("is_premium")
+			and template_doc.has_premium_tasks
+		)
+		else 0
+	)
+
+	project.save(ignore_permissions=True)
+
+	# 2. HOD Assignment (Project Level)
+	head_of_department_user = None
+
+	if sub_cat_doc.head_of_department:
+		head_of_department_user = frappe.db.get_value(
+			"Employee",
+			{"employee": sub_cat_doc.head_of_department},
+			"user_id",
+		)
+
+		if head_of_department_user:
+			create_todo(
+				"Project",
+				project.name,
+				head_of_department_user,
+				frappe.session.user,
+				f"Project assigned to {sub_cat_doc.head_of_department}",
+			)
+
+	# 3. Task Generation
+	_generate_tasks_from_list(
+		project=project,
+		sub_cat_doc=sub_cat_doc,
+		template_doc=template_doc,
+		task_list=template_doc.tasks,
+		args=args,
+		head_of_department_user=head_of_department_user,
+	)
+
+	if args.get("is_premium") and hasattr(
+		template_doc, "premium_tasks"
+	):
+		_generate_tasks_from_list(
+			project=project,
+			sub_cat_doc=sub_cat_doc,
+			template_doc=template_doc,
+			task_list=template_doc.premium_tasks,
+			args=args,
+			head_of_department_user=head_of_department_user,
+			is_premium=True,
+		)
+
+	return project
+
+
+def _generate_tasks_from_list(
+	project,
+	sub_cat_doc,
+	template_doc,
+	task_list,
+	args,
+	head_of_department_user,
+	is_premium=False,
+):
+	"""Helper to loop through task list and create tasks"""
+
+	assign_employees = args.get("assign_to_employees", [])
+
+	for template_task in reversed(task_list):
+
+		# Avoid duplicates for premium reruns
+		if (
+			is_premium
+			and frappe.db.exists(
+				"Task",
+				{
+					"project": project.name,
+					"subject": template_task.subject,
+				},
+			)
+		):
+			continue
+
+		t_doc_template = frappe.get_doc(
+			"Task",
+			template_task.task,
+		)
+
+		task = frappe.new_doc("Task")
+		task.compliance_sub_category = sub_cat_doc.name
+		task.subject = template_task.subject
+		task.project = project.name
+		task.company = project.company
+		task.project_name = project.project_name
+		task.category_type = project.category_type
+		task.exp_start_date = project.expected_start_date
+		task.custom_serial_number = template_task.idx
+		task.department = sub_cat_doc.department
+		task.task_weightage = (
+			template_task.task_weightage or 0
+		)
+		task.is_premium_task = 1 if is_premium else 0
+		task.has_reimbursement = (
+			template_task.has_reimbursement
+		)
+
+		# Time & Duration
+		if t_doc_template.expected_time:
+			task.expected_time = (
+				t_doc_template.expected_time
+			)
+
+		if template_task.custom_task_duration:
+			task.duration = (
+				template_task.custom_task_duration
+			)
+			task.exp_end_date = add_days(
+				project.expected_start_date,
+				template_task.custom_task_duration,
+			)
+
+		# External Dependencies
+		if template_task.has_external_dependencies:
+			task.has_external_dependencies = 1
+			task.send_email_notification_for_lag_time = (
+				template_task
+				.send_email_notification_for_lag_time
+			)
+
+		# Internal Dependencies
+		if t_doc_template.depends_on:
+			for depends_task in t_doc_template.depends_on:
+				dependent_task_name = frappe.db.get_value(
+					"Task",
+					{
+						"project": project.name,
+						"subject": depends_task.subject,
+					},
+					"name",
+				)
+
+				if dependent_task_name:
+					task.append(
+						"depends_on",
+						{"task": dependent_task_name},
+					)
+
+		# Documents
+		if (
+			template_task.custom_has_document
+			and hasattr(
+				template_doc,
+				"custom_documents_required",
+			)
+		):
+			for documents in (
+				template_doc.custom_documents_required
+			):
+				if documents.task == template_task.task:
+					for doc_name in documents.documents.split(
+						", "
+					):
+						task.append(
+							"custom_task_document_items",
+							{"document": doc_name},
+						)
+
+		task.save(ignore_permissions=True)
+
+		# 4. Task Assignment Logic
+
+		# A. Direct Employee Assignment
+		if assign_employees:
+			for emp_id in assign_employees:
+				user_id = frappe.db.get_value(
+					"Employee",
+					emp_id,
+					"user_id",
+				)
+
+				if (
+					user_id
+					and user_id
+					!= head_of_department_user
+				):
+					create_todo(
+						"Task",
+						task.name,
+						user_id,
+						frappe.session.user,
+						f"Task {task.name} Assigned",
+					)
+
+		# B. Template Based Assignment
+		elif (
+			template_task.type
+			and template_task.employee_or_group
+		):
+			frappe.db.set_value(
+				"Task",
+				task.name,
+				"assigned_to",
+				template_task.employee_or_group,
+			)
+
+			targets = []
+
+			if template_task.type == "Employee":
+				user = frappe.db.get_value(
+					"Employee",
+					template_task.employee_or_group,
+					"user_id",
+				)
+				if user:
+					targets.append(user)
+
+			elif template_task.type == "Employee Group":
+				group = frappe.get_doc(
+					"Employee Group",
+					template_task.employee_or_group,
+				)
+				if group.employee_list:
+					targets = [
+						e.user_id
+						for e in group.employee_list
+						if e.user_id
+					]
+
+			for user in targets:
+				if user != head_of_department_user:
+					create_todo(
+						"Task",
+						task.name,
+						user,
+						frappe.session.user,
+						f"Task {task.name} Assigned",
+					)
+
+		# C. HOD Notification
+		if head_of_department_user:
+			create_todo(
+				"Task",
+				task.name,
+				head_of_department_user,
+				frappe.session.user,
+				f"HOD Notification: "
+				f"Task {task.subject} created",
+			)
