@@ -47,6 +47,11 @@ class ComplianceAgreement(Document):
 				compliance_date = getdate(row.compliance_date)
 				next_compliance_date = getdate(row.next_compliance_date)
 				sub = frappe.get_doc("Compliance Sub Category", row.compliance_sub_category)
+
+				#ignore if not allow repeat
+				if not sub.allow_repeat:
+					continue
+
 				day = cint(sub.day)
 				step = {"Monthly":1, "Quarterly": 3, "Half Yearly": 6, "Yearly": 12}[sub.repeat_on]
 				next_compliance_date = add_months(compliance_date, step)
