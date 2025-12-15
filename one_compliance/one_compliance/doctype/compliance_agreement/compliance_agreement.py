@@ -42,7 +42,6 @@ class ComplianceAgreement(Document):
 		self.update_compliance_agreement_status()
 		self.set_compliance_date()
 		self.validate_compliance_dates_on_table()
-<<<<<<< HEAD
 
 	def validate_compliance_dates_on_table(self):
 		'''
@@ -105,8 +104,6 @@ class ComplianceAgreement(Document):
 								title='Invalid Compliance Date',
 								msg=f'Compliance Date must be on month of <b>`{allowed}`</b> on Row <b>#{row.idx}</b>.'
 							)
-=======
->>>>>>> 5a9056f (feat: shared utility for project and task creation)
 
 	def on_trash(self):
 		delete_project_along_with_compliance_agreement = frappe.db.get_single_value(
