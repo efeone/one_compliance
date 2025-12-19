@@ -95,3 +95,29 @@ def create_if_customer_not_exists(opp):
 	customer.insert(ignore_permissions=True)
 
 	return customer.name
+
+@frappe.whitelist()
+def get_item_compliance(item_code):
+	"""
+	Fetches compliance_category and compliance_sub_category
+	from Compliance Sub Category doctype based on Item Code.
+	"""
+
+	if not item_code:
+		return {}
+
+	data = frappe.db.get_value(
+		'Compliance Sub Category',
+		{'item_code': item_code},
+		['name', 'compliance_category', 'sub_category'],
+		as_dict=True
+	)
+
+	if not data:
+		return {}
+
+	return {
+		"compliance_category": data.get("compliance_category"),
+		"compliance_sub_category": data.get("name")
+	}
+
