@@ -301,13 +301,25 @@ class CustomTask(NestedSet):
 		self.update_project()
 
 	def update_status(self):
-		if self.status not in ("Cancelled", "Completed") and self.exp_end_date:
+		if self.status not in ("Cancelled", "Completed", "Hold") and self.exp_end_date:
 			from datetime import datetime
 
 			if self.exp_end_date < datetime.now().date():
 				self.db_set("status", "Overdue", update_modified=False)
 				self.update_project()
 
+@frappe.whitelist()
+def set_tasks_as_overdue():
+	tasks = frappe.get_all(
+		"Task",
+		filters={"status": ["not in", ["Cancelled", "Completed", "Hold"]]},
+		fields=["name", "status", "review_date"],
+	)
+	for task in tasks:
+		if task.status == "Pending Review":
+			if getdate(task.review_date) > getdate(today()):
+				continue
+		frappe.get_doc("Task", task.name).update_status()
 
 @frappe.whitelist()
 def append_users_to_project(doc, method):
