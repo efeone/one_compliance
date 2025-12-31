@@ -31,6 +31,17 @@ frappe.ui.form.on('Sales Order', {
         handle_unlinking(frm);
 
         handle_rework_order(frm);
+
+        // Show button only if checkbox is checked and no PI exists yet
+		if (frm.doc.is_outsource_service && !frm.doc.purchase_invoice) {
+			frm.add_custom_button(__('Create Purchase Invoice'), () => {
+				create_purchase_invoice(frm);
+			});
+		}
+    },
+    supplier: (frm) => {
+        frm.set_value("purchase_invoice", null);
+        apply_filter_to_supplier_purchase_invoice(frm, frm.doc.supplier);
     }
 });
 
@@ -250,4 +261,60 @@ function handle_rework_order(frm) {
       frm.remove_custom_button("Payment Request", "Create");
     }, 500);
   }
+}
+
+
+/**
+ * Apply filter to Purchase Invoice field based on selected Supplier
+ */
+const apply_filter_to_supplier_purchase_invoice = (frm, supplier) => {
+    frm.set_query("purchase_invoice", ()=> {
+        return {
+            filters: {
+                supplier: supplier,
+            }
+        }
+    })
+}
+
+
+
+
+
+function create_purchase_invoice(frm) {
+	// Prompt user to add Service Item(s) and Rate(s)
+	frappe.prompt([
+		{
+			fieldname: 'item_code',
+			fieldtype: 'Link',
+			label: 'Service Item',
+			options: 'Item',
+			reqd: 1
+		},
+		{
+			fieldname: 'rate',
+			fieldtype: 'Currency',
+			label: 'Rate',
+			reqd: 1
+		}
+	],
+	(values) => {
+		frappe.call({
+			method: 'one_compliance.one_compliance.doc_events.sales_order.create_purchase_invoice',
+			args: {
+				docname: frm.doc.name,
+				items: [values]
+			},
+			callback: function(r) {
+				if (r.message) {
+					frm.set_value('purchase_invoice', r.message);
+					frm.refresh_field('purchase_invoice');
+					frappe.msgprint(__('Purchase Invoice {0} created successfully', [r.message]));
+				}
+			}
+		});
+	},
+	'Add Service Item',
+	'Create'
+	);
 }
