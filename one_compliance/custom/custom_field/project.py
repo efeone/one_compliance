@@ -128,5 +128,18 @@ def get_project_custom_fields():
 				"read_only": 1,
 				"insert_after": "custom_is_internal",
 			},
+			{
+				"fieldname": "project_dashboard_html",
+				"fieldtype": "HTML",
+				"label": "",
+				"insert_before": "naming_series"
+			},
+			{
+				"fieldname": "project_dashboard_section",
+				"fieldtype": "Section Break",
+				"label": " ",
+				"insert_after": "project_dashboard_html"
+			}
+
 		]
 	}

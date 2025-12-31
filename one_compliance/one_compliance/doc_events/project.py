@@ -217,3 +217,20 @@ def create_tasks_from_template(project):
 
 	return created_tasks
 	
+
+
+@frappe.whitelist()
+def get_project_tasks(project):
+    tasks = frappe.get_all(
+        "Task",
+        filters={"project": project},
+        fields=["name", "subject", "status"],
+        order_by="modified desc"
+    )
+
+    has_completed = any(t.status == "Completed" for t in tasks)
+
+    return {
+        "show": has_completed,
+        "tasks": tasks
+    }

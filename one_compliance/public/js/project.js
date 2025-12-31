@@ -95,6 +95,8 @@ frappe.ui.form.on('Project', {
 			}
 		});
 	}
+
+    load_project_tasks(frm);
 	},
 });
 
@@ -269,3 +271,84 @@ let customer_documents = function (frm) {
 	});
 	d.show();
 };
+
+
+
+
+
+
+function load_project_tasks(frm) {
+    frappe.call({
+        method: 'one_compliance.one_compliance.doc_events.project.get_project_tasks',
+        args: {
+            project: frm.doc.name
+        },
+        callback: function (r) {
+            if (!r.message || !r.message.show) {
+                frm.set_df_property('project_dashboard_html', 'options', '');
+                return;
+            }
+
+            let html = `
+                <div class="project-task-dashboard">
+                    <h5 style="margin-bottom: 8px;">Task Status</h5>
+
+                    <div class="task-table-wrapper">
+                        <table class="table table-bordered table-sm" style="width: 100%; margin-bottom: 0;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%">Task ID</th>
+                                    <th style="width: 50%">Subject</th>
+                                    <th style="width: 25%">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            r.message.tasks.forEach(task => {
+                html += `
+                    <tr>
+                        <td>
+                            <a href="/app/task/${task.name}" target="_blank">
+                                ${task.name}
+                            </a>
+                        </td>
+                        <td>${task.subject || ''}</td>
+                        <td>
+                            <span class="indicator ${
+                                task.status === 'Completed' ? 'green' : 'blue'
+                            }">
+                                ${task.status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <style>
+                    .task-table-wrapper {
+                        max-height: 300px;
+                        overflow-y: auto;    /* 🔹 SCROLL */
+                        border: 1px solid var(--border-color);
+                        border-radius: 6px;
+                    }
+
+                    .task-table-wrapper thead th {
+                        position: sticky;
+                        top: 0;
+                        background: var(--card-bg);
+                        z-index: 1;
+                    }
+                </style>
+            `;
+
+            frm.set_df_property('project_dashboard_html', 'options', html);
+        }
+    });
+}
