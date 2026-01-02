@@ -39,6 +39,13 @@ frappe.ui.form.on('Sales Order', {
 			});
 		}
     },
+
+    is_outsource_service : (frm) => {
+            if (frm.doc.is_outsource_service) {
+                frm.set_df_property('supplier', 'reqd', true);
+            }
+        },
+
     supplier: (frm) => {
         frm.set_value("purchase_invoice", null);
         apply_filter_to_supplier_purchase_invoice(frm, frm.doc.supplier);
@@ -289,7 +296,15 @@ function create_purchase_invoice(frm) {
 			fieldtype: 'Link',
 			label: 'Service Item',
 			options: 'Item',
-			reqd: 1
+			reqd: 1,
+            get_query: () => {
+                return {
+                    filters: {
+                        is_purchase_item: 1,
+                        is_service_item: 1
+                    }
+                }
+            }
 		},
 		{
 			fieldname: 'rate',
@@ -309,6 +324,7 @@ function create_purchase_invoice(frm) {
 				if (r.message) {
 					frm.set_value('purchase_invoice', r.message);
 					frm.refresh_field('purchase_invoice');
+                    frm.reload_doc();
 					frappe.msgprint(__('Purchase Invoice {0} created successfully', [r.message]));
 				}
 			}
