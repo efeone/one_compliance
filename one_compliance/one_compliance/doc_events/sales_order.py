@@ -685,6 +685,8 @@ def create_purchase_invoice(docname, items):
             "rate": flt(item.get("rate", 0))
         })
 
-    pi.insert()
+    pi.insert(ignore_permissions=True)
+
+    so.db_set("purchase_invoice", pi.name, update_modified=False)
 
     return pi.name
