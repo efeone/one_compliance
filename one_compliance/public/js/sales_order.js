@@ -301,7 +301,8 @@ function create_purchase_invoice(frm) {
                 return {
                     filters: {
                         is_purchase_item: 1,
-                        is_service_item: 1
+                        is_service_item: 1,
+                        is_stock_item: 0
                     }
                 }
             }
