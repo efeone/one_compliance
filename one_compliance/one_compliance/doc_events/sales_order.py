@@ -275,6 +275,9 @@ def _create_task_doc(project, template_task, compliance_sub_category, project_te
 	if template_task.has_reimbursement:
 		task_doc.has_reimbursement = template_task.has_reimbursement
 
+	if template_task.checklist_template:
+		task_doc.checklist_template = template_task.checklist_template
+
 	# Add dependencies
 	if template_task_doc.depends_on:
 		for depends_task in template_task_doc.depends_on:
