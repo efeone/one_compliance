@@ -147,10 +147,18 @@ def get_task_custom_fields():
 				"read_only": 1,
 			},
 			{
+				"fieldname": "checklist_template",
+				"fieldtype": "Link",
+				"label": "Checklist Template",
+				"options": "Task Checklist Template",
+				"insert_after": "compliance_sub_category",
+				"read_only": 1,
+			},
+			{
 				"fieldname": "is_premium_task",
 				"fieldtype": "Check",
 				"label": "Is Premium Task",
-				"insert_after": "compliance_sub_category",
+				"insert_after": "checklist_template",
 				"read_only": 1,
 			},
 			{
@@ -182,5 +190,13 @@ def get_task_custom_fields():
 				"read_only": 1,
 				"insert_after": "send_email_notification_for_lag_time",
 			},
+			{
+				"fieldname": "task_checklist_template",
+				"fieldtype": "Table",
+				"label": "Task Checklist Template",
+				"options": "Task Checklist Template Detail",
+				"insert_after": "has_reimbursement",
+				"hidden": 1,
+			}
 		]
 	}

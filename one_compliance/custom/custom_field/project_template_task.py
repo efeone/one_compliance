@@ -86,5 +86,12 @@ def get_project_template_task_custom_fields():
 				"label": "Has Reimbursement",
 				"insert_after": "send_email_notification_for_lag_time",
 			},
+			{
+				"fieldname": "checklist_template",
+				"fieldtype": "Link",
+				"label": "Checklist Template",
+				"options": "Task Checklist Template",
+				"insert_after": "has_reimbursement",
+			},
 		]
 	}
