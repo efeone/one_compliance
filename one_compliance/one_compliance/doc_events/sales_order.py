@@ -666,6 +666,8 @@ def create_purchase_invoice(docname, items):
 
     so = frappe.get_doc("Sales Order", docname)
 
+    project_id = frappe.db.get_value("Project", {"sales_order": docname}, "name") or None
+
     if not so.supplier:
         frappe.throw(_("Supplier is required in Sales Order"))
 
@@ -674,6 +676,7 @@ def create_purchase_invoice(docname, items):
         "supplier": so.supplier,
         "company": so.company,
         "posting_date": today(),
+        "project": project_id,
         "items": []
     })
 
