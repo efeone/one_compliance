@@ -1,4 +1,9 @@
 frappe.ui.form.on('Project', {
+
+    onload(frm) {
+        load_project_tasks(frm);
+    },
+
 	refresh(frm) {
 	if (!frm.is_new()) {
 		setTimeout(() => {
