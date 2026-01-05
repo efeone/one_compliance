@@ -5,7 +5,6 @@ def update_sales_order(doc, method):
     """
 	Update linked Sales Order's payment status and outstanding amount
 	"""
-
     frappe.db.set_value(
         "Sales Order",
         doc.sales_order,

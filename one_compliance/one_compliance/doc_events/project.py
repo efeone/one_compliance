@@ -216,11 +216,13 @@ def create_tasks_from_template(project):
 		created_tasks.append(task.name)
 
 	return created_tasks
-	
 
 
 @frappe.whitelist()
 def get_project_tasks(project):
+    """ 
+    Fetch tasks related to a project and determine if any are completed.
+    """
     tasks = frappe.get_all(
         "Task",
         filters={"project": project},

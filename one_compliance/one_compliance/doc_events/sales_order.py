@@ -655,8 +655,6 @@ def set_compliance_fields(doc, method):
 				item.custom_compliance_category     = subcat.compliance_category
 				item.custom_compliance_subcategory  = subcat.name
 
-
-
 @frappe.whitelist()
 def create_purchase_invoice(docname, items):
     """Create Purchase Invoice from Sales Order"""

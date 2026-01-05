@@ -140,6 +140,5 @@ def get_project_custom_fields():
 				"label": " ",
 				"insert_after": "project_dashboard_html"
 			}
-
 		]
 	}

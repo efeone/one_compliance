@@ -204,6 +204,5 @@ def get_sales_order_custom_fields():
 				"read_only": 1,
 				"insert_after": "payment_status",
     		}
-
 		]
 	}
