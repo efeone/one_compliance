@@ -195,8 +195,15 @@ def get_sales_order_custom_fields():
 				"read_only": 1,
 				"depends_on": "eval: doc.is_outsource_service",
 				"fetch_from": "purchase_invoice.status"
-			}
-
+			},
+			{
+				"fieldname": "outstanding_amount",
+				"fieldtype": "Currency",
+				"label": "Outstanding Amount",
+				"fetch_from": "purchase_invoice.outstanding_amount",
+				"read_only": 1,
+				"insert_after": "payment_status",
+    		}
 
 		]
 	}

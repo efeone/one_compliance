@@ -182,6 +182,9 @@ doc_events = {
     },
 	'Timesheet': {
 		'on_update': 'one_compliance.one_compliance.doc_events.timesheet.check_lag_and_notify',
+	},
+	"Purchase Invoice": {
+		"on_update": "one_compliance.one_compliance.doc_events.purchase_invoice.update_sales_order"
 	}
 }	
 

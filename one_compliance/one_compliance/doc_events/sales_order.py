@@ -677,6 +677,7 @@ def create_purchase_invoice(docname, items):
         "company": so.company,
         "posting_date": today(),
         "project": project_id,
+        "sales_order": so.name,
         "items": []
     })
 

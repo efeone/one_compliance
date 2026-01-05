@@ -278,10 +278,6 @@ let customer_documents = function (frm) {
 };
 
 
-
-
-
-
 function load_project_tasks(frm) {
     frappe.call({
         method: 'one_compliance.one_compliance.doc_events.project.get_project_tasks',

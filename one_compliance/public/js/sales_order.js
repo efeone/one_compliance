@@ -285,9 +285,6 @@ const apply_filter_to_supplier_purchase_invoice = (frm, supplier) => {
 }
 
 
-
-
-
 function create_purchase_invoice(frm) {
 	// Prompt user to add Service Item(s) and Rate(s)
 	frappe.prompt([
