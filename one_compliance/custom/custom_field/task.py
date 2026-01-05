@@ -194,9 +194,9 @@ def get_task_custom_fields():
 				"fieldname": "task_checklist_template",
 				"fieldtype": "Table",
 				"label": "Task Checklist Template",
-				"options": "Task Checklist Template Detail",
-				"insert_after": "has_reimbursement",
-				"hidden": 1,
+				"options": "Task Checklist Template Record",
+				"insert_after": "depends_on_tasks",
+				"read_only": 1,
 			}
 		]
 	}

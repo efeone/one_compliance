@@ -462,6 +462,8 @@ function save_checklist(frm, checklist_items, dialog) {
 		let row = frm.add_child('task_checklist_template');
 		row.checklist_item = item.checklist_item;
 		row.completed = item.completed;
+        row.completed_on = item.completed ? frappe.datetime.now_date() : null;
+        row.completed_by = item.completed ? frappe.session.user : null;
 		row.idx = item.idx;
 	});
 

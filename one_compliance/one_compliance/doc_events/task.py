@@ -86,6 +86,10 @@ class CustomTask(NestedSet):
 		self.validate_dependencies_for_template_task()
 		self.validate_completed_on()
 		self.validate_reimbursement_check()
+		self.validate_checklist()
+
+	def before_insert(self):
+		self.set_checklist_template()
 
 	def validate_dates(self):
 		self.validate_from_to_dates("exp_start_date", "exp_end_date")
@@ -307,6 +311,32 @@ class CustomTask(NestedSet):
 			if self.exp_end_date < datetime.now().date():
 				self.db_set("status", "Overdue", update_modified=False)
 				self.update_project()
+
+	def set_checklist_template(self):
+		'''
+			Set Checklist Template from Compliance Sub Category on Task Creation
+		'''
+		if not self.checklist_template:
+			return
+		if not frappe.db.exists("Task Checklist Template", self.checklist_template):
+			return
+		template_doc = frappe.get_doc("Task Checklist Template", self.checklist_template)
+		for item in template_doc.checklist:
+			self.append("task_checklist_template", {
+				"checklist_item": item.checklist_item,
+			})
+
+	def validate_checklist(self):
+		'''
+			Validate Checklist Completion on Task Completion
+		'''
+		if self.status == "Completed":
+			for item in self.task_checklist_template:
+				if not item.completed:
+					frappe.throw(
+						title=_("Checklist Incomplete"),
+						msg=_("Please complete the checklist item <b>`{0}`</b> before marking the task <b>`{1}`</b> as Completed".format(item.checklist_item, self.name))
+					)
 
 @frappe.whitelist()
 def set_tasks_as_overdue():
