@@ -307,6 +307,10 @@ def create_project_completion_todos(sales_order, project_name):
 		sales_order (str): ID of Sales Order linked with project
 		project_name (str): Project Name of the Project to handle completion
 	"""
+	# Check if sales order exists
+	if not frappe.db.exists("Sales Order", sales_order):
+		# If sales order does not exist, ignore project completion todos
+		return
 	project_id = frappe.db.exists("Project", {"project_name": project_name})
 	if not project_id:
 		frappe.throw(f"Project {project_name} does not exist")

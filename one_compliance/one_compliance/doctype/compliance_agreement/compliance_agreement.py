@@ -808,6 +808,10 @@ def create_project_from_template(sales_order, project_template, customer, compan
 							task_doc.append("custom_task_document_items", {
 								"document": docs
 							})
+
+			if template_task.checklist_template:
+				task_doc.checklist_template = template_task.checklist_template
+
 			task_doc.insert(ignore_permissions=True)
 			assigned_users = []
 
