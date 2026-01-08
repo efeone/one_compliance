@@ -57,74 +57,93 @@ def get_compliance_subcategory(item_code):
 
 @frappe.whitelist()
 def create_project_from_sales_order(sales_order, start_date, item_code, priority, assign_to=None, expected_end_date=None, remark=None, custom_instructions=None):
-	"""Create project from sales order with tasks based on project template"""
+	"""Create project from sales order with tasks based on project template
+	"""
+	# Parse assignees
 	employees = json.loads(assign_to) if assign_to else []
-	
+
 	# Fetch required documents
 	sales_order_doc = frappe.get_doc('Sales Order', sales_order)
 	compliance_sub_category = frappe.get_doc('Compliance Sub Category', {'item_code': item_code})
-	
+
+	# Ensure project template exists
 	if not compliance_sub_category.project_template:
 		frappe.throw(
-			title=_('ALERT !!'), 
+			title=_('ALERT !!'),
 			msg=_(f'Project Template does not exist for {compliance_sub_category.name}')
 		)
-	
+
 	project_template_doc = frappe.get_doc('Project Template', compliance_sub_category.project_template)
-	head_of_department = frappe.db.get_value(
-		'Employee', 
-		{'employee': compliance_sub_category.head_of_department}, 
-		'user_id'
-	)
-	
-	# Validate assignees
-	if not assign_to and not _has_template_assignees(project_template_doc):
+
+	# Head of department (user_id)
+	head_of_department = None
+	if compliance_sub_category.head_of_department:
+		head_of_department = frappe.db.get_value(
+			'Employee',
+			{'employee': compliance_sub_category.head_of_department},
+			'user_id'
+		)
+
+	# Customer group HOD (optional)
+	group_hod_user_id = None
+	customer_group = frappe.db.get_value('Customer', sales_order_doc.customer, 'customer_group')
+	if customer_group:
+		group_hod = frappe.db.get_value('Customer Group', customer_group, 'hod')
+		if group_hod:
+			group_hod_user_id = frappe.db.get_value('Employee', group_hod, 'user_id')
+
+	# Validate assignees (either explicit assign_to or template has assignees)
+	if not employees and not _has_template_assignees(project_template_doc):
 		frappe.msgprint("Project can't be created since no assignees are specified in tasks")
 		return
-	
-	# Create project
+
+	# Create project using helper
 	project = _create_project(
-		sales_order_doc, 
-		compliance_sub_category, 
+		sales_order_doc,
+		compliance_sub_category,
 		project_template_doc,
-		start_date, 
-		expected_end_date, 
-		priority, 
-		remark, 
+		start_date,
+		expected_end_date,
+		priority,
+		remark,
 		custom_instructions
 	)
-	
+
 	# Assign to head of department
-	if compliance_sub_category.head_of_department:
+	if head_of_department:
 		_assign_to_head_of_department(project.name, head_of_department, 'Project')
-	
-	# Assign to additional employees
-	if assign_to:
+
+	# Assign to customer group HOD if present and different from HOD
+	if group_hod_user_id and group_hod_user_id != head_of_department:
+		create_todo('Project', project.name, group_hod_user_id, frappe.session.user, "Project {} Assigned Successfully".format(project.name))
+
+	# Assign to additional employees from assign_to
+	if employees:
 		_assign_to_employees(employees, project.name, head_of_department, 'Project')
-	
+
 	frappe.msgprint(f'Project Created for {compliance_sub_category.name}.', alert=1)
-	
+
 	# Create tasks from template
 	_create_tasks_from_template(
-		project, 
-		project_template_doc, 
+		project,
+		project_template_doc,
 		compliance_sub_category,
-		start_date, 
-		employees, 
+		start_date,
+		employees,
 		head_of_department
 	)
-	
+
 	# Create premium tasks if applicable
-	if sales_order_doc.get("is_premium_project") and hasattr(project_template_doc, "premium_tasks"):
+	if sales_order_doc.get("is_premium_project") and getattr(project_template_doc, "premium_tasks", None):
 		_create_premium_tasks(
-			project, 
-			project_template_doc, 
+			project,
+			project_template_doc,
 			compliance_sub_category,
-			start_date, 
-			employees, 
+			start_date,
+			employees,
 			head_of_department
 		)
-	
+
 	frappe.db.commit()
 
 
