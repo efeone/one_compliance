@@ -40,15 +40,13 @@ frappe.ui.form.on('Sales Order', {
 		}
     },
 
-    is_outsource_service : (frm) => {
-            if (frm.doc.is_outsource_service) {
-                frm.set_df_property('supplier', 'reqd', true);
-            }
-        },
-
     supplier: (frm) => {
         frm.set_value("purchase_invoice", null);
         apply_filter_to_supplier_purchase_invoice(frm, frm.doc.supplier);
+    },
+
+    purchase_invoice: (frm) => {
+        make_is_outsource_service_read_only(frm);
     }
 });
 
@@ -271,18 +269,52 @@ function handle_rework_order(frm) {
 }
 
 
+
+const get_projects_from_sales_order = async (sales_order) => {
+    const r = await frappe.call({
+        method: "frappe.client.get_list",
+        args: {
+            doctype: "Project",
+            filters: {
+                sales_order: sales_order
+            },
+            fields: ["name"]
+        }
+    });
+
+    return (r.message || []).map(p => p.name);
+};
+
+
 /**
- * Apply filter to Purchase Invoice field based on selected Supplier
+ * Apply filter to Purchase Invoice field based on Supplier and linked Projects
  */
-const apply_filter_to_supplier_purchase_invoice = (frm, supplier) => {
-    frm.set_query("purchase_invoice", ()=> {
+const apply_filter_to_supplier_purchase_invoice = async (frm, supplier) => {
+    if (!frm.doc.name || !supplier) return;
+
+    const projects = await get_projects_from_sales_order(frm.doc.name);
+    console.log(projects, "project test ok");
+
+    frm.set_query("purchase_invoice", () => {
+        // Supplier-only filter
+        if (!projects || !projects.length) {
+            return {
+                filters: {
+                    supplier: supplier
+                }
+            };
+        }
+        // Supplier + Projects filter
         return {
             filters: {
                 supplier: supplier,
+                project: ["in", projects]
             }
-        }
-    })
-}
+        };
+    });
+};
+
+
 
 
 function create_purchase_invoice(frm) {
@@ -331,4 +363,14 @@ function create_purchase_invoice(frm) {
 	'Add Service Item',
 	'Create'
 	);
+}
+
+
+const make_is_outsource_service_read_only = (frm) => {
+    if (frm.doc.purchase_invoice) {
+        frm.set_df_property("is_outsource_service", "read_only", true);
+    }
+    else {
+        frm.set_df_property("is_outsource_service", "read_only", false);
+    }
 }

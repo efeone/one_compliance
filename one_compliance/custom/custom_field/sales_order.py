@@ -176,7 +176,8 @@ def get_sales_order_custom_fields():
 				"options": "Supplier",
 				"insert_after": "custom_billing_date",
 				"allow_on_submit": 1,
-				"depends_on": "eval: doc.is_outsource_service"
+				"depends_on": "eval: doc.is_outsource_service",
+				"mandatory_depends_on": "eval: doc.is_outsource_service"
 			},
 			{
 				"fieldname": "purchase_invoice",

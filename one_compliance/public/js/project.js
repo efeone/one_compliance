@@ -287,7 +287,7 @@ function load_project_tasks(frm) {
             project: frm.doc.name
         },
         callback: function (r) {
-            if (!r.message || !r.message.show) {
+            if (!r.message) {
                 frm.set_df_property('project_dashboard_html', 'options', '');
                 return;
             }
