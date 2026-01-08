@@ -269,7 +269,7 @@ function handle_rework_order(frm) {
 }
 
 
-
+// Get list of Projects linked to the given Sales Order
 const get_projects_from_sales_order = async (sales_order) => {
     const r = await frappe.call({
         method: "frappe.client.get_list",
@@ -293,7 +293,6 @@ const apply_filter_to_supplier_purchase_invoice = async (frm, supplier) => {
     if (!frm.doc.name || !supplier) return;
 
     const projects = await get_projects_from_sales_order(frm.doc.name);
-    console.log(projects, "project test ok");
 
     frm.set_query("purchase_invoice", () => {
         // Supplier-only filter
@@ -366,6 +365,7 @@ function create_purchase_invoice(frm) {
 }
 
 
+// Make 'is_outsource_service' field read-only if Purchase Invoice is linked
 const make_is_outsource_service_read_only = (frm) => {
     if (frm.doc.purchase_invoice) {
         frm.set_df_property("is_outsource_service", "read_only", true);
