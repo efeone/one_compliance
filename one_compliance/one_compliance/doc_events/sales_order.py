@@ -2,9 +2,10 @@ from datetime import datetime, timedelta
 
 import frappe
 from frappe import _
-from frappe.utils import add_days, add_months, date_diff, getdate, json, today
+from frappe.utils import add_days, add_months, date_diff, getdate, json, today, flt
 from one_compliance.one_compliance.utils import add_custom as add_assign
 from one_compliance.one_compliance.utils import create_todo, get_users_with_role
+
 
 
 @frappe.whitelist()
@@ -656,3 +657,41 @@ def set_compliance_fields(doc, method):
 			if subcat:
 				item.custom_compliance_category     = subcat.compliance_category
 				item.custom_compliance_subcategory  = subcat.name
+
+@frappe.whitelist()
+def create_purchase_invoice(docname, items):
+    """Create Purchase Invoice from Sales Order"""
+
+    if isinstance(items, str):
+        items = json.loads(items)
+
+    so = frappe.get_doc("Sales Order", docname)
+
+    project_id = frappe.db.get_value("Project", {"sales_order": docname}, "name") or None
+
+    if not so.supplier:
+        frappe.throw(_("Supplier is required in Sales Order"))
+
+    pi = frappe.get_doc({
+        "doctype": "Purchase Invoice",
+        "supplier": so.supplier,
+        "company": so.company,
+        "posting_date": today(),
+        "project": project_id,
+        "sales_order": so.name,
+        "items": []
+    })
+
+    # Add items
+    for item in items:
+        pi.append("items", {
+            "item_code": item.get("item_code"),
+            "qty": flt(item.get("qty", 1)),
+            "rate": flt(item.get("rate", 0))
+        })
+
+    pi.insert(ignore_permissions=True)
+
+    so.db_set("purchase_invoice", pi.name, update_modified=False)
+
+    return pi.name

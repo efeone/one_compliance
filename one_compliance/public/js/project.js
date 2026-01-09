@@ -1,4 +1,9 @@
 frappe.ui.form.on('Project', {
+
+	onload(frm) {
+		load_project_tasks(frm);
+	},
+
 	refresh(frm) {
 	if (!frm.is_new()) {
 		setTimeout(() => {
@@ -95,6 +100,8 @@ frappe.ui.form.on('Project', {
 			}
 		});
 	}
+
+	load_project_tasks(frm);
 	},
 });
 
@@ -269,3 +276,131 @@ let customer_documents = function (frm) {
 	});
 	d.show();
 };
+
+/**
+ * Load Project Tasks and display in HTML field
+ */
+function load_project_tasks(frm) {
+	frappe.call({
+		method: 'one_compliance.one_compliance.doc_events.project.get_project_tasks',
+		args: {
+			project: frm.doc.name
+		},
+		callback: function (r) {
+			if (!r.message || !r.message.tasks || r.message.tasks.length === 0 || !r.message.show) {
+				frm.set_df_property('project_dashboard_html', 'hidden', 1);
+				return;
+			}
+			
+			const html = generate_task_dashboard(r.message.tasks);
+			frm.set_df_property('project_dashboard_html', 'options', html);
+		},
+		error: function(r) {
+			frappe.show_alert({
+				message: __('Failed to load project tasks'),
+				indicator: 'red'
+			});
+			frm.set_df_property('project_dashboard_html', 'options', '');
+		}
+	});
+}
+
+function generate_task_dashboard(tasks) {
+	const task_rows = tasks.map(task => generate_task_row(task)).join('');
+	
+	return `
+		<div class="project-task-dashboard">
+			<h5>Task Status</h5>
+			<div class="task-table-wrapper">
+				<table class="table table-bordered table-sm" style="width: 100%; margin-bottom: 0;">
+					<thead>
+						<tr>
+							<th style="width: 15%">Task ID</th>
+							<th style="width: 40%">Subject</th>
+							<th style="width: 15%">Status</th>
+							<th style="width: 15%">Completed By</th>
+							<th style="width: 15%">Completed On</th>
+						</tr>
+					</thead>
+					<tbody>
+						${task_rows}
+					</tbody>
+				</table>
+			</div>
+		</div>
+		${get_table_styles()}
+	`;
+}
+
+function generate_task_row(task) {
+	const is_completed = task.status === 'Completed';
+	const status_class = is_completed ? 'green' : 'blue';
+	
+	// Escape HTML to prevent XSS
+	const escaped_name = frappe.utils.escape_html(task.name || '');
+	const escaped_subject = frappe.utils.escape_html(task.subject || '');
+	const escaped_status = frappe.utils.escape_html(task.status || '');
+	
+	// Generate user link with full name
+	const completed_by_html = is_completed && task.completed_by 
+		? generate_user_link(task.completed_by)
+		: '';
+	
+	const completed_date = is_completed && task.completed_on 
+		? frappe.format(task.completed_on, {'fieldtype': 'Date'}) 
+		: '';
+	
+	return `
+		<tr>
+			<td>
+				<a href="/app/task/${encodeURIComponent(task.name)}" target="_blank">
+					${escaped_name}
+				</a>
+			</td>
+			<td>${escaped_subject}</td>
+			<td>
+				<span class="indicator ${status_class}">
+					${escaped_status}
+				</span>
+			</td>
+			<td>${completed_by_html}</td>
+			<td>${completed_date}</td>
+		</tr>
+	`;
+}
+
+function generate_user_link(user_email) {
+	if (!user_email) return '';
+
+	const full_name = frappe.user_info(user_email).fullname;
+
+	const escaped_email = frappe.utils.escape_html(user_email);
+	const display_name = full_name 
+		? frappe.utils.escape_html(full_name) 
+		: escaped_email;
+	
+	return `<a href="/app/user/${encodeURIComponent(user_email)}" target="_blank">${display_name}</a>`;
+}
+
+function get_table_styles() {
+	return `
+		<style>
+			.task-table-wrapper {
+				max-height: 300px;
+				overflow-y: auto;
+				border: 1px solid var(--border-color);
+				border-radius: 6px;
+			}
+			.task-table-wrapper thead th {
+				position: sticky;
+				top: 0;
+				background: var(--card-bg);
+				z-index: 1;
+				box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+			}
+			.task-table-wrapper tbody tr:hover {
+				background-color: var(--table-hover-bg);
+			}
+		</style>
+	`;
+}
