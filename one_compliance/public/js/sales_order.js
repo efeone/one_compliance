@@ -33,7 +33,7 @@ frappe.ui.form.on('Sales Order', {
         handle_rework_order(frm);
 
         // Show button only if checkbox is checked and no PI exists yet
-		if (frm.doc.is_outsource_service && !frm.doc.purchase_invoice) {
+		if (frm.doc.docstatus === 1 && frm.doc.is_outsource_service && !frm.doc.purchase_invoice) {
 			frm.add_custom_button(__('Create Purchase Invoice'), () => {
 				create_purchase_invoice(frm);
 			});
