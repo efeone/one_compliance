@@ -214,14 +214,16 @@
   {
    "fieldname": "company",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Company",
-   "options": "Company"
+   "options": "Company",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2026-01-15 13:53:48.184369",
+ "modified": "2026-01-15 14:34:59.671781",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter",
