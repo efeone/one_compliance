@@ -8,7 +8,6 @@ from one_compliance.one_compliance.doctype.compliance_agreement.compliance_agree
 	create_sales_orders_from_compliance_agreements,
 )
 
-
 class ComplianceSettings(Document):
 	pass
 
