@@ -982,25 +982,23 @@ def create_sales_order_and_project_from_popup(
 	)
 
 	rate = detail.rate or 0
-	old_compliance = detail.compliance_date
-	old_next = detail.next_compliance_date
-	base_date = old_next or old_compliance or compliance_date
+	old_next_compliance_date = detail.next_compliance_date
 
-	new_compliance_date = base_date
-	new_next_date = None
+	new_compliance_date = old_next_compliance_date
+	new_next_compliance_date = None
 
 	if subcat.allow_repeat:
 		if subcat.repeat_on == "Monthly":
-			new_next_date = add_months(base_date, 1)
+			new_next_compliance_date = add_months(new_compliance_date, 1)
 
 		elif subcat.repeat_on == "Quarterly":
-			new_next_date = add_months(base_date, 3)
+			new_next_compliance_date = add_months(new_compliance_date, 3)
 
 		elif subcat.repeat_on == "Half Yearly":
-			new_next_date = add_months(base_date, 6)
+			new_next_compliance_date = add_months(new_compliance_date, 6)
 
 		elif subcat.repeat_on == "Yearly":
-			new_next_date = add_months(base_date, 12)
+			new_next_compliance_date = add_months(new_compliance_date, 12)
 
 	project = None
 	if subcat.project_template:
@@ -1013,25 +1011,25 @@ def create_sales_order_and_project_from_popup(
 			compliance_category_details_id=compliance_category_details_id,
 			compliance_agreement=compliance_agreement,
 			compliance_category=subcat.compliance_category,
-			compliance_date=new_compliance_date, 
+			compliance_date=compliance_date, 
 		)
-	if not subcat.is_billable:
 
+		#Update next compliance dates
 		frappe.db.set_value(
 			"Compliance Category Details",
 			compliance_category_details_id,
 			{
 				"compliance_date": new_compliance_date,
-				"next_compliance_date": new_next_date
+				"next_compliance_date": new_next_compliance_date
 			}
 		)
-
+	if not subcat.is_billable:
 		return f"Project Created: {project.name if project else 'No Template'} | Not Billable"
 
 	exists = frappe.db.exists("Sales Order", {
 		"compliance_agreement": compliance_agreement,
 		"compliance_sub_category": compliance_sub_category,
-		"transaction_date": new_compliance_date
+		"transaction_date": compliance_date
 	})
 
 	if exists:
@@ -1041,8 +1039,8 @@ def create_sales_order_and_project_from_popup(
 	so.company = agreement.company
 	so.compliance_agreement = compliance_agreement
 	so.compliance_sub_category = compliance_sub_category
-	so.transaction_date = new_compliance_date
-	so.delivery_date = new_compliance_date
+	so.transaction_date = compliance_date
+	so.delivery_date = compliance_date
 
 	if agreement.default_payment_terms_template:
 		so.payment_terms_template = agreement.default_payment_terms_template
@@ -1061,14 +1059,5 @@ def create_sales_order_and_project_from_popup(
 	if project:
 		project.db_set("sales_order", so.name)
 		so.db_set("project", project.name)
-
-	frappe.db.set_value(
-		"Compliance Category Details",
-		compliance_category_details_id,
-		{
-			"compliance_date": new_compliance_date,
-			"next_compliance_date": new_next_date
-		}
-	)
 
 	return f"Sales Order Created: {so.name} | Project Created: {project.name if project else 'No Template'}"

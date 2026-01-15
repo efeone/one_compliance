@@ -58,7 +58,7 @@ frappe.ui.form.on('Compliance Agreement', {
 	},
 	has_long_term_validity: function (frm) {
 		if (frm.doc.has_long_term_validity) {
-			frm.set_value('valid_upto', );
+			frm.set_value('valid_upto',);
 		}
 	}
 });
@@ -180,8 +180,10 @@ let create_project = function (frm) {
 					let matching_item = frm.doc.compliance_category_details.find(item => item.compliance_sub_category === selected_sub);
 					if (matching_item && matching_item.compliance_date) {
 						d.set_value('start_date', matching_item.compliance_date);
+						d.set_df_property('start_date', 'read_only', 1);
 					} else {
 						d.set_value('start_date', null);
+						d.set_df_property('start_date', 'read_only', 0);
 					}
 				}
 			},
