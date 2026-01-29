@@ -1,9 +1,21 @@
 import frappe
+from frappe.utils import flt
 from one_compliance.one_compliance.utils import (
 	create_notification_log,
 )
 
 
+def calculate_total_lag_hours(doc, method=None):
+	"""
+		Calculate total lag hours from time logs
+	"""
+	total_lag_seconds = 0
+	for row in doc.time_logs:
+		if row.lag_time:
+			total_lag_seconds += flt(row.lag_time)
+	doc.total_lag_hours = total_lag_seconds / 3600.0
+
+	
 def check_lag_and_notify(doc, method=None):
 	"""
 		Send notification if Lag time found in timesheet
