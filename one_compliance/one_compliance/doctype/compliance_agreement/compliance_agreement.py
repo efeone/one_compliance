@@ -557,10 +557,12 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 		category_details = frappe.get_all(
 			"Compliance Category Details",
 			filters={"parent": agreement.name},
-			fields=["name", "compliance_sub_category", "rate"]
+			fields=["name", "compliance_sub_category", "rate", "compliance_date", "next_compliance_date"]
 		)
 
 		for detail in category_details:
+
+			compliance_date = getdate(detail.compliance_date) if detail.compliance_date else current_date
 			sub_cat = detail.compliance_sub_category
 			if not sub_cat:
 				continue
@@ -580,8 +582,6 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 
 			allow_repeat = sub_category.allow_repeat
 			repeat_on = sub_category.repeat_on
-			repeat_day = sub_category.day
-			repeat_month = sub_category.month
 			item_code = sub_category.item_code
 			project_template = sub_category.project_template
 			is_billable = sub_category.is_billable
@@ -594,12 +594,8 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 				if current_date == valid_from:
 					should_create = True
 			else:
-				month_number = MONTH_MAP.get(repeat_month) if repeat_month else None
-				if repeat_on == "Monthly" and repeat_day and current_date.day == int(repeat_day):
+				if current_date == compliance_date:
 					should_create = True
-				elif repeat_on in ["Quarterly", "Half Yearly", "Yearly"] and month_number and repeat_day:
-					if current_date.month == month_number and current_date.day == int(repeat_day):
-						should_create = True
 
 			if not should_create:
 				continue
@@ -618,27 +614,28 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 					posting_date
 				)
 
-			# === Calculate compliance dates (common for both cases) ===
-			base_date = getdate(nowdate())
-			compliance_date = None
-			next_compliance_date = None
+				if project:
+					# Calculation Next Compliance Dates
+					next_compliance_date = None
 
-			if allow_repeat:
-				if repeat_on == "Monthly":
-					compliance_date = add_months(base_date, 1)
-					next_compliance_date = add_months(compliance_date, 1)
-				elif repeat_on == "Quarterly":
-					compliance_date = add_months(base_date, 3)
-					next_compliance_date = add_months(compliance_date, 3)
-				elif repeat_on == "Half Yearly":
-					compliance_date = add_months(base_date, 6)
-					next_compliance_date = add_months(compliance_date, 6)
-				elif repeat_on == "Yearly":
-					compliance_date = add_months(base_date, 12)
-					next_compliance_date = add_months(compliance_date, 12)
-			else:
-				compliance_date = base_date
-				next_compliance_date = None
+					if allow_repeat:
+						if repeat_on == "Monthly":
+							next_compliance_date = add_months(compliance_date, 1)
+						elif repeat_on == "Quarterly":
+							next_compliance_date = add_months(compliance_date, 3)
+						elif repeat_on == "Half Yearly":
+							next_compliance_date = add_months(compliance_date, 6)
+						elif repeat_on == "Yearly":
+							next_compliance_date = add_months(compliance_date, 12)
+
+					frappe.db.set_value(
+						"Compliance Category Details",
+						detail.name,
+						{
+							"compliance_date": compliance_date,
+							"next_compliance_date": next_compliance_date
+						}
+					)
 
 			# === Create Sales Order only if billable ===
 			if is_billable:
@@ -676,26 +673,9 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 							project.db_set("sales_order", so.name)
 							so.db_set("project", project.name)
 
-						frappe.db.set_value(
-							"Compliance Category Details",
-							detail.name,
-							{
-								"compliance_date": compliance_date,
-								"next_compliance_date": next_compliance_date
-							}
-						)
-
 					except Exception:
 						frappe.log_error(frappe.get_traceback(), f"SO Creation Failed - {agreement.name}")
-			else:
-				frappe.db.set_value(
-					"Compliance Category Details",
-					detail.name,
-					{
-						"compliance_date": compliance_date,
-						"next_compliance_date": next_compliance_date
-					}
-				)
+
 
 def create_project_from_template(sales_order, project_template, customer, company,
 								 compliance_sub_category, compliance_category_details_id,
