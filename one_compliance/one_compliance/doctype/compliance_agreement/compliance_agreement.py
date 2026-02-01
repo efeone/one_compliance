@@ -1,6 +1,6 @@
 import frappe
 from frappe.model.document import Document
-from frappe.utils import add_days, add_months, get_last_day, getdate, nowdate, today
+from frappe.utils import add_days, add_months, get_last_day, getdate, today
 from frappe.utils.data import cint
 
 from one_compliance.one_compliance.utils import create_todo
@@ -557,7 +557,7 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 		category_details = frappe.get_all(
 			"Compliance Category Details",
 			filters={"parent": agreement.name},
-			fields=["name", "compliance_sub_category", "rate"]
+			fields=["name", "compliance_sub_category", "rate", "compliance_date"]
 		)
 
 		for detail in category_details:
@@ -595,10 +595,16 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 					should_create = True
 			else:
 				month_number = MONTH_MAP.get(repeat_month) if repeat_month else None
-				if repeat_on == "Monthly" and repeat_day and current_date.day == int(repeat_day):
-					should_create = True
-				elif repeat_on in ["Quarterly", "Half Yearly", "Yearly"] and month_number and repeat_day:
-					if current_date.month == month_number and current_date.day == int(repeat_day):
+				if repeat_day and current_date.day == cint(repeat_day):
+					is_correct_cycle = False
+					if repeat_on == "Monthly":
+						is_correct_cycle = True
+					elif repeat_on in ["Quarterly", "Half Yearly", "Yearly"] and month_number:
+						step = {"Quarterly": 3, "Half Yearly": 6, "Yearly": 12}[repeat_on]
+						if (current_date.month - month_number) % step == 0:
+							is_correct_cycle = True
+
+					if is_correct_cycle and detail.compliance_date and getdate(detail.compliance_date) == current_date:
 						should_create = True
 
 			if not should_create:
@@ -606,7 +612,12 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 
 			project = None
 			if project_template:
-				project = create_project_from_template(
+				if not frappe.db.exists("Project", {
+					"compliance_agreement": agreement.name,
+					"compliance_sub_category": sub_cat,
+					"expected_start_date": current_date
+				}):	
+					project = create_project_from_template(
 					None,
 					project_template,
 					agreement.customer,
@@ -619,25 +630,28 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 				)
 
 			# === Calculate compliance dates (common for both cases) ===
-			base_date = getdate(nowdate())
 			compliance_date = None
 			next_compliance_date = None
 
 			if allow_repeat:
-				if repeat_on == "Monthly":
-					compliance_date = add_months(base_date, 1)
-					next_compliance_date = add_months(compliance_date, 1)
-				elif repeat_on == "Quarterly":
-					compliance_date = add_months(base_date, 3)
-					next_compliance_date = add_months(compliance_date, 3)
-				elif repeat_on == "Half Yearly":
-					compliance_date = add_months(base_date, 6)
-					next_compliance_date = add_months(compliance_date, 6)
-				elif repeat_on == "Yearly":
-					compliance_date = add_months(base_date, 12)
-					next_compliance_date = add_months(compliance_date, 12)
+				step = {"Monthly": 1, "Quarterly": 3, "Half Yearly": 6, "Yearly": 12}.get(repeat_on, 0)
+				if step:
+					day = cint(repeat_day)
+					# Calculate next compliance date
+					next_d = add_months(current_date, step)
+					try:
+						compliance_date = next_d.replace(day=day)
+					except ValueError:
+						compliance_date = get_last_day(next_d)
+
+					# Calculate subsequent compliance date
+					subseq_d = add_months(compliance_date, step)
+					try:
+						next_compliance_date = subseq_d.replace(day=day)
+					except ValueError:
+						next_compliance_date = get_last_day(subseq_d)
 			else:
-				compliance_date = base_date
+				compliance_date = getdate(current_date)
 				next_compliance_date = None
 
 			# === Create Sales Order only if billable ===
@@ -645,7 +659,7 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 				if not frappe.db.exists("Sales Order", {
 					"compliance_agreement": agreement.name,
 					"compliance_sub_category": sub_cat,
-					"transaction_date": nowdate()
+					"transaction_date": current_date
 				}):
 					try:
 						item_name = frappe.db.get_value("Item", item_code, "item_name") if item_code else None
@@ -657,8 +671,8 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 						so.company = agreement.company
 						so.compliance_agreement = agreement.name
 						so.compliance_sub_category = sub_cat
-						so.transaction_date = nowdate()
-						so.delivery_date = nowdate()
+						so.transaction_date = current_date
+						so.delivery_date = current_date
 						if agreement.default_payment_terms_template:
 							so.payment_terms_template = agreement.default_payment_terms_template
 
@@ -676,19 +690,21 @@ def create_sales_orders_from_compliance_agreements(posting_date=today()):
 							project.db_set("sales_order", so.name)
 							so.db_set("project", project.name)
 
-						frappe.db.set_value(
-							"Compliance Category Details",
-							detail.name,
-							{
-								"compliance_date": compliance_date,
-								"next_compliance_date": next_compliance_date
-							}
-						)
+						if compliance_date:
+							frappe.db.set_value(
+								"Compliance Category Details",
+								detail.name,
+								{
+									"compliance_date": compliance_date,
+									"next_compliance_date": next_compliance_date
+								}
+							)
 
 					except Exception:
 						frappe.log_error(frappe.get_traceback(), f"SO Creation Failed - {agreement.name}")
 			else:
-				frappe.db.set_value(
+				if compliance_date:
+					frappe.db.set_value(
 					"Compliance Category Details",
 					detail.name,
 					{
