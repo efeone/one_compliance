@@ -165,7 +165,8 @@ doc_events = {
 		'on_submit': 'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
 	},
 	'Opportunity':{
-		'after_save':'one_compliance.one_compliance.doc_events.oppotunity.make_engagement_letter'
+		'after_save':'one_compliance.one_compliance.doc_events.oppotunity.make_engagement_letter',
+		'after_insert': 'one_compliance.one_compliance.doc_events.oppotunity.create_opportunity_todos',
 	},
 	'Sales Order':{
 		'on_submit':'one_compliance.one_compliance.doc_events.sales_order.create_project_on_submit',
