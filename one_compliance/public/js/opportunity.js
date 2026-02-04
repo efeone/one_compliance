@@ -1,4 +1,7 @@
 frappe.ui.form.on('Opportunity',{
+    onload: function(frm) {
+        fetch_documents_from_settings(frm);
+    },
 	refresh: function(frm) {
 		if(!frm.is_new()){
 			setTimeout(() => {
@@ -186,6 +189,30 @@ function fetch_item_compliance(frm, cdt, cdn) {
 				frappe.model.set_value(cdt, cdn, 'compliance_category', r.message.compliance_category);
 				frappe.model.set_value(cdt, cdn, 'compliance_sub_category', r.message.compliance_sub_category);
 			}
+		}
+	});
+}
+
+
+
+function fetch_documents_from_settings(frm) {
+	if (!frm.is_new()) {
+		return;
+	}
+	frappe.call({
+		method: "one_compliance.one_compliance.doctype.compliance_settings.compliance_settings.get_documents_template",
+		callback: function (r) {
+
+			if (!r.message || !r.message.length) return;
+
+			frm.clear_table("custom_documents_required");
+
+			r.message.forEach(row => {
+				let d = frm.add_child("custom_documents_required");
+				d.document_required = row.document_name;
+			});
+
+			frm.refresh_field("custom_documents_required");
 		}
 	});
 }

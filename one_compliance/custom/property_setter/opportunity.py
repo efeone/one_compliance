@@ -42,4 +42,12 @@ def get_opportunity_property_setters():
 			"property_type": "Check",
 			"value": "1",
 		},
+		{
+			"doc_type": "Opportunity",
+			"doctype_or_field": "DocField",
+			"field_name": "job_title",
+			"property": "label",
+			"property_type": "Data",
+			"value": "Position",
+		},
 	]

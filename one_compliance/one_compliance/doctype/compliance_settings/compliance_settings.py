@@ -55,3 +55,14 @@ def compliance_date_update(compliance_date, compliance_agreement = None):
 						if frappe.db.get_value('Compliance Category Details', compliance_category_details_id, 'compliance_date') == getdate(compliance_date):
 							compliance_date = frappe.db.get_value('Compliance Category Details', compliance_category_details_id, 'compliance_date')
 							update_compliance_dates(compliance_category_details_id)
+
+@frappe.whitelist()
+def get_documents_template():
+	'''method used to fetch document required templates'''
+	return frappe.db.get_all(
+		"Document Required Template",
+		fields=[
+			"document_name"
+		],
+		order_by="idx asc"
+	)

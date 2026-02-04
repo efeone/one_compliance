@@ -1,7 +1,7 @@
 import frappe
 from frappe.model.mapper import *
 from frappe import _
-from frappe.utils import getdate, today, get_link_to_form
+from frappe.utils import getdate, today, get_link_to_form, add_days, nowdate
 
 @frappe.whitelist()
 def make_engagement_letter(source_name,target_name=None):
@@ -121,3 +121,48 @@ def get_item_compliance(item_code):
 		"compliance_sub_category": data.get("name")
 	}
 
+def create_opportunity_todos(doc, method=None):
+	"""
+	Create ToDo(s) based on Opportunity ToDo Template
+	"""
+	compliance_settings = frappe.get_single("Compliance Settings")
+
+	if not compliance_settings.opportunity_todo_template:
+		return
+
+	for row in compliance_settings.opportunity_todo_template:
+		due_date = add_days(nowdate(), row.due_date_rule) if row.due_date_rule else None
+
+		users = []
+
+		if row.role:
+			role_users = frappe.get_all(
+				"Has Role",
+				filters={"role": row.role},
+				pluck="parent"
+			)
+
+			users = frappe.get_all(
+				"User",
+				filters={
+					"name": ["in", role_users],
+					"enabled": 1
+				},
+				pluck="name"
+			)
+		if users:
+			for user in users:
+				todo = frappe.new_doc("ToDo")
+				todo.description = row.description
+				todo.reference_type = "Opportunity"
+				todo.reference_name = doc.name
+				todo.allocated_to = user
+				todo.date = due_date
+				todo.insert(ignore_permissions=True)
+		else:
+			todo = frappe.new_doc("ToDo")
+			todo.description = row.description
+			todo.reference_type = "Opportunity"
+			todo.reference_name = doc.name
+			todo.date = due_date
+			todo.insert(ignore_permissions=True)

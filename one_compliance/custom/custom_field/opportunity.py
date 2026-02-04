@@ -43,5 +43,33 @@ def get_opportunity_custom_fields():
 				"options": "Customer Type",
 				"insert_after": "website"
 			},
+			{
+				"fieldname": "preferred_communication_method",
+				"fieldtype": "Select",
+				"label": "Preferred Communication Method",
+				"options": "WhatsApp\nEmail\nCall",
+				"insert_after": "job_title"
+			},
+			{
+				"fieldname": "has_multi_company",
+				"fieldtype": "Check",
+				"label": "Has Multi Company",
+				"insert_after": "opportunity_date"
+			},
+			{
+				"fieldname": "has_multi_company_sec",
+				"fieldtype": "Section Break",
+				"label": "Multi Company Details",
+				"insert_after": "territory",
+				"depends_on": "eval:doc.has_multi_company == 1",
+			},
+			{
+				"fieldname": "multi_company_details",
+				"fieldtype": "Table",
+				"label": "Multi Company Details",
+				"insert_after": "has_multi_company_sec",
+				"depends_on": "eval:doc.has_multi_company == 1",
+				"options": "Multi Company Detail",
+			},
 		]
 	}
