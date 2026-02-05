@@ -50,4 +50,11 @@ def get_opportunity_property_setters():
 			"property_type": "Data",
 			"value": "Position",
 		},
+		{
+			"doc_type": "Opportunity",
+			"doctype_or_field": "DocType",
+			"property": "field_order",
+			"property_type": "Data",
+			"value": '["naming_series", "enquiry_from", "opportunity_from", "party_name", "customer_name", "status", "column_break0", "opportunity_type", "source", "opportunity_owner", "column_break_10", "sales_stage", "expected_closing", "probability", "organization_details_section", "organization_name", "no_of_employees", "annual_revenue", "sales_order", "opportunity_date", "has_multi_company", "customer_group", "column_break_23", "industry", "market_segment", "website", "licensing_authority", "custom_customer_type", "column_break_31", "city", "state", "office_number", "office_mobile_number", "country", "territory", "has_multi_company_sec", "multi_company_details", "section_break_14", "currency", "column_break_36", "conversion_rate", "column_break_17", "opportunity_amount", "base_opportunity_amount", "more_info", "company", "campaign", "transaction_date", "column_break1", "language", "amended_from", "title", "first_response_time", "lost_detail_section", "lost_reasons", "order_lost_reason", "column_break_56", "competitors", "contact_info", "primary_contact_section", "contact_person", "job_title", "preferred_communication_method", "column_break_54", "name_of_contact_person", "contact_email", "contact_mobile", "column_break_22", "whatsapp", "phone", "phone_ext", "address_contact_section", "address_html", "customer_address", "address_display", "column_break3", "contact_html", "contact_display", "items_section", "compliance_category", "items", "section_break_32", "base_total", "column_break_33", "total", "custom_section_break_wwmzg", "custom_documents_required", "activities_tab", "open_activities_html", "follow_up_reply", "all_activities_section", "all_activities_html", "notes_tab", "notes_html", "notes", "dashboard_tab"]',
+		},
 	]
