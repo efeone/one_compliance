@@ -71,5 +71,12 @@ def get_opportunity_custom_fields():
 				"depends_on": "eval:doc.has_multi_company == 1",
 				"options": "Multi Company Detail",
 			},
+			{
+				"fieldname": "compliance_category",
+				"fieldtype": "Table MultiSelect",
+				"label": "Compliance Category",
+				"insert_after": "items",
+				"options": "Compliance Category List",
+			},
 		]
 	}
