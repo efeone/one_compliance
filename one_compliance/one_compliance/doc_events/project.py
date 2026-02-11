@@ -90,14 +90,15 @@ def set_status_to_overdue():
 
 	projects = frappe.get_all(
 		"Project",
-		filters={"status": ["not in", ["Cancelled", "Hold", "Completed", "Invoiced"]]},
+		filters={"status": ["not in", ["Cancelled", "Hold", "Completed", "Invoiced", "Partially Paid", "Paid"]]},
 		fields=["name", "expected_end_date"],
 	)
 
 	today_date = getdate(today())
 	for project in projects:
 		if project.expected_end_date and today_date > getdate(project.expected_end_date):
-			frappe.db.set_value("Project", project.name, "status", "Overdue")
+			if frappe.db.exists("Task", {"project": project.name, "status": ["not in", ["Completed", "Cancelled", "Hold"]]}):
+				frappe.db.set_value("Project", project.name, "status", "Overdue")
 
 
 @frappe.whitelist()
