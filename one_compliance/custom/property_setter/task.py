@@ -128,4 +128,20 @@ def get_task_property_setters():
 			"property_type": "Data",
 			"value": "",
 		},
+		{
+			"doc_type": "Task",
+			"doctype_or_field": "DocField",
+			"field_name": "custom_mode_of_payment",
+			"property": "mandatory_depends_on",
+			"property_type": "Data",
+			"value": "",
+		},
+		{
+			"doc_type": "Task",
+			"doctype_or_field": "DocField",
+			"field_name": "custom_payable_amount",
+			"property": "mandatory_depends_on",
+			"property_type": "Data",
+			"value": "",
+		},
 	]
