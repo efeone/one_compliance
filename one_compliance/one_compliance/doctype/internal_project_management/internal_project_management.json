@@ -7,6 +7,7 @@
  "field_order": [
   "project_details_section",
   "project_name",
+  "company",
   "column_break_equk",
   "posting_date",
   "work_details_section",
@@ -32,6 +33,14 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Project Name ",
+   "reqd": 1
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
    "reqd": 1
   },
   {
