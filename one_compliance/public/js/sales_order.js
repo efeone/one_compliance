@@ -11,6 +11,9 @@ frappe.ui.form.on('Sales Order', {
 					frm.set_value('custom_create_project_automatically', value);
 				});
 		}
+
+        set_assign_to_employee_filter(frm);
+
 	},
 	refresh: function (frm) {
 		if (
@@ -54,6 +57,10 @@ frappe.ui.form.on('Sales Order', {
 	purchase_invoice: (frm) => {
 		make_is_outsource_service_read_only(frm);
 	},
+
+    transaction_date: function (frm) {
+        set_assign_to_employee_filter(frm);
+    }
 });
 
 let create_project_from_sales_order = function (frm) {
@@ -410,4 +417,19 @@ function add_pi_button(frm) {
 			create_purchase_invoice(frm);
 		}, __('Create'));
 	}
+}
+
+/**
+ * Set filter for 'Assign To Employee' field based on transaction date
+ */
+function set_assign_to_employee_filter(frm) {
+    frm.set_query("custom_assign_to", function () {
+        return {
+            query: "one_compliance.one_compliance.utils.get_active_employees_for_so",
+            filters: {
+                transaction_date: frm.doc.transaction_date,
+                status: "Active",
+            }
+        };
+    });
 }
