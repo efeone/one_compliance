@@ -21,6 +21,7 @@ class InternalProjectManagement(Document):
 		new_project = frappe.new_doc("Project")
 		new_project.custom_is_internal = 1
 		new_project.project_name = f"{self.get('project_name', '')} {self.get('compliance_sub_category', '')} {self.get('posting_date')}"
+		new_project.company = self.get("company")
 		new_project.department = self.get("department", "")
 		new_project.compliance_sub_category = self.get("compliance_sub_category", "")
 		new_project.expected_start_date = self.get("expected_start_date", "")
@@ -49,6 +50,7 @@ class InternalProjectManagement(Document):
 				task_doc.update(
 					{
 						"project": new_project.name,
+						"company": self.get("company"),
 						"subject": f"{task.get('subject')}",
 						"status": "Open",
 						"type": task.get("type"),
