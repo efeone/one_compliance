@@ -108,11 +108,15 @@ def get_data(filters: dict) -> list[dict]:
 		result.append(row)
 	journal_entries = get_journal_entries(filters)
 	result.extend(journal_entries)
+	# Sort by posting date descending
+	result.sort(key=lambda x: x.posting_date, reverse=True)
 	return result
 
 def get_journal_entries(filters):
 	"""
 	Returns filtered Journal Entry records linked to customers.
+	Excludes fully paid Journal Entries.
+	Shows paid amount if partially paid.
 	"""
 	conditions = []
 	vals = []
@@ -141,16 +145,40 @@ def get_journal_entries(filters):
 			cust.customer_group,
 			'Journal Entry' AS voucher_type,
 			je.name AS voucher_no,
+
 			(jel.debit - jel.credit) AS grand_total,
-			0 AS paid_amount,
-			(jel.debit - jel.credit) AS outstanding_amount,
+
+			COALESCE((
+				SELECT SUM(per.allocated_amount)
+				FROM `tabPayment Entry Reference` per
+				JOIN `tabPayment Entry` pe ON pe.name = per.parent
+				WHERE per.reference_doctype = 'Journal Entry'
+				  AND per.reference_name = je.name
+				  AND pe.docstatus = 1
+			), 0) AS paid_amount,
+
+			(jel.debit - jel.credit) -
+			COALESCE((
+				SELECT SUM(per.allocated_amount)
+				FROM `tabPayment Entry Reference` per
+				JOIN `tabPayment Entry` pe ON pe.name = per.parent
+				WHERE per.reference_doctype = 'Journal Entry'
+				  AND per.reference_name = je.name
+				  AND pe.docstatus = 1
+			), 0) AS outstanding_amount,
+
 			NULL AS due_date
+
 		FROM `tabJournal Entry` je
 		JOIN `tabJournal Entry Account` jel
 			ON jel.parent = je.name
 		LEFT JOIN `tabCustomer` cust
 			ON cust.name = jel.party
+
 		WHERE je.docstatus = 1
 		  AND jel.party_type = 'Customer'
 		  {where}
+
+		GROUP BY je.name
+		HAVING outstanding_amount != 0
 	""", vals, as_dict=True)
