@@ -12,6 +12,7 @@ from frappe.email.doctype.notification.notification import get_context
 class ComplianceSubCategory(Document):
 	def validate(self):
 		self.validate_rate()
+		self.validate_duplicate_companies()
 		if self.is_billable and not self.item_code:
 			sub_cat_item = create_compliance_item_from_sub_category(self, self.sub_category, self.rate)
 			self.item_code = sub_cat_item
@@ -21,10 +22,19 @@ class ComplianceSubCategory(Document):
 			self.item_code = self.sub_category
 			update_related_item_name(self,self.get_doc_before_save().sub_category, self.sub_category, self.compliance_category)
 
+		sync_item_defaults(self)
+
 	def validate_rate(self):
 		""" Method to validate rate """
 		if not self.rate and self.is_billable:
 			frappe.throw(_('Please Enter Valid Rate'))
+
+	def validate_duplicate_companies(self):
+		companies = []
+		for d in self.default_account:
+			if d.company in companies:
+				frappe.throw(_("Cannot set multiple Item Defaults for company: {0}").format(d.company))
+			companies.append(d.company)
 
 	def after_delete(self):
 		# Delete related Compliance Items
@@ -159,6 +169,29 @@ def delete_related_items(item_name):
 	frappe.db.commit()
 
 	frappe.msgprint("Compliance Item Deleted: {}".format(item_name), indicator="green", alert=1)
+
+def sync_item_defaults(doc):
+	if not doc.item_code or not frappe.db.exists('Item', doc.item_code):
+		return
+	item = frappe.get_doc("Item", doc.item_code)
+	sub_cat_companies = {d.company: d.default_income_account for d in doc.default_account if d.company}
+	# Update or clear income accounts for existing defaults
+	for d in item.item_defaults:
+		if d.company in sub_cat_companies:
+			d.income_account = sub_cat_companies[d.company]
+		else:
+			d.income_account = ""
+	# Add new defaults
+	existing_companies = {d.company for d in item.item_defaults}
+	for company, income_account in sub_cat_companies.items():
+		if company not in existing_companies:
+			item.append("item_defaults", {
+				"company": company,
+				"income_account": income_account,
+				"default_warehouse": ''
+			})
+	item.flags.ignore_mandatory = True
+	item.save(ignore_permissions=True)
 
 @frappe.whitelist()
 def update_related_item_name(doc, old_sub_category, new_sub_category, compliance_category):
