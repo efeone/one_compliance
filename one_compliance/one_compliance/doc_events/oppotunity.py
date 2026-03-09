@@ -166,3 +166,44 @@ def create_opportunity_todos(doc, method=None):
 			todo.reference_name = doc.name
 			todo.date = due_date
 			todo.insert(ignore_permissions=True)
+
+@frappe.whitelist()
+def get_compliance_sub_category_list(compliance_category):
+	return frappe.get_all(
+		"Compliance Sub Category",
+		filters={"compliance_category": compliance_category},
+		fields=["name", "item_code"]
+	)
+
+@frappe.whitelist()
+def create_customer_from_opportunity(opportunity):
+    """
+    Create Customer from Opportunity if enquiry_from = New Client
+    Return Customer name
+    """
+
+    opp = frappe.get_doc("Opportunity", opportunity)
+    if opp.enquiry_from != "New Client":
+        return opp.party_name
+
+    if not opp.organization_name:
+        frappe.throw("Organization Name is required to create Customer")
+    existing_customer = frappe.db.exists(
+        "Customer",
+        {"customer_name": opp.organization_name}
+    )
+    if existing_customer:
+        return existing_customer
+    customer_type = frappe.db.get_single_value(
+        "Compliance Settings",
+        "customer_type"
+    )
+    customer = frappe.get_doc({
+        "doctype": "Customer",
+        "customer_name": opp.organization_name,
+		"compliance_customer_type": customer_type
+    })
+
+    customer.insert(ignore_permissions=True)
+    return customer.name
+

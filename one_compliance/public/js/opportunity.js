@@ -16,6 +16,7 @@ frappe.ui.form.on('Opportunity',{
 				create_event(frm)
 			});
 			make_buttons(frm);
+            add_agreement_button(frm);
 		}
 	},
 	make_engagement_letter: function (frm) {
@@ -24,6 +25,9 @@ frappe.ui.form.on('Opportunity',{
 			frm: cur_frm
 		});
 	},
+    compliance_category(frm) {
+        fetch_compliance_sub_categories(frm);
+    },
 });
 
 function create_event(frm) {
@@ -215,4 +219,163 @@ function fetch_documents_from_settings(frm) {
 			frm.refresh_field("custom_documents_required");
 		}
 	});
+}
+
+/**
+ * Create compliance agreement from opportunity
+ */
+function add_agreement_button(frm) {
+	frappe.db.get_single_value("Compliance Settings", "create_agreement_from_opportunity").then(value => {
+		if (value) {
+			frm.add_custom_button(
+				__("Agreement"),
+				() => {
+					open_service_dialog(frm);
+				},
+				__("Create")
+			);
+		}
+	});
+}
+
+/**
+ * Show popup to create compliance agreement from opportunity
+ */
+function open_service_dialog(frm) {
+
+	let d = new frappe.ui.Dialog({
+		title: __("Create Agreement"),
+		size: "extra-large",
+		fields: [
+			{ fieldtype: "HTML", fieldname: "services_html" }
+		],
+		primary_action_label: __("Create Agreement"),
+		primary_action() {
+
+			let selected_items = [];
+			let compliance_categories = [];
+
+			d.$wrapper.find(".service-check:checked").each(function () {
+				let row = frm.doc.items[$(this).data("idx")];
+				selected_items.push(row);
+
+				if (row.compliance_category) {
+					compliance_categories.push(row.compliance_category);
+				}
+			});
+
+			if (!selected_items.length) {
+				frappe.msgprint(__("Please select at least one service"));
+				return;
+			}
+
+			compliance_categories = [...new Set(compliance_categories)];
+			frappe.new_doc("Compliance Agreement");
+
+			frappe.after_ajax(() => {
+
+				let agreement_frm = cur_frm;
+				agreement_frm.doc.opportunity_name = frm.doc.name;
+				agreement_frm.refresh_field("opportunity_name");
+				if (frm.doc.enquiry_from === "Existing Client") {
+					agreement_frm.doc.customer = frm.doc.party_name;
+					agreement_frm.refresh_field("customer");
+
+				} else if (frm.doc.enquiry_from === "New Client") {
+					frappe.call({
+						method: "one_compliance.one_compliance.doc_events.oppotunity.create_customer_from_opportunity",
+						args: {
+							opportunity: frm.doc.name
+						},
+						callback: function (r) {
+							if (r.message) {
+								agreement_frm.doc.customer = r.message;
+								agreement_frm.refresh_field("customer");
+							}
+						}
+					});
+				}
+				agreement_frm.clear_table("compliance_category");
+
+				compliance_categories.forEach(cat => {
+					let row = agreement_frm.add_child("compliance_category");
+					row.compliance_category = cat;
+				});
+
+				agreement_frm.refresh_field("compliance_category");
+				selected_items.forEach(item => {
+					let child = agreement_frm.add_child("compliance_category_details");
+					child.compliance_category = item.compliance_category;
+					child.compliance_sub_category = item.compliance_sub_category;
+					child.rate = item.rate;
+				});
+
+				agreement_frm.refresh_field("compliance_category_details");
+			});
+
+			d.hide();
+		}
+	});
+
+	d.show();
+	let html = `
+	<table class="table table-bordered table-hover">
+	<thead>
+	<tr>
+		<th><input type="checkbox" id="select_all_services"></th>
+		<th>Service</th>
+		<th>Compliance Category</th>
+		<th>Sub Category</th>
+		<th>Qty</th>
+		<th>Rate</th>
+		<th>Amount</th>
+	</tr>
+	</thead><tbody>
+	`;
+
+	(frm.doc.items || []).forEach((row, i) => {
+		html += `
+		<tr>
+			<td><input type="checkbox" class="service-check" data-idx="${i}"></td>
+			<td>${row.item_name || ""}</td>
+			<td>${row.compliance_category || ""}</td>
+			<td>${row.compliance_sub_category || ""}</td>
+			<td>${row.qty || 0}</td>
+			<td>${row.rate || 0}</td>
+			<td>${row.amount || 0}</td>
+		</tr>`;
+	});
+
+	html += `</tbody></table>`;
+	d.fields_dict.services_html.$wrapper.html(html);
+
+	d.$wrapper.find("#select_all_services").on("change", function () {
+		d.$wrapper.find(".service-check").prop("checked", $(this).is(":checked"));
+	});
+}
+
+
+/**
+ * Fetch compliance sub categories from the selected compliance categories
+ */
+function fetch_compliance_sub_categories(frm){
+	if (frm.doc.compliance_category.length) {
+		frm.clear_table('items')
+		frm.doc.compliance_category.forEach(compliance_category => {
+			frappe.call('one_compliance.one_compliance.doc_events.oppotunity.get_compliance_sub_category_list', {
+				compliance_category: compliance_category.compliance_category
+			}).then(r => {
+				if (r.message) {
+					r.message.forEach(row => {
+						let d = frm.add_child('items');
+						d.compliance_sub_category = row.name;
+                        d.compliance_category = compliance_category.compliance_category;
+                        d.item_code = row.item_code;
+					});
+					frm.refresh_field('items');
+				}
+			})
+		});
+		frm.refresh_field('items');
+	}
 }

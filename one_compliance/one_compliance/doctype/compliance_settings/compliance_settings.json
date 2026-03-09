@@ -10,6 +10,7 @@
   "general_configurations_section",
   "create_user_on_customer_creation",
   "add_compliance_category_in_project_name",
+  "create_agreement_from_opportunity",
   "column_break_begm",
   "create_project_from_sales_order_automatically",
   "delete_project_along_with_compliance_agreement",
@@ -455,12 +456,18 @@
    "fieldtype": "Table",
    "label": "Opportunity ToDo Template",
    "options": "Opportunity ToDo Template"
+  },
+  {
+   "default": "0",
+   "fieldname": "create_agreement_from_opportunity",
+   "fieldtype": "Check",
+   "label": "Create Agreement from Opportunity"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-02-04 09:31:57.723108",
+ "modified": "2026-02-05 12:01:32.043259",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
