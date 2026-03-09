@@ -85,7 +85,7 @@ def create_if_customer_not_exists(opp):
 	customer.update({
 		"opportunity_name": opp.name,
 		"customer_name": opp.contact_person or "Unnamed Customer",
-		"compliance_customer_type": (
+		"custom_customer_type": (
 			opp.custom_customer_type
 			or frappe.db.get_single_value("Compliance Settings", "customer_type")
 		),
