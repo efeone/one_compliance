@@ -1,15 +1,11 @@
 import frappe
 from frappe import _
 from frappe.email.doctype.notification.notification import get_context
-from frappe.utils import add_days, getdate, today
-from one_compliance.one_compliance.utils import create_todo
-from one_compliance.one_compliance.doc_events.task import (
-	create_sales_order,
-	get_rate_from_compliance_agreement,
-	update_expected_dates_in_task,
-)
+from frappe.utils import getdate, today
+from one_compliance.one_compliance.doc_events.task import update_expected_dates_in_task
 from one_compliance.one_compliance.utils import (
 	create_project_completion_todos,
+	create_todo,
 	send_notification,
 )
 
@@ -182,10 +178,6 @@ def create_tasks_from_template(project):
 	created_tasks = []
 
 	for template_task in template_doc.tasks:
-		template_task_doc = None
-		if template_task.task:
-			template_task_doc = frappe.get_doc("Task", template_task.task)
-
 		task = frappe.new_doc("Task")
 		task.compliance_sub_category = project_doc.compliance_sub_category
 		task.subject = template_task.subject
@@ -228,7 +220,7 @@ def get_project_tasks(project):
         "Task",
         filters={"project": project},
         fields=["name", "subject", "status", "completed_by", "completed_on"],
-        order_by="modified desc"
+        order_by="creation asc"
     )
 
     has_completed = any(t.status == "Completed" for t in tasks)
