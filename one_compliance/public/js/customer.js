@@ -1,4 +1,13 @@
 frappe.ui.form.on('Customer',{
+  setup(frm) {
+    frm.set_query("supplier", function () {
+      return {
+        filters: {
+          is_promoter: 1
+        }
+      };
+    });
+  },
   compliance_customer_type: function(frm){
     if(frm.doc.compliance_customer_type){
       if(frm.doc.compliance_customer_type == 'Individual'){
@@ -10,7 +19,31 @@ frappe.ui.form.on('Customer',{
       refresh_field('customer_type');
     }
   },
+  one_time(frm) {
+        if (frm.doc.one_time) {
+            frm.set_value("repeat_on_project", 0);
+        }
+ },
+  repeat_on_project(frm) {
+        if (frm.doc.repeat_on_project) {
+            frm.set_value("one_time", 0);
+        }
+    },
+  disable_referral_commission(frm) {
+			toggle_referral_fields(frm);
+	},
+   commission_based_on_percentage(frm) {
+        if(frm.doc.commission_based_on_percentage){
+            frm.set_value("commission_based_on_amount", 0);
+        }
+    },
+  commission_based_on_amount(frm) {
+        if(frm.doc.commission_based_on_amount){
+            frm.set_value("commission_based_on_percentage", 0);
+        }
+    },
   refresh: function(frm){
+	toggle_referral_fields(frm);
     setTimeout(() => {
       frm.remove_custom_button('Pricing Rule','Create');
       frm.remove_custom_button('Get Customer Group Details','Actions');
@@ -331,4 +364,48 @@ let send_clarification_message = function (frm){
     }
   });
   d.show()
+}
+
+/**
+ * Function to show/hide referral commission related fields based on Compliance Settings and disable_referral_commission field value
+ */
+function toggle_referral_fields(frm){
+    frappe.call({
+        method: "frappe.client.get_single_value",
+        args: {
+            doctype: "Compliance Settings",
+            field: "enable_referral_commission"
+        },
+        callback: function(r){
+
+            if(r.message){
+                frm.toggle_display("referral_commission", true);
+
+                let disabled = frm.doc.disable_referral_commission;
+
+                frm.toggle_display("supplier", !disabled);
+                frm.toggle_display("commission_based_on_percentage", !disabled);
+                frm.toggle_display("commission_based_on_amount", !disabled);
+                frm.toggle_display("one_time", !disabled);
+                frm.toggle_display("repeat_on_project", !disabled);
+                frm.toggle_display("reference_completed", !disabled);
+                frm.toggle_display("reference_details", !disabled);
+
+            }
+            else{
+
+                frm.toggle_display("referral_commission", false);
+                frm.toggle_display("supplier", false);
+                frm.toggle_display("commission_based_on_percentage", false);
+                frm.toggle_display("commission_based_on_amount", false);
+                frm.toggle_display("one_time", false);
+                frm.toggle_display("repeat_on_project", false);
+                frm.toggle_display("reference_completed", false);
+                frm.toggle_display("reference_details", false);
+
+            }
+
+        }
+    });
+
 }
