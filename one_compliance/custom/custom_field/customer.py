@@ -148,7 +148,6 @@ def get_customer_custom_fields():
 				"label": "Supplier",
 				"options": "Supplier",
 				"depends_on": "eval:!doc.disable_referral_commission",
-				"mandatory_depends_on": "eval:!doc.disable_referral_commission",
 			},
 			{
 				"fieldname": "commission_based_on_percentage",
@@ -209,7 +208,7 @@ def get_customer_custom_fields():
 			{
 				"fieldname": "reference_sec",
 				"fieldtype": "Section Break",
-				"insert_after": "reference_completed",
+				"insert_after": "remarks",
 				"depends_on": "eval:!doc.disable_referral_commission",
 			},
 			{
@@ -220,6 +219,13 @@ def get_customer_custom_fields():
 				"options": "Reference Detail",
 				"depends_on": "eval:!doc.disable_referral_commission",
 				"read_only": 1,
+			},
+			{
+				"fieldname": "remarks",
+				"fieldtype": "Small Text",
+				"insert_after": "reference_completed",
+				"label": "Remarks",
+				"depends_on": "eval:!doc.disable_referral_commission && doc.reference_completed",
 			},
 		]
 	}

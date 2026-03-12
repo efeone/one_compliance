@@ -384,6 +384,7 @@ function toggle_referral_fields(frm){
                 let disabled = frm.doc.disable_referral_commission;
 
                 frm.toggle_display("supplier", !disabled);
+                frm.toggle_reqd("supplier", !disabled);
                 frm.toggle_display("commission_based_on_percentage", !disabled);
                 frm.toggle_display("commission_based_on_amount", !disabled);
                 frm.toggle_display("one_time", !disabled);
@@ -402,6 +403,7 @@ function toggle_referral_fields(frm){
                 frm.toggle_display("repeat_on_project", false);
                 frm.toggle_display("reference_completed", false);
                 frm.toggle_display("reference_details", false);
+                frm.toggle_reqd("supplier", false);
 
             }
 

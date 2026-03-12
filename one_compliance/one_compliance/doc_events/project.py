@@ -294,12 +294,15 @@ def create_commission_purchase_invoice(doc, method=None):
 	})
 
 	pi.insert(ignore_permissions=True)
-	customer.append("reference_details", {
+	frappe.get_doc({
+		"doctype": "Reference Detail",
+		"parent": customer.name,
+		"parenttype": "Customer",
+		"parentfield": "reference_details",
 		"purchase_invoice": pi.name,
-		"rate": rate
-	})
-	if customer.one_time:
-		customer.reference_completed = 1
+		"rate": rate,
+		"status": pi.status
+	}).insert(ignore_permissions=True)
 
-	customer.save(ignore_permissions=True)
-	frappe.db.commit()
+	if customer.one_time:
+		frappe.db.set_value("Customer", customer.name, "reference_completed", 1)

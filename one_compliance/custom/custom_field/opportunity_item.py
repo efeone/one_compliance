@@ -11,6 +11,7 @@ def get_opportunity_item_custom_fields():
 				"options": "Compliance Category",
 				"insert_after": "item_code",
 				"in_list_view": 1,
+				"columns": 2,
 			},
 			{
 				"fieldname": "compliance_sub_category",
@@ -18,7 +19,8 @@ def get_opportunity_item_custom_fields():
 				"fieldtype": "Link",				
 				"options": "Compliance Sub Category",		
 				"insert_after": "compliance_category",
-				"in_list_view": 1,	
+				"in_list_view": 1,
+				"columns": 2,	
 			},
 			{
 				"fieldname": "repeat_on",
@@ -35,20 +37,19 @@ def get_opportunity_item_custom_fields():
 				"fieldtype": "Data",
 				"insert_after": "repeat_on",
 				"in_list_view": 1,
+				"columns": 1,
 			},
 			{
 				"fieldname": "initial_due_date",
 				"label": "Initial Due Date",
 				"fieldtype": "Date",
 				"insert_after": "purpose",
-				"in_list_view": 1,
 			},
 			{
 				"fieldname": "remarks",
 				"label": "Remarks",
 				"fieldtype": "Small Text",
 				"insert_after": "qty",
-				"in_list_view": 1,
 			}
 		]
 }

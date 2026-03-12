@@ -189,6 +189,8 @@ doc_events = {
 	},
 	"Purchase Invoice": {
 		"on_change": "one_compliance.one_compliance.doc_events.purchase_invoice.update_sales_order",
+		"on_update": "one_compliance.one_compliance.doc_events.purchase_invoice.update_commission_status_in_customer",
+		"on_cancel": "one_compliance.one_compliance.doc_events.purchase_invoice.update_commission_status_in_customer",
 	}
 }	
 
