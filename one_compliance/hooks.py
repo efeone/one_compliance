@@ -171,7 +171,10 @@ doc_events = {
 	'Sales Order':{
 		'on_submit':'one_compliance.one_compliance.doc_events.sales_order.create_project_on_submit',
 		'on_cancel': 'one_compliance.one_compliance.doc_events.sales_order.so_on_cancel_custom',
-		'on_update_after_submit': 'one_compliance.one_compliance.doc_events.sales_order.so_on_update_after_submit',
+		'on_update_after_submit': [
+			'one_compliance.one_compliance.doc_events.sales_order.so_on_update_after_submit',
+			'one_compliance.one_compliance.doc_events.sales_order.set_invoice_generation_date'
+		],
 		'validate': 'one_compliance.one_compliance.doc_events.sales_order.set_compliance_fields'
 	},
 	'Payment Entry':{
