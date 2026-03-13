@@ -249,7 +249,7 @@ def create_commission_purchase_invoice(doc, method=None):
 	customer = frappe.get_doc("Customer", doc.customer)
 	if customer.disable_referral_commission:
 		return
-	if customer.reference_completed and customer.one_time:
+	if customer.reference_completed:
 		return
 	if doc.compliance_sub_category:
 		billable = frappe.db.get_value(

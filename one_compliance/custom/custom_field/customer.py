@@ -161,8 +161,8 @@ def get_customer_custom_fields():
 				"fieldtype": "Float",
 				"insert_after": "commission_based_on_percentage",
 				"label": "Commission Percentage",
-				"depends_on": "eval:doc.commission_based_on_percentage",
-				"mandatory_depends_on": "eval:doc.commission_based_on_percentage",
+				"depends_on": "eval:doc.commission_based_on_percentage && !doc.disable_referral_commission",
+				"mandatory_depends_on": "eval:doc.commission_based_on_percentage && !doc.disable_referral_commission",
 			},
 			{
 				"fieldname": "commission_based_on_amount",
@@ -176,8 +176,8 @@ def get_customer_custom_fields():
 				"fieldtype": "Currency",
 				"insert_after": "commission_based_on_amount",
 				"label": "Commission Amount",
-				"depends_on": "eval:doc.commission_based_on_amount",
-				"mandatory_depends_on": "eval:doc.commission_based_on_amount",
+				"depends_on": "eval:doc.commission_based_on_amount && !doc.disable_referral_commission",
+				"mandatory_depends_on": "eval:doc.commission_based_on_amount && !doc.disable_referral_commission",
 			},
 			{
 				"fieldname": "commission_col",
