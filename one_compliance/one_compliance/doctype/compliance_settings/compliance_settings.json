@@ -11,6 +11,8 @@
   "create_user_on_customer_creation",
   "add_compliance_category_in_project_name",
   "create_agreement_from_opportunity",
+  "enable_referral_commission",
+  "service_item",
   "column_break_begm",
   "create_project_from_sales_order_automatically",
   "delete_project_along_with_compliance_agreement",
@@ -462,16 +464,30 @@
    "fieldname": "create_agreement_from_opportunity",
    "fieldtype": "Check",
    "label": "Create Agreement from Opportunity"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_referral_commission",
+   "fieldtype": "Check",
+   "label": "Enable Referral Commission"
+  },
+  {
+   "depends_on": "eval:doc.enable_referral_commission == 1",
+   "fieldname": "service_item",
+   "fieldtype": "Link",
+   "label": "Service Item",
+   "mandatory_depends_on": "eval:doc.enable_referral_commission == 1",
+   "options": "Item"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2026-02-05 12:01:32.043259",
+ "modified": "2026-03-09 09:54:35.506504",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

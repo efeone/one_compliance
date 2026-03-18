@@ -144,6 +144,7 @@ doc_events = {
 	},
 	'Project':{
 		'on_update': 'one_compliance.one_compliance.doc_events.project.project_on_update',
+		'after_insert': 'one_compliance.one_compliance.doc_events.project.create_commission_purchase_invoice',
 	},
 	'Customer':{
 		'on_update':[
@@ -159,7 +160,8 @@ doc_events = {
 			'one_compliance.one_compliance.doc_events.oppotunity.set_opportunity_converted',
 			'one_compliance.one_compliance.doc_events.customer.create_aml_task'
 		],	
-		'before_insert': 'one_compliance.one_compliance.doc_events.customer.disable_customer_on_creation'
+		'before_insert': 'one_compliance.one_compliance.doc_events.customer.disable_customer_on_creation',
+		'validate': 'one_compliance.one_compliance.doc_events.customer.validate_commission_type'
 	},
 	'Sales Invoice':{
 		'on_submit': 'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
@@ -175,7 +177,11 @@ doc_events = {
 		'validate': 'one_compliance.one_compliance.doc_events.sales_order.set_compliance_fields'
 	},
 	'Payment Entry':{
-		'on_submit': 'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_submit'
+		'on_submit': [
+			'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_submit',
+			'one_compliance.one_compliance.doc_events.payment_entry.update_commission_status_from_payment'
+		],
+		'on_cancel': 'one_compliance.one_compliance.doc_events.payment_entry.update_commission_status_from_payment'
 	},
 	'ToDo':{
 		'before_insert':[
@@ -188,6 +194,8 @@ doc_events = {
 	},
 	"Purchase Invoice": {
 		"on_change": "one_compliance.one_compliance.doc_events.purchase_invoice.update_sales_order",
+		"on_submit": "one_compliance.one_compliance.doc_events.purchase_invoice.update_commission_status_in_customer",
+		"on_cancel": "one_compliance.one_compliance.doc_events.purchase_invoice.update_commission_status_in_customer",
 	}
 }	
 

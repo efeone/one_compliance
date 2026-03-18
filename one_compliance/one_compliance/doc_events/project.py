@@ -221,19 +221,88 @@ def create_tasks_from_template(project):
 
 @frappe.whitelist()
 def get_project_tasks(project):
-    """ 
-    Fetch tasks related to a project and determine if any are completed.
-    """
-    tasks = frappe.get_all(
-        "Task",
-        filters={"project": project},
-        fields=["name", "subject", "status", "completed_by", "completed_on"],
-        order_by="modified desc"
-    )
+	""" 
+	Fetch tasks related to a project and determine if any are completed.
+	"""
+	tasks = frappe.get_all(
+		"Task",
+		filters={"project": project},
+		fields=["name", "subject", "status", "completed_by", "completed_on"],
+		order_by="modified desc"
+	)
 
-    has_completed = any(t.status == "Completed" for t in tasks)
+	has_completed = any(t.status == "Completed" for t in tasks)
 
-    return {
-        "show": has_completed,
-        "tasks": tasks
-    }
+	return {
+		"show": has_completed,
+		"tasks": tasks
+	}
+
+def create_commission_purchase_invoice(doc, method=None):
+	"""
+	Creates a Purchase Invoice for referral commission when a Project is marked as Completed.
+	"""
+	settings = frappe.get_single("Compliance Settings")
+
+	if not settings.enable_referral_commission:
+		return
+	customer = frappe.get_doc("Customer", doc.customer)
+	if customer.disable_referral_commission:
+		return
+	if customer.reference_completed:
+		return
+	if doc.compliance_sub_category:
+		billable = frappe.db.get_value(
+			"Compliance Sub Category",
+			doc.compliance_sub_category,
+			"is_billable"
+		)
+
+		if not billable:
+			return
+	sales_order = frappe.db.get_value(
+		"Sales Order",
+		{"project": doc.name},
+		["name", "grand_total"],
+		as_dict=True
+	)
+
+	if not sales_order:
+		return
+
+	sales_order_amount = sales_order.grand_total
+	rate = 0
+
+	if customer.commission_amount:
+		rate = customer.commission_amount
+	else:
+		if customer.commission_percentage:
+			rate = (sales_order_amount * customer.commission_percentage) / 100
+
+	if not rate:
+		return
+	pi = frappe.new_doc("Purchase Invoice")
+	pi.supplier = customer.supplier
+	pi.is_commission_invoice = 1
+	pi.customer = customer.name
+	pi.compliance_sub_category = doc.compliance_sub_category
+	pi.project = doc.name
+	pi.append("items", {
+		"item_code": settings.service_item,
+		"qty": 1,
+		"rate": rate
+	})
+
+	pi.insert(ignore_permissions=True)
+	frappe.get_doc({
+		"doctype": "Reference Detail",
+		"parent": customer.name,
+		"parenttype": "Customer",
+		"parentfield": "reference_details",
+		"purchase_invoice": pi.name,
+		"rate": rate,
+		"status": pi.status
+	}).insert(ignore_permissions=True)
+
+	if customer.one_time:
+		frappe.db.set_value("Customer", customer.name, "reference_completed", 1)
