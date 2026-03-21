@@ -423,6 +423,7 @@ def so_on_update_after_submit(doc, method):
 	'''
 	update_journal_entry(doc)
 	set_total_reimbursement_amount(doc)
+	set_invoice_generation_date(doc)
 	doc.reload()
 
 def set_total_reimbursement_amount(doc):
