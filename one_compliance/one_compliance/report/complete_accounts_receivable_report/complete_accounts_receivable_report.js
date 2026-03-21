@@ -34,6 +34,11 @@ frappe.query_reports["Complete Accounts Receivable Report"] = {
             label: __("Customer Group"),
             fieldtype: "Link",
             options: "Customer Group",
+        },
+        {
+            fieldname: "include_draft_journal_entries",
+            label: __("Include Draft Journal Entries"),
+            fieldtype: "Check",
         }
     ]
 };

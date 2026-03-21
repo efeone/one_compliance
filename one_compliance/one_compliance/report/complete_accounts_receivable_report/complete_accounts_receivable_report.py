@@ -115,11 +115,16 @@ def get_data(filters: dict) -> list[dict]:
 def get_journal_entries(filters):
 	"""
 	Returns filtered Journal Entry records linked to customers.
+	Includes Draft Journal Entries if checkbox is enabled.
 	Excludes fully paid Journal Entries.
 	Shows paid amount if partially paid.
 	"""
 	conditions = []
 	vals = []
+	if filters.get("include_draft_journal_entries"):
+		docstatus_condition = "je.docstatus IN (0, 1)"
+	else:
+		docstatus_condition = "je.docstatus = 1"
 
 	if filters.get("company"):
 		conditions.append("je.company = %s")
@@ -175,7 +180,7 @@ def get_journal_entries(filters):
 		LEFT JOIN `tabCustomer` cust
 			ON cust.name = jel.party
 
-		WHERE je.docstatus = 1
+		WHERE {docstatus_condition}
 		  AND jel.party_type = 'Customer'
 		  {where}
 
