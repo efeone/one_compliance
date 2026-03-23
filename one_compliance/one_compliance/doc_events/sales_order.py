@@ -423,6 +423,7 @@ def so_on_update_after_submit(doc, method):
 	'''
 	update_journal_entry(doc)
 	set_total_reimbursement_amount(doc)
+	set_invoice_generation_date(doc)
 	doc.reload()
 
 def set_total_reimbursement_amount(doc):
@@ -660,38 +661,51 @@ def set_compliance_fields(doc, method):
 
 @frappe.whitelist()
 def create_purchase_invoice(docname, items):
-    """Create Purchase Invoice from Sales Order"""
+	"""Create Purchase Invoice from Sales Order"""
 
-    if isinstance(items, str):
-        items = json.loads(items)
+	if isinstance(items, str):
+		items = json.loads(items)
 
-    so = frappe.get_doc("Sales Order", docname)
+	so = frappe.get_doc("Sales Order", docname)
 
-    project_id = frappe.db.get_value("Project", {"sales_order": docname}, "name") or None
+	project_id = frappe.db.get_value("Project", {"sales_order": docname}, "name") or None
 
-    if not so.supplier:
-        frappe.throw(_("Supplier is required in Sales Order"))
+	if not so.supplier:
+		frappe.throw(_("Supplier is required in Sales Order"))
 
-    pi = frappe.get_doc({
-        "doctype": "Purchase Invoice",
-        "supplier": so.supplier,
-        "company": so.company,
-        "posting_date": today(),
-        "project": project_id,
-        "sales_order": so.name,
-        "items": []
-    })
+	pi = frappe.get_doc({
+		"doctype": "Purchase Invoice",
+		"supplier": so.supplier,
+		"company": so.company,
+		"posting_date": today(),
+		"project": project_id,
+		"sales_order": so.name,
+		"items": []
+	})
 
-    # Add items
-    for item in items:
-        pi.append("items", {
-            "item_code": item.get("item_code"),
-            "qty": flt(item.get("qty", 1)),
-            "rate": flt(item.get("rate", 0))
-        })
+	# Add items
+	for item in items:
+		pi.append("items", {
+			"item_code": item.get("item_code"),
+			"qty": flt(item.get("qty", 1)),
+			"rate": flt(item.get("rate", 0))
+		})
 
-    pi.insert(ignore_permissions=True)
+	pi.insert(ignore_permissions=True)
 
-    so.db_set("purchase_invoice", pi.name, update_modified=False)
+	so.db_set("purchase_invoice", pi.name, update_modified=False)
 
-    return pi.name
+	return pi.name
+
+def set_invoice_generation_date(doc, method=None):
+	"""
+	Set invoice_generation_date when workflow state is Proforma Invoice and invoice_generation_date is not set
+	"""
+	if doc.workflow_state == "Proforma Invoice":
+		if not doc.invoice_generation_date:
+			frappe.db.set_value(
+				"Sales Order",
+				doc.name,
+				"invoice_generation_date",
+				today()
+			)
