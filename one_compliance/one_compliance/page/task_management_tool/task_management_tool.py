@@ -130,7 +130,7 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 	}
 
 @frappe.whitelist()
-def create_timesheet(project, task, employee, activity, from_time, to_time, lag_time=None, reason_for_lag_time=None):
+def create_timesheet(project, task, employee, activity, from_time, to_time, lag_time=None, reason_for_lag_time=None, description=None):
 	"""
 		Create or update a Timesheet for an employee based on provided time logs.
 	"""
@@ -152,7 +152,8 @@ def create_timesheet(project, task, employee, activity, from_time, to_time, lag_
 			"from_time": from_time,
 			"to_time": to_time,
 			"lag_time": lag_time,
-			"reason_for_lag_time": reason_for_lag_time
+			"reason_for_lag_time": reason_for_lag_time,
+			"description": description,
 		})
 		existing_timesheet.save()
 		frappe.db.commit()
@@ -166,7 +167,8 @@ def create_timesheet(project, task, employee, activity, from_time, to_time, lag_
 			"from_time": from_time,
 			"to_time": to_time,
 			"lag_time": lag_time,
-			"reason_for_lag_time": reason_for_lag_time
+			"reason_for_lag_time": reason_for_lag_time,
+			"description": description,
 		})
 
 		timesheet.insert(ignore_permissions=True)
