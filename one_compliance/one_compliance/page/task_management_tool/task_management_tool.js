@@ -648,7 +648,12 @@ function show_time_entry_dialog(page, task_name, project_name, assignees, start_
 				fieldname: "reason_for_lag_time",
 				fieldtype: 'Small Text',
 				hidden: !show_lag_time_fields
-			}
+			},
+			{
+				label: __("Description"),
+				fieldname: "description",
+				fieldtype: "Small Text"
+			},
 		],
 		primary_action_label: __("Submit"),
 		primary_action(values) {
