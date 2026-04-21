@@ -250,49 +250,61 @@ function initialize_task_actions(page) {
 	body.find(".startButton").off().on("click", function () {
 		const task_name = $(this).attr("task-id");
 		const project_name = $(this).attr("project-id");
+		const task_subject = $(this).attr("task-subject");
 		const status = page.fields_dict.status.get_value();
 
 		if (["Completed", "Hold", "Cancelled"].includes(status)) return;
 
 		const current_time = frappe.datetime.now_datetime();
 		const formatted_time = frappe.datetime.str_to_user(current_time);
-		localStorage.setItem(`start-time-task-${task_name}-project-${project_name}`, current_time);
 
-		body.find(`.start-time[task-id='${task_name}'][project-id='${project_name}']`).text(formatted_time);
-		update_task_status(page, task_name, "Working");
+		frappe.call({
+			method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.start_active_timer",
+			args: {
+				task: task_name,
+				project: project_name || "",
+				subject: task_subject || "",
+				start_time: current_time
+			},
+			callback: (r) => {
+				if (r.message) {
+					const user = frappe.session.user;
+					if (user) {
+						localStorage.setItem('one-compliance-active-timer-' + user, JSON.stringify(r.message));
+					}
+					
+					body.find(`.start-time[task-id='${task_name}'][project-id='${project_name}']`).text(formatted_time);
+					update_task_status(page, task_name, "Working");
 
-		$(this).hide();
-		body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).show();
+					$(this).hide();
+					body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).show();
+					$(document).trigger('one-compliance-timer-changed', [r.message]);
+				}
+			}
+		});
 	});
 
-	body.find(".start-time").each(function () {
-		const task_name = $(this).attr("task-id");
-		const project_name = $(this).attr("project-id");
-		let start_time = localStorage.getItem(`start-time-task-${task_name}-project-${project_name}`);
+	frappe.call({
+		method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.get_active_timer",
+		callback: (r) => {
+			const active_timers = r.message || [];
+			body.find(".start-time").each(function () {
+				const task_name = $(this).attr("task-id");
+				const project_name = $(this).attr("project-id");
+				
+				const task_timer = active_timers.find(t => t.task === task_name);
 
-		if (start_time) {
-			const stored_date = new Date(start_time);
-			const current_date = new Date();
-
-			if (
-				stored_date.getDate() !== current_date.getDate() ||
-				stored_date.getMonth() !== current_date.getMonth() ||
-				stored_date.getFullYear() !== current_date.getFullYear()
-			) {
-				localStorage.removeItem(`start-time-task-${task_name}-project-${project_name}`);
-				start_time = null;
-			}
-		}
-
-		if (start_time) {
-			const formatted_time = frappe.datetime.str_to_user(start_time);
-			$(this).text(formatted_time);
-			body.find(`.startButton[task-id='${task_name}'][project-id='${project_name}']`).hide();
-			body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).show();
-		} else {
-			$(this).text("");
-			body.find(`.startButton[task-id='${task_name}'][project-id='${project_name}']`).show();
-			body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).hide();
+				if (task_timer) {
+					const formatted_time = frappe.datetime.str_to_user(task_timer.start_time);
+					$(this).text(formatted_time);
+					body.find(`.startButton[task-id='${task_name}'][project-id='${project_name}']`).hide();
+					body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).show();
+				} else {
+					$(this).text("");
+					body.find(`.startButton[task-id='${task_name}'][project-id='${project_name}']`).show();
+					body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).hide();
+				}
+			});
 		}
 	});
 
@@ -300,20 +312,29 @@ function initialize_task_actions(page) {
 		const task_name = $(this).attr("task-id");
 		const project_name = $(this).attr("project-id");
 		const assignees = $(this).attr("assignees");
-		const start_time = localStorage.getItem(`start-time-task-${task_name}-project-${project_name}`);
-		frappe.db.get_value("Task", task_name, "has_external_dependencies")
-			.then(({ message }) => {
-				const show_lag = !!message?.has_external_dependencies;
 
-				show_time_entry_dialog(
-					page,
-					task_name,
-					project_name,
-					assignees,
-					start_time,
-					show_lag
-				);
-			});
+		frappe.call({
+			method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.get_active_timer",
+			callback: (r) => {
+				const active_timers = r.message || [];
+				const task_timer = active_timers.find(t => t.task === task_name);
+				const start_time = task_timer ? task_timer.start_time : null;
+
+				frappe.db.get_value("Task", task_name, "has_external_dependencies")
+					.then(({ message }) => {
+						const show_lag = !!message?.has_external_dependencies;
+
+						show_time_entry_dialog(
+							page,
+							task_name,
+							project_name,
+							assignees,
+							start_time,
+							show_lag
+						);
+					});
+			}
+		});
 
 	});
 
@@ -657,7 +678,17 @@ function show_time_entry_dialog(page, task_name, project_name, assignees, start_
 		],
 		primary_action_label: __("Submit"),
 		primary_action(values) {
-			localStorage.removeItem(`start-time-task-${task_name}-project-${project_name}`);
+			frappe.call({
+				method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.stop_active_timer",
+				args: { task: task_name },
+				callback: (r) => {
+					const user = frappe.session.user;
+					if (user) {
+						localStorage.setItem('one-compliance-active-timer-' + user, JSON.stringify(r.message || []));
+					}
+					$(document).trigger('one-compliance-timer-changed', [r.message || []]);
+				}
+			});
 			frappe.call({
 				method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.create_timesheet",
 				args: values,
@@ -917,21 +948,25 @@ Hide start buttons if no assignees are set OR if task already has a start time.
 function hide_start_button_without_assignees(page) {
 	if (!page || !page.body) return;
 
-	page.body.find(".startButton").each(function () {
-		const $btn = $(this);
-		let assignees = $btn.attr("assignees") || "";
-		const task_id = $btn.attr("task-id");
-		const project_id = $btn.attr("project-id");
+	frappe.call({
+		method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.get_active_timer",
+		callback: (r) => {
+			const active_timers = r.message || [];
+			page.body.find(".startButton").each(function () {
+				const $btn = $(this);
+				let assignees = $btn.attr("assignees") || "";
+				const task_id = $btn.attr("task-id");
 
-		assignees = assignees.replace(/\s+/g, "").trim();
+				assignees = assignees.replace(/\s+/g, "").trim();
 
-		const start_time_key = "start-time-task-" + task_id + "-project-" + project_id;
-		const start_time = localStorage.getItem(start_time_key);
+				const is_active = active_timers.some(t => t.task === task_id);
 
-		if (!assignees || start_time) {
-			$btn.hide();
-		} else {
-			$btn.show();
+				if (!assignees || is_active) {
+					$btn.hide();
+				} else {
+					$btn.show();
+				}
+			});
 		}
 	});
 }

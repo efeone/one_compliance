@@ -280,3 +280,73 @@ def get_icon_hidden_status():
 		'hide_payment_icon': frappe.db.get_single_value("Compliance Settings", "hide_payment_icon")
 	}
 	return data
+
+@frappe.whitelist()
+def start_active_timer(task, project, subject, start_time):
+	user = frappe.session.user
+	if not user or user == 'Guest':
+		return
+
+	val1 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_employee_time_overlap")
+	val2 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_user_time_overlap")
+	ignore_overlap = bool(val1 or val2)
+	
+	if not ignore_overlap:
+		existing_timer = frappe.db.sql("""
+			SELECT task, subject FROM `tabActive Task Timer` WHERE user = %s AND task != %s
+		""", (user, task), as_dict=True)
+		
+		if existing_timer:
+			existing_timer = existing_timer[0]
+			frappe.throw(_("Another task is already running: {0}. Please stop it before starting a new one.").format(existing_timer.subject or existing_timer.task))
+
+	timer_name = frappe.db.get_value("Active Task Timer", {"user": user, "task": task})
+
+	if timer_name:
+		doc = frappe.get_doc("Active Task Timer", timer_name)
+	else:
+		doc = frappe.new_doc("Active Task Timer")
+		doc.user = user
+		doc.task = task
+	
+	doc.flags.ignore_permissions = True
+	
+	doc.project = project
+	doc.subject = subject
+	doc.start_time = start_time
+	doc.save(ignore_permissions=True)
+	frappe.db.commit() 
+
+	all_timers = get_active_timer()
+	frappe.publish_realtime("one_compliance_timer_update", all_timers, user=user)
+
+	return all_timers
+
+@frappe.whitelist()
+def stop_active_timer(task=None):
+	user = frappe.session.user
+	filters = {"user": user}
+	if task:
+		filters["task"] = task
+	
+	timer_names = frappe.get_all("Active Task Timer", filters=filters, pluck="name", ignore_permissions=True)
+	for name in timer_names:
+		frappe.delete_doc("Active Task Timer", name, ignore_permissions=True)
+	
+	frappe.db.commit()
+	
+	all_timers = get_active_timer()
+	frappe.publish_realtime("one_compliance_timer_update", all_timers, user=user)
+	return all_timers
+
+@frappe.whitelist()
+def get_active_timer():
+	user = frappe.session.user
+	if not user or user == 'Guest':
+		return []
+	
+	timers = frappe.db.sql("""
+		SELECT task, project, subject, start_time FROM `tabActive Task Timer` WHERE user = %s
+	""", (user,), as_dict=True)
+	
+	return timers

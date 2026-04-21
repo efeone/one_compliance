@@ -1,0 +1,68 @@
+#oc-timer-wrap {
+	position: fixed;
+	bottom: 20px;
+	right: 20px;
+	z-index: 2147483647;
+}
+
+#oc-timer-box {
+	background: #ff851b;
+	color: white;
+	padding: 10px 15px;
+	border-radius: 8px;
+
+	display: flex;
+	align-items: center;
+	gap: 10px;
+
+	font-weight: bold;
+	font-size: 14px;
+
+	cursor: pointer;
+
+	box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+	position: relative;
+	z-index: 2;
+
+	text-decoration: none;
+	white-space: nowrap;
+
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+#oc-timer-wrap::before {
+	content: "";
+	position: absolute;
+	top: -3px;
+	left: -3px;
+	right: -3px;
+	bottom: -3px;
+
+	border-radius: 10px;
+
+	pointer-events: none;
+
+	background: conic-gradient(
+		from 0deg,
+		rgba(255,133,27,0) 0deg,
+		rgba(255,133,27,0) 60deg,
+		rgba(255,133,27,0.9) 90deg,
+		rgba(255,133,27,0) 140deg,
+		rgba(255,133,27,0) 360deg
+	);
+
+	filter: blur(1.5px);
+
+	animation: oc-wave-rotate 1.8s linear infinite;
+}
+
+
+@keyframes oc-wave-rotate {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
