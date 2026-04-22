@@ -182,7 +182,7 @@ class CustomTask(NestedSet):
 		'''
 			Validate Rembursement JV on Task Completion
 		'''
-		if self.status == "Completed" and self.has_reimbursement and not self.custom_is_payable:
+		if self.status == "Completed" and self.get('has_reimbursement') and not self.get('custom_is_payable'):
 			frappe.throw(
 				title=_("Reimbursement Journal Entry Missing"),
 				msg=_("Please create Reimbursement Journal Entry before marking the task <b>`{0}`</b> as Completed".format(self.name)))
@@ -316,11 +316,12 @@ class CustomTask(NestedSet):
 		'''
 			Set Checklist Template from Compliance Sub Category on Task Creation
 		'''
-		if not self.checklist_template:
+		checklist_template = self.get('checklist_template')
+		if not checklist_template:
 			return
-		if not frappe.db.exists("Task Checklist Template", self.checklist_template):
+		if not frappe.db.exists("Task Checklist Template", checklist_template):
 			return
-		template_doc = frappe.get_doc("Task Checklist Template", self.checklist_template)
+		template_doc = frappe.get_doc("Task Checklist Template", checklist_template)
 		for item in template_doc.checklist:
 			self.append("task_checklist_template", {
 				"checklist_item": item.checklist_item,
@@ -331,7 +332,7 @@ class CustomTask(NestedSet):
 			Validate Checklist Completion on Task Completion
 		'''
 		if self.status == "Completed":
-			for item in self.task_checklist_template:
+			for item in self.get('task_checklist_template') or []:
 				if not item.completed:
 					frappe.throw(
 						title=_("Checklist Incomplete"),
