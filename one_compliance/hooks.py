@@ -12,8 +12,8 @@ required_apps = ["frappe/erpnext", "frappe/hrms"]
 # ------------------
 
 # include js, css files in header of desk.html
-# app_include_css = "/assets/one_compliance/css/one_compliance.css"
-# app_include_js = "/assets/one_compliance/js/one_compliance.js"
+app_include_css = "/assets/one_compliance/css/one_compliance.css"
+app_include_js = "/assets/one_compliance/js/one_compliance.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/one_compliance/css/one_compliance.css"
