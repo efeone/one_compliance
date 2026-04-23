@@ -869,57 +869,73 @@ Opens a dialog to update the status of a specific task and refreshes the task li
 */
 
 function update_status(page, task_name, project_id, task_id) {
-	frappe.model.with_doctype('Task', () => {
-		let meta = frappe.get_meta('Task');
-		let status_field = meta.fields.find(df => df.fieldname === 'status');
+	frappe.call({
+		method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.get_active_timer",
+		callback: function(r) {
 
-		const exclude = ["Template", "Cancelled", "Overdue"];
+			const active_timers = r.message || [];
+			const is_running = active_timers.some(t => t.task === task_id);
 
-		// Create newline string
-		let option_string = (status_field.options || "")
-			.split("\n")
-			.filter(opt => opt && opt.trim() !== "" && !exclude.includes(opt))
-			.join("\n");
+			if (is_running) {
+				frappe.msgprint({
+					title: __("Not Allowed"),
+					message: __("This task is currently running. Please stop the timer before marking it as Completed."),
+					indicator: "red"
+				});
+				return;
+			}
+			frappe.model.with_doctype('Task', () => {
+				let meta = frappe.get_meta('Task');
+				let status_field = meta.fields.find(df => df.fieldname === 'status');
 
-		const dialog = new frappe.ui.Dialog({
-			title: __("Update Task Status"),
-			fields: [
-				{
-					label: __("Status"),
-					fieldname: "status",
-					fieldtype: "Select",
-					options: option_string,
-					default: "Completed",
-				},
-				{
-					label: __("Completed By"),
-					fieldname: "completed_by",
-					fieldtype: "Link",
-					options: "User",
-					default: frappe.session.user,
-				},
-				{
-					label: __("Completed On"),
-					fieldname: "completed_on",
-					fieldtype: "Date",
-					default: frappe.datetime.get_today(),
-				},
-			],
-			primary_action_label: __("Update"),
-			primary_action(values) {
-				frappe.call({
-					method: "one_compliance.one_compliance.doc_events.task.update_task_status",
-					args: { task_id, ...values },
-					callback(r) {
-						if (r.message) {
-							dialog.hide();
-							refresh_tasks(page);
-						}
+				const exclude = ["Template", "Cancelled", "Overdue"];
+
+				let option_string = (status_field.options || "")
+					.split("\n")
+					.filter(opt => opt && opt.trim() !== "" && !exclude.includes(opt))
+					.join("\n");
+
+				const dialog = new frappe.ui.Dialog({
+					title: __("Update Task Status"),
+					fields: [
+						{
+							label: __("Status"),
+							fieldname: "status",
+							fieldtype: "Select",
+							options: option_string,
+							default: "Completed",
+						},
+						{
+							label: __("Completed By"),
+							fieldname: "completed_by",
+							fieldtype: "Link",
+							options: "User",
+							default: frappe.session.user,
+						},
+						{
+							label: __("Completed On"),
+							fieldname: "completed_on",
+							fieldtype: "Date",
+							default: frappe.datetime.get_today(),
+						},
+					],
+					primary_action_label: __("Update"),
+					primary_action(values) {
+						frappe.call({
+							method: "one_compliance.one_compliance.doc_events.task.update_task_status",
+							args: { task_id, ...values },
+							callback(r) {
+								if (r.message) {
+									dialog.hide();
+									refresh_tasks(page);
+								}
+							},
+						});
 					},
 				});
-			},
-		});
-		dialog.show();
+				dialog.show();
+			});
+		}
 	});
 }
 

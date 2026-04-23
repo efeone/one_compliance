@@ -289,7 +289,7 @@ def start_active_timer(task, project, subject, start_time):
 
 	val1 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_employee_time_overlap")
 	val2 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_user_time_overlap")
-	ignore_overlap = bool(val1 or val2)
+	ignore_overlap = (int(val1 or 0) == 1) or (int(val2 or 0) == 1)
 	
 	if not ignore_overlap:
 		existing_timer = frappe.db.sql("""
