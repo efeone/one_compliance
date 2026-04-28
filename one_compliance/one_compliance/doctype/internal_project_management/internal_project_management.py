@@ -24,6 +24,18 @@ class InternalProjectManagement(Document):
 		new_project.company = self.get("company")
 		new_project.department = self.get("department", "")
 		new_project.compliance_sub_category = self.get("compliance_sub_category", "")
+		compliance_sub_category = self.get("compliance_sub_category")
+		if compliance_sub_category:
+			compliance_data = frappe.db.get_value(
+				"Compliance Sub Category",
+				compliance_sub_category,
+				["compliance_category", "category_type"],
+				as_dict=True
+			)
+			if compliance_data:
+				new_project.compliance_category = compliance_data.get("compliance_category")
+				new_project.category_type = compliance_data.get("category_type")
+
 		new_project.expected_start_date = self.get("expected_start_date", "")
 		new_project.expected_end_date = self.get("expected_end_date", "")
 		new_project.project_type = "Internal"
