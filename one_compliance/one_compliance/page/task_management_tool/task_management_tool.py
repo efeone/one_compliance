@@ -283,9 +283,24 @@ def get_icon_hidden_status():
 
 @frappe.whitelist()
 def start_active_timer(task, project, subject, start_time):
+	"""
+		Start a timer for a specific task, ensuring no overlapping timers for the same user.
+	"""
 	user = frappe.session.user
 	if not user or user == 'Guest':
-		return
+		frappe.throw(_("User authentication required. Please login first."))
+	if not frappe.db.exists("Task", task):
+		frappe.throw(_("Task {0} not found").format(task))
+	if not frappe.has_permission("Task", "read", task):
+		frappe.throw(_("No permission to access this task"))
+	if project and not frappe.db.exists("Project", project):
+		frappe.throw(_("Project {0} not found").format(project))
+	try:
+		start_dt = frappe.utils.get_datetime(start_time)
+		if start_dt > frappe.utils.now_datetime():
+			frappe.throw(_("Start time cannot be in the future"))
+	except Exception:
+		frappe.throw(_("Invalid start_time format"))
 
 	val1 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_employee_time_overlap")
 	val2 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_user_time_overlap")
@@ -324,6 +339,9 @@ def start_active_timer(task, project, subject, start_time):
 
 @frappe.whitelist()
 def stop_active_timer(task=None):
+	"""
+		Stop the active timer for the current user, optionally filtering by task.
+	"""
 	user = frappe.session.user
 	filters = {"user": user}
 	if task:
@@ -341,6 +359,9 @@ def stop_active_timer(task=None):
 
 @frappe.whitelist()
 def get_active_timer():
+	"""
+		Retrieve the active timer for the current user, ensuring proper permissions and handling guest users.
+	"""
 	user = frappe.session.user
 	if not user or user == 'Guest':
 		return []
