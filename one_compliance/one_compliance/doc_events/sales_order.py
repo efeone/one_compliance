@@ -400,7 +400,7 @@ def create_sales_order_from_event(event, customer=None, sub_category=None, rate=
 	new_sales_order.submit()
 	frappe.db.set_value("Sales Order", new_sales_order.name, "status", "Proforma Invoice")
 	frappe.db.set_value("Sales Order", new_sales_order.name, "workflow_state", "Proforma Invoice")
-	frappe.db.set_value("Sales Order", sales_order, "invoice_generation_date", today())
+	frappe.db.set_value("Sales Order", new_sales_order.name, "invoice_generation_date", today())
 	frappe.msgprint(f"Proforma Invoice {new_sales_order.name} Created against {event}", alert=True)
 	accounts_users = get_users_with_role("Accounts User")
 	add_assign({
