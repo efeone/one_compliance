@@ -2,6 +2,7 @@ import frappe
 from frappe import _
 from frappe.email.doctype.notification.notification import get_context
 from frappe.utils import add_days, getdate, today
+from one_compliance.one_compliance.utils import create_todo
 from one_compliance.one_compliance.doc_events.task import (
 	create_sales_order,
 	get_rate_from_compliance_agreement,
@@ -57,6 +58,11 @@ def set_project_status(project, status, comment=None):
 
 	project = frappe.get_doc("Project", project)
 	frappe.has_permission(doc=project, throw=True)
+	if status == "Cancelled" and project.sales_order:
+		if frappe.db.exists("Sales Order", project.sales_order):
+			so = frappe.get_doc("Sales Order", project.sales_order)
+			if so.docstatus == 1:
+				so.cancel()
 
 	tasks = frappe.get_all("Task", filters={"project": project.name}, fields=["name", "status"])
 
@@ -84,14 +90,15 @@ def set_status_to_overdue():
 
 	projects = frappe.get_all(
 		"Project",
-		filters={"status": ["not in", ["Cancelled", "Hold", "Completed", "Invoiced"]]},
+		filters={"status": ["not in", ["Cancelled", "Hold", "Completed", "Invoiced", "Partially Paid", "Paid"]]},
 		fields=["name", "expected_end_date"],
 	)
 
 	today_date = getdate(today())
 	for project in projects:
 		if project.expected_end_date and today_date > getdate(project.expected_end_date):
-			frappe.db.set_value("Project", project.name, "status", "Overdue")
+			if frappe.db.exists("Task", {"project": project.name, "status": ["not in", ["Completed", "Cancelled", "Hold"]]}):
+				frappe.db.set_value("Project", project.name, "status", "Overdue")
 
 
 @frappe.whitelist()
@@ -135,8 +142,13 @@ def convert_project_to_premium(project):
 			return "no_template"
 
 		template_doc = frappe.get_doc("Project Template", sub_category_doc.project_template)
-
 		for premium_task in template_doc.premium_tasks:
+			existing_task = frappe.db.exists("Task", {
+				"project": project_doc.name,
+				"subject": premium_task.subject
+			})
+			if existing_task:
+				continue
 			task = frappe.new_doc("Task")
 			task.subject = premium_task.subject
 			task.project = project_doc.name
@@ -152,3 +164,145 @@ def convert_project_to_premium(project):
 	except Exception:
 		frappe.log_error(frappe.get_traceback(), "Convert Project to Premium Error")
 		return "failed"
+
+@frappe.whitelist()
+def create_tasks_from_template(project):
+	"""Create tasks in a Project from its Sub Category's Project Template"""
+	project_doc = frappe.get_doc("Project", project)
+
+	if not project_doc.compliance_sub_category:
+		frappe.throw("No Compliance Sub Category linked with this Project")
+
+	sub_category_doc = frappe.get_doc("Compliance Sub Category", project_doc.compliance_sub_category)
+	if not sub_category_doc.project_template:
+		frappe.throw("No Project Template linked with this Sub Category")
+
+	template_doc = frappe.get_doc("Project Template", sub_category_doc.project_template)
+
+	created_tasks = []
+
+	for template_task in template_doc.tasks:
+		template_task_doc = None
+		if template_task.task:
+			template_task_doc = frappe.get_doc("Task", template_task.task)
+
+		task = frappe.new_doc("Task")
+		task.compliance_sub_category = project_doc.compliance_sub_category
+		task.subject = template_task.subject
+		task.task_weightage = template_task.task_weightage or 0
+		task.project = project_doc.name
+		task.company = project_doc.company
+		task.project_name = project_doc.project_name
+		task.category_type = project_doc.category_type
+		task.custom_serial_number = template_task.idx
+
+		task.status = "Open"
+		task.save(ignore_permissions=True)
+
+		if template_task.type and template_task.employee_or_group:
+			frappe.db.set_value("Task", task.name, "assigned_to", template_task.employee_or_group)
+
+			if template_task.type == "Employee":
+				user_id = frappe.db.get_value("Employee", template_task.employee_or_group, "user_id")
+				if user_id:
+					create_todo("Task", task.name, user_id, user_id, f"Task {task.name} Assigned Successfully")
+
+			elif template_task.type == "Employee Group":
+				employee_group = frappe.get_doc("Employee Group", template_task.employee_or_group)
+				if employee_group.employee_list:
+					for emp in employee_group.employee_list:
+						if emp.user_id:
+							create_todo("Task", task.name, emp.user_id, emp.user_id, f"Task {task.name} Assigned Successfully")
+
+		created_tasks.append(task.name)
+
+	return created_tasks
+
+
+@frappe.whitelist()
+def get_project_tasks(project):
+	""" 
+	Fetch tasks related to a project and determine if any are completed.
+	"""
+	tasks = frappe.get_all(
+		"Task",
+		filters={"project": project},
+		fields=["name", "subject", "status", "completed_by", "completed_on"],
+		order_by="modified desc"
+	)
+
+	has_completed = any(t.status == "Completed" for t in tasks)
+
+	return {
+		"show": has_completed,
+		"tasks": tasks
+	}
+
+def create_commission_purchase_invoice(doc, method=None):
+	"""
+	Creates a Purchase Invoice for referral commission when a Project is marked as Completed.
+	"""
+	settings = frappe.get_single("Compliance Settings")
+
+	if not settings.enable_referral_commission:
+		return
+	customer = frappe.get_doc("Customer", doc.customer)
+	if customer.disable_referral_commission:
+		return
+	if customer.reference_completed:
+		return
+	if doc.compliance_sub_category:
+		billable = frappe.db.get_value(
+			"Compliance Sub Category",
+			doc.compliance_sub_category,
+			"is_billable"
+		)
+
+		if not billable:
+			return
+	sales_order = frappe.db.get_value(
+		"Sales Order",
+		{"project": doc.name},
+		["name", "grand_total"],
+		as_dict=True
+	)
+
+	if not sales_order:
+		return
+
+	sales_order_amount = sales_order.grand_total
+	rate = 0
+
+	if customer.commission_amount:
+		rate = customer.commission_amount
+	else:
+		if customer.commission_percentage:
+			rate = (sales_order_amount * customer.commission_percentage) / 100
+
+	if not rate:
+		return
+	pi = frappe.new_doc("Purchase Invoice")
+	pi.supplier = customer.supplier
+	pi.is_commission_invoice = 1
+	pi.customer = customer.name
+	pi.compliance_sub_category = doc.compliance_sub_category
+	pi.project = doc.name
+	pi.append("items", {
+		"item_code": settings.service_item,
+		"qty": 1,
+		"rate": rate
+	})
+
+	pi.insert(ignore_permissions=True)
+	frappe.get_doc({
+		"doctype": "Reference Detail",
+		"parent": customer.name,
+		"parenttype": "Customer",
+		"parentfield": "reference_details",
+		"purchase_invoice": pi.name,
+		"rate": rate,
+		"status": pi.status
+	}).insert(ignore_permissions=True)
+
+	if customer.one_time:
+		frappe.db.set_value("Customer", customer.name, "reference_completed", 1)

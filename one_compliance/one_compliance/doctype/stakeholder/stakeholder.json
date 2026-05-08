@@ -20,6 +20,7 @@
   "contact_number",
   "email_id",
   "whatsapp_number",
+  "date_of_birth",
   "address_and_contacts_section",
   "residential_address",
   "column_break_zhky",
@@ -35,7 +36,11 @@
   "aml_section",
   "aml_risk_category",
   "column_break_mtii",
-  "aml_risk_status"
+  "aml_risk_status",
+  "ksa_information_tab",
+  "iqama_id",
+  "iqama_expiry_date",
+  "iqama_profession"
  ],
  "fields": [
   {
@@ -192,12 +197,37 @@
    "fieldname": "address_and_contacts_section",
    "fieldtype": "Section Break",
    "label": "Address and Contacts"
+  },
+  {
+   "fieldname": "date_of_birth",
+   "fieldtype": "Date",
+   "label": "Date of Birth"
+  },
+  {
+   "fieldname": "ksa_information_tab",
+   "fieldtype": "Tab Break",
+   "label": "KSA Information"
+  },
+  {
+   "fieldname": "iqama_id",
+   "fieldtype": "Data",
+   "label": "Iqama ID"
+  },
+  {
+   "fieldname": "iqama_expiry_date",
+   "fieldtype": "Date",
+   "label": "Iqama Expiry Date"
+  },
+  {
+   "fieldname": "iqama_profession",
+   "fieldtype": "Data",
+   "label": "Iqama profession"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-11-12 11:26:29.682027",
+ "modified": "2025-11-25 08:30:28.215033",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Stakeholder",

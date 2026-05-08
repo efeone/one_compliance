@@ -40,7 +40,7 @@ def get_conditions(filters: dict) -> tuple[str, list]:
 
 	if filters.get("customer_group"):
 		conditions.append("cust.customer_group = %s")
-		vals.append(filters.get("customer_group"))	
+		vals.append(filters.get("customer_group"))
 
 	return " AND ".join(conditions), vals
 
@@ -62,7 +62,6 @@ def get_data(filters: dict) -> list[dict]:
 	sales_orders = frappe.db.sql(f"""
 		SELECT
 			so.transaction_date AS posting_date,
-			'Customer' AS party_type,
 			so.customer,
 			ps.due_date AS due_date,
 			so.name AS sales_order,
@@ -105,6 +104,86 @@ def get_data(filters: dict) -> list[dict]:
 
 		row.paid_amount = row.paid_amount or 0
 		row.outstanding_amount = row.grand_total - row.paid_amount
-		result.append(row)
 
+		result.append(row)
+	journal_entries = get_journal_entries(filters)
+	result.extend(journal_entries)
+	# Sort by posting date descending
+	result.sort(key=lambda x: x.posting_date, reverse=True)
 	return result
+
+def get_journal_entries(filters):
+	"""
+	Returns filtered Journal Entry records linked to customers.
+	Includes Draft Journal Entries if checkbox is enabled.
+	Excludes fully paid Journal Entries.
+	Shows paid amount if partially paid.
+	"""
+	conditions = []
+	vals = []
+	if filters.get("include_draft_journal_entries"):
+		docstatus_condition = "je.docstatus IN (0, 1)"
+	else:
+		docstatus_condition = "je.docstatus = 1"
+
+	if filters.get("company"):
+		conditions.append("je.company = %s")
+		vals.append(filters["company"])
+
+	if filters.get("customer"):
+		conditions.append("jel.party = %s")
+		vals.append(filters["customer"])
+
+	if filters.get("from_date") and filters.get("to_date"):
+		conditions.append("je.posting_date BETWEEN %s AND %s")
+		vals.append(filters["from_date"])
+		vals.append(filters["to_date"])
+
+	where = " AND ".join(conditions)
+	if where:
+		where = "AND " + where
+
+	return frappe.db.sql(f"""
+		SELECT
+			je.posting_date,
+			jel.party AS customer,
+			cust.customer_group,
+			'Journal Entry' AS voucher_type,
+			je.name AS voucher_no,
+
+			(jel.debit - jel.credit) AS grand_total,
+
+			COALESCE((
+				SELECT SUM(per.allocated_amount)
+				FROM `tabPayment Entry Reference` per
+				JOIN `tabPayment Entry` pe ON pe.name = per.parent
+				WHERE per.reference_doctype = 'Journal Entry'
+				  AND per.reference_name = je.name
+				  AND pe.docstatus = 1
+			), 0) AS paid_amount,
+
+			(jel.debit - jel.credit) -
+			COALESCE((
+				SELECT SUM(per.allocated_amount)
+				FROM `tabPayment Entry Reference` per
+				JOIN `tabPayment Entry` pe ON pe.name = per.parent
+				WHERE per.reference_doctype = 'Journal Entry'
+				  AND per.reference_name = je.name
+				  AND pe.docstatus = 1
+			), 0) AS outstanding_amount,
+
+			NULL AS due_date
+
+		FROM `tabJournal Entry` je
+		JOIN `tabJournal Entry Account` jel
+			ON jel.parent = je.name
+		LEFT JOIN `tabCustomer` cust
+			ON cust.name = jel.party
+
+		WHERE {docstatus_condition}
+		  AND jel.party_type = 'Customer'
+		  {where}
+
+		GROUP BY je.name
+		HAVING outstanding_amount != 0
+	""", vals, as_dict=True)

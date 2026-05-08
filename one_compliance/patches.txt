@@ -4,3 +4,5 @@
 [post_model_sync]
 # These patches will run post doctype sync
 one_compliance.patches.v15.so_workflow_cancel_state 2024-08-28test1
+one_compliance.patches.v15.task_payment_table 2026-01-29test1
+one_compliance.patches.v15.sync_item_defaults 2026-03-06

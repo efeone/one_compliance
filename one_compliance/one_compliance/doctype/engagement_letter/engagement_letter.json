@@ -9,6 +9,8 @@
  "engine": "InnoDB",
  "field_order": [
   "engagement_letter_types",
+  "column_break_faxp",
+  "company",
   "section_break_dkkd",
   "opportunity",
   "opportunity_from",
@@ -204,12 +206,24 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
+  },
+  {
+   "fieldname": "column_break_faxp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-09-01 12:27:21.557411",
+ "modified": "2026-01-15 14:34:59.671781",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Engagement Letter",

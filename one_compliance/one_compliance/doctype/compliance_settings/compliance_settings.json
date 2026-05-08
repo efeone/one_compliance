@@ -10,6 +10,9 @@
   "general_configurations_section",
   "create_user_on_customer_creation",
   "add_compliance_category_in_project_name",
+  "create_agreement_from_opportunity",
+  "enable_referral_commission",
+  "service_item",
   "column_break_begm",
   "create_project_from_sales_order_automatically",
   "delete_project_along_with_compliance_agreement",
@@ -25,10 +28,15 @@
   "column_break_gnzz",
   "customer_type",
   "default_tds_account",
+  "role_allowed_to_approve_lag_time",
   "task_settings_section",
   "task_template_series",
   "column_break_kqmy",
   "ignore_dependent_task_validation",
+  "task_management_tool_settings_section",
+  "hide_document_icon",
+  "hide_credentials_icon",
+  "hide_payment_icon",
   "tab_break_us4n3",
   "notifications_from_subcategory_section",
   "enable_task_before_due_date_notification",
@@ -52,6 +60,7 @@
   "project_before_due_date_notification",
   "notifications_on_project_creation_section",
   "doctypes_to_be_ignored",
+  "opportunity_todo_template",
   "digital_signature_settings_tab",
   "digital_signature_category",
   "din_kyc_category",
@@ -64,7 +73,9 @@
   "auditor_sub_category",
   "tab_4_tab",
   "invoice_series_setup_section",
-  "invoice_series"
+  "invoice_series",
+  "document_details_tab",
+  "document_required"
  ],
  "fields": [
   {
@@ -401,16 +412,82 @@
    "fieldtype": "Link",
    "label": "Role Allowed to Manage AML Compliance",
    "options": "Role"
+  },
+  {
+   "fieldname": "role_allowed_to_approve_lag_time",
+   "fieldtype": "Link",
+   "label": "Role Allowed to Approve Lag Time",
+   "options": "Role"
+  },
+  {
+   "fieldname": "task_management_tool_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Task Management Tool Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "hide_document_icon",
+   "fieldtype": "Check",
+   "label": "Hide Document Icon"
+  },
+  {
+   "default": "0",
+   "fieldname": "hide_payment_icon",
+   "fieldtype": "Check",
+   "label": "Hide Payment Icon"
+  },
+  {
+   "default": "0",
+   "fieldname": "hide_credentials_icon",
+   "fieldtype": "Check",
+   "label": "Hide Credentials Icon"
+  },
+  {
+   "fieldname": "document_details_tab",
+   "fieldtype": "Tab Break",
+   "label": "Document Details"
+  },
+  {
+   "fieldname": "document_required",
+   "fieldtype": "Table",
+   "label": "Documents Required",
+   "options": "Document Required Template"
+  },
+  {
+   "fieldname": "opportunity_todo_template",
+   "fieldtype": "Table",
+   "label": "Opportunity ToDo Template",
+   "options": "Opportunity ToDo Template"
+  },
+  {
+   "default": "0",
+   "fieldname": "create_agreement_from_opportunity",
+   "fieldtype": "Check",
+   "label": "Create Agreement from Opportunity"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_referral_commission",
+   "fieldtype": "Check",
+   "label": "Enable Referral Commission"
+  },
+  {
+   "depends_on": "eval:doc.enable_referral_commission == 1",
+   "fieldname": "service_item",
+   "fieldtype": "Link",
+   "label": "Service Item",
+   "mandatory_depends_on": "eval:doc.enable_referral_commission == 1",
+   "options": "Item"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-10-17 15:49:16.690818",
+ "modified": "2026-03-09 09:54:35.506504",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Settings",
- "naming_rule": "Expression (old style)",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

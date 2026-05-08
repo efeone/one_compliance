@@ -135,11 +135,11 @@ def get_sales_order_custom_fields():
 				"read_only": 1,
 			},
 			{
-                "fieldname": "follow_up_for_next_project",
-                "fieldtype": "Check",
-                "label": "Follow up for next Project",
-                "insert_after": "custom_create_project_automatically"
-            },
+				"fieldname": "follow_up_for_next_project",
+				"fieldtype": "Check",
+				"label": "Follow up for next Project",
+				"insert_after": "custom_create_project_automatically"
+			},
 			{
 				"fieldname": "follow_up_completed",
 				"fieldtype": "Check",
@@ -154,6 +154,59 @@ def get_sales_order_custom_fields():
 				"options": "Compliance Agreement",
 				"insert_after": "custom_is_rework",
 				"read_only": 1
-			}
+			},
+			{
+
+				"fieldname": "is_premium_project",
+				"fieldtype": "Check",
+				"label": "Is Premium Project",
+				"insert_after": "amended_from"
+			},
+			{
+				"fieldname": "is_outsource_service",
+				"fieldtype": "Check",
+				"label": "Is Outsource Service",
+				"insert_after": "is_premium_project",
+				"allow_on_submit": 1
+			},
+			{
+				"fieldname": "supplier",
+				"fieldtype": "Link",
+				"label": "Supplier",
+				"options": "Supplier",
+				"insert_after": "custom_billing_date",
+				"allow_on_submit": 1,
+				"depends_on": "eval: doc.is_outsource_service",
+				"mandatory_depends_on": "eval: doc.is_outsource_service"
+			},
+			{
+				"fieldname": "purchase_invoice",
+				"fieldtype": "Link",
+				"label": "Purchase Invoice",
+				"options": "Purchase Invoice",
+				"insert_after": "supplier",
+				"allow_on_submit": 1,
+				"depends_on": "eval: doc.is_outsource_service"
+			},
+			{
+				"fieldname": "payment_status",
+				"fieldtype": "Data",
+				"label": "Payment Status",
+				"insert_after": "purchase_invoice",
+				"read_only": 1,
+				"depends_on": "eval: doc.is_outsource_service",
+				"fetch_from": "purchase_invoice.status",
+				"allow_on_submit": 1,
+			},
+			{
+				"fieldname": "outstanding_amount",
+				"fieldtype": "Currency",
+				"label": "Outstanding Amount",
+				"fetch_from": "purchase_invoice.outstanding_amount",
+				"read_only": 1,
+				"depends_on": "eval: doc.is_outsource_service",
+				"insert_after": "payment_status",
+				"allow_on_submit": 1,
+    		}
 		]
 	}

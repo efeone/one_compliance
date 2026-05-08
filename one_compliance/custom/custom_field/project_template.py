@@ -20,8 +20,9 @@ def get_project_template_custom_fields():
 			{
 				"fieldname": "custom_project_duration",
 				"fieldtype": "Int",
-				"insert_after": "project_type",
+				"insert_after": "project_duration_minutes",
 				"label": "Project Duration(Days)",
+				"depends_on": "eval: doc.project_duration_type == 'Days'",
 			},
 			{
 				"fetch_from": "compliance_sub_category.category_type",
@@ -72,14 +73,39 @@ def get_project_template_custom_fields():
 				"fieldname": "premium_tasks",
 				"fieldtype": "Table",
 				"label": "Premium Tasks",
-				"options": "Premium Tasks",
+				"options": "Project Template Task",
 				"insert_after": "custom_add_tasks",
+				"depends_on": "eval:doc.has_premium_tasks",
+				"mandatory_depends_on": "eval:doc.has_premium_tasks == 1",
 			},
 			{
 				"fieldname": "custom_add_tasks2",
 				"fieldtype": "Button",
 				"label": "Add Tasks",
 				"insert_after": "premium_tasks",
+				"depends_on": "eval:doc.has_premium_tasks",
+			},
+			{
+				"fieldname": "has_premium_tasks",
+				"fieldtype": "Check",
+				"label": "Has Premium Tasks",
+				"insert_after": "enable_task_readiness_flow",
+			},
+			{
+				"fieldname": "project_duration_type",
+				"fieldtype": "Select",
+				"label": "Project Duration Type",
+				"insert_after": "project_type",
+				"options": "\nDays\nMinutes",
+			},
+			{
+				"fieldname": "project_duration_minutes",
+				"fieldtype": "Duration",
+				"label": "Project Duration (Minutes)",
+				"insert_after": "project_duration_type",
+				"hide_days": 1,
+				"hide_seconds": 1,
+				"depends_on": "eval:doc.project_duration_type == 'Minutes' ",
 			},
 		]
 	}

@@ -13,11 +13,11 @@ Post the output screenshots, if a UI is affected or added due to this feature.
 ## Areas affected and ensured
 List out the areas affected by your code changes.
 
-## Is there any existing behavior change of other features due to this code change?
+## Is there any existing behaviour change of other features due to this code change?
 Mention Yes or No. If Yes, provide the appropriate explanation.
 
-## Was this feature tested on the browsers?
-  - Chrome
-  - Mozilla Firefox
-  - Opera Mini
-  - Safari
+## Was this feature tested on these browsers?
+- [ ]   Chrome
+- [ ]   Mozilla Firefox
+- [ ]   Opera Mini
+- [ ]   Safari

@@ -1,7 +1,7 @@
 import frappe
 from frappe.model.mapper import *
 from frappe import _
-from frappe.utils import getdate, today, get_link_to_form
+from frappe.utils import getdate, today, get_link_to_form, add_days, nowdate
 
 @frappe.whitelist()
 def make_engagement_letter(source_name,target_name=None):
@@ -95,3 +95,115 @@ def create_if_customer_not_exists(opp):
 	customer.insert(ignore_permissions=True)
 
 	return customer.name
+
+@frappe.whitelist()
+def get_item_compliance(item_code):
+	"""
+	Fetches compliance_category and compliance_sub_category
+	from Compliance Sub Category doctype based on Item Code.
+	"""
+
+	if not item_code:
+		return {}
+
+	data = frappe.db.get_value(
+		'Compliance Sub Category',
+		{'item_code': item_code},
+		['name', 'compliance_category', 'sub_category'],
+		as_dict=True
+	)
+
+	if not data:
+		return {}
+
+	return {
+		"compliance_category": data.get("compliance_category"),
+		"compliance_sub_category": data.get("name")
+	}
+
+def create_opportunity_todos(doc, method=None):
+	"""
+	Create ToDo(s) based on Opportunity ToDo Template
+	"""
+	compliance_settings = frappe.get_single("Compliance Settings")
+
+	if not compliance_settings.opportunity_todo_template:
+		return
+
+	for row in compliance_settings.opportunity_todo_template:
+		due_date = add_days(nowdate(), row.due_date_rule) if row.due_date_rule else None
+
+		users = []
+
+		if row.role:
+			role_users = frappe.get_all(
+				"Has Role",
+				filters={"role": row.role},
+				pluck="parent"
+			)
+
+			users = frappe.get_all(
+				"User",
+				filters={
+					"name": ["in", role_users],
+					"enabled": 1
+				},
+				pluck="name"
+			)
+		if users:
+			for user in users:
+				todo = frappe.new_doc("ToDo")
+				todo.description = row.description
+				todo.reference_type = "Opportunity"
+				todo.reference_name = doc.name
+				todo.allocated_to = user
+				todo.date = due_date
+				todo.insert(ignore_permissions=True)
+		else:
+			todo = frappe.new_doc("ToDo")
+			todo.description = row.description
+			todo.reference_type = "Opportunity"
+			todo.reference_name = doc.name
+			todo.date = due_date
+			todo.insert(ignore_permissions=True)
+
+@frappe.whitelist()
+def get_compliance_sub_category_list(compliance_category):
+	return frappe.get_all(
+		"Compliance Sub Category",
+		filters={"compliance_category": compliance_category},
+		fields=["name", "item_code"]
+	)
+
+@frappe.whitelist()
+def create_customer_from_opportunity(opportunity):
+    """
+    Create Customer from Opportunity if enquiry_from = New Client
+    Return Customer name
+    """
+
+    opp = frappe.get_doc("Opportunity", opportunity)
+    if opp.enquiry_from != "New Client":
+        return opp.party_name
+
+    if not opp.organization_name:
+        frappe.throw("Organization Name is required to create Customer")
+    existing_customer = frappe.db.exists(
+        "Customer",
+        {"customer_name": opp.organization_name}
+    )
+    if existing_customer:
+        return existing_customer
+    customer_type = frappe.db.get_single_value(
+        "Compliance Settings",
+        "customer_type"
+    )
+    customer = frappe.get_doc({
+        "doctype": "Customer",
+        "customer_name": opp.organization_name,
+		"compliance_customer_type": customer_type
+    })
+
+    customer.insert(ignore_permissions=True)
+    return customer.name
+

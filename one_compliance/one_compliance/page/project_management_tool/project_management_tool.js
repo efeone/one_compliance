@@ -11,110 +11,62 @@ frappe.pages['project-management_tool'].on_page_load = function (wrapper) {
 	page.main.addClass("frappe-card");
 
 	make_filters(page);
+	// Initialize pagination
+	page.current_page = 1;
+	page.page_length = 20;
 
 	refresh_projects(page);
 }
 
+/*
+Creates filter fields on the page and binds change events to refresh the project list.
+*/
 function make_filters(page) {
-	let projectField = page.add_field({
-		label: __("Project"),
-		fieldname: "project",
-		fieldtype: "Link",
-		options: "Project",
-		change() {
-			if (page.fields_dict.project.get_value()) {
-				refresh_projects(page);
-			}
-		}
-	});
-	page.fields_dict.project.$input.on('change', function () {
-		if (!page.fields_dict.project.get_value()) {
-			refresh_projects(page);
-		}
-	});
-	let customerField = page.add_field({
-		label: __("Customer"),
-		fieldname: "customer",
-		fieldtype: "Link",
-		options: "Customer",
-		change() {
-			if (page.fields_dict.customer.get_value()) {
-				refresh_projects(page);
-			}
-		}
-	});
-	page.fields_dict.customer.$input.on('change', function () {
-		if (!page.fields_dict.customer.get_value()) {
-			refresh_projects(page);
-		}
-	});
-	let employeeField = page.add_field({
-		label: __("Employee"),
-		fieldname: "employee",
-		fieldtype: "Link",
-		options: "User",
-		default: get_employee_id(),
-		change() {
-			if (page.fields_dict.employee.get_value()) {
-				refresh_projects(page);
-			}
+	// Define all filters except Status
+	const filters = [
+		{ label: "Project", fieldname: "project", options: "Project" },
+		{ label: "Customer", fieldname: "customer", options: "Customer" },
+		{
+			label: "Employee",
+			fieldname: "employee",
+			options: "User",
+			default: get_employee_id(),
+			read_only: frappe.session.user === 'Administrator' ? 0 : 1
 		},
-		read_only: frappe.session.user === 'Administrator' ? 0 : 1
-	});
-	page.fields_dict.employee.$input.on('change', function () {
-		if (!page.fields_dict.employee.get_value()) {
+		{ label: "Department", fieldname: "department", options: "Department" },
+		{ label: "Compliance Sub Category", fieldname: "compliance_sub_category", options: "Compliance Sub Category" },
+		{ label: "From Date", fieldname: "from_date", fieldtype: "Date" },
+		{ label: "To Date", fieldname: "to_date", fieldtype: "Date" }
+	];
+
+	// Helper function for refresh
+	const bind_refresh = (fieldname) => {
+		let field = page.fields_dict[fieldname];
+		field.$input.on('change', function () {
 			refresh_projects(page);
-		}
-	});
-	let categoryField = page.add_field({
-		label: __("Department"),
-		fieldname: "department",
-		fieldtype: "Link",
-		options: "Department",
-		change() {
-			if (page.fields_dict.department.get_value()) {
-				refresh_projects(page);
+		});
+	};
+
+	// Create fields dynamically
+	filters.forEach(f => {
+		page.add_field({
+			label: __(f.label),
+			fieldname: f.fieldname,
+			fieldtype: f.fieldtype || "Link",
+			options: f.options,
+			default: f.default || undefined,
+			read_only: f.read_only || 0,
+			change() {
+				if (page.fields_dict[f.fieldname].get_value()) {
+					refresh_projects(page);
+				}
 			}
-		}
+		});
+		bind_refresh(f.fieldname);
 	});
-	page.fields_dict.department.$input.on('change', function () {
-		if (!page.fields_dict.department.get_value()) {
-			refresh_projects(page);
-		}
-	});
-	let subcategoryField = page.add_field({
-		label: __("Compliance Sub Category"),
-		fieldname: "compliance_sub_category",
-		fieldtype: "Link",
-		options: "Compliance Sub Category",
-		change() {
-			if (page.fields_dict.compliance_sub_category.get_value()) {
-				refresh_projects(page);
-			}
-		}
-	});
-	page.fields_dict.compliance_sub_category.$input.on('change', function () {
-		if (!page.fields_dict.compliance_sub_category.get_value()) {
-			refresh_projects(page);
-		}
-	});
-	let fromDateField = page.add_field({
-		label: __("From Date"),
-		fieldname: "from_date",
-		fieldtype: "Date"
-	});
-	page.fields_dict.from_date.$input.off('change').on('change', function () {
-		refresh_projects(page);
-	});
-	let toDateField = page.add_field({
-		label: __("To Date"),
-		fieldname: "to_date",
-		fieldtype: "Date"
-	});
-	page.fields_dict.to_date.$input.off('change').on('change', function () {
-		refresh_projects(page);
-	});
-	let status = page.add_field({
+
+	// Add Status filter separately (Select field)
+	page.add_field({
 		label: __("Status"),
 		fieldname: "status",
 		fieldtype: "Select",
@@ -135,6 +87,9 @@ function make_filters(page) {
 	});
 }
 
+/*
+ Returns the current user's Employee ID, or an empty string if user is Administrator.
+*/
 function get_employee_id() {
 	if (frappe.session.user === 'Administrator') {
 		return '';
@@ -144,15 +99,25 @@ function get_employee_id() {
 	}
 }
 
-function refresh_projects(page) {
-	// Clear existing projects from the page
+/*
+ Clear existing projects from the page
+*/
+function refresh_projects(page, page_num = null) {
+	// Handle page number
+	if (page_num) {
+		page.current_page = page_num;
+	} else {
+		page.current_page = page.current_page || 1;
+	}
+
+	// Clear existing project list and pagination controls
 	page.body.find(".frappe-list").remove();
 
-	const selectedStatus = page.fields_dict.status.get_value();
-	const projectName = page.fields_dict.project.get_value();
-	const customerName = page.fields_dict.customer.get_value();
+	const selected_status = page.fields_dict.status.get_value();
+	const project_name = page.fields_dict.project.get_value();
+	const customer_name = page.fields_dict.customer.get_value();
 	const department = page.fields_dict.department.get_value();
-	const subCategory = page.fields_dict.compliance_sub_category.get_value();
+	const sub_category = page.fields_dict.compliance_sub_category.get_value();
 	const employee = page.fields_dict.employee.get_value();
 	const from_date = page.fields_dict.from_date.get_value();
 	const to_date = page.fields_dict.to_date.get_value();
@@ -160,14 +125,16 @@ function refresh_projects(page) {
 	frappe.call({
 		method: "one_compliance.one_compliance.page.project_management_tool.project_management_tool.get_project",
 		args: {
-			status: selectedStatus,
-			project: projectName,
-			customer: customerName,
+			status: selected_status,
+			project: project_name,
+			customer: customer_name,
 			department: department,
-			sub_category: subCategory,
+			sub_category: sub_category,
 			employee: employee,
 			from_date: from_date,
-			to_date: to_date
+			to_date: to_date,
+			page: page.current_page,
+			page_length: page.page_length
 		},
 		callback: (r) => {
 			if (r.message && r.message.length > 0) {
@@ -184,13 +151,56 @@ function refresh_projects(page) {
 					// Navigate to the task management tool page
 					frappe.set_route('task-management-tool');
 				});
+
+				// Attach pagination controls and page-length button logic
+				render_pagination_controls(page, r.message.length);
+				setup_page_length_buttons(page);
 			} else {
 				// If no projects are found, append a message to the page body
-				$('<div class="frappe-list"></div>').appendTo(page.body).append('<div class="no-result text-muted flex justify-center align-center" style="text-align: center;"><p>No Project found with matching filters.</p></div>');
+				$('<div class="frappe-list"></div>').appendTo(page.body)
+					.append('<div class="no-result text-muted flex justify-center align-center" style="text-align: center;"><p>No Project found with matching filters.</p></div>');
 			}
 		},
 		freeze: true,
 		freeze_message: 'Loading Project'
 	});
+}
 
+/*
+Renders pagination controls (Previous, Next, and Page Info) inside #pagination-container.
+*/
+function render_pagination_controls(page, result_count) {
+	const container = $("#pagination-container");
+	container.empty();
+
+	const prev_btn = $('<button class="page-btn btn btn-default btn-sm me-2">Previous</button>');
+	const next_btn = $('<button class="page-btn btn btn-default btn-sm">Next</button>');
+	const info_text = $(`<span style="margin: 0 10px;">Page ${page.current_page}</span>`);
+
+	// Disable logic
+	if (page.current_page === 1) prev_btn.prop('disabled', true);
+	if (result_count < page.page_length) next_btn.prop('disabled', true);
+
+	// Events
+	prev_btn.on('click', () => refresh_projects(page, page.current_page - 1));
+	next_btn.on('click', () => refresh_projects(page, page.current_page + 1));
+
+	container.append(prev_btn, info_text, next_btn);
+}
+
+/*
+Sets up event listeners for page length buttons to change the number of items displayed per page.
+*/
+function setup_page_length_buttons(page) {
+	$(".page-length-btn").removeClass("active");
+
+	$(`.page-length-btn[data-length="${page.page_length}"]`).addClass("active");
+
+	$(".page-length-btn").off('click').on('click', function () {
+		$(".page-length-btn").removeClass("active");
+		$(this).addClass("active");
+		page.page_length = parseInt($(this).attr("data-length"));
+		page.current_page = 1;
+		refresh_projects(page);
+	});
 }

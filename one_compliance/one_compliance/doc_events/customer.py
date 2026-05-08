@@ -546,3 +546,20 @@ def create_aml_task(doc, method):
 					"User {} does not exist".format(username),
 					"AML Task Creation"
 				)
+
+def validate_commission_type(doc, method=None):
+	"""
+	Validate referral commission settings in Customer doctype when a Customer is created or updated.
+	"""
+	enable_referral = frappe.db.get_single_value(
+		"Compliance Settings",
+		"enable_referral_commission"
+	)
+	if not enable_referral:
+		return
+	if doc.disable_referral_commission:
+		return
+	if not doc.commission_based_on_percentage and not doc.commission_based_on_amount:
+		frappe.throw("Please select Commission Based on Percentage or Commission Based on Amount.")
+	if not doc.one_time and not doc.repeat_on_project:
+		frappe.throw("Please select either One Time or Repeat On Project for referral commission.")

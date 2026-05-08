@@ -1,75 +1,105 @@
 /* Style to each task card */
 .card {
-        margin: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border: None;
-        border-radius: 8px;
-        overflow: hidden;
-        padding: 2px;
-        background-color: aliceblue;
-    }
-    /* background color to the main page */
-    .layout-main-section.frappe-card {
-      background-color: #fdf7f9;
-    }
-    /* background color to the filter form */
-    .page-form {
-      background-color: #fdf7f9;
-    }
-    /* transparent background to the header tag */
-    .list-row-head {
-      background-color: transparent;
-    }
-    /* padding to each card body */
-    .card-body {
-        padding: 20px;
-    }
-    /* style to card title */
-    .card-title {
-        font-size: 1rem;
-        margin-bottom: 10px;
-    }
-    /* Alignment for card text section */
-    .card-text {
-        margin-bottom: 15px;
-    }
-    /* Alignment for button icon section */
-    .btn-icon {
-        margin-right: 2px;
-        padding: 8px;
-        margin-bottom: 5px;
-    }
-    /* Alignment for add assignee button icon */
-    .rounded-circle {
-      margin-top:5px;
-      padding: 0px 4px;
-      position: absolute;
-      right: 30px;
-    }
-    /* style to the customer link */
-    .customer-link {
-        display: inline-block;
-        max-width: 100%; /* Adjust as needed */
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-    }
+		margin: 20px 10px ;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		border: None;
+		border-radius: 8px;
+		overflow: hidden;
+		padding: 2px;
+		background-color: rgb(242, 242, 243);
+	}
+	/* background color to the main page */
+	.layout-main-section.frappe-card {
+	  background-color: #ffffff;
+	}
+	/* background color to the filter form */
+	.page-form {
+	  background-color: #ffffff;
+	}
+	/* transparent background to the header tag */
+	.list-row-head {
+	  background-color: transparent;
+	}
+	/* padding to each card body */
+	.card-body {
+		padding: 20px;
+	}
+	/* style to card title */
+	.card-title {
+		font-size: 1rem;
+		margin-bottom: 10px;
+	}
+	/* Alignment for card text section */
+	.card-text {
+		margin-bottom: 15px;
+	}
+	/* Alignment for button icon section */
+	.btn-icon {
+		margin-right: 2px;
+		padding: 8px;
+		margin-bottom: 5px;
+	}
+	/* Alignment for add assignee button icon */
+	.rounded-circle {
+	  margin-top:5px;
+	  padding: 0px 4px;
+	  position: absolute;
+	  right: 30px;
+	}
+	/* style to the customer link */
+	.customer-link {
+		display: inline-block;
+		max-width: 100%; /* Adjust as needed */
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
 
-    .customer-link:hover {
-        max-width: none;
-        white-space: nowrap;
-        overflow: visible;
-    }
-    /* style to the project link */
-    .project-link{
-      display: inline-block;
-      max-width: 100%; /* Adjust as needed */
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
+	.customer-link:hover {
+		max-width: none;
+		white-space: nowrap;
+		overflow: visible;
+	}
+	/* style to the project link */
+	.project-link{
+	  display: inline-block;
+	  max-width: 100%; /* Adjust as needed */
+	  overflow: hidden;
+	  white-space: nowrap;
+	  text-overflow: ellipsis;
+	}
 
-    .project-link:hover {
-        max-width: none;
-        white-space: normal;
-    }
+	.project-link:hover {
+		max-width: none;
+		white-space: normal;
+	}
+
+	#pagination-container .btn {
+		display: inline-block;
+		margin: 0 5px;
+		padding: 5px 12px;
+		font-size: 14px;
+		border-radius: 5px;
+		border: 1px solid #3e89ec;
+		color: #007bff;
+		background-color: white;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	#pagination-container .btn:hover {
+		background-color: #1d7be0;
+		color: white;
+	}
+
+	#pagination-container .btn:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
+
+
+	}
+
+	.page-size-selector {
+	display: flex;
+	align-items: center;
+	}

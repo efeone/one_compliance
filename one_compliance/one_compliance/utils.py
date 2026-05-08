@@ -307,6 +307,10 @@ def create_project_completion_todos(sales_order, project_name):
 		sales_order (str): ID of Sales Order linked with project
 		project_name (str): Project Name of the Project to handle completion
 	"""
+	# Check if sales order exists
+	if not frappe.db.exists("Sales Order", sales_order):
+		# If sales order does not exist, ignore project completion todos
+		return
 	project_id = frappe.db.exists("Project", {"project_name": project_name})
 	if not project_id:
 		frappe.throw(f"Project {project_name} does not exist")
@@ -562,3 +566,33 @@ def notify_assignment(assigned_by, allocated_to, doc_type, doc_name, action="CLO
 
 		enqueue_create_notification(allocated_to, notification_doc)
 
+@frappe.whitelist()
+def get_active_employees_for_so(doctype, txt, searchfield, start, page_len, filters):
+	"""Method to get active employees for Sales Order"""
+
+	so_date = filters.get("transaction_date")
+
+	employees = frappe.db.sql("""
+		SELECT
+			e.name, e.employee_name
+		FROM
+			`tabEmployee` e
+		WHERE
+			(
+				e.status = 'Active'
+			OR
+				(e.status = 'Left' AND e.relieving_date >= %s)
+			)
+			AND (e.employee_name LIKE %s OR e.name LIKE %s)
+		ORDER BY
+			e.name ASC
+		LIMIT %s OFFSET %s
+	""", (
+		so_date,
+		f"%{txt}%",
+		f"%{txt}%",
+		page_len,
+		start
+	), as_list=True)
+
+	return employees

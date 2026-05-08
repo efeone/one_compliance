@@ -27,6 +27,7 @@
   "internal",
   "is_billable",
   "rate",
+  "premium_task",
   "section_break_qmwb",
   "default_account",
   "department_details_section",
@@ -244,10 +245,10 @@
    "read_only": 1
   },
   {
-   "default": "1",
+   "default": "0",
    "fieldname": "project_based_on_prior_phase",
    "fieldtype": "Check",
-   "label": "Project based on Prior Phase"
+   "label": "Project Based on Prior Phase"
   },
   {
    "fieldname": "section_break_qmwb",
@@ -289,11 +290,18 @@
    "fieldtype": "Link",
    "label": "Renew Notification for Customer",
    "options": "Email Template"
+  },
+  {
+   "default": "0",
+   "fieldname": "premium_task",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Has Premium Task"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-06-10 11:25:17.649914",
+ "modified": "2025-10-21 14:09:24.167462",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Compliance Sub Category",
@@ -368,6 +376,7 @@
   }
  ],
  "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
  "search_fields": "sub_category,compliance_category,category_type",
  "sort_field": "modified",
  "sort_order": "DESC",

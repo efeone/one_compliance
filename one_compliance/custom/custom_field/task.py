@@ -147,11 +147,56 @@ def get_task_custom_fields():
 				"read_only": 1,
 			},
 			{
+				"fieldname": "checklist_template",
+				"fieldtype": "Link",
+				"label": "Checklist Template",
+				"options": "Task Checklist Template",
+				"insert_after": "compliance_sub_category",
+				"read_only": 1,
+			},
+			{
+				"fieldname": "is_premium_task",
+				"fieldtype": "Check",
+				"label": "Is Premium Task",
+				"insert_after": "checklist_template",
+				"read_only": 1,
+			},
+			{
+				"fieldname": "has_external_dependencies",
+				"fieldtype": "Check",
+				"label": "Has External Dependencies",
+				"insert_after": "is_premium_task",
+				"read_only": 1,
+			},
+			{
+				"fieldname": "send_email_notification_for_lag_time",
+				"fieldtype": "Check",
+				"label": "Send Email Notification for Lag Time",
+				"insert_after": "has_external_dependencies",
+				"depends_on": "eval:doc.has_external_dependencies",
+				"read_only": 1,
+			},
+			{
 				"fieldname": "task_weightage",
 				"fieldtype": "Select",
 				"label": "Task Weightage",
 				"options": "\n0\n1\n2\n3\n4\n5\n",
 				"insert_after": "start"
+			},
+			{
+				"fieldname": "has_reimbursement",
+				"fieldtype": "Check",
+				"label": "Has Reimbursement",
+				"read_only": 1,
+				"insert_after": "send_email_notification_for_lag_time",
+			},
+			{
+				"fieldname": "task_checklist_template",
+				"fieldtype": "Table",
+				"label": "Task Checklist Template",
+				"options": "Task Checklist Template Record",
+				"insert_after": "depends_on_tasks",
+				"read_only": 1,
 			}
 		]
 	}

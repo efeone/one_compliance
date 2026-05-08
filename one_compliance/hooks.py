@@ -31,17 +31,18 @@ required_apps = ["frappe/erpnext", "frappe/hrms"]
 
 # include js in doctype views
 doctype_js = {
-    "Project Template" : "public/js/project_template.js",
-    "Customer" : "public/js/customer.js",
-    "Project": "public/js/project.js",
-    "Task": "public/js/task.js",
-    "Department": "public/js/department.js",
-    "Lead":"public/js/lead.js",
-    "Opportunity":"public/js/opportunity.js",
-    "Sales Invoice":"public/js/sales_invoice.js",
-    "Sales Order":"public/js/sales_order.js",
-    "Company" : "public/js/company.js",
-    "Event":"public/js/event.js"
+	"Project Template" : "public/js/project_template.js",
+	"Customer" : "public/js/customer.js",
+	"Project": "public/js/project.js",
+	"Task": "public/js/task.js",
+	"Department": "public/js/department.js",
+	"Lead":"public/js/lead.js",
+	"Opportunity":"public/js/opportunity.js",
+	"Sales Invoice":"public/js/sales_invoice.js",
+	"Sales Order":"public/js/sales_order.js",
+	"Company" : "public/js/company.js",
+	"Event":"public/js/event.js",
+	"Timesheet": "public/js/timesheet.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -101,7 +102,7 @@ after_migrate = "one_compliance.setup.after_migrate"
 
 permission_query_conditions = {
 	"Project": "one_compliance.one_compliance.doc_events.project.get_permission_query_conditions",
-    "Task": "one_compliance.one_compliance.doc_events.task.get_permission_query_conditions",
+	"Task": "one_compliance.one_compliance.doc_events.task.get_permission_query_conditions",
 }
 #
 # has_permission = {
@@ -144,44 +145,60 @@ doc_events = {
     },
     'Project':{
         'on_update': 'one_compliance.one_compliance.doc_events.project.project_on_update',
+		'after_insert': 'one_compliance.one_compliance.doc_events.project.create_commission_purchase_invoice',
     },
-    'Customer':{
-        'on_update':[
-            'one_compliance.one_compliance.doc_events.customer.customer_on_update',
-            'one_compliance.one_compliance.doc_events.customer.create_project_from_customer',
+	'Customer':{
+		'on_update':[
+			'one_compliance.one_compliance.doc_events.customer.customer_on_update',
+			'one_compliance.one_compliance.doc_events.customer.create_project_from_customer',
 			'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.update_status_on_customer_change'
-        ],
-        'before_save':[
-            'one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',
-            'one_compliance.one_compliance.doc_events.customer.set_expiry_dates'
-        ],
-        'after_insert': [
+		],
+		'before_save':[
+			'one_compliance.one_compliance.doc_events.customer.create_task_from_opportunity',
+			'one_compliance.one_compliance.doc_events.customer.set_expiry_dates'
+		],
+		'after_insert': [
 			'one_compliance.one_compliance.doc_events.oppotunity.set_opportunity_converted',
 			'one_compliance.one_compliance.doc_events.customer.create_aml_task'
 		],	
-		'before_insert': 'one_compliance.one_compliance.doc_events.customer.disable_customer_on_creation'
-    },
-    'Sales Invoice':{
-        'on_submit': 'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
-    },
-    'Opportunity':{
-        'after_save':'one_compliance.one_compliance.doc_events.oppotunity.make_engagement_letter'
-    },
-    'Sales Order':{
-        'on_submit':'one_compliance.one_compliance.doc_events.sales_order.create_project_on_submit',
-        'on_cancel': 'one_compliance.one_compliance.doc_events.sales_order.so_on_cancel_custom',
-        'on_update_after_submit': 'one_compliance.one_compliance.doc_events.sales_order.so_on_update_after_submit',
-        'validate': 'one_compliance.one_compliance.doc_events.sales_order.set_compliance_fields'
-    },
-    'Payment Entry':{
-        'on_submit': 'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_submit'
-    },
-    'ToDo':{
-        'before_insert':[
-            'one_compliance.one_compliance.doc_events.todo.set_company_and_related_fields',
-        ]
-    }
-}
+		'before_insert': 'one_compliance.one_compliance.doc_events.customer.disable_customer_on_creation',
+		'validate': 'one_compliance.one_compliance.doc_events.customer.validate_commission_type'
+	},
+	'Sales Invoice':{
+		'on_submit': 'one_compliance.one_compliance.doc_events.sales_invoice.sales_invoice_on_submit'
+	},
+	'Opportunity':{
+		'after_save':'one_compliance.one_compliance.doc_events.oppotunity.make_engagement_letter',
+		'after_insert': 'one_compliance.one_compliance.doc_events.oppotunity.create_opportunity_todos',
+	},
+	'Sales Order':{
+		'on_submit':'one_compliance.one_compliance.doc_events.sales_order.create_project_on_submit',
+		'on_cancel': 'one_compliance.one_compliance.doc_events.sales_order.so_on_cancel_custom',
+		'on_update_after_submit': 'one_compliance.one_compliance.doc_events.sales_order.so_on_update_after_submit',
+		'validate': 'one_compliance.one_compliance.doc_events.sales_order.set_compliance_fields'
+	},
+	'Payment Entry':{
+		'on_submit': [
+			'one_compliance.one_compliance.doc_events.payment_entry.payment_entry_on_submit',
+			'one_compliance.one_compliance.doc_events.payment_entry.update_commission_status_from_payment'
+		],
+		'on_cancel': 'one_compliance.one_compliance.doc_events.payment_entry.update_commission_status_from_payment'
+	},
+	'ToDo':{
+		'before_insert':[
+			'one_compliance.one_compliance.doc_events.todo.set_company_and_related_fields',
+		]
+	},
+	'Timesheet': {
+		'validate': 'one_compliance.one_compliance.doc_events.timesheet.calculate_total_lag_hours',
+		'on_update': 'one_compliance.one_compliance.doc_events.timesheet.check_lag_and_notify',
+	},
+	"Purchase Invoice": {
+		"on_change": "one_compliance.one_compliance.doc_events.purchase_invoice.update_sales_order",
+		"on_submit": "one_compliance.one_compliance.doc_events.purchase_invoice.update_commission_status_in_customer",
+		"on_cancel": "one_compliance.one_compliance.doc_events.purchase_invoice.update_commission_status_in_customer",
+	}
+}	
 
 # Scheduled Tasks
 # ---------------
@@ -191,28 +208,30 @@ scheduler_events = {
 # "one_compliance.tasks.hourly"
 # ],
 	"daily": [
-        'one_compliance.one_compliance.utils.task_daily_sheduler',
-        'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.change_agreement_status_scheduler',
-        'one_compliance.one_compliance.doc_events.customer.create_project_from_customer_scheduler',
-        'one_compliance.one_compliance.utils.notification_for_digital_signature_expiry',
-        'one_compliance.one_compliance.utils.project_overdue_notification',
-        'one_compliance.one_compliance.doc_events.project.set_status_to_overdue',
-        'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.send_repeat_notif',
-        'one_compliance.one_compliance.doc_events.sales_order.create_opportunity',
-		'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_sales_orders_from_compliance_agreements'
-    ],
+		'one_compliance.one_compliance.utils.task_daily_sheduler',
+		'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.change_agreement_status_scheduler',
+		'one_compliance.one_compliance.doc_events.customer.create_project_from_customer_scheduler',
+		'one_compliance.one_compliance.utils.notification_for_digital_signature_expiry',
+		'one_compliance.one_compliance.utils.project_overdue_notification',
+		'one_compliance.one_compliance.doc_events.project.set_status_to_overdue',
+		'one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.send_repeat_notif',
+		'one_compliance.one_compliance.doc_events.sales_order.create_opportunity',
+		'one_compliance.one_compliance.doc_events.task.set_tasks_as_overdue',
+		'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_sales_orders_from_compliance_agreements',
+		'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_future_one_time_projects',
+	],
 #	"hourly": [
 #		"one_compliance.tasks.hourly"
 #	],
 	# "weekly": [
-    #
+	#
 	# ],
 	# "monthly": [
-    #
+	#
 	# ],
-    "cron": {
-        "0 6 * * *": ["one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.create_renewal_opportunities"]
-    }
+	"cron": {
+		"0 6 * * *": ["one_compliance.one_compliance.doctype.compliance_sub_category.compliance_sub_category.create_renewal_opportunities"]
+	}
 }
 
 # Testing
@@ -232,7 +251,7 @@ override_whitelisted_methods = {
 # along with any modifications made in other Frappe apps
 override_doctype_dashboards = {
 	"Item": "one_compliance.one_compliance.doc_events.item_dashboard.get_data",
-    "Project": "one_compliance.one_compliance.doc_events.project_dashboard.get_data"
+	"Project": "one_compliance.one_compliance.doc_events.project_dashboard.get_data"
 }
 
 # exempt linked doctypes from being automatically cancelled
@@ -277,9 +296,9 @@ override_doctype_dashboards = {
 # ]
 fixtures = [
 	{
-        "dt": "Custom HTML Block",
-        "filters": [
-            ["name", "in", ["Employee Management", "Employee Management"]]
-        ]
-    }
+		"dt": "Custom HTML Block",
+		"filters": [
+			["name", "in", ["Employee Management", "Employee Management"]]
+		]
+	}
 ]

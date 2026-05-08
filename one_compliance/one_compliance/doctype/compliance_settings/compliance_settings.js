@@ -76,6 +76,15 @@ frappe.ui.form.on('Compliance Settings', {
       };
     });
 
+    // filter for service_item based on is_service_item
+    frm.set_query('service_item', function () {
+        return {
+            filters: {
+                is_service_item: 1
+            }
+        };
+    });
+
 		//filter for digital_signature_sub_category based on digital_signature_category
     frm.set_query('digital_signature_sub_category', function(){
       return {

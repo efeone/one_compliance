@@ -86,6 +86,11 @@ class CustomTask(NestedSet):
 		self.update_depends_on()
 		self.validate_dependencies_for_template_task()
 		self.validate_completed_on()
+		self.validate_reimbursement_check()
+		self.validate_checklist()
+
+	def before_insert(self):
+		self.set_checklist_template()
 
 	def validate_dates(self):
 		self.validate_from_to_dates("exp_start_date", "exp_end_date")
@@ -173,6 +178,15 @@ class CustomTask(NestedSet):
 	def validate_completed_on(self):
 		if self.completed_on and getdate(self.completed_on) > getdate():
 			frappe.throw(_("Completed On cannot be greater than Today"))
+
+	def validate_reimbursement_check(self):
+		'''
+			Validate Rembursement JV on Task Completion
+		'''
+		if self.status == "Completed" and self.has_reimbursement and not self.custom_is_payable:
+			frappe.throw(
+				title=_("Reimbursement Journal Entry Missing"),
+				msg=_("Please create Reimbursement Journal Entry before marking the task <b>`{0}`</b> as Completed".format(self.name)))
 
 	def update_depends_on(self):
 		depends_on_tasks = ""
@@ -311,12 +325,51 @@ class CustomTask(NestedSet):
 		self.update_project()
 
 	def update_status(self):
-		if self.status not in ("Cancelled", "Completed") and self.exp_end_date:
+		if self.status not in ("Cancelled", "Completed", "Hold") and self.exp_end_date:
 			from datetime import datetime
 
 			if self.exp_end_date < datetime.now().date():
 				self.db_set("status", "Overdue", update_modified=False)
 				self.update_project()
+
+	def set_checklist_template(self):
+		'''
+			Set Checklist Template from Compliance Sub Category on Task Creation
+		'''
+		if not self.checklist_template:
+			return
+		if not frappe.db.exists("Task Checklist Template", self.checklist_template):
+			return
+		template_doc = frappe.get_doc("Task Checklist Template", self.checklist_template)
+		for item in template_doc.checklist:
+			self.append("task_checklist_template", {
+				"checklist_item": item.checklist_item,
+			})
+
+	def validate_checklist(self):
+		'''
+			Validate Checklist Completion on Task Completion
+		'''
+		if self.status == "Completed":
+			for item in self.task_checklist_template:
+				if not item.completed:
+					frappe.throw(
+						title=_("Checklist Incomplete"),
+						msg=_("Please complete the checklist item <b>`{0}`</b> before marking the task <b>`{1}`</b> as Completed".format(item.checklist_item, self.name))
+					)
+
+@frappe.whitelist()
+def set_tasks_as_overdue():
+	tasks = frappe.get_all(
+		"Task",
+		filters={"status": ["not in", ["Cancelled", "Completed", "Hold"]]},
+		fields=["name", "status", "review_date"],
+	)
+	for task in tasks:
+		if task.status == "Pending Review":
+			if getdate(task.review_date) > getdate(today()):
+				continue
+		frappe.get_doc("Task", task.name).update_status()
 
 @frappe.whitelist()
 def append_users_to_project(doc, method):
