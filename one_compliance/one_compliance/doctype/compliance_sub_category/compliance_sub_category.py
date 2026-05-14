@@ -217,55 +217,55 @@ def update_related_item_name(doc, old_sub_category, new_sub_category, compliance
 	"""
 	Update the related Item's name and code when the subcategory is renamed.
 	"""
-    item_name = frappe.db.get_value("Item", {"item_name": old_sub_category}, "name")
-    if item_name:
-        frappe.rename_doc("Item", item_name, new_sub_category, force=True)
-        frappe.db.set_value("Item", new_sub_category, {
-            "item_name": new_sub_category,
-            "item_code": new_sub_category
-        })
-        if doc.default_account:
-            for d in doc.default_account:
-                frappe.db.set_value(
-                    "Item Default",
-                    {"parent": new_sub_category, "company": d.company},
-                    {
-                        "income_account": d.default_income_account
-                    }
-                )
-    rename_compliance_subcategory(old_sub_category, new_sub_category, compliance_category)
-    frappe.msgprint(
-        f"Item & Subcategory Updated: {old_sub_category} → {new_sub_category}",
-        indicator="green",
-        alert=True
-    )
+	item_name = frappe.db.get_value("Item", {"item_name": old_sub_category}, "name")
+	if item_name:
+		frappe.rename_doc("Item", item_name, new_sub_category, force=True)
+		frappe.db.set_value("Item", new_sub_category, {
+			"item_name": new_sub_category,
+			"item_code": new_sub_category
+		})
+		if doc.default_account:
+			for d in doc.default_account:
+				frappe.db.set_value(
+					"Item Default",
+					{"parent": new_sub_category, "company": d.company},
+					{
+						"income_account": d.default_income_account
+					}
+				)
+	rename_compliance_subcategory(old_sub_category, new_sub_category, compliance_category)
+	frappe.msgprint(
+		f"Item & Subcategory Updated: {old_sub_category} → {new_sub_category}",
+		indicator="green",
+		alert=True
+	)
 
 @frappe.whitelist()
 def rename_compliance_subcategory(old_sub_category, new_sub_category, compliance_category):
 	"""
 	Update the Compliance Sub Category name to reflect the new subcategory name.
 	"""
-    old_name = f"{compliance_category}-{old_sub_category}"
-    new_name = f"{compliance_category}-{new_sub_category}"
+	old_name = f"{compliance_category}-{old_sub_category}"
+	new_name = f"{compliance_category}-{new_sub_category}"
 
-    if frappe.db.exists("Compliance Sub Category", old_name):
-        frappe.rename_doc(
-            "Compliance Sub Category",
-            old_name,
-            new_name,
-            force=True
-        )
-        frappe.db.set_value(
-            "Compliance Sub Category",
-            new_name,
-            "sub_category",
-            new_sub_category
-        )
-        frappe.msgprint(
-            f"Subcategory Renamed: {old_name} → {new_name}",
-            indicator="blue",
-            alert=True
-        )
+	if frappe.db.exists("Compliance Sub Category", old_name):
+		frappe.rename_doc(
+			"Compliance Sub Category",
+			old_name,
+			new_name,
+			force=True
+		)
+		frappe.db.set_value(
+			"Compliance Sub Category",
+			new_name,
+			"sub_category",
+			new_sub_category
+		)
+		frappe.msgprint(
+			f"Subcategory Renamed: {old_name} → {new_name}",
+			indicator="blue",
+			alert=True
+		)
 
 def send_repeat_notif():
 	"""Method sends repeat notifications for compliance subcategories."""
@@ -392,44 +392,44 @@ def send_notification_email(projects_to_notify, sub_category_doc):
 
 @frappe.whitelist()
 def create_renewal_opportunities():
-    today_date = getdate(today())
-    sub_categories = frappe.get_all(
-        "Compliance Sub Category",
-        filters={"enabled": 1, "allow_repeat": 1},
-        fields=["name", "renew_notif_days_before", "sub_category"]
-    )
-    for sub_cat in sub_categories:
-        if not sub_cat.renew_notif_days_before:
-            continue
-        sales_orders = frappe.get_all(
-            "Sales Order",
-            filters={"custom_compliance_subcategory": sub_cat.name},
-            fields=["name", "custom_expected_end_date", "customer"]
-        )
-        for order in sales_orders:
-            if not order.custom_expected_end_date:
-                continue
-            renewal_date = getdate(order.custom_expected_end_date)
-            notif_date = add_days(renewal_date, -int(sub_cat.renew_notif_days_before))
-            if notif_date == today_date:
-                existing = frappe.get_all("Opportunity", filters={
-                    "opportunity_type": "Sales",
-                    "party_name": order.customer
-                })
-                if not existing:
-                    sales_order_doc = frappe.get_doc("Sales Order", order.name)
-                    opportunity = frappe.new_doc("Opportunity")
-                    opportunity.opportunity_from = "Customer"
-                    opportunity.party_name = order.customer
-                    opportunity.opportunity_type = "Sales"
-                    opportunity.enquiry_date = today_date
-                    opportunity.status = "Open"
-                    for item in sales_order_doc.items:
-                        opportunity.append("items", {
-                            "item_code": item.item_code,
-                            "qty": item.qty,
-                            "rate": item.rate,
-                            "amount": item.amount
-                        })
-                    opportunity.save(ignore_permissions=True)
-                    frappe.db.commit()
+	today_date = getdate(today())
+	sub_categories = frappe.get_all(
+		"Compliance Sub Category",
+		filters={"enabled": 1, "allow_repeat": 1},
+		fields=["name", "renew_notif_days_before", "sub_category"]
+	)
+	for sub_cat in sub_categories:
+		if not sub_cat.renew_notif_days_before:
+			continue
+		sales_orders = frappe.get_all(
+			"Sales Order",
+			filters={"custom_compliance_subcategory": sub_cat.name},
+			fields=["name", "custom_expected_end_date", "customer"]
+		)
+		for order in sales_orders:
+			if not order.custom_expected_end_date:
+				continue
+			renewal_date = getdate(order.custom_expected_end_date)
+			notif_date = add_days(renewal_date, -int(sub_cat.renew_notif_days_before))
+			if notif_date == today_date:
+				existing = frappe.get_all("Opportunity", filters={
+					"opportunity_type": "Sales",
+					"party_name": order.customer
+				})
+				if not existing:
+					sales_order_doc = frappe.get_doc("Sales Order", order.name)
+					opportunity = frappe.new_doc("Opportunity")
+					opportunity.opportunity_from = "Customer"
+					opportunity.party_name = order.customer
+					opportunity.opportunity_type = "Sales"
+					opportunity.enquiry_date = today_date
+					opportunity.status = "Open"
+					for item in sales_order_doc.items:
+						opportunity.append("items", {
+							"item_code": item.item_code,
+							"qty": item.qty,
+							"rate": item.rate,
+							"amount": item.amount
+						})
+					opportunity.save(ignore_permissions=True)
+					frappe.db.commit()
