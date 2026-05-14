@@ -145,7 +145,7 @@ def get_customer_custom_fields():
 				"fieldname": "supplier",
 				"fieldtype": "Link",
 				"insert_after": "disable_referral_commission",
-				"label": "Supplier",
+				"label": "Referred By",
 				"options": "Supplier",
 				"depends_on": "eval:!doc.disable_referral_commission",
 			},
