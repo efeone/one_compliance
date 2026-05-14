@@ -30,7 +30,14 @@ frappe.ui.form.on('Sales Invoice', {
                         label: 'TDS Account',
                         fieldname: 'tds_account',
                         fieldtype: 'Link',
-                        options: 'Account'
+                        options: 'Account',
+                        get_query: function () {
+                            return {
+                                filters: {
+                                    company: frm.doc.company
+                                }
+                            };
+                        }
                     },
                     {
                         label: 'Percentage of TDS',
