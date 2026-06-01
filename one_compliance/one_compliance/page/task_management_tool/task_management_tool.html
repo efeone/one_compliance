@@ -67,12 +67,14 @@
 							<!-- Button for start -->
 							<button class="btn btn-outline-warning btn-icon startButton" task-id="{{ data.name }}"
 								project-id="{{ data.project }}" assignees="{{ data.employee_names }}"
+								task-subject="{{ data.subject }}"
 								data-toggle="tooltip" title="Start Timer">
 								<i class="fas fa-play"></i>
 							</button>
 							<!-- Button for timesheet -->
 							<button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}"
 								project-id="{{ data.project }}" assignees="{{ data.employee_names }}"
+								task-subject="{{ data.subject }}"
 								data-toggle="tooltip" title="Time Sheet">
 								<i class="fas fa-clock"></i>
 							</button>

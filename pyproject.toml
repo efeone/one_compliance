@@ -1,0 +1,20 @@
+[project]
+name = "one_compliance"
+authors = [
+    { name = "efeone", email = "info@efeone.com"}
+]
+description = "One Compliance is a comprehensive task management software solution designed to help organizations efficiently plan, track, and execute compliance-related and operational tasks. It provides a centralized platform to assign responsibilities, monitor progress, set deadlines, and ensure accountability across teams. With features such as task scheduling, workflow tracking, and reporting, One Compliance enables businesses to maintain regulatory adherence, improve coordination, and enhance overall productivity while reducing the risk of missed or incomplete tasks."
+requires-python = ">=3.10"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = [
+    # "frappe~=15.0.0" # Installed and managed by bench.
+]
+
+[build-system]
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+# These dependencies are only installed when developer mode is enabled
+[tool.bench.dev-dependencies]
+# package_name = "~=1.1.0"
