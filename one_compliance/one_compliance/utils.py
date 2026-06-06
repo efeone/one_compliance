@@ -374,35 +374,38 @@ def create_timesheet(employee, activity_type, from_time, to_time, event=None):
 	to_time = get_datetime(to_time)
 	employee_id = frappe.get_value("Employee", {"name": employee}, "name")
 
-	# If event is provided, check if it's already added to any timesheet for this employee
-	if event:
-		has_entry = frappe.db.get_value("Timesheet Detail", 
-			{"event": event, "parenttype": "Timesheet", "docstatus": ["<", 2]}, 
-			"parent"
-		)
-		if has_entry:
-			# Verify if the parent timesheet belongs to this employee
-			ts_employee = frappe.db.get_value("Timesheet", has_entry, "employee")
-			if ts_employee == employee_id:
-				frappe.throw(_("Timesheet already created for this Event"))
+	# Check if a draft timesheet already exists for the employee for today
+	existing_ts = frappe.db.get_value("Timesheet", {
+		"employee": employee_id,
+		"start_date": from_time.date(),
+		"docstatus": 0
+	}, "name")
 
-	# Check if a timesheet already exists for the employee within the given date range
-	existing_ts = frappe.db.get_value("Timesheet", {"employee": employee_id, "start_date": from_time.date(), "end_date": to_time.date()}, "name")
-	
 	if existing_ts:
 		timesheet = frappe.get_doc("Timesheet", existing_ts)
+		# Check if event already logged
+		if event and any(log.event == event for log in timesheet.time_logs):
+			return
+		
+		timesheet.append("time_logs", {
+			"activity_type": activity_type,
+			"from_time": from_time,
+			"to_time": to_time,
+			"event": event
+		})
+		timesheet.save(ignore_permissions=True)
 	else:
 		timesheet = frappe.new_doc("Timesheet")
 		timesheet.employee = employee_id
+		timesheet.append("time_logs",{
+			"activity_type": activity_type,
+			"from_time": from_time,
+			"to_time": to_time,
+			"event": event
+		})
 
-	timesheet.append("time_logs",{
-		"activity_type": activity_type,
-		"from_time": from_time,
-		"to_time": to_time,
-		"event": event
-	})
-
-	timesheet.save(ignore_permissions=True)
+		timesheet.insert(ignore_permissions=True)
+	
 	frappe.db.commit()
 
 @frappe.whitelist()

@@ -41,15 +41,8 @@
 		text-decoration: none;
 		white-space: nowrap;
 
-		min-width: 50px;
-		min-height: 20px;
-
 		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 			Helvetica, Arial, sans-serif;
-		}
-
-		#oc-timer-box:empty {
-			display: none !important;
 		}
 
 		#oc-timer-wrap::before {
@@ -206,10 +199,8 @@
 
     if (timers.length > 0) {
       link.innerHTML = getHTML(timers);
-      wrap.style.display = 'block';
     } else {
       link.style.display = 'none';
-      wrap.style.display = 'none';
     }
 
     wrap.appendChild(link);
@@ -246,7 +237,6 @@
      */
     function update(data) {
       const el = document.getElementById('oc-timer-box');
-      const wrap = document.getElementById('oc-timer-wrap');
       if (!el) return;
 
       const timers = Array.isArray(data)
@@ -271,14 +261,12 @@
 
         el.innerHTML = getHTML(timers);
         el.style.display = 'flex';
-        if (wrap) wrap.style.display = 'block';
 
         if (user) {
           localStorage.setItem(PREFIX + user, JSON.stringify(timers));
         }
       } else {
         el.style.display = 'none';
-        if (wrap) wrap.style.display = 'none';
 
         if (user) {
           localStorage.removeItem(PREFIX + user);
@@ -306,166 +294,149 @@
     });
   }
 
+  // =========================
+  // Ad-hoc Events
+  // =========================
+
   /**
-   * Shows a dialog to create a new Event from the tool.
-   * Shared between Task Management Tool and Project Management Tool.
+   * Start a synthetic task timer for an ad-hoc event
    */
-  window.show_add_event_dialog = function (opts = {}) {
+  window.start_active_event_timer = function () {
+    frappe.call({
+      method:
+        'one_compliance.one_compliance.page.task_management_tool.task_management_tool.check_active_timer',
+      callback: function (r) {
+        if (r.message) {
+          frappe.msgprint(r.message);
+        } else {
+          const user = frappe.session.user;
+          const task_id = 'EVENT-' + user;
+          const start_time = frappe.datetime.now_datetime();
+
+          frappe.call({
+            method:
+              'one_compliance.one_compliance.page.task_management_tool.task_management_tool.start_active_timer',
+            args: {
+              task: task_id,
+              project: '',
+              subject: 'Ad-hoc Event',
+              start_time: start_time,
+            },
+            callback: function (r) {
+              $(document).trigger('one-compliance-timer-changed', [
+                r.message,
+              ]);
+              $(document).trigger('one-compliance-refresh-tools');
+            },
+          });
+        }
+      },
+    });
+  };
+
+  /**
+   * Show dialog to finalize an ad-hoc event
+   * @param {string} start_time
+   * @param {string} subject
+   */
+  window.show_add_event_dialog = function (start_time, subject) {
     frappe.model.with_doctype('Event', function () {
-      frappe.call({
-        method: 'one_compliance.one_compliance.page.task_management_tool.task_management_tool.check_active_timer',
-        callback: function (r) {
-          // If starting a NEW event tracking session (no timer_task_id provided), check for overlap
-          if (!opts.timer_task_id && r.message && r.message.status === 'warning') {
-            frappe.msgprint({
-              title: __('Active Task Running'),
-              indicator: 'orange',
-              message: r.message.message
-            });
+      const meta = frappe.get_meta('Event');
+      const catField = meta.fields.find(
+        (f) => f.fieldname === 'event_category'
+      );
+      const options = catField ? catField.options.split('\n') : [];
+
+      const d = new frappe.ui.Dialog({
+        title: __('Add Event'),
+        fields: [
+          {
+            label: __('Subject'),
+            fieldname: 'subject',
+            fieldtype: 'Data',
+            reqd: 1,
+            default: subject || 'Ad-hoc Event',
+          },
+          {
+            label: __('Starts On'),
+            fieldname: 'start_time',
+            fieldtype: 'Datetime',
+            read_only: 1,
+            default: start_time,
+          },
+          {
+            label: __('Company'),
+            fieldname: 'company',
+            fieldtype: 'Link',
+            options: 'Company',
+            reqd: 1,
+            default: frappe.defaults.get_user_default('company'),
+          },
+          {
+            label: __('Client'),
+            fieldname: 'customer',
+            fieldtype: 'Link',
+            options: 'Customer',
+          },
+          {
+            label: __('Event Category'),
+            fieldname: 'event_category',
+            fieldtype: 'Select',
+            options: options,
+            reqd: 1,
+          },
+          {
+            label: __('Description'),
+            fieldname: 'description',
+            fieldtype: 'Small Text',
+          },
+          {
+            label: __('Ends On'),
+            fieldname: 'ends_on',
+            fieldtype: 'Datetime',
+            reqd: 1,
+            default: frappe.datetime.now_datetime(),
+          },
+        ],
+        primary_action_label: __('Add Timesheet'),
+        primary_action(values) {
+          if (values.ends_on <= values.start_time) {
+            frappe.msgprint(__('Ends On must be after Starts On'));
             return;
           }
-
-          const meta = frappe.get_meta('Event');
-          const category_field = meta.fields.find(f => f.fieldname === 'event_category');
-          const category_options = category_field ? category_field.options : 'Events\nMeeting\nCall\nSent/Received Email\nOther';
-
-          const dialog = new frappe.ui.Dialog({
-            title: __('Add Event'),
-            fields: [
-              {
-                label: __('Subject'),
-                fieldname: 'subject',
-                fieldtype: 'Data',
-                reqd: 1
-              },
-              {
-                label: __('Starts On'),
-                fieldname: 'starts_on',
-                fieldtype: 'Datetime',
-                default: opts.start_time || frappe.datetime.now_datetime(),
-                reqd: 1
-              },
-              {
-                label: __('Client'),
-                fieldname: 'client',
-                fieldtype: 'Link',
-                options: 'Customer'
-              },
-              {
-                fieldtype: 'Column Break'
-              },
-              {
-                label: __('Event Category'),
-                fieldname: 'event_category',
-                fieldtype: 'Select',
-                options: category_options,
-                default: 'Meeting'
-              },
-              {
-                label: __('Company'),
-                fieldname: 'company',
-                fieldtype: 'Link',
-                options: 'Company',
-                default: frappe.defaults.get_user_default('company')
-              },
-              {
-                label: __('End On'),
-                fieldname: 'ends_on',
-                fieldtype: 'Datetime',
-                default: opts.timer_task_id ? frappe.datetime.now_datetime() : null
+          d.disable_primary_action();
+          frappe.call({
+            method:
+              'one_compliance.one_compliance.page.task_management_tool.task_management_tool.create_event_from_tool',
+            args: values,
+            callback: function (r) {
+              if (r.message) {
+                frappe.show_alert({
+                  message: __('Event and Timesheet created successfully'),
+                  indicator: 'green',
+                });
+                d.hide();
+                $(document).trigger('one-compliance-timer-changed', [[]]);
+                const task_page = frappe.pages['task-management-tool'];
+                if (task_page && task_page.page) {
+                  task_page.page.completed_event_data = {
+                    name: 'EVENT-' + frappe.session.user,
+                    subject: values.subject,
+                    status: 'Completed',
+                    is_event: true,
+                    start_time: values.start_time
+                  };
+                }
+                $(document).trigger('one-compliance-refresh-tools');
               }
-            ],
-            primary_action_label: __('Add Timesheet'),
-            primary_action(values) {
-              frappe.call({
-                method: 'one_compliance.one_compliance.page.task_management_tool.task_management_tool.create_event_from_tool',
-                args: {
-                  ...values,
-                  add_timesheet: true
-                },
-                callback: function (res) {
-                  if (res.message) {
-                    frappe.show_alert({
-                      message: __('Event and Timesheet created successfully'),
-                      indicator: 'green'
-                    });
-                    if (opts.timer_task_id) {
-                      frappe.call({
-                        method: 'one_compliance.one_compliance.page.task_management_tool.task_management_tool.stop_active_timer',
-                        args: { task: opts.timer_task_id },
-                        callback: (r) => {
-                          if (r.message) {
-                            $(document).trigger('one-compliance-timer-changed', [r.message]);
-                            if (frappe.get_route()[0] === 'task-management-tool') {
-                                location.reload();
-                            }
-                          }
-                        }
-                      });
-                    }
-                    dialog.hide();
-                  }
-                }
-              });
-            }
+            },
+            always: function () {
+              d.enable_primary_action();
+            },
           });
-
-          dialog.set_secondary_action_label(__('Close'));
-          dialog.set_secondary_action(() => {
-            if (opts.timer_task_id) {
-                frappe.confirm(
-                    __('Are you sure you want to close this dialog? Your tracking session will continue until stopped from the list.'),
-                    () => {
-                        dialog.hide();
-                    }
-                );
-            } else {
-                dialog.hide();
-            }
-          });
-
-          dialog.add_custom_button(__('Edit Full Form'), function () {
-            const values = dialog.get_values(true);
-            if (opts.timer_task_id) {
-              frappe.call({
-                method: 'one_compliance.one_compliance.page.task_management_tool.task_management_tool.stop_active_timer',
-                args: { task: opts.timer_task_id },
-                callback: (r) => {
-                  if (r.message) {
-                    $(document).trigger('one-compliance-timer-changed', [r.message]);
-                  }
-                }
-              });
-            }
-            dialog.hide();
-
-            frappe.model.with_doctype('Event', function () {
-              const doc = frappe.model.get_new_doc('Event');
-              doc.subject = values.subject;
-              doc.starts_on = values.starts_on;
-              doc.ends_on = values.ends_on;
-              doc.custom_customer = values.client;
-              doc.event_category = values.event_category;
-              doc.company = values.company;
-
-              // Add current employee as participant
-              frappe.db.get_value('Employee', { user_id: frappe.session.user }, ['name', 'employee_name']).then(r => {
-                let employee = r.message ? r.message.name : null;
-                let employee_name = r.message ? r.message.employee_name : null;
-                if (employee) {
-                  const row = frappe.model.add_child(doc, 'event_participants');
-                  row.reference_doctype = 'Employee';
-                  row.reference_docname = employee;
-                  row.custom_participant_name = employee_name;
-                }
-                frappe.set_route('Form', 'Event', doc.name);
-              });
-            });
-          });
-
-          dialog.show();
-        }
+        },
       });
+      d.show();
     });
   };
 

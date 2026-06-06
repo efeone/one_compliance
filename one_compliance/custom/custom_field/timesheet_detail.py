@@ -36,7 +36,7 @@ def get_timesheet_detail_custom_fields():
 				"fieldtype": "Link",
 				"label": "Event",
 				"options": "Event",
-				"insert_after": "approval_status"
+				"insert_after": "approval_status",
 			},
 		]
 	}
