@@ -8,6 +8,33 @@ frappe.pages['project-management_tool'].on_page_load = function (wrapper) {
 	// Button to refresh the page
 	let $button = page.set_secondary_action('Refresh', () => location.reload())
 
+	page.add_button(__('Add Event'), function () {
+		const current_time = frappe.datetime.now_datetime();
+		frappe.call({
+			method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.start_active_timer",
+			args: {
+				task: "EVENT-" + frappe.session.user,
+				project: "",
+				subject: "Event Tracking",
+				start_time: current_time
+			},
+			callback: (r) => {
+				if (r.message) {
+					const user = frappe.session.user;
+					if (user) {
+						localStorage.setItem('one-compliance-active-timer-' + user, JSON.stringify(r.message));
+					}
+					frappe.show_alert({
+						message: __("Event tracking started. Go to Task Management Tool to stop it."),
+						indicator: "orange"
+					});
+					toggle_add_event_button(page);
+					$(document).trigger('one-compliance-timer-changed', [r.message]);
+				}
+			}
+		});
+	});
+
 	page.main.addClass("frappe-card");
 
 	make_filters(page);
@@ -16,6 +43,30 @@ frappe.pages['project-management_tool'].on_page_load = function (wrapper) {
 	page.page_length = 20;
 
 	refresh_projects(page);
+	toggle_add_event_button(page);
+
+}
+
+frappe.pages['project-management_tool'].on_page_show = function (wrapper) {
+	var page = wrapper.page;
+	toggle_add_event_button(page);
+}
+
+/**
+ * Toggles the visibility of the "Add Event" button based on active event timers.
+ * Uses localStorage for instant feedback.
+ */
+function toggle_add_event_button(page) {
+	const user = frappe.session.user;
+	const active_timers = JSON.parse(localStorage.getItem('one-compliance-active-timer-' + user) || '[]');
+	const event_timer = active_timers.find(t => t.task && t.task.startsWith("EVENT-"));
+	const $btn = page.wrapper.find('.page-actions button:contains("Add Event")');
+	
+	if (event_timer) {
+		$btn.hide();
+	} else {
+		$btn.show();
+	}
 }
 
 /*
@@ -204,3 +255,5 @@ function setup_page_length_buttons(page) {
 		refresh_projects(page);
 	});
 }
+
+

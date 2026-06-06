@@ -19,7 +19,7 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 
 	if status:
 		if status in ["Completed", "Cancelled", "Template"]:
-			return
+			return {"tasks": [], "total_tasks": 0, "icons": get_icon_hidden_status()}
 		else:
 			values["status"] = status
 			conditions.append("t.status = %(status)s")
@@ -73,7 +73,8 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 		LEFT JOIN `tabCompliance Sub Category` c ON t.compliance_sub_category = c.name
 		{where_clause}
 	"""
-	total_tasks = frappe.db.sql(count_query, values.copy(), as_dict=False)[0][0]
+	res = frappe.db.sql(count_query, values.copy(), as_dict=False)
+	total_tasks = res[0][0] if res else 0
 
 	data_query = f"""
 		SELECT
@@ -90,7 +91,7 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 	values['page_length'] = int(page_length)
 	values['offset'] = (int(page) - 1) * int(page_length)
 
-	task_list = frappe.db.sql(data_query, values, as_dict=1)
+	task_list = frappe.db.sql(data_query, values, as_dict=1) or []
 
 	for task_item in task_list:
 		task_item['employee_names'] = []
@@ -114,14 +115,54 @@ def get_task(status=None, task=None, project=None, customer=None, department=Non
 		if task_item['completed_by']:
 			if task_item['completed_by'] == 'Administrator':
 				task_item['completed_by_name'] = 'Administrator'
+				task_item['completed_by_id'] = 'Administrator'
 			else:
 				completed_by = frappe.get_value("Employee", {"user_id": task_item['completed_by']}, ["name", "employee_name"], as_dict=True)
 				if completed_by:
 					task_item['completed_by_name'] = completed_by.get("employee_name")
 					task_item['completed_by_id'] = completed_by.get("name")
+				else:
+					task_item['completed_by_name'] = ""
+					task_item['completed_by_id'] = ""
 		else:
-			task_item['completed_by_name'] = []
-			task_item['completed_by_id'] = []
+			task_item['completed_by_name'] = ""
+			task_item['completed_by_id'] = ""
+
+	# Check for active event timers for the current user and inject synthetic tasks
+	try:
+		active_event_timers = frappe.get_all("Active Task Timer", filters={
+			"user": current_user,
+			"task": ["like", "EVENT-%"]
+		}, fields=["task", "subject", "start_time"])
+
+		for timer in active_event_timers:
+			employee = frappe.get_value("Employee", {"user_id": current_user}, ["name", "employee_name"], as_dict=True)
+			synthetic_task = {
+				"name": timer.task,
+				"subject": timer.subject or "Event Tracking",
+				"status": "Working",
+				"is_event_timer": 1,
+				"start_time": timer.start_time,
+				"employee_names": [employee.employee_name] if employee else [current_user],
+				"_assign": [{"employee_name": employee.employee_name, "employee_id": employee.name}] if employee else [],
+				"assigned_to": "",
+				"project": "",
+				"project_name": "Event",
+				"customer": "",
+				"department": "",
+				"compliance_sub_category": "",
+				"exp_start_date": timer.start_time,
+				"exp_end_date": "",
+				"custom_is_payable": 0,
+				"color": "orange",
+				"completed_by": "",
+				"completed_by_name": "",
+				"completed_by_id": "",
+				"readiness_status": ""
+			}
+			task_list.insert(0, synthetic_task)
+	except Exception:
+		pass
 
 	return {
 		"tasks": task_list,
@@ -289,10 +330,13 @@ def start_active_timer(task, project, subject, start_time):
 	user = frappe.session.user
 	if not user or user == 'Guest':
 		frappe.throw(_("User authentication required. Please login first."))
-	if not frappe.db.exists("Task", task):
-		frappe.throw(_("Task {0} not found").format(task))
-	if not frappe.has_permission("Task", "read", task):
-		frappe.throw(_("No permission to access this task"))
+	
+	is_event = task.startswith("EVENT-")
+	if not is_event:
+		if not frappe.db.exists("Task", task):
+			frappe.throw(_("Task {0} not found").format(task))
+		if not frappe.has_permission("Task", "read", task):
+			frappe.throw(_("No permission to access this task"))
 	if project and not frappe.db.exists("Project", project):
 		frappe.throw(_("Project {0} not found").format(project))
 	try:
@@ -307,11 +351,12 @@ def start_active_timer(task, project, subject, start_time):
 	ignore_overlap = (int(val1 or 0) == 1) or (int(val2 or 0) == 1)
 	
 	if not ignore_overlap:
-		existing_timer = frappe.db.sql("""
-			SELECT task, subject FROM `tabActive Task Timer` WHERE user = %s AND task != %s
-		""", (user, task), as_dict=True)
+		# Check for ANY existing timer for the same user, regardless of task ID
+		existing_timer = frappe.get_all("Active Task Timer", filters={
+			"user": user
+		}, fields=["task", "subject"], limit=1)
 		
-		if existing_timer:
+		if existing_timer and existing_timer[0].task != task:
 			existing_timer = existing_timer[0]
 			frappe.throw(_("Another task is already running: {0}. Please stop it before starting a new one.").format(existing_timer.subject or existing_timer.task))
 
@@ -329,7 +374,13 @@ def start_active_timer(task, project, subject, start_time):
 	doc.project = project
 	doc.subject = subject
 	doc.start_time = start_time
-	doc.save(ignore_permissions=True)
+	if is_event:
+		doc.flags.ignore_links = True
+	
+	if doc.is_new():
+		doc.insert(ignore_permissions=True)
+	else:
+		doc.save(ignore_permissions=True)
 	frappe.db.commit() 
 
 	all_timers = get_active_timer()
@@ -366,8 +417,64 @@ def get_active_timer():
 	if not user or user == 'Guest':
 		return []
 	
-	timers = frappe.db.sql("""
-		SELECT task, project, subject, start_time FROM `tabActive Task Timer` WHERE user = %s
-	""", (user,), as_dict=True)
+	timers = frappe.get_all("Active Task Timer", filters={"user": user}, fields=["task", "project", "subject", "start_time"])
 	
 	return timers
+
+@frappe.whitelist()
+def check_active_timer():
+	"""
+	Check if any task is already running for the current user.
+	"""
+	user = frappe.session.user
+	if not user or user == 'Guest':
+		return {"status": "ok"}
+
+	val1 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_employee_time_overlap")
+	val2 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_user_time_overlap")
+	ignore_overlap = (int(val1 or 0) == 1) or (int(val2 or 0) == 1)
+
+	if not ignore_overlap:
+		existing_timer = frappe.get_all("Active Task Timer", filters={"user": user}, fields=["task", "subject"], limit=1)
+
+		if existing_timer:
+			existing_timer = existing_timer[0]
+			return {
+				"status": "warning",
+				"message": _("Another task is already running: {0}. Please stop it before starting a new one.").format(existing_timer.subject or existing_timer.task)
+			}
+
+	return {"status": "ok"}
+
+@frappe.whitelist()
+def create_event_from_tool(subject, starts_on, client=None, event_category=None, company=None, ends_on=None, add_timesheet=False):
+	"""
+	Create an Event from Task/Project Management Tool.
+	"""
+	event = frappe.new_doc("Event")
+	event.subject = subject
+	event.starts_on = starts_on
+	event.ends_on = ends_on
+	event.custom_customer = client
+	event.event_category = event_category
+	event.company = company
+	
+	# Add current user as participant (Employee)
+	employee = frappe.get_value("Employee", {"user_id": frappe.session.user}, ["name", "employee_name"], as_dict=True)
+	if employee:
+		event.append("event_participants", {
+			"reference_doctype": "Employee",
+			"reference_docname": employee.name,
+			"custom_participant_name": employee.employee_name
+		})
+
+	if add_timesheet:
+		event.status = "Completed"
+	
+	event.insert(ignore_permissions=True)
+	
+	if add_timesheet:
+		from one_compliance.one_compliance.utils import make_time_sheet_entry
+		make_time_sheet_entry(event.name)
+	
+	return event.name

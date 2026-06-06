@@ -14,7 +14,7 @@
 		</header>
 
 		{% for data in task_list %}
-		<div class="card task-entry">
+		<div class="card task-entry" data-is-event-timer="{{ data.is_event_timer or 0 }}">
 			<div class="card-body">
 				<div class="row">
 					<div class="col-md-2" style="padding: inherit;">
@@ -78,6 +78,7 @@
 								data-toggle="tooltip" title="Time Sheet">
 								<i class="fas fa-clock"></i>
 							</button>
+							{% if not data.is_event_timer %}
 							<!-- Button for view documents -->
 							<button class="btn btn-outline-info btn-icon documentButton"
 								sub-category="{{ data.compliance_sub_category }}" customer="{{ data.customer }}"
@@ -102,6 +103,7 @@
 								is_payment_icon_hidden %} hidden {% endif %}>
 								<i class="fas fa-wallet"></i>
 							</button>
+							{% endif %}
 						</div>
 					</div>
 				</div>
