@@ -191,9 +191,6 @@ function refresh_tasks(page, reset_page = false) {
 						is_event: true,
 						start_time: event_timer.start_time
 					});
-				} else if (page.completed_event_data) {
-					tasks.unshift(page.completed_event_data);
-					delete page.completed_event_data;
 				}
 
 				if (tasks.length > 0) {
@@ -201,10 +198,10 @@ function refresh_tasks(page, reset_page = false) {
 					setup_pagination(page, r.message.total_tasks);
 					setup_page_length_buttons(page);
 					initialize_task_actions(page, active_timers);
-					$(document).trigger('one-compliance-timer-changed', [active_timers]);
 				} else {
 					show_no_task_found(page);
 				}
+				$(document).trigger('one-compliance-timer-changed', [active_timers]);
 			}
 		},
 		freeze: true,

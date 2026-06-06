@@ -199,8 +199,10 @@
 
     if (timers.length > 0) {
       link.innerHTML = getHTML(timers);
+      wrap.style.display = 'block';
     } else {
       link.style.display = 'none';
+      wrap.style.display = 'none';
     }
 
     wrap.appendChild(link);
@@ -237,6 +239,7 @@
      */
     function update(data) {
       const el = document.getElementById('oc-timer-box');
+      const wrap = document.getElementById('oc-timer-wrap');
       if (!el) return;
 
       const timers = Array.isArray(data)
@@ -261,12 +264,14 @@
 
         el.innerHTML = getHTML(timers);
         el.style.display = 'flex';
+        if (wrap) wrap.style.display = 'block';
 
         if (user) {
           localStorage.setItem(PREFIX + user, JSON.stringify(timers));
         }
       } else {
         el.style.display = 'none';
+        if (wrap) wrap.style.display = 'none';
 
         if (user) {
           localStorage.removeItem(PREFIX + user);
@@ -417,16 +422,6 @@
                 });
                 d.hide();
                 $(document).trigger('one-compliance-timer-changed', [[]]);
-                const task_page = frappe.pages['task-management-tool'];
-                if (task_page && task_page.page) {
-                  task_page.page.completed_event_data = {
-                    name: 'EVENT-' + frappe.session.user,
-                    subject: values.subject,
-                    status: 'Completed',
-                    is_event: true,
-                    start_time: values.start_time
-                  };
-                }
                 $(document).trigger('one-compliance-refresh-tools');
               }
             },

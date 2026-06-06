@@ -10,12 +10,23 @@ frappe.pages['project-management_tool'].on_page_load = function (wrapper) {
 
 	page.main.addClass("frappe-card");
 
-	page.add_inner_button(__('Add Event'), function () {
+	page.add_event_btn = page.add_inner_button(__('Add Event'), function () {
 		window.start_active_event_timer();
 	});
 
 	$(document).on('one-compliance-refresh-tools', function () {
 		refresh_projects(page);
+	});
+
+	$(document).on('one-compliance-timer-changed', function (e, timers) {
+		const has_event_timer = (timers || []).some(t => t.task && t.task.startsWith('EVENT-'));
+		if (page.add_event_btn) {
+			if (has_event_timer) {
+				page.add_event_btn.hide();
+			} else {
+				page.add_event_btn.show();
+			}
+		}
 	});
 
 	make_filters(page);
@@ -145,15 +156,12 @@ function refresh_projects(page, page_num = null) {
 			page_length: page.page_length
 		},
 		callback: (r) => {
-			if (r.message && r.message.projects && r.message.projects.length > 0) {
-				$(frappe.render_template("project_management_tool", { project_list: r.message.projects })).appendTo(page.body);
+			if (r.message) {
+				if (r.message.projects && r.message.projects.length > 0) {
+					$(frappe.render_template("project_management_tool", { project_list: r.message.projects })).appendTo(page.body);
 
-				if (r.message.active_timers) {
-					$(document).trigger('one-compliance-timer-changed', [r.message.active_timers]);
-				}
-
-				// Action to redirect to the task management tool 
-				page.body.find(".showTask").on("click", function () {
+					// Action to redirect to the task management tool 
+					page.body.find(".showTask").on("click", function () {
 					var project_id = $(this).attr("project");
 										
 					// Set route options before navigation
@@ -164,13 +172,15 @@ function refresh_projects(page, page_num = null) {
 					frappe.set_route('task-management-tool');
 				});
 
-				// Attach pagination controls and page-length button logic
-				render_pagination_controls(page, r.message.length);
-				setup_page_length_buttons(page);
-			} else {
-				// If no projects are found, append a message to the page body
-				$('<div class="frappe-list"></div>').appendTo(page.body)
-					.append('<div class="no-result text-muted flex justify-center align-center" style="text-align: center;"><p>No Project found with matching filters.</p></div>');
+					// Attach pagination controls and page-length button logic
+					render_pagination_controls(page, r.message.projects.length);
+					setup_page_length_buttons(page);
+				} else {
+					// If no projects are found, append a message to the page body
+					$('<div class="frappe-list"></div>').appendTo(page.body)
+						.append('<div class="no-result text-muted flex justify-center align-center" style="text-align: center;"><p>No Project found with matching filters.</p></div>');
+				}
+				$(document).trigger('one-compliance-timer-changed', [r.message.active_timers]);
 			}
 		},
 		freeze: true,
