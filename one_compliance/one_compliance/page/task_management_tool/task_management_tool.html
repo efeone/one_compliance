@@ -25,12 +25,12 @@
 							}}</a><br>
 						<a class="card-subtitle project-link" href="/app/project/{{ data.project }}"
 							color="{{ data.color }}">{{ data.project_name }}</a>
+						{% endif %}
 						{% if data.customer %}
 						<p class="card-text customer-link">
 							Customer: <a style="font-weight:bold;" href="/app/customer/{{data.customer}}">{{
 								data.customer }}</a>
 						</p>
-						{% endif %}
 						{% endif %}
 					</div>
 					<div class="col-md-2 text-center" style="padding: inherit;">

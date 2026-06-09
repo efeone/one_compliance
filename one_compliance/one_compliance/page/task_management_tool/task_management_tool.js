@@ -19,7 +19,7 @@ frappe.pages['task-management-tool'].on_page_load = function (wrapper) {
 	});
 
 	$(document).on('one-compliance-timer-changed', function (e, timers) {
-		const has_event_timer = (timers || []).some(t => t.task && t.task.startsWith('EVENT-'));
+		const has_event_timer = (timers || []).some(t => t.is_ad_hoc_event);
 		if (page.add_event_btn) {
 			if (has_event_timer) {
 				page.add_event_btn.hide();
@@ -182,10 +182,10 @@ function refresh_tasks(page, reset_page = false) {
 				let tasks = r.message.tasks || [];
 				const active_timers = r.message.active_timers || [];
 
-				const event_timer = active_timers.find(t => t.task && t.task.startsWith('EVENT-'));
+				const event_timer = active_timers.find(t => t.is_ad_hoc_event);
 				if (event_timer) {
 					tasks.unshift({
-						name: event_timer.task,
+						name: 'EVENT-' + frappe.session.user,
 						subject: event_timer.subject || 'Ad-hoc Event',
 						status: 'Working',
 						is_event: true,
@@ -333,7 +333,7 @@ function initialize_task_actions(page, active_timers = null) {
 			const project_name = $(this).attr("project-id");
 			const is_event = task_name && task_name.startsWith('EVENT-');
 
-			const task_timer = active_timers_list.find(t => t.task === task_name);
+			const task_timer = is_event ? active_timers_list.find(t => t.is_ad_hoc_event) : active_timers_list.find(t => t.task === task_name);
 
 			if (task_timer) {
 				const formatted_time = frappe.datetime.str_to_user(task_timer.start_time);

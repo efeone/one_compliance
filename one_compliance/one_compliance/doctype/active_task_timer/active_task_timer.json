@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "full_name:task",
+ "autoname": "prompt",
  "creation": "2026-04-18 11:40:00",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -10,6 +10,7 @@
   "user",
   "full_name",
   "task",
+  "is_ad_hoc_event",
   "project",
   "subject",
   "start_time"
@@ -28,6 +29,12 @@
    "fieldtype": "Link",
    "label": "Task",
    "options": "Task"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_ad_hoc_event",
+   "fieldtype": "Check",
+   "label": "Is Ad-hoc Event"
   },
   {
    "fieldname": "project",

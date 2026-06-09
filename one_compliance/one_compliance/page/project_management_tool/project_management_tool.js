@@ -19,7 +19,7 @@ frappe.pages['project-management_tool'].on_page_load = function (wrapper) {
 	});
 
 	$(document).on('one-compliance-timer-changed', function (e, timers) {
-		const has_event_timer = (timers || []).some(t => t.task && t.task.startsWith('EVENT-'));
+		const has_event_timer = (timers || []).some(t => t.is_ad_hoc_event);
 		if (page.add_event_btn) {
 			if (has_event_timer) {
 				page.add_event_btn.hide();
@@ -162,15 +162,15 @@ function refresh_projects(page, page_num = null) {
 
 					// Action to redirect to the task management tool 
 					page.body.find(".showTask").on("click", function () {
-					var project_id = $(this).attr("project");
-										
-					// Set route options before navigation
-					frappe.route_options = {
-						project: project_id
-					};					
-					// Navigate to the task management tool page
-					frappe.set_route('task-management-tool');
-				});
+						var project_id = $(this).attr("project");
+											
+						// Set route options before navigation
+						frappe.route_options = {
+							project: project_id
+						};					
+						// Navigate to the task management tool page
+						frappe.set_route('task-management-tool');
+					});
 
 					// Attach pagination controls and page-length button logic
 					render_pagination_controls(page, r.message.projects.length);

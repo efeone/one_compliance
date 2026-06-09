@@ -283,17 +283,21 @@ def get_icon_hidden_status():
 	return data
 
 @frappe.whitelist()
-def start_active_timer(task, project, subject, start_time):
+def start_active_timer(task, project, subject, start_time, is_ad_hoc_event=0):
 	"""
 		Start a timer for a specific task, ensuring no overlapping timers for the same user.
 	"""
 	user = frappe.session.user
+	is_ad_hoc_event = int(is_ad_hoc_event)
+
 	if not user or user == 'Guest':
 		frappe.throw(_("User authentication required. Please login first."))
-	if not task.startswith("EVENT-") and not frappe.db.exists("Task", task):
-		frappe.throw(_("Task {0} not found").format(task))
-	if not task.startswith("EVENT-") and not frappe.has_permission("Task", "read", task):
-		frappe.throw(_("No permission to access this task"))
+	
+	if not is_ad_hoc_event:
+		if not task or not frappe.db.exists("Task", task):
+			frappe.throw(_("Task {0} not found").format(task))
+		if not frappe.has_permission("Task", "read", task):
+			frappe.throw(_("No permission to access this task"))
 	if project and not frappe.db.exists("Project", project):
 		frappe.throw(_("Project {0} not found").format(project))
 	try:
@@ -303,9 +307,8 @@ def start_active_timer(task, project, subject, start_time):
 	except Exception:
 		frappe.throw(_("Invalid start_time format"))
 
-	val1 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_employee_time_overlap")
-	val2 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_user_time_overlap")
-	ignore_overlap = (int(val1 or 0) == 1) or (int(val2 or 0) == 1)
+	settings = frappe.db.get_value("Projects Settings", "Projects Settings", ["ignore_employee_time_overlap", "ignore_user_time_overlap"], as_dict=True) or {}
+	ignore_overlap = (int(settings.get("ignore_employee_time_overlap") or 0) == 1) or (int(settings.get("ignore_user_time_overlap") or 0) == 1)
 	
 	if not ignore_overlap:
 		existing_timer = frappe.db.sql("""
@@ -316,18 +319,24 @@ def start_active_timer(task, project, subject, start_time):
 			existing_timer = existing_timer[0]
 			frappe.throw(_("Another task is already running: {0}. Please stop it before starting a new one.").format(existing_timer.subject or existing_timer.task))
 
-	timer_name = frappe.db.get_value("Active Task Timer", {"user": user, "task": task})
+	filters = {"user": user}
+	if is_ad_hoc_event:
+		filters["is_ad_hoc_event"] = 1
+	else:
+		filters["task"] = task
+
+	timer_name = frappe.db.get_value("Active Task Timer", filters)
 
 	if timer_name:
 		doc = frappe.get_doc("Active Task Timer", timer_name)
 	else:
 		doc = frappe.new_doc("Active Task Timer")
 		doc.user = user
-		doc.task = task
+		if not is_ad_hoc_event:
+			doc.task = task
 	
 	doc.flags.ignore_permissions = True
-	if task.startswith("EVENT-"):
-		doc.flags.ignore_links = True
+	doc.is_ad_hoc_event = is_ad_hoc_event
 	
 	doc.project = project
 	doc.subject = subject
@@ -341,13 +350,17 @@ def start_active_timer(task, project, subject, start_time):
 	return all_timers
 
 @frappe.whitelist()
-def stop_active_timer(task=None):
+def stop_active_timer(task=None, is_ad_hoc_event=0):
 	"""
-		Stop the active timer for the current user, optionally filtering by task.
+		Stop the active timer for the current user, optionally filtering by task or ad-hoc status.
 	"""
 	user = frappe.session.user
+	is_ad_hoc_event = int(is_ad_hoc_event)
 	filters = {"user": user}
-	if task:
+	
+	if is_ad_hoc_event:
+		filters["is_ad_hoc_event"] = 1
+	elif task:
 		filters["task"] = task
 	
 	timer_names = frappe.get_all("Active Task Timer", filters=filters, pluck="name", ignore_permissions=True)
@@ -370,7 +383,7 @@ def get_active_timer():
 		return []
 	
 	timers = frappe.db.sql("""
-		SELECT task, project, subject, start_time FROM `tabActive Task Timer` WHERE user = %s
+		SELECT task, project, subject, start_time, is_ad_hoc_event FROM `tabActive Task Timer` WHERE user = %s
 	""", (user,), as_dict=True)
 	
 	return timers
@@ -381,9 +394,8 @@ def check_active_timer():
 		Check if an active timer exists for the current user, respecting overlap settings.
 	"""
 	user = frappe.session.user
-	val1 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_employee_time_overlap")
-	val2 = frappe.db.get_value("Projects Settings", "Projects Settings", "ignore_user_time_overlap")
-	ignore_overlap = (int(val1 or 0) == 1) or (int(val2 or 0) == 1)
+	settings = frappe.db.get_value("Projects Settings", "Projects Settings", ["ignore_employee_time_overlap", "ignore_user_time_overlap"], as_dict=True) or {}
+	ignore_overlap = (int(settings.get("ignore_employee_time_overlap") or 0) == 1) or (int(settings.get("ignore_user_time_overlap") or 0) == 1)
 
 	if not ignore_overlap:
 		existing_timer = frappe.db.sql("""
@@ -412,6 +424,7 @@ def create_event_from_tool(subject, event_category, start_time, company, ends_on
 	event.custom_customer = customer
 	event.event_type = "Private"
 	event.status = "Completed"
+	event.send_reminder = 0
 	
 	if employee:
 		event.append("event_participants", {
@@ -427,6 +440,6 @@ def create_event_from_tool(subject, event_category, start_time, company, ends_on
 	make_time_sheet_entry(event.name)
 	
 	# Stop the ad-hoc event timer
-	stop_active_timer(f"EVENT-{user}")
+	stop_active_timer(is_ad_hoc_event=1)
 	
 	return event.name
