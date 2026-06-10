@@ -307,13 +307,10 @@ def start_active_timer(task, project, subject, start_time, is_ad_hoc_event=0):
 	except Exception:
 		frappe.throw(_("Invalid start_time format"))
 
-	settings = frappe.db.get_value("Projects Settings", "Projects Settings", ["ignore_employee_time_overlap", "ignore_user_time_overlap"], as_dict=True) or {}
-	ignore_overlap = (int(settings.get("ignore_employee_time_overlap") or 0) == 1) or (int(settings.get("ignore_user_time_overlap") or 0) == 1)
-	
-	if not ignore_overlap:
+	if not _is_time_overlap_ignored():
 		existing_timer = frappe.db.sql("""
-			SELECT task, subject FROM `tabActive Task Timer` WHERE user = %s AND task != %s
-		""", (user, task), as_dict=True)
+			SELECT task, subject FROM `tabActive Task Timer` WHERE user = %s AND COALESCE(task, '') != %s
+		""", (user, task or ''), as_dict=True)
 		
 		if existing_timer:
 			existing_timer = existing_timer[0]
@@ -394,10 +391,7 @@ def check_active_timer():
 		Check if an active timer exists for the current user, respecting overlap settings.
 	"""
 	user = frappe.session.user
-	settings = frappe.db.get_value("Projects Settings", "Projects Settings", ["ignore_employee_time_overlap", "ignore_user_time_overlap"], as_dict=True) or {}
-	ignore_overlap = (int(settings.get("ignore_employee_time_overlap") or 0) == 1) or (int(settings.get("ignore_user_time_overlap") or 0) == 1)
-
-	if not ignore_overlap:
+	if not _is_time_overlap_ignored():
 		existing_timer = frappe.db.sql("""
 			SELECT task, subject FROM `tabActive Task Timer` WHERE user = %s
 		""", (user,), as_dict=True)
@@ -405,6 +399,17 @@ def check_active_timer():
 			existing_timer = existing_timer[0]
 			return _("Another task is already running: {0}. Please stop it before starting a new one.").format(existing_timer.subject or existing_timer.task)
 	return None
+
+def _is_time_overlap_ignored():
+	"""
+	Checks if time overlap should be ignored based on Projects Settings.
+	Uses caching for high performance.
+	"""
+	settings = frappe.get_cached_value("Projects Settings", "Projects Settings",
+		["ignore_employee_time_overlap", "ignore_user_time_overlap"], as_dict=True) or {}
+
+	return (int(settings.get("ignore_employee_time_overlap") or 0) == 1) or \
+		   (int(settings.get("ignore_user_time_overlap") or 0) == 1)
 
 @frappe.whitelist()
 def create_event_from_tool(subject, event_category, start_time, company, ends_on, description=None, customer=None):
