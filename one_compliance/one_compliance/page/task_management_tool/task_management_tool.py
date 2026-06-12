@@ -406,10 +406,12 @@ def _is_time_overlap_ignored():
 	Uses caching for high performance.
 	"""
 	settings = frappe.get_cached_value("Projects Settings", "Projects Settings",
-		["ignore_employee_time_overlap", "ignore_user_time_overlap"], as_dict=True) or {}
+		["ignore_employee_time_overlap", "ignore_user_time_overlap"], as_dict=True)
 
-	return (int(settings.get("ignore_employee_time_overlap") or 0) == 1) or \
-		   (int(settings.get("ignore_user_time_overlap") or 0) == 1)
+	if not settings:
+		return False
+
+	return bool(settings.ignore_employee_time_overlap or settings.ignore_user_time_overlap)
 
 @frappe.whitelist()
 def create_event_from_tool(subject, event_category, start_time, company, ends_on, description=None, customer=None):
