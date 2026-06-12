@@ -60,6 +60,7 @@ def get_project(
 	query += f" ORDER BY p.modified DESC LIMIT {int(page_length)} OFFSET {int(offset)};"
 
 	project_list = frappe.db.sql(query, as_dict=1)
+
 	# Process employee assignment details
 	for project in project_list:
 		project['employee_names'] = []
@@ -82,4 +83,9 @@ def get_project(
 			project['_assign'] = []
 			project['employee_names'] = []
 
-	return project_list
+	from one_compliance.one_compliance.page.task_management_tool.task_management_tool import get_active_timer
+
+	return {
+		"projects": project_list,
+		"active_timers": get_active_timer()
+	}

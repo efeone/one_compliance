@@ -31,5 +31,12 @@ def get_timesheet_detail_custom_fields():
 				"default": "Pending",
 				"insert_after": "lag_notification_sent",
 			},
+			{
+				"fieldname": "event",
+				"fieldtype": "Link",
+				"label": "Event",
+				"options": "Event",
+				"insert_after": "approval_status",
+			},
 		]
 	}

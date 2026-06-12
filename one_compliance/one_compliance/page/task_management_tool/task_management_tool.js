@@ -10,6 +10,25 @@ frappe.pages['task-management-tool'].on_page_load = function (wrapper) {
 	page.current_page = 1;
 	page.page_length = 20;
 
+	page.add_event_btn = page.add_inner_button(__('Add Event'), function () {
+		window.start_active_event_timer();
+	});
+
+	$(document).on('one-compliance-refresh-tools', function () {
+		refresh_tasks(page);
+	});
+
+	$(document).on('one-compliance-timer-changed', function (e, timers) {
+		const has_event_timer = (timers || []).some(t => t.is_ad_hoc_event);
+		if (page.add_event_btn) {
+			if (has_event_timer) {
+				page.add_event_btn.hide();
+			} else {
+				page.add_event_btn.show();
+			}
+		}
+	});
+
 	make_filters(page);
 	if (!frappe.route_options || !frappe.route_options.project) {
 		refresh_tasks(page, true);
@@ -159,13 +178,30 @@ function refresh_tasks(page, reset_page = false) {
 			page_length: page.page_length
 		},
 		callback: (r) => {
-			if (r.message && r.message.tasks.length > 0) {
-				render_task_list(page, r.message.tasks, r.message.icons);
-				setup_pagination(page, r.message.total_tasks);
-				setup_page_length_buttons(page);
-				initialize_task_actions(page);
-			} else {
-				show_no_task_found(page);
+			if (r.message) {
+				let tasks = r.message.tasks || [];
+				const active_timers = r.message.active_timers || [];
+
+				const event_timer = active_timers.find(t => t.is_ad_hoc_event);
+				if (event_timer) {
+					tasks.unshift({
+						name: 'EVENT-' + frappe.session.user,
+						subject: event_timer.subject || 'Ad-hoc Event',
+						status: 'Working',
+						is_event: true,
+						start_time: event_timer.start_time
+					});
+				}
+
+				if (tasks.length > 0) {
+					render_task_list(page, tasks, r.message.icons);
+					setup_pagination(page, r.message.total_tasks);
+					setup_page_length_buttons(page);
+					initialize_task_actions(page, active_timers);
+				} else {
+					show_no_task_found(page);
+				}
+				$(document).trigger('one-compliance-timer-changed', [active_timers]);
 			}
 		},
 		freeze: true,
@@ -227,7 +263,7 @@ function render_task_list(page, tasks, icons) {
 Handles all task-related button bindings and UI updates
 */
 
-function initialize_task_actions(page) {
+function initialize_task_actions(page, active_timers = null) {
 	const body = page.body;
 
 	body.find(".paymentEntryButton").off().on("click", function () {
@@ -246,6 +282,12 @@ function initialize_task_actions(page) {
 	});
 
 	body.find(".timeEntryButton").hide();
+
+	body.find(".eventDialogButton").off().on("click", function () {
+		const start_time = $(this).attr("start-time");
+		const subject = $(this).attr("task-subject");
+		window.show_add_event_dialog(start_time, subject);
+	});
 
 	body.find(".startButton").off().on("click", function () {
 		const task_name = $(this).attr("task-id");
@@ -284,29 +326,47 @@ function initialize_task_actions(page) {
 		});
 	});
 
-	frappe.call({
-		method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.get_active_timer",
-		callback: (r) => {
-			const active_timers = r.message || [];
-			body.find(".start-time").each(function () {
-				const task_name = $(this).attr("task-id");
-				const project_name = $(this).attr("project-id");
-				
-				const task_timer = active_timers.find(t => t.task === task_name);
+	const apply_active_timers = (timers) => {
+		const active_timers_list = timers || [];
+		body.find(".start-time").each(function () {
+			const task_name = $(this).attr("task-id");
+			const project_name = $(this).attr("project-id");
+			const is_event = task_name && task_name.startsWith('EVENT-');
 
-				if (task_timer) {
-					const formatted_time = frappe.datetime.str_to_user(task_timer.start_time);
-					$(this).text(formatted_time);
-					body.find(`.startButton[task-id='${task_name}'][project-id='${project_name}']`).hide();
-					body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).show();
+			const task_timer = is_event ? active_timers_list.find(t => t.is_ad_hoc_event) : active_timers_list.find(t => t.task === task_name);
+
+			if (task_timer) {
+				const formatted_time = frappe.datetime.str_to_user(task_timer.start_time);
+				$(this).text(formatted_time);
+				body.find(`.startButton[task-id='${task_name}'][project-id='${project_name}']`).hide();
+
+				if (is_event) {
+					body.find(`.eventDialogButton[task-id='${task_name}']`).show();
+					body.find(`.timeEntryButton[task-id='${task_name}']`).hide();
 				} else {
-					$(this).text("");
-					body.find(`.startButton[task-id='${task_name}'][project-id='${project_name}']`).show();
-					body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).hide();
+					body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).show();
 				}
-			});
-		}
-	});
+			} else {
+				$(this).text("");
+				if (!is_event) {
+					body.find(`.startButton[task-id='${task_name}'][project-id='${project_name}']`).show();
+				}
+				body.find(`.timeEntryButton[task-id='${task_name}'][project-id='${project_name}']`).hide();
+				body.find(`.eventDialogButton[task-id='${task_name}']`).hide();
+			}
+		});
+	};
+
+	if (active_timers) {
+		apply_active_timers(active_timers);
+	} else {
+		frappe.call({
+			method: "one_compliance.one_compliance.page.task_management_tool.task_management_tool.get_active_timer",
+			callback: (r) => {
+				apply_active_timers(r.message);
+			}
+		});
+	}
 
 	body.find(".timeEntryButton").off().on("click", function () {
 		const task_name = $(this).attr("task-id");
@@ -751,7 +811,10 @@ function set_status_colors(page) {
 		status_el.css("color", color);
 		project_el.css("color", color);
 
-		if (["Open", "Overdue", "Working", "Pending Review", "Hold", "Pending with Authority"].includes(status)) add_check_icon(status_el[0]);
+		const task_id = status_el.attr("task-id");
+		const is_event = task_id && task_id.startsWith('EVENT-');
+
+		if (!is_event && ["Open", "Overdue", "Working", "Pending Review", "Hold", "Pending with Authority"].includes(status)) add_check_icon(status_el[0]);
 	});
 
 	function add_check_icon(element) {

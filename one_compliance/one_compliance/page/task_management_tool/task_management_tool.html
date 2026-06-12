@@ -18,10 +18,14 @@
 			<div class="card-body">
 				<div class="row">
 					<div class="col-md-2" style="padding: inherit;">
+						{% if data.is_event %}
+						<span class="card-title" style="color: orange; font-weight: bold;">{{ data.subject }}</span>
+						{% else %}
 						<a class="card-title" style="color: orange;" href="/app/task/{{data.name}}">{{ data.subject
 							}}</a><br>
 						<a class="card-subtitle project-link" href="/app/project/{{ data.project }}"
 							color="{{ data.color }}">{{ data.project_name }}</a>
+						{% endif %}
 						{% if data.customer %}
 						<p class="card-text customer-link">
 							Customer: <a style="font-weight:bold;" href="/app/customer/{{data.customer}}">{{
@@ -68,17 +72,24 @@
 							<button class="btn btn-outline-warning btn-icon startButton" task-id="{{ data.name }}"
 								project-id="{{ data.project }}" assignees="{{ data.employee_names }}"
 								task-subject="{{ data.subject }}"
-								data-toggle="tooltip" title="Start Timer">
+								data-toggle="tooltip" title="Start Timer" {% if data.is_event %} style="display:none;" {% endif %}>
 								<i class="fas fa-play"></i>
+							</button>
+							<!-- Button for event dialog -->
+							<button class="btn btn-outline-primary btn-icon eventDialogButton" task-id="{{ data.name }}"
+								task-subject="{{ data.subject }}" start-time="{{ data.start_time }}"
+								data-toggle="tooltip" title="Finalize Event" {% if not data.is_event %} style="display:none;" {% endif %}>
+								<i class="fas fa-clock"></i>
 							</button>
 							<!-- Button for timesheet -->
 							<button class="btn btn-outline-primary btn-icon timeEntryButton" task-id="{{ data.name }}"
 								project-id="{{ data.project }}" assignees="{{ data.employee_names }}"
 								task-subject="{{ data.subject }}"
-								data-toggle="tooltip" title="Time Sheet">
+								data-toggle="tooltip" title="Time Sheet" {% if data.is_event %} style="display:none;" {% endif %}>
 								<i class="fas fa-clock"></i>
 							</button>
 							<!-- Button for view documents -->
+							{% if not data.is_event %}
 							<button class="btn btn-outline-info btn-icon documentButton"
 								sub-category="{{ data.compliance_sub_category }}" customer="{{ data.customer }}"
 								data-toggle="tooltip" title="Documents" {% if is_document_icon_hidden %} hidden {% endif
@@ -102,6 +113,7 @@
 								is_payment_icon_hidden %} hidden {% endif %}>
 								<i class="fas fa-wallet"></i>
 							</button>
+							{% endif %}
 						</div>
 					</div>
 				</div>

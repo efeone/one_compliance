@@ -365,29 +365,48 @@ def make_time_sheet_entry(event):
 			if participant.reference_doctype == "Employee":
 				employee_id = participant.reference_docname
 				if employee_id:
-					create_timesheet(employee_id, activity_type, from_time, to_time)
+					create_timesheet(employee_id, activity_type, from_time, to_time, event)
 
 
 @frappe.whitelist()
-def create_timesheet(employee, activity_type, from_time, to_time):
+def create_timesheet(employee, activity_type, from_time, to_time, event=None):
 	from_time = get_datetime(from_time)
 	to_time = get_datetime(to_time)
 	employee_id = frappe.get_value("Employee", {"name": employee}, "name")
 
-	# Check if a timesheet already exists for the employee within the given date range
-	if frappe.db.exists("Timesheet", {"employee": employee_id, "start_date": from_time.date(), "end_date": to_time.date()}):
-		frappe.throw(_("Timesheet already Created"))
+	# Check if a draft timesheet already exists for the employee for today
+	existing_ts = frappe.db.get_value("Timesheet", {
+		"employee": employee_id,
+		"start_date": from_time.date(),
+		"docstatus": 0
+	}, "name")
+
+	if existing_ts:
+		timesheet = frappe.get_doc("Timesheet", existing_ts)
+		# Check if event already logged
+		if event and any(log.event == event for log in timesheet.time_logs):
+			return
+		
+		timesheet.append("time_logs", {
+			"activity_type": activity_type,
+			"from_time": from_time,
+			"to_time": to_time,
+			"event": event
+		})
+		timesheet.save(ignore_permissions=True)
 	else:
 		timesheet = frappe.new_doc("Timesheet")
 		timesheet.employee = employee_id
 		timesheet.append("time_logs",{
 			"activity_type": activity_type,
 			"from_time": from_time,
-			"to_time": to_time
+			"to_time": to_time,
+			"event": event
 		})
 
 		timesheet.insert(ignore_permissions=True)
-		frappe.db.commit()
+	
+	frappe.db.commit()
 
 @frappe.whitelist()
 def get_employee_list_for_hod():
