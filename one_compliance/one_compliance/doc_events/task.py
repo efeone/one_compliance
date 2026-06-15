@@ -10,6 +10,7 @@ from frappe.utils import add_days, cstr, date_diff, flt, getdate, today
 from frappe.utils.data import format_date
 from frappe.utils.nestedset import NestedSet
 from erpnext.projects.doctype.task.task import check_if_child_exists, CircularReferenceError
+from frappe.utils import getdate
 
 from one_compliance.one_compliance.utils import (
 	create_project_completion_todos,
@@ -205,6 +206,25 @@ class CustomTask(NestedSet):
 		self.unassign_todo()
 		self.populate_depends_on()
 
+	def before_validate(self):
+		self.update_project_expected_end_date()
+
+	def update_project_expected_end_date(self):
+		'''
+			Update the project's expected end date if the task's completion date is later.
+		'''
+		if not self.project or not self.completed_on:
+			return
+		current_eed = frappe.db.get_value("Project", self.project, "expected_end_date")
+
+		if getdate(current_eed) < getdate(self.completed_on):
+			frappe.db.set_value(
+				"Project",
+				self.project,
+				"expected_end_date",
+				self.completed_on
+			)
+
 	def unassign_todo(self):
 		if self.status == "Completed":
 			close_all_assignments(self.doctype, self.name)
@@ -387,37 +407,75 @@ def add_project_user_if_not_exists(project, user_id):
 @frappe.whitelist()
 def task_on_update(doc, method):
 	set_task_time_line(doc)
+
 	if doc.status == 'Completed':
-		if frappe.db.get_single_value("Compliance Settings", "enable_task_complete_notification_for_director"):
+		if frappe.db.get_single_value(
+			"Compliance Settings",
+			"enable_task_complete_notification_for_director"
+		):
 			task_complete_notification_for_director(doc)
+
 		if doc.custom_is_payable:
 			create_journal_entry(doc)
-		if doc.project:
-			if frappe.db.exists('Project', doc.project):
-				project = frappe.get_doc ('Project', doc.project)
-				if project.status == 'Completed':
-					if not frappe.db.get_value("Sales Order", project.sales_order, "custom_is_rework"):
-						create_project_completion_todos(project.sales_order, project.project_name)
-					# send_project_completion_mail = frappe.db.get_value('Customer', project.customer, 'send_project_completion_mail')
-					# if send_project_completion_mail:
-					# 	email_id = frappe.db.get_value('Customer', project.customer, 'email_id')
-					# 	if email_id:
-					# 		project_complete_notification_for_customer(project, email_id)
-		# Check if this task is a dependency for other tasks
-		dependent_tasks = frappe.get_all('Task Depends On', filters={'task': doc.name}, fields=['parent'])
+
+		if doc.project and frappe.db.exists("Project", doc.project):
+
+			project_status, sales_order = frappe.db.get_value(
+				"Project",
+				doc.project,
+				["status", "sales_order"]
+			)
+
+			if project_status == "Completed":
+
+				if not sales_order or not frappe.db.exists("Sales Order", sales_order):
+					sales_order = frappe.db.exists(
+						"Sales Order",
+						{"project": doc.project, "docstatus": 1}
+					)
+					if not sales_order:
+						frappe.throw(
+							_(f"Sales Order not found for {doc.project}")
+						)
+
+				if not frappe.db.get_value(
+					"Sales Order",
+					sales_order,
+					"custom_is_rework"
+				):
+					create_project_completion_todos(sales_order, doc.project)
+
+		dependent_tasks = frappe.get_all(
+			'Task Depends On',
+			filters={'task': doc.name},
+			fields=['parent']
+		)
+
 		for dependent_task in dependent_tasks:
-			task = frappe.get_doc('Task', dependent_task.parent)
+			task_name = dependent_task.parent
+
+			current_status = frappe.db.get_value("Task", task_name, "status")
+
 			all_dependencies_completed = True
-			# Check if all dependent tasks are completed
-			for dependency in task.depends_on:
-				dependency_doc = frappe.get_doc('Task', dependency.task)
-				if dependency_doc.status != 'Completed':
+
+			dependencies = frappe.get_all(
+				"Task Depends On",
+				filters={"parent": task_name},
+				fields=["task"]
+			)
+
+			for dependency in dependencies:
+				dep_status = frappe.db.get_value(
+					"Task",
+					dependency.task,
+					"status"
+				)
+				if dep_status != "Completed":
 					all_dependencies_completed = False
 					break
-			# If all dependencies are completed, mark the dependent task as completed
-			if all_dependencies_completed and task.status != 'Completed':
-				task.status = 'Completed'
-				task.save()
+
+			if all_dependencies_completed and current_status != "Completed":
+				frappe.db.set_value("Task", task_name, "status", "Completed")
 
 @frappe.whitelist()
 def task_complete_notification_for_director(doc):
@@ -553,14 +611,32 @@ def create_sales_order(project, rate, sub_category_doc, payment_terms=None, subm
 	frappe.msgprint("Sales Order {0} Created against {1}".format(new_sales_order.name, project.name), alert=True)
 
 @frappe.whitelist()
-def update_task_status(task_id, status, completed_by, completed_on):
-	# Load the task document from the database
+def update_task_status(task_id, status, completed_by, completed_on, comment=None):
+	'''
+	Update the status and completion details of a Task and optionally add comments
+	to both the Task and its linked Project.
+	'''
+
 	task_doc = frappe.get_doc("Task", task_id)
 	task_doc.completed_on = frappe.utils.getdate(completed_on)
 	task_doc.status = status
 	task_doc.completed_by = completed_by
+	if comment:
+		task_prefix = frappe.bold(_("Reason for updating task status:"))
+		task_comment = f"{task_prefix}<br> {frappe.utils.escape_html(comment)}"
+		task_doc.add_comment("Comment", task_comment)
+
+		if task_doc.project:
+			formatted_date = frappe.utils.formatdate(completed_on, "dd-mm-yyyy")
+			project_prefix = frappe.bold(_("Reason for Updating Expected End Date:"))
+			project_comment = (
+				f"{project_prefix}<br>"
+				f"Task <b>{task_doc.name}</b> Completed on {formatted_date}."
+			)
+			project_doc = frappe.get_doc("Project", task_doc.project)
+			project_doc.add_comment("Comment", project_comment)
+
 	task_doc.save()
-	frappe.db.commit()
 	frappe.msgprint("Task Status has been set to {0}".format(status), alert=True)
 	return True
 
@@ -746,3 +822,24 @@ def enable_customer_on_task_completion(doc, method):
 		customer.aml_compliance_checked = 1
 		customer.save(ignore_permissions=True)
 		frappe.msgprint(f"Customer {customer.name} has been enabled after AML compliance task completion.")
+
+def on_update(doc, method):
+	'''
+		Update the project's expected end date if the task's completion date is later.
+	'''
+	if not doc.project or not doc.completed_on:
+		return
+
+	project = frappe.get_doc("Project", doc.project)
+
+	if project.expected_end_date < doc.completed_on:
+		project.db_set('expected_end_date', doc.completed_on)
+		task_completed_date = getdate(doc.completed_on)
+		project_eed = getdate(project.expected_end_date)
+
+		if task_completed_date > project_eed:
+			project.db_set("expected_end_date", task_completed_date)
+			comment_content = '<h2><b>Reason for updating project completion date:</b></h2>'
+			comment_content += f"Expected End Date updated to <b>{doc.completed_on}</b> based on Task <b>{doc.name}</b> completion."
+			project.add_comment(text=_(comment_content))
+
