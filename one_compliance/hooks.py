@@ -218,6 +218,7 @@ scheduler_events = {
 		'one_compliance.one_compliance.doc_events.task.set_tasks_as_overdue',
 		'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_sales_orders_from_compliance_agreements',
 		'one_compliance.one_compliance.doctype.compliance_agreement.compliance_agreement.create_future_one_time_projects',
+		'one_compliance.one_compliance.doc_events.customer.create_so_project_from_legal_authority',
 	],
 #	"hourly": [
 #		"one_compliance.tasks.hourly"
