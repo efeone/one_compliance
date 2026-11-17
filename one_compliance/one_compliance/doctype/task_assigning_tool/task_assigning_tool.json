@@ -19,6 +19,9 @@
   "assign",
   "task_reassigns_section",
   "task_reassigns",
+  "task_removal_section",
+  "task_removal",
+  "remove_assignments",
   "section_break_fyzdz",
   "compliance_categories",
   "compliance_executives"
@@ -33,7 +36,7 @@
    "options": "Department"
   },
   {
-   "depends_on": "eval: doc.assignment_type == 'Assign'",
+   "depends_on": "eval: doc.assignment_type == 'Assign' || doc.assignment_type == 'Remove'",
    "fieldname": "employee",
    "fieldtype": "Link",
    "label": "Employee",
@@ -43,7 +46,7 @@
    "fieldname": "assignment_type",
    "fieldtype": "Select",
    "label": "Assignment Type",
-   "options": "\nTransfer\nAssign",
+   "options": "\nTransfer\nAssign\nRemove",
    "reqd": 1
   },
   {
@@ -91,7 +94,7 @@
    "label": "Assign"
   },
   {
-   "depends_on": "eval: doc.employee",
+   "depends_on": "eval: doc.employee && doc.assignment_type == 'Assign'",
    "fieldname": "compliance_categories",
    "fieldtype": "Link",
    "label": "Compliance Categories",
@@ -119,13 +122,31 @@
    "fieldname": "add_to_subcategories",
    "fieldtype": "Button",
    "label": "Add To Subcategories"
+  },
+  {
+   "fieldname": "task_removal_section",
+   "fieldtype": "Section Break",
+   "label": "Task Removal"
+  },
+  {
+   "depends_on": "eval:doc.assignment_type == 'Remove' && doc.employee",
+   "fieldname": "task_removal",
+   "fieldtype": "Table",
+   "label": "Task Removal",
+   "options": "Task Reassign"
+  },
+  {
+   "depends_on": "eval:doc.assignment_type == 'Remove' && doc.employee",
+   "fieldname": "remove_assignments",
+   "fieldtype": "Button",
+   "label": "Remove Assignments"
   }
  ],
  "hide_toolbar": 1,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-11-01 12:05:00.127334",
+ "modified": "2025-08-05 19:39:38.456051",
  "modified_by": "Administrator",
  "module": "One Compliance",
  "name": "Task Assigning Tool",
@@ -162,6 +183,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
