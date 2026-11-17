@@ -122,30 +122,31 @@ override_doctype_class = {
 # Hook on document methods and events
 
 doc_events = {
-	'Project Template':{
-		'after_insert': 'one_compliance.one_compliance.doc_events.project_template.update_project_template',
-		'on_trash': 'one_compliance.one_compliance.doc_events.project_template.on_trash',
-		'validate': 'one_compliance.one_compliance.doc_events.project_template.validate',
-	},
-	'Task':{
-		'on_update':[
-			'one_compliance.one_compliance.doc_events.task.task_on_update',
-			'one_compliance.one_compliance.doc_events.task.make_sales_invoice',
-			'one_compliance.one_compliance.doc_events.task.subtask_on_update',
-			'one_compliance.one_compliance.doc_events.task.on_task_update',
-			'one_compliance.one_compliance.doc_events.task.enable_customer_on_task_completion'
-		],
-		'validate':[
-			'one_compliance.one_compliance.doc_events.task.append_users_to_project',
-			'one_compliance.one_compliance.doc_events.task.set_task_status_to_hold',
-		],
-		'autoname': 'one_compliance.one_compliance.doc_events.task.autoname',
-		'after_insert':'one_compliance.one_compliance.doc_events.task.set_task_readiness_flow_on_creation',
-	},
-	'Project':{
-		'on_update': 'one_compliance.one_compliance.doc_events.project.project_on_update',
+    'Project Template':{
+        'after_insert': 'one_compliance.one_compliance.doc_events.project_template.update_project_template',
+        'on_trash': 'one_compliance.one_compliance.doc_events.project_template.on_trash',
+        'validate': 'one_compliance.one_compliance.doc_events.project_template.validate',
+    },
+    'Task':{
+        'on_update':[
+            'one_compliance.one_compliance.doc_events.task.task_on_update',
+            'one_compliance.one_compliance.doc_events.task.make_sales_invoice',
+            'one_compliance.one_compliance.doc_events.task.subtask_on_update',
+            'one_compliance.one_compliance.doc_events.task.on_task_update',
+			'one_compliance.one_compliance.doc_events.task.enable_customer_on_task_completion',
+			'one_compliance.one_compliance.doc_events.task.on_update',
+        ],
+        'validate':[
+            'one_compliance.one_compliance.doc_events.task.append_users_to_project',
+            'one_compliance.one_compliance.doc_events.task.set_task_status_to_hold',
+        ],
+        'autoname': 'one_compliance.one_compliance.doc_events.task.autoname',
+        'after_insert':'one_compliance.one_compliance.doc_events.task.set_task_readiness_flow_on_creation',
+    },
+    'Project':{
+        'on_update': 'one_compliance.one_compliance.doc_events.project.project_on_update',
 		'after_insert': 'one_compliance.one_compliance.doc_events.project.create_commission_purchase_invoice',
-	},
+    },
 	'Customer':{
 		'on_update':[
 			'one_compliance.one_compliance.doc_events.customer.customer_on_update',
