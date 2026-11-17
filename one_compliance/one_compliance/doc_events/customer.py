@@ -7,6 +7,8 @@ from one_compliance.one_compliance.utils import add_custom as add_assignment
 from one_compliance.one_compliance.utils import *
 from frappe.email.doctype.notification.notification import get_context
 from one_compliance.one_compliance.utils import create_todo 
+from frappe.utils import getdate, add_years, add_months, add_days
+
 
 @frappe.whitelist()
 def set_customer_type_value(doc):
@@ -563,3 +565,324 @@ def validate_commission_type(doc, method=None):
 		frappe.throw("Please select Commission Based on Percentage or Commission Based on Amount.")
 	if not doc.one_time and not doc.repeat_on_project:
 		frappe.throw("Please select either One Time or Repeat On Project for referral commission.")
+		
+@frappe.whitelist()
+def create_so_project_from_legal_authority(posting_date=None):
+	"""
+	Scheduler method to create Sales Order and Project based on legal authority appointment date.
+	"""
+
+	today_date = getdate(posting_date) if posting_date else getdate()
+
+	customers = frappe.get_all(
+		"Customer",
+		filters={"disabled": 0, "is_frozen": 0},
+		pluck="name"
+	)
+
+	for customer_name in customers:
+
+		customer_doc = frappe.get_doc("Customer", customer_name)
+
+		company = (
+			frappe.defaults.get_user_default("Company")
+			or frappe.db.get_single_value("Global Defaults", "default_company")
+		)
+
+		if not company:
+			frappe.log_error("No Default Company Found", "DIN KYC Scheduler")
+			continue
+
+		for row in customer_doc.custom_legal_authority_list:
+
+			if not row.compliance_sub_category:
+				continue
+
+			create_project = False
+
+			if not row.last_din_kyc_date:
+				create_project = True
+
+			elif row.din_kyc_date and getdate(row.din_kyc_date) == today_date:
+				create_project = True
+
+			if not create_project:
+				continue
+
+			sub_category = frappe.db.get_value(
+				"Compliance Sub Category",
+				row.compliance_sub_category,
+				["item_code", "project_template", "is_billable", "repeat_on", "rate"],
+				as_dict=True
+			)
+
+			if not sub_category:
+				continue
+
+			project = None
+			so = None
+
+			if sub_category.is_billable and sub_category.item_code:
+
+				existing_so = frappe.db.exists(
+					"Sales Order",
+					{
+						"customer": customer_name,
+						"compliance_sub_category": row.compliance_sub_category,
+						"transaction_date": today_date,
+					},
+				)
+
+				if not existing_so:
+
+					item_name = frappe.db.get_value(
+						"Item", sub_category.item_code, "item_name"
+					)
+
+					so = frappe.new_doc("Sales Order")
+					so.customer = customer_name
+					so.company = company
+					so.compliance_sub_category = row.compliance_sub_category
+					so.transaction_date = today_date
+					so.delivery_date = today_date
+
+					so.append(
+						"items",
+						{
+							"item_code": sub_category.item_code,
+							"item_name": item_name,
+							"qty": 1,
+							"rate": sub_category.rate,
+						},
+					)
+
+					so.insert(ignore_permissions=True)
+					so.submit()
+
+				else:
+					so = frappe.get_doc("Sales Order", existing_so)
+
+			if sub_category.project_template:
+
+				existing_project = frappe.db.exists(
+					"Project",
+					{
+						"customer": customer_name,
+						"compliance_sub_category": row.compliance_sub_category,
+						"expected_start_date": today_date,
+					},
+				)
+
+				if not existing_project:
+
+					project = create_project_from_template(
+						sales_order=so.name if so else None,
+						project_template=sub_category.project_template,
+						customer=customer_name,
+						company=company,
+						compliance_sub_category=row.compliance_sub_category,
+						din_kyc_date=today_date,
+					)
+
+				else:
+					project = frappe.get_doc("Project", existing_project)
+
+				if project and so:
+					project.db_set("sales_order", so.name)
+					so.db_set("project", project.name)
+
+			row.last_din_kyc_date = today_date
+
+			if sub_category.repeat_on == "Yearly":
+				row.din_kyc_date = add_years(today_date, 1)
+
+			elif sub_category.repeat_on == "Half Yearly":
+				row.din_kyc_date = add_months(today_date, 6)
+
+			elif sub_category.repeat_on == "Quarterly":
+				row.din_kyc_date = add_months(today_date, 3)
+
+			elif sub_category.repeat_on == "Monthly":
+				row.din_kyc_date = add_months(today_date, 1)
+
+			else:
+				row.din_kyc_date = add_years(today_date, 1)
+
+		customer_doc.flags.ignore_mandatory = True
+		customer_doc.save(ignore_permissions=True)
+
+	frappe.db.commit()
+
+def create_project_from_template(
+	sales_order,
+	project_template,
+	customer,
+	company,
+	compliance_sub_category,
+	din_kyc_date,
+):
+	"""
+		Create Project and Tasks from Project Template for DIN KYC Compliance
+	"""
+
+	try:
+
+		compliance_date = getdate(din_kyc_date)
+
+		project_template_doc = frappe.get_doc("Project Template", project_template)
+		sub_category_doc = frappe.get_doc("Compliance Sub Category", compliance_sub_category)
+
+		repeat_on = frappe.db.get_value(
+			"Compliance Sub Category",
+			compliance_sub_category,
+			"repeat_on"
+		)
+
+		naming_year = compliance_date.year
+		naming_month = compliance_date.strftime("%B")
+
+		if naming_month in ["January", "February", "March"]:
+			naming_quarter = "Quarter 1"
+		elif naming_month in ["April", "May", "June"]:
+			naming_quarter = "Quarter 2"
+		elif naming_month in ["July", "August", "September"]:
+			naming_quarter = "Quarter 3"
+		else:
+			naming_quarter = "Quarter 4"
+
+		if repeat_on == "Yearly":
+			naming = naming_year
+		elif repeat_on == "Quarterly":
+			naming = str(naming_year) + " " + naming_quarter
+		else:
+			naming = str(naming_year) + " " + naming_month
+
+		project = frappe.new_doc("Project")
+		project.company = company
+
+		add_compliance_category_in_project_name = frappe.db.get_single_value(
+			"Compliance Settings", "add_compliance_category_in_project_name"
+		)
+
+		if add_compliance_category_in_project_name:
+			project.project_name = f"{customer}-{compliance_sub_category}-{naming}"
+		else:
+			sub_category_name = frappe.db.get_value(
+				"Compliance Sub Category",
+				compliance_sub_category,
+				"sub_category"
+			)
+			project.project_name = f"{customer}-{sub_category_name}-{naming}"
+
+		project.customer = customer
+		project.compliance_sub_category = compliance_sub_category
+		project.compliance_category = sub_category_doc.compliance_category
+		project.expected_start_date = compliance_date
+		project.sales_order = sales_order
+
+		project.category_type = sub_category_doc.category_type
+		project.department = sub_category_doc.department
+
+		if project_template_doc.custom_project_duration:
+			project.expected_end_date = add_days(
+				compliance_date,
+				project_template_doc.custom_project_duration
+			)
+
+		project.insert(ignore_permissions=True)
+
+		if sub_category_doc.head_of_department:
+			hod_user = frappe.db.get_value(
+				"Employee",
+				sub_category_doc.head_of_department,
+				"user_id"
+			)
+
+			if hod_user:
+				create_todo(
+					"Project",
+					project.name,
+					hod_user,
+					frappe.session.user,
+					f"Project assigned to {sub_category_doc.head_of_department}"
+				)
+
+		for template_task in project_template_doc.tasks:
+
+			template_task_doc = frappe.get_doc("Task", template_task.task)
+
+			task_doc = frappe.new_doc("Task")
+			task_doc.subject = template_task.subject
+			task_doc.project = project.name
+			task_doc.company = project.company
+			task_doc.project_name = project.project_name
+			task_doc.compliance_sub_category = compliance_sub_category
+			task_doc.category_type = project.category_type
+			task_doc.exp_start_date = compliance_date
+
+			if template_task_doc.expected_time:
+				task_doc.expected_time = template_task_doc.expected_time
+
+			if template_task.custom_task_duration:
+				task_doc.duration = template_task.custom_task_duration
+				task_doc.exp_end_date = add_days(
+					compliance_date,
+					template_task.custom_task_duration
+				)
+
+			if template_task.task_weightage:
+				task_doc.task_weightage = template_task.task_weightage
+
+			if template_task.checklist_template:
+				task_doc.checklist_template = template_task.checklist_template
+
+			task_doc.insert(ignore_permissions=True)
+
+			assigned_users = []
+
+			if template_task.type == "Employee" and template_task.employee_or_group:
+				user_id = frappe.db.get_value(
+					"Employee",
+					template_task.employee_or_group,
+					"user_id"
+				)
+				if user_id:
+					assigned_users.append(user_id)
+
+			elif template_task.type == "Employee Group" and template_task.employee_or_group:
+				group = frappe.get_doc("Employee Group", template_task.employee_or_group)
+				for emp in group.employee_list:
+					if emp.user_id:
+						assigned_users.append(emp.user_id)
+
+			hod_user = None
+			if sub_category_doc.head_of_department:
+				hod_user = frappe.db.get_value(
+					"Employee",
+					sub_category_doc.head_of_department,
+					"user_id"
+				)
+
+			for user in assigned_users:
+				create_todo(
+					"Task",
+					task_doc.name,
+					user,
+					frappe.session.user,
+					f"Task assigned: {task_doc.subject}"
+				)
+
+			if hod_user and hod_user not in assigned_users:
+				create_todo(
+					"Task",
+					task_doc.name,
+					hod_user,
+					frappe.session.user,
+					f"HOD notified for task: {task_doc.subject}"
+				)
+
+		return project
+
+	except Exception:
+		frappe.log_error(frappe.get_traceback(), "Project Creation Failed")
+		return None
